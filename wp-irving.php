@@ -1,14 +1,15 @@
 <?php
 /**
- * Entry point for the plugin.
+ * Plugin Name:     WP Irving
+ * Description:     Use WordPress as the API for Irving.
+ * Author:          Alley
+ * Author URI:      https://alley.co
+ * Text Domain:     wp-irving
+ * Domain Path:     /languages
+ * Version:         0.1.0
  *
- * Plugin Name: WP Irving
- * Description: The WordPress side of Irving - Alley's React Ecosystem
- * Author: Alley Interactive, jameswburke
- * Version: 0.1
- * Author URI: http://alleyinteractive.com
- *
- * @package Irving
+ * @package         Wp_Irving
  */
 
-define( 'IRVING_PATH', dirname( __FILE__ ) );
+// Your code starts here.
+define( 'WP_IRVING_PATH', dirname( __FILE__ ) );
