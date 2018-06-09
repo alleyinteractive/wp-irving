@@ -2,7 +2,7 @@
 /**
  * PHPUnit bootstrap file
  *
- * @package Wp_Irving
+ * @package WP_Irving
  */
 
 $_tests_dir = getenv( 'WP_TESTS_DIR' );
