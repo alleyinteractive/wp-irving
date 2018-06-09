@@ -111,7 +111,14 @@ class Admin_Bar extends Component {
 	}
 }
 
-
+/**
+ * Helper to get the admin bar component.
+ *
+ * @param  string $name     Component name or array of properties.
+ * @param  array  $config   Component config.
+ * @param  array  $children Component children.
+ * @return Admin_Bar An instance of the Admin_Bar class.
+ */
 function admin_bar( $name = '', array $config = [], array $children = [] ) {
 	return new Admin_Bar( $name, $config, $children );
 }

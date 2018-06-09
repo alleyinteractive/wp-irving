@@ -51,10 +51,10 @@ class Component {
 			$children = $data['children'] ?? [];
 		}
 
-		// Store in class.
-		$this->name     = $name;
-		$this->config   = $config;
-		$this->children = $children;
+		// Store in class vars unless overridden by extended classes.
+		$this->name     = ! empty( $this->name ) ?  $this->name : $name;
+		$this->config   = ! empty( $this->config ) ? $this->config : $config;
+		$this->children = ! empty( $this->children ) ? $this->children : $children;
 
 		return $this;
 	}
