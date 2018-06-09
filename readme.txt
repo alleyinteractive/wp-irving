@@ -4,7 +4,7 @@ Tags: irving, headless
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-WP Irving contains everything needed to power an Irving site powered by WordPress.
+WP Irving contains everything needed to power an Irving site with WordPress.
 
 == Description ==
 
