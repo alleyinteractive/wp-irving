@@ -46,7 +46,7 @@ class Component_Endpoint extends Endpoint {
 	public function register_rest_routes() {
 		register_rest_route(
 			$this->namespace,
-			'/component/',
+			'/components/',
 			[
 				'methods'  => \WP_REST_Server::READABLE,
 				'callback' => [ $this, 'get_route_response' ],

@@ -23,11 +23,6 @@ class Endpoint {
 	 * Constructor.
 	 */
 	public function __construct() {
-
-		// Resolve CORS issues
-		add_filter( 'allowed_http_origin', '__return_true' );
-		header( 'Access-Control-Allow-Origin: *' );
-
 		add_action( 'rest_api_init', [ $this, 'register_rest_routes' ] );
 	}
 }

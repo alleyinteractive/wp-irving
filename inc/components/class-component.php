@@ -55,21 +55,6 @@ class Component {
 		$this->name     = ! empty( $this->name ) ?  $this->name : $name;
 		$this->config   = ! empty( $this->config ) ? $this->config : $config;
 		$this->children = ! empty( $this->children ) ? $this->children : $children;
-
-		return $this;
-	}
-
-	/**
-	 * Output properties as an array to be used as JSON.
-	 *
-	 * @return array Component properties.
-	 */
-	public function json() {
-		return [
-			'name'     => $this->name,
-			'config'   => $this->config,
-			'children' => $this->children,
-		];
 	}
 }
 
