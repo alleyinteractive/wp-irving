@@ -70,7 +70,7 @@ class Admin_Bar extends Component {
 			$this->children[] = $this->create_button(
 				[
 					'label' => __( 'Edit', 'wp-irving' ),
-					'url' => get_edit_post_link( $wp_query->posts[0]->ID ),
+					'url'   => get_edit_post_link( $wp_query->posts[0]->ID ),
 				]
 			);
 		}

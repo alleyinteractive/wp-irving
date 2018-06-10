@@ -87,7 +87,7 @@ class Components_Endpoint extends Endpoint {
 	public function get_query_by_path( $path ) {
 		global $wp_rewrite;
 
-		// Query to execute
+		// Query to execute.
 		$query = '';
 
 		// Get path, remove leading slash.
@@ -103,7 +103,7 @@ class Components_Endpoint extends Endpoint {
 				// Prep query for use in WP_Query.
 				$query = preg_replace( '!^.+\?!', '', $query );
 				$query = addslashes( \WP_MatchesMapRegex::apply( $query, $matches ) );
-				parse_str($query, $perma_query_vars);
+				parse_str( $query, $perma_query_vars );
 				break;
 			}
 		}

@@ -14,12 +14,12 @@
 define( 'WP_IRVING_PATH', dirname( __FILE__ ) );
 define( 'WP_IRVING_VERSION', '1.0' );
 
-// Base classes
+// Base classes.
 require_once( WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-component.php' );
 
-// API
+// API.
 require_once( WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php' );
 
-// Shapes
+// Shapes.
 require_once( WP_IRVING_PATH . '/inc/components/class-admin-bar.php' );
