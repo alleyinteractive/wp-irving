@@ -1,6 +1,6 @@
 <?php
 /**
- * Class file for Component endpoint.
+ * Class file for Components endpoint.
  *
  * @package WP_Irving
  */
@@ -8,9 +8,9 @@
 namespace WP_Irving\REST_API;
 
 /**
- * Component endpoint.
+ * Components endpoint.
  */
-class Component_Endpoint extends Endpoint {
+class Components_Endpoint extends Endpoint {
 
 	/**
 	 * Path being queried.
@@ -67,9 +67,15 @@ class Component_Endpoint extends Endpoint {
 		$this->query   = $this->get_query_by_path( $this->path );
 
 		/**
-		 * Filter just the response.
+		 * Modify the output of the components route.
+		 *
+		 * @param Array      $response The response of this request.
+		 * @param WP_Query   $query WP_Query object corresponding to this
+		 *                        request.
+		 * @param string     $context The context for this request.
+		 * @param WP_Request $request WP_Request object.
 		 */
-		return apply_filters( 'wp_irving_route', $this->response, $this->query, $this->context, $request );
+		return apply_filters( 'wp_irving_components_route', $this->response, $this->query, $this->context, $request );
 	}
 
 	/**
@@ -106,4 +112,4 @@ class Component_Endpoint extends Endpoint {
 	}
 }
 
-new Component_Endpoint();
+new Components_Endpoint();

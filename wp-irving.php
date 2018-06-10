@@ -19,7 +19,7 @@ require_once( WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-component.php' );
 
 // API
-require_once( WP_IRVING_PATH . '/inc/endpoints/class-component-endpoint.php' );
+require_once( WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php' );
 
 // Shapes
 require_once( WP_IRVING_PATH . '/inc/components/class-admin-bar.php' );
