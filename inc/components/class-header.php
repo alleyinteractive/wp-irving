@@ -32,7 +32,7 @@ class Header extends Component {
 }
 
 /**
- * Helper to get the header component.
+ * Helper to get the component.
  *
  * @param  string $name     Component name or array of properties.
  * @param  array  $config   Component config.
