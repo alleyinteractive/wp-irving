@@ -26,8 +26,8 @@ class Content_Item extends Component {
 	 */
 	public function default_config() {
 		return [
-			'type'    => '',
-			'object'  => null,
+			'type'   => '',
+			'object' => null,
 		];
 	}
 }
