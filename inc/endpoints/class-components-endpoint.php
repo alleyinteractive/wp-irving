@@ -70,12 +70,13 @@ class Components_Endpoint extends Endpoint {
 		 * Modify the output of the components route.
 		 *
 		 * @param Array      $response The response of this request.
-		 * @param WP_Query   $query WP_Query object corresponding to this
-		 *                        request.
-		 * @param string     $context The context for this request.
+		 * @param WP_Query   $query    WP_Query object corresponding to this
+		 *                             request.
+		 * @param string     $context  The context for this request.
+		 * @param string     $path     The path for this request.
 		 * @param WP_Request $request WP_Request object.
 		 */
-		return apply_filters( 'wp_irving_components_route', $this->response, $this->query, $this->context, $request );
+		return (array) apply_filters( 'wp_irving_components_route', $this->response, $this->query, $this->context, $this->path, $request );
 	}
 
 	/**

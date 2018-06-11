@@ -55,6 +55,30 @@ class Component {
 		$this->name     = ! empty( $this->name ) ? $this->name : $name;
 		$this->config   = ! empty( $this->config ) ? $this->config : $config;
 		$this->children = ! empty( $this->children ) ? $this->children : $children;
+
+		// Conform config.
+		$this->config = wp_parse_args( $this->config, $this->default_config() );
+	}
+
+	/**
+	 * Define a default config shape.
+	 *
+	 * @return array Default config.
+	 */
+	public function default_config() {
+		return [];
+	}
+
+	/**
+	 * Helper to set a top level config value.
+	 *
+	 * @param string $key   Config key.
+	 * @param mixed  $value Config value.
+	 * @return mixed An instance of this class.
+	 */
+	public function set_config( $key, $value ) {
+		$this->config[ $key ] = $value;
+		return $this;
 	}
 }
 
