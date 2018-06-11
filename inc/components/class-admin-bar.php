@@ -112,7 +112,7 @@ class Admin_Bar extends Component {
 }
 
 /**
- * Helper to get the admin bar component.
+ * Helper to get the component.
  *
  * @param  string $name     Component name or array of properties.
  * @param  array  $config   Component config.

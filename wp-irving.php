@@ -23,3 +23,5 @@ require_once( WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php' );
 
 // Shapes.
 require_once( WP_IRVING_PATH . '/inc/components/class-admin-bar.php' );
+require_once( WP_IRVING_PATH . '/inc/components/class-content-item.php' );
+require_once( WP_IRVING_PATH . '/inc/components/class-content-list.php' );
