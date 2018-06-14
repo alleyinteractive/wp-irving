@@ -1,6 +1,6 @@
 <?php
 /**
- * Class file for Irving's Menu Item component.
+ * Class file for Irving's Menu component.
  *
  * @package WP_Irving
  */
@@ -8,16 +8,16 @@
 namespace WP_Irving\Component;
 
 /**
- * Defines the components of the Menu Item.
+ * Defines the components of the menu.
  */
-class Menu_Item extends Component {
+class Menu extends Component {
 
 	/**
 	 * Unique component slug.
 	 *
 	 * @var string
 	 */
-	public $name = 'menu-item';
+	public $name = 'menu';
 
 	/**
 	 * Define a default config shape.
@@ -26,9 +26,30 @@ class Menu_Item extends Component {
 	 */
 	public function default_config() {
 		return [
-			'label' => '',
-			'url'   => '',
+			'classes' => [],
 		];
+	}
+
+	/**
+	 * Build a menu component by parsing a menu location.
+	 *
+	 * @param  string $menu_location Menu location.
+	 * @return Menu An instance of the Menu class.
+	 */
+	public function parse_wp_menu_by_location( string $menu_location ) {
+		return $this;
+	}
+
+	/**
+	 * Build a menu component by parsing a menu.
+	 *
+	 * @param  string $menu_slug Menu slug.
+	 * @return Menu An instance of the Menu class.
+	 */
+	public function parse_wp_menu( string $menu_slug ) {
+		$menu_items = wp_get_nav_menu_items( $menu_slug );
+
+		return $this;
 	}
 }
 
@@ -38,8 +59,8 @@ class Menu_Item extends Component {
  * @param  string $name     Component name or array of properties.
  * @param  array  $config   Component config.
  * @param  array  $children Component children.
- * @return Menu_Item An instance of the Menu_Item class.
+ * @return Menu An instance of the Menu class.
  */
-function menu_item( $name = '', array $config = [], array $children = [] ) {
-	return new Menu_Item( $name, $config, $children );
+function menu( $name = '', array $config = [], array $children = [] ) {
+	return new Menu( $name, $config, $children );
 }
