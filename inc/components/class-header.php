@@ -26,7 +26,8 @@ class Header extends Component {
 	 */
 	public function default_config() {
 		return [
-			'content' => '',
+			'site_title' => get_bloginfo( 'name' ),
+			'site_url'   => site_url(),
 		];
 	}
 }

@@ -63,7 +63,7 @@ class Components_Endpoint extends Endpoint {
 	 */
 	public function get_route_response( $request ) {
 		$this->path    = $request->get_param( 'path' );
-		$this->context = $request->get_param( 'context' );
+		$this->context = $request->get_param( 'context' ) ?? '';
 		$this->query   = $this->get_query_by_path( $this->path );
 
 		/**
