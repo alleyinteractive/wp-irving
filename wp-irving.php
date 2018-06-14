@@ -21,7 +21,12 @@ require_once( WP_IRVING_PATH . '/inc/components/class-component.php' );
 // API.
 require_once( WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php' );
 
-// Shapes.
+// Default components.
 require_once( WP_IRVING_PATH . '/inc/components/class-admin-bar.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-content-item.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-content-list.php' );
+require_once( WP_IRVING_PATH . '/inc/components/class-footer.php' );
+require_once( WP_IRVING_PATH . '/inc/components/class-header.php' );
+require_once( WP_IRVING_PATH . '/inc/components/class-image.php' );
+require_once( WP_IRVING_PATH . '/inc/components/class-menu-item.php' );
+require_once( WP_IRVING_PATH . '/inc/components/class-menu.php' );
