@@ -28,7 +28,7 @@ class Menu_Item extends Component {
 		/**
 		 * Modify the default config for this component.
 		 *
-		 * @param   $defaults Component defaults.
+		 * @param  $defaults Component defaults.
 		 */
 		return apply_filters(
 			'wp_irving_components_default_menu_item',
@@ -62,7 +62,7 @@ class Menu_Item extends Component {
 		/**
 		 * Modify the config for the menu_item component using the menu object.
 		 *
-		 * @param  Array    $this->config The config array for this component.
+		 * @param  array    $this->config The config array for this component.
 		 * @param  \WP_Post $menu_object  The menu post for this component.
 		 */
 		$this->config = apply_filters( 'wp_irving_components_config_menu_item', $this->config, $menu_object );
