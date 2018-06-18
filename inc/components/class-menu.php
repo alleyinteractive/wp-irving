@@ -46,7 +46,7 @@ class Menu extends Component {
 
 		// If valid menu term.
 		if ( $menu_term instanceof \WP_Term ) {
-			$this->parse_wp_menu( $menu_term->slug );
+			$this->parse_wp_menu( $menu_term );
 		}
 
 		return $this;
@@ -55,11 +55,11 @@ class Menu extends Component {
 	/**
 	 * Build a menu component by parsing a menu.
 	 *
-	 * @param  string $menu_slug Menu slug.
+	 * @param  \WP_Term $menu Menu term.
 	 * @return Menu An instance of the Menu class.
 	 */
-	public function parse_wp_menu( string $menu_slug ) {
-		$menu_items = wp_get_nav_menu_items( $menu_slug );
+	public function parse_wp_menu( \WP_Term $menu ) {
+		$menu_items = wp_get_nav_menu_items( $menu );
 
 		$this->children = $this->build_menu( $menu_items );
 
