@@ -1,72 +1,57 @@
 sudo: false
+dist: trusty
 
 language: php
 
-matrix:
-  include:
-    - php: 5.3
-      env: WP_VERSION=4.7.6
-      dist: precise
-    - php: 5.3
-      env: WP_VERSION=latest
-      dist: precise
-    - php: 5.6
-      env: WP_VERSION=latest
-    - php: 5.6
-      env: WP_TRAVISCI=phpcs
-    - php: 7.0
-      env: WP_VERSION=latest
-    - php: 7.0
-      env: WP_VERSION=nightly
-    - php: 7.1
-      env: WP_VERSION=latest
-    - php: 7.2
-      env: WP_VERSION=latest
-  fast_finish: true
-  allow_failures:
-    - php: 7.2
+notifications:
+  email:
+    on_success: never
+    on_failure: change
 
 branches:
   only:
     - master
-    - dev
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+matrix:
+  include:
+    - php: 7.2
+      env: WP_VERSION=latest
+    - php: 7.1
+      env: WP_VERSION=trunk
+    - php: 7.0
+      env: WP_VERSION=4.5
 
 before_script:
-  # Turn off Xdebug. See https://core.trac.wordpress.org/changeset/40138.
-  - phpenv config-rm xdebug.ini || echo "Xdebug not available"
-
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - |
+    if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
+      phpenv config-rm xdebug.ini
+    else
+      echo "xdebug.ini does not exist"
+    fi
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
       bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-      npm install
-      export PATH="$HOME/.composer/vendor/bin:$PATH"
-      if [[ ${TRAVIS_PHP_VERSION:0:2} == "7." ]]; then
-        composer global require "phpunit/phpunit=5.7.*"
-      else
-        composer global require "phpunit/phpunit=4.8.*"
-      fi
+      composer global require "phpunit/phpunit=4.8.*|5.7.*"
+      composer install
     fi
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-      npm install
-      composer install
+      composer global require wp-coding-standards/wpcs
+      phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
     fi
 
 script:
-  - find . -path ./vendor -prune -o -type "f" -iname "*.php" | xargs -L "1" php -l
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
       phpunit
-    fi
-  - |
-    if [[ ! -z "$WP_VERSION" ]] ; then
-      phpunit -c multisite.xml
-    fi
-  - |
-    if [[ ! -z "$WP_VERSION" ]] ; then
-      grunt qunit:specific --wp=$WP_VERSION
+      WP_MULTISITE=1 phpunit
     fi
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-      grunt phpcs
+      phpcs
     fi
