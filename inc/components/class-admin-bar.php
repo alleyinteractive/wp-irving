@@ -66,11 +66,14 @@ class Admin_Bar extends Component {
 	 */
 	public function parse_query( $wp_query ) {
 		// Add a button to edit the current post.
-		if ( $wp_query->is_single() || $wp_query->is_page() ) {
+		if (
+			! empty( $wp_query->posts )
+			&& ( $wp_query->is_single() || $wp_query->is_page() )
+		) {
 			$this->children[] = $this->create_button(
 				[
 					'label' => __( 'Edit', 'wp-irving' ),
-					'url'   => get_edit_post_link( $wp_query->posts[0]->ID ),
+					'url'   => get_edit_post_link( $wp_query->posts[0]->ID ?? 0 ),
 				]
 			);
 		}

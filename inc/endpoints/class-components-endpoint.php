@@ -38,7 +38,20 @@ class Components_Endpoint extends Endpoint {
 	 *
 	 * @var array
 	 */
-	public $response = [];
+	public $response = [
+		'defaults' => [],
+		'page'     => [],
+	];
+
+	/**
+	 * Initialize class.
+	 */
+	public function __construct() {
+		parent::__construct();
+
+		add_filter( 'post_row_actions', [ $this, 'add_api_link' ], 10, 2 );
+		add_filter( 'page_row_actions', [ $this, 'add_api_link' ], 10, 2 );
+	}
 
 	/**
 	 * Register the REST API routes.
@@ -62,21 +75,28 @@ class Components_Endpoint extends Endpoint {
 	 * @return array
 	 */
 	public function get_route_response( $request ) {
-		$this->path    = $request->get_param( 'path' );
+		$this->path    = $request->get_param( 'path' ) ?? '';
 		$this->context = $request->get_param( 'context' ) ?? '';
 		$this->query   = $this->get_query_by_path( $this->path );
 
 		/**
 		 * Modify the output of the components route.
 		 *
-		 * @param Array      $response The response of this request.
-		 * @param WP_Query   $query    WP_Query object corresponding to this
-		 *                             request.
-		 * @param string     $context  The context for this request.
-		 * @param string     $path     The path for this request.
-		 * @param WP_Request $request WP_Request object.
+		 * @param Array           $response The response of this request.
+		 * @param WP_Query        $query    WP_Query object corresponding to this
+		 *                                  request.
+		 * @param string          $context  The context for this request.
+		 * @param string          $path     The path for this request.
+		 * @param WP_REST_Request $request  WP_REST_Request object.
 		 */
-		return (array) apply_filters( 'wp_irving_components_route', $this->response, $this->query, $this->context, $this->path, $request );
+		return (array) apply_filters(
+			'wp_irving_components_route',
+			$this->response,
+			$this->query,
+			$this->context,
+			$this->path,
+			$request
+		);
 	}
 
 	/**
@@ -110,6 +130,37 @@ class Components_Endpoint extends Endpoint {
 		}
 
 		return new \WP_Query( $query );
+	}
+
+	/**
+	 * Add API endpoint link to post row actions.
+	 *
+	 * @param  array    $actions Action links.
+	 * @param  \WP_Post $post    WP_Post object.
+	 * @return array Updated action links.
+	 */
+	public function add_api_link( array $actions, \WP_Post $post ) : array {
+
+		// Get post permalink.
+		$permalink = get_permalink( $post );
+
+		// Extract path.
+		$path = wp_parse_url( $permalink, PHP_URL_PATH );
+
+		// Apply path to rest URL for Irving components endpoint.
+		$path_url = add_query_arg(
+			'path',
+			$path,
+			rest_url( 'irving/v1/components' )
+		);
+
+		// Add new link.
+		$actions['api'] = sprintf(
+			'<a href="%1$s">API</a>',
+			esc_url( $path_url )
+		);
+
+		return $actions;
 	}
 }
 

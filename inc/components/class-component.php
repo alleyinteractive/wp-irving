@@ -91,6 +91,19 @@ class Component {
 		$this->children = array_filter( $children );
 		return $this;
 	}
+
+	/**
+	 * Helper to output this class as an array.
+	 *
+	 * @return array
+	 */
+	public function to_array() : array {
+		return [
+			'name'     => $this->name,
+			'config'   => $this->config,
+			'children' => $this->children,
+		];
+	}
 }
 
 /**
