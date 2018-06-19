@@ -58,6 +58,8 @@ class Component {
 
 		// Conform config.
 		$this->config = wp_parse_args( $this->config, $this->default_config() );
+
+		return $this;
 	}
 
 	/**
@@ -90,6 +92,14 @@ class Component {
 	public function set_children( array $children ) {
 		$this->children = $children;
 		return $this;
+	}
+
+	public function to_array() {
+		return [
+			'name'     => $this->name,
+			'config'   => $this->config,
+			'children' => $this->children,
+		];
 	}
 }
 

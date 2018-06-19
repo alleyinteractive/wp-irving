@@ -27,7 +27,6 @@ require_once( WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php' );
 
 // Default components.
 require_once( WP_IRVING_PATH . '/inc/components/class-admin-bar.php' );
-require_once( WP_IRVING_PATH . '/inc/components/class-component-wrapper.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-footer.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-header.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-image.php' );
