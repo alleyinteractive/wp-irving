@@ -37,7 +37,7 @@ trait Content_Item {
 		}
 
 		// If post is an integer, assume it's the post ID.
-		if ( 0 !== absint( $post ) ) {
+		if ( ! $post instanceof \WP_Post && 0 !== absint( $post ) ) {
 			$post = get_post( $post );
 		}
 
