@@ -58,8 +58,6 @@ class Component {
 
 		// Conform config.
 		$this->config = wp_parse_args( $this->config, $this->default_config() );
-
-		return $this;
 	}
 
 	/**
@@ -94,7 +92,12 @@ class Component {
 		return $this;
 	}
 
-	public function to_array() {
+	/**
+	 * Helper to output this class as an array.
+	 *
+	 * @return array
+	 */
+	public function to_array() : array {
 		return [
 			'name'     => $this->name,
 			'config'   => $this->config,

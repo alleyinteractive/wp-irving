@@ -141,16 +141,20 @@ class Components_Endpoint extends Endpoint {
 	 */
 	function add_api_link( array $actions, \WP_Post $post ) : array {
 
+		// Get post permalink
 		$permalink = get_permalink( $post );
 
+		// Extract path
 		$path = wp_parse_url( $permalink, PHP_URL_PATH );
 
+		// Apply path to rest URL for Irving components endpoint.
 		$path_url = add_query_arg(
 			'path',
 			$path,
 			rest_url( 'irving/v1/components' )
 		);
 
+		// Add new link.
 		$actions['api'] = sprintf(
 			'<a href="%1$s">API</a>',
 			esc_url( $path_url )
