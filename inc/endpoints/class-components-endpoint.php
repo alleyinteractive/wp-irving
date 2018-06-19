@@ -34,11 +34,11 @@ class Components_Endpoint extends Endpoint {
 	public $query = null;
 
 	/**
-	 * Response of request.
+	 * Data for response.
 	 *
 	 * @var array
 	 */
-	public $response = [
+	public $data = [
 		'defaults' => [],
 		'page'     => [],
 	];
@@ -82,21 +82,30 @@ class Components_Endpoint extends Endpoint {
 		/**
 		 * Modify the output of the components route.
 		 *
-		 * @param Array           $response The response of this request.
+		 * @param Array           $data     Data for response.
 		 * @param WP_Query        $query    WP_Query object corresponding to this
 		 *                                  request.
 		 * @param string          $context  The context for this request.
 		 * @param string          $path     The path for this request.
 		 * @param WP_REST_Request $request  WP_REST_Request object.
 		 */
-		return (array) apply_filters(
+		$data = (array) apply_filters(
 			'wp_irving_components_route',
-			$this->response,
+			$this->data,
 			$this->query,
 			$this->context,
 			$this->path,
 			$request
 		);
+
+		// Create the response object
+		$response = new \WP_REST_Response( $data );
+
+		// Add a custom status code
+		$status = apply_filters( 'wp_irving_components_route_status', 200 );
+		$response->set_status( $status );
+
+		return $response;
 	}
 
 	/**
