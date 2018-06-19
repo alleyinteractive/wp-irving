@@ -139,12 +139,12 @@ class Components_Endpoint extends Endpoint {
 	 * @param  \WP_Post $post    WP_Post object.
 	 * @return array Updated action links.
 	 */
-	function add_api_link( array $actions, \WP_Post $post ) : array {
+	public function add_api_link( array $actions, \WP_Post $post ) : array {
 
-		// Get post permalink
+		// Get post permalink.
 		$permalink = get_permalink( $post );
 
-		// Extract path
+		// Extract path.
 		$path = wp_parse_url( $permalink, PHP_URL_PATH );
 
 		// Apply path to rest URL for Irving components endpoint.
