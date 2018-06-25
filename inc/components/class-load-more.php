@@ -10,7 +10,7 @@ namespace WP_Irving\Component;
 /**
  * Defines the LoadMore component.
  */
-class LoadMore extends Component {
+class Load_More extends Component {
 
 	/**
 	 * The component name.
@@ -25,6 +25,8 @@ class LoadMore extends Component {
 	 * @return array
 	 */
 	public function default_config() {
+		add_filter( 'get_pagenum_link', [ $this, 'map_next_page_url' ], 10, 2 );
+
 		return [
 			'label' => 'Load More',
 			'url'   => $this->get_next_posts_page_link(),
@@ -53,5 +55,29 @@ class LoadMore extends Component {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Map the generated next page url to a components endpoint compatible url.
+	 *
+	 * @param string $url The next page url.
+	 * @return string
+	 */
+	public function map_next_page_url( $url ) {
+		$page_regex = '/page\/\d+\//';
+		$page_match = [];
+		preg_match( $page_regex, $url, $page_match );
+
+		// Remove pagination from api url.
+		$url = preg_replace( $page_regex, '', $url );
+
+		// Move pagination path items to path query param.
+		$parsed_url     = wp_parse_url( $url );
+		$query          = wp_parse_args( $parsed_url['query'] );
+		$query['path'] .= $page_match[0];
+
+		// Add new query back to url.
+		$url = preg_replace( '/\?.*?$/', '', $url );
+		return add_query_arg( $query, $url );
 	}
 }
