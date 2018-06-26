@@ -57,6 +57,7 @@ class Load_More extends Component {
 	public function set_pagination_vars( $page, $num_pages ) {
 		$this->page      = $page;
 		$this->num_pages = $num_pages;
+		// Reapply generated link if pagination vars are updated.
 		$this->set_config( 'url', $this->get_next_posts_page_link() );
 		return $this;
 	}
