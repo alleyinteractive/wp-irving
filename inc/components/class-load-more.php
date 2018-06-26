@@ -20,6 +20,20 @@ class Load_More extends Component {
 	public $name = 'load-more';
 
 	/**
+	 * The current archive page.
+	 *
+	 * @var int
+	 */
+	public $page = 0;
+
+	/**
+	 * The total number of archive pages.
+	 *
+	 * @var int
+	 */
+	public $num_pages = 0;
+
+	/**
 	 * Define the default config of a load more component.
 	 *
 	 * @return array
@@ -31,6 +45,19 @@ class Load_More extends Component {
 			'label' => 'Load More',
 			'url'   => $this->get_next_posts_page_link(),
 		];
+	}
+
+	/**
+	 * Set the necessary pagination data to render the component.
+	 *
+	 * @param int $page The current archive page.
+	 * @param int $num_pages The total number of archive pages.
+	 * @return Load_More
+	 */
+	public function set_pagination_vars( $page, $num_pages ) {
+		$this->page      = $page;
+		$this->num_pages = $num_pages;
+		return $this;
 	}
 
 	/**
@@ -50,7 +77,7 @@ class Load_More extends Component {
 		// because we need to call \get_pagenum_link() with escape = false.
 		$next_page = intval( $current_page ) + 1;
 		$max_page  = $wp_query->max_num_pages;
-		if ( ! $max_page || $max_page >= $next_page ) {
+		if ( $max_page >= $next_page ) {
 			return get_pagenum_link( $next_page, false );
 		}
 
@@ -80,4 +107,16 @@ class Load_More extends Component {
 		$url = preg_replace( '/\?.*?$/', '', $url );
 		return add_query_arg( $query, $url );
 	}
+}
+
+/**
+ * Helper to get the content grid component.
+ *
+ * @param  string $name     Component name or array of properties.
+ * @param  array  $config   Component config.
+ * @param  array  $children Component children.
+ * @return Load_More An instance of the Load_More class.
+ */
+function load_more( $name = '', array $config = [], array $children = [] ) {
+	return new Load_More( $name, $config, $children );
 }
