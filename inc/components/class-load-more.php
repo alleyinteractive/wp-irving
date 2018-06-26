@@ -57,6 +57,7 @@ class Load_More extends Component {
 	public function set_pagination_vars( $page, $num_pages ) {
 		$this->page      = $page;
 		$this->num_pages = $num_pages;
+		$this->set_config( 'url', $this->get_next_posts_page_link() );
 		return $this;
 	}
 
@@ -66,18 +67,14 @@ class Load_More extends Component {
 	 * @return string|null
 	 */
 	public function get_next_posts_page_link() {
-		global $paged, $wp_query;
-
-		$current_page = $paged;
-		if ( ! $current_page ) {
-			$current_page = 1;
+		if ( ! $this->page ) {
+			$this->page = 1;
 		}
 
 		// We have to duplicate the majority of \get_next_posts_page_link(),
 		// because we need to call \get_pagenum_link() with escape = false.
-		$next_page = intval( $current_page ) + 1;
-		$max_page  = $wp_query->max_num_pages;
-		if ( $max_page >= $next_page ) {
+		$next_page = intval( $this->page ) + 1;
+		if ( $this->num_pages >= $next_page ) {
 			return get_pagenum_link( $next_page, false );
 		}
 
@@ -86,12 +83,16 @@ class Load_More extends Component {
 
 	/**
 	 * Map the generated next page url to a components endpoint compatible url.
+	 * Example:
+	 * /components/page/2/?path=/2018/page/2/&context=page
+	 * ->
+	 * /components/?path=/2018/page/2/&context=page
 	 *
 	 * @param string $url The next page url.
 	 * @return string
 	 */
 	public function map_next_page_url( $url ) {
-		$page_regex = '/page\/\d+\//';
+		$page_regex = '/page\/\d+\/?/';
 		$page_match = [];
 		preg_match( $page_regex, $url, $page_match );
 
@@ -101,7 +102,9 @@ class Load_More extends Component {
 		// Move pagination path items to path query param.
 		$parsed_url     = wp_parse_url( $url );
 		$query          = wp_parse_args( $parsed_url['query'] );
-		$query['path'] .= $page_match[0];
+		$query['path']  = preg_replace( $page_regex, '', $query['path'] );
+		$query['path']  = rtrim( $query['path'], '/' );
+		$query['path'] .= '/' . $page_match[0];
 
 		// Add new query back to url.
 		$url = preg_replace( '/\?.*?$/', '', $url );
