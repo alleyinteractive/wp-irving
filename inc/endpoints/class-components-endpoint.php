@@ -75,14 +75,25 @@ class Components_Endpoint extends Endpoint {
 	 * @return array
 	 */
 	public function get_route_response( $request ) {
-		$this->path    = $request->get_param( 'path' ) ?? '';
+
+		/**
+		 * Action fired on the request.
+		 *
+		 * @param  string $raw_path Raw path value from request.
+		 */
+		do_action( 'wp_irving_components_request', $request );
+
+		// Parse path and context.
+		$this->parse_path( $request->get_param( 'path' ) ?? '' );
 		$this->context = $request->get_param( 'context' ) ?? '';
-		$this->query   = $this->get_query_by_path( $this->path );
+
+		// Parse query.
+		$this->query = $this->get_query_by_path( $this->path );
 
 		/**
 		 * Modify the output of the components route.
 		 *
-		 * @param Array           $data     Data for response.
+		 * @param array           $data     Data for response.
 		 * @param WP_Query        $query    WP_Query object corresponding to this
 		 *                                  request.
 		 * @param string          $context  The context for this request.
@@ -98,14 +109,43 @@ class Components_Endpoint extends Endpoint {
 			$request
 		);
 
-		// Create the response object
+		// Create the response object.
 		$response = new \WP_REST_Response( $data );
 
-		// Add a custom status code
+		// Add a custom status code.
 		$status = apply_filters( 'wp_irving_components_route_status', 200 );
 		$response->set_status( $status );
 
 		return $response;
+	}
+
+	/**
+	 * Execute filters and actions for the path.
+	 *
+	 * @param  string $raw_path Raw path from request.
+	 */
+	public function parse_path( string $raw_path = '' ) {
+
+		/**
+		 * Action fired on the raw path value.
+		 *
+		 * @param  string $raw_path Raw path value from request.
+		 */
+		do_action( 'wp_irving_components_raw_path', $raw_path );
+
+		/**
+		 * Modify the output of the components route.
+		 *
+		 * @param  string $raw_path Raw path value from request.
+		 */
+		$this->path = (string) apply_filters( 'wp_irving_components_path', $raw_path );
+
+		/**
+		 * Action fired on the sanitized path value.
+		 *
+		 * @param  string $raw_path Raw path value from request.
+		 */
+		do_action( 'wp_irving_components_path', $this->path );
 	}
 
 	/**
@@ -157,10 +197,13 @@ class Components_Endpoint extends Endpoint {
 		$path = wp_parse_url( $permalink, PHP_URL_PATH );
 
 		// Apply path to rest URL for Irving components endpoint.
+		// Use site_url() instead of rest_url() because WP-Irving uses WP_HOME
+		// as the Irving App, and rest_url() uses WP_HOME instead of
+		// WP_SITEURL, which is what we need to use.
 		$path_url = add_query_arg(
 			'path',
 			$path,
-			rest_url( 'irving/v1/components' )
+			site_url( rest_get_url_prefix() . '/irving/v1/components' )
 		);
 
 		// Add new link.
