@@ -197,10 +197,13 @@ class Components_Endpoint extends Endpoint {
 		$path = wp_parse_url( $permalink, PHP_URL_PATH );
 
 		// Apply path to rest URL for Irving components endpoint.
+		// Use site_url() instead of rest_url() because WP-Irving uses WP_HOME
+		// as the Irving App, and rest_url() uses WP_HOME instead of
+		// WP_SITEURL, which is what we need to use.
 		$path_url = add_query_arg(
 			'path',
 			$path,
-			site_url( 'wp-json/irving/v1/components' )
+			site_url( rest_get_url_prefix() . '/irving/v1/components' )
 		);
 
 		// Add new link.
