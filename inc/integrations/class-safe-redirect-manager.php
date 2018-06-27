@@ -22,6 +22,11 @@ class Safe_Redirect_Manager {
 	 */
 	public function __construct() {
 
+		// Ensure Safe Redirect Manager exists and is enabled.
+		if ( ! class_exists( '\SRM_Redirect' ) ) {
+			return;
+		}
+
 		// Store the request parameters and kickoff the redirect check.
 		add_action( 'wp_irving_components_request', [ $this, 'parse_request' ] );
 	}
