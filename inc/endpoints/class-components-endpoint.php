@@ -75,14 +75,25 @@ class Components_Endpoint extends Endpoint {
 	 * @return array
 	 */
 	public function get_route_response( $request ) {
-		$this->path    = $request->get_param( 'path' ) ?? '';
+
+		/**
+		 * Action fired on the request.
+		 *
+		 * @param  string $raw_path Raw path value from request.
+		 */
+		do_action( 'wp_irving_components_request', $request );
+
+		// Parse path and context.
+		$this->parse_path( $request->get_param( 'path' ) ?? '' );
 		$this->context = $request->get_param( 'context' ) ?? '';
-		$this->query   = $this->get_query_by_path( $this->path );
+
+		// Parse query.
+		$this->query = $this->get_query_by_path( $this->path );
 
 		/**
 		 * Modify the output of the components route.
 		 *
-		 * @param Array           $data     Data for response.
+		 * @param array           $data     Data for response.
 		 * @param WP_Query        $query    WP_Query object corresponding to this
 		 *                                  request.
 		 * @param string          $context  The context for this request.
@@ -106,6 +117,35 @@ class Components_Endpoint extends Endpoint {
 		$response->set_status( $status );
 
 		return $response;
+	}
+
+	/**
+	 * Execute filters and actions for the path.
+	 *
+	 * @param  string $raw_path Raw path from request.
+	 */
+	public function parse_path( string $raw_path = '' ) {
+
+		/**
+		 * Action fired on the raw path value.
+		 *
+		 * @param  string $raw_path Raw path value from request.
+		 */
+		do_action( 'wp_irving_components_raw_path', $raw_path );
+
+		/**
+		 * Modify the output of the components route.
+		 *
+		 * @param  string $raw_path Raw path value from request.
+		 */
+		$this->path = (string) apply_filters( 'wp_irving_components_path', $raw_path );
+
+		/**
+		 * Action fired on the sanitized path value.
+		 *
+		 * @param  string $raw_path Raw path value from request.
+		 */
+		do_action( 'wp_irving_components_path', $this->path );
 	}
 
 	/**
@@ -160,7 +200,7 @@ class Components_Endpoint extends Endpoint {
 		$path_url = add_query_arg(
 			'path',
 			$path,
-			rest_url( 'irving/v1/components' )
+			site_url( 'wp-json/irving/v1/components' )
 		);
 
 		// Add new link.

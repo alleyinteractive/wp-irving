@@ -32,3 +32,6 @@ require_once( WP_IRVING_PATH . '/inc/components/class-header.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-image.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-menu-item.php' );
 require_once( WP_IRVING_PATH . '/inc/components/class-menu.php' );
+
+// Integrations
+require_once( WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php' );
