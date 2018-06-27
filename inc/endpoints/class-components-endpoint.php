@@ -79,7 +79,7 @@ class Components_Endpoint extends Endpoint {
 		/**
 		 * Action fired on the request.
 		 *
-		 * @param  string $raw_path Raw path value from request.
+		 * @param \WP_REST_Request $request  WP_REST_Request object.
 		 */
 		do_action( 'wp_irving_components_request', $request );
 
