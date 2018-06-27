@@ -1,12 +1,14 @@
 <?php
 /**
+ * WP Irving integration for Safe Redirect Manager.
  *
+ * @package WP_Irving;
  */
 
 namespace WP_Irving;
 
 /**
- * Class to parse redirects within the Safe Redirect Manager plugin.
+ * Class to parse redirects using the Safe Redirect Manager plugin.
  */
 class Safe_Redirect_Manager {
 

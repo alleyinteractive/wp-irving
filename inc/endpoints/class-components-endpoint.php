@@ -109,10 +109,10 @@ class Components_Endpoint extends Endpoint {
 			$request
 		);
 
-		// Create the response object
+		// Create the response object.
 		$response = new \WP_REST_Response( $data );
 
-		// Add a custom status code
+		// Add a custom status code.
 		$status = apply_filters( 'wp_irving_components_route_status', 200 );
 		$response->set_status( $status );
 
