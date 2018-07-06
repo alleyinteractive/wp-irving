@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset name="WP Starter Theme">
-	<description>PHP_CodeSniffer standard for WP Starter Theme.</description>
+	<description>PHP_CodeSniffer standard for Irving.</description>
 
 	<!--
 	Pass some flags to PHPCS:
