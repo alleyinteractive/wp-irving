@@ -213,7 +213,7 @@ class Image extends Component {
 			'src'         => esc_url( $this->get_lqip_src()->config['url'] ),
 			'srcset'      => $this->get_srcset(),
 			'sourceTags'  => $picture ? $this->get_source_tags() : [],
-			'picture'  => $picture,
+			'picture'     => $picture,
 			'originalUrl' => $this->get_base_url(),
 			'alt'         => $this->get_alt_text(),
 		], $this->config );
