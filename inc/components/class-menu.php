@@ -26,7 +26,8 @@ class Menu extends Component {
 	 */
 	public function default_config() {
 		return [
-			'classes' => [],
+			'classes'      => [],
+			'menuLocation' => '',
 		];
 	}
 
@@ -37,6 +38,8 @@ class Menu extends Component {
 	 * @return Menu An instance of the Menu class.
 	 */
 	public function parse_wp_menu_by_location( string $menu_location ) {
+
+		$this->config['menuLocation'] = $menu_location;
 
 		// Get menu locations.
 		$locations = get_nav_menu_locations();
