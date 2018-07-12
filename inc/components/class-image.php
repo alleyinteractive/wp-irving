@@ -124,7 +124,7 @@ class Image extends Component {
 	public function set_post_id( $post_id ) {
 		// Get the URL.
 		$attachment_id = get_post_thumbnail_id( $post_id );
-		$url = strtok( wp_get_attachment_image_url( absint( $attachment_id ), 'full' ), '?' );
+		$url           = strtok( wp_get_attachment_image_url( absint( $attachment_id ), 'full' ), '?' );
 
 		$this->set_config( 'attachment_id', $attachment_id );
 		$this->set_config( 'post_id', $post_id );
@@ -163,13 +163,13 @@ class Image extends Component {
 	 * Loads a predefined array of settings from the static sizes array.
 	 *
 	 * @param string $image_size Key of the size.
-	 * @param bool $use_picture Use a <picture> element?
+	 * @param bool   $use_picture Whether or not to use a <picture> element.
 	 * @return Component Current instance of this class.
 	 */
 	public function set_config_for_size( string $image_size, $use_picture = false ) {
-		$sizes = self::$sizes;
+		$sizes       = self::$sizes;
 		$size_config = [];
-		$crops = $this->config['crops'];
+		$crops       = $this->config['crops'];
 
 		// Sizes is a shortcut to set this components data.
 		if ( empty( $sizes[ $image_size ] ) ) {
@@ -205,8 +205,8 @@ class Image extends Component {
 	/**
 	 * Prepare config for use with an <img> or <picture> tag.
 	 *
-	 * @param bool $use_picture Use a <picture> element?
-	 * @return void
+	 * @param bool $use_picture Whether or not to use a <picture> element.
+	 * @return Component Current instance of this class.
 	 */
 	public function configure_data( $use_picture ) {
 		$this->config = wp_parse_args( [
@@ -221,6 +221,11 @@ class Image extends Component {
 		return $this;
 	}
 
+	/**
+	 * Retrieve alt text for current image.
+	 *
+	 * @return string
+	 */
 	public function get_alt_text() {
 		$alt = $this->config['alt'] ?? wp_get_attachment_caption( $this->config['attachemnt_id'] );
 
@@ -231,14 +236,14 @@ class Image extends Component {
 		return $alt;
 	}
 
-    /**
+	/**
 	 * Prepare config for use with an <picture> tag.
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function get_source_tags() {
 		$source_tags = [];
-		$sources = (array) $this->config['sources'];
+		$sources     = (array) $this->config['sources'];
 
 		foreach ( $sources as $params ) {
 			// Get source URL.
@@ -257,7 +262,7 @@ class Image extends Component {
 			// Construct source tag.
 			$source_tags[] = [
 				'srcset' => $srcset_string,
-				'media' => esc_attr( $this->get_media( $params['media'] ?? '' ) ),
+				'media'  => esc_attr( $this->get_media( $params['media'] ?? '' ) ),
 			];
 		}
 
@@ -299,7 +304,7 @@ class Image extends Component {
 		$aspect_ratio = $this->config['aspect_ratio'];
 		return $this->apply_transforms( [
 			'quality' => [ 60 ],
-			'resize' => [ 60, 60 * $aspect_ratio ],
+			'resize'  => [ 60, 60 * $aspect_ratio ],
 		] );
 	}
 
@@ -309,7 +314,7 @@ class Image extends Component {
 	 * @return array Sources.
 	 */
 	public function get_srcset() : string {
-		$srcset = [];
+		$srcset  = [];
 		$sources = (array) $this->config['sources'];
 
 		foreach ( $sources as $params ) {
@@ -324,7 +329,7 @@ class Image extends Component {
 			if ( $this->config['retina'] ) {
 				$this->apply_transforms( $params['transforms'], 2 );
 				$retina_descriptor = $descriptor * 2;
-				$srcset[] = "{$this->config['url']} {$retina_descriptor}w";
+				$srcset[]          = "{$this->config['url']} {$retina_descriptor}w";
 			}
 
 			$srcset[] = "{$src_url} {$descriptor}w";
@@ -361,9 +366,9 @@ class Image extends Component {
 
 		if ( $min_width && $max_width ) {
 			return "{$min_width} and {$max_width}";
-		} else if ( $min_width ) {
+		} elseif ( $min_width ) {
 			return $min_width;
-		} else if ( $max_width ) {
+		} elseif ( $max_width ) {
 			return $max_width;
 		}
 
@@ -543,7 +548,7 @@ class Image extends Component {
 	public function render_picture() {
 		\ai_get_template_part(
 			$this->get_component_path( 'picture' ), array(
-				'component' => $this,
+				'component'  => $this,
 				'stylesheet' => 'image',
 			)
 		);
