@@ -163,10 +163,10 @@ class Image extends Component {
 	 * Loads a predefined array of settings from the static sizes array.
 	 *
 	 * @param string $image_size Key of the size.
-	 * @param bool   $use_picture Whether or not to use a <picture> element.
+	 * @param bool   $picture Whether or not to use a <picture> element.
 	 * @return Component Current instance of this class.
 	 */
-	public function set_config_for_size( string $image_size, $use_picture = false ) {
+	public function set_config_for_size( string $image_size, $picture = false ) {
 		$sizes       = self::$sizes;
 		$size_config = [];
 		$crops       = $this->config['crops'];
@@ -197,7 +197,7 @@ class Image extends Component {
 			$this->set_config( 'sources', $sources );
 		}
 
-		$this->configure_data( $use_picture );
+		$this->configure_data( $picture );
 
 		return $this;
 	}
@@ -205,15 +205,15 @@ class Image extends Component {
 	/**
 	 * Prepare config for use with an <img> or <picture> tag.
 	 *
-	 * @param bool $use_picture Whether or not to use a <picture> element.
+	 * @param bool $picture Whether or not to use a <picture> element.
 	 * @return Component Current instance of this class.
 	 */
-	public function configure_data( $use_picture ) {
+	public function configure_data( $picture ) {
 		$this->config = wp_parse_args( [
 			'src'         => esc_url( $this->get_lqip_src()->config['url'] ),
 			'srcset'      => $this->get_srcset(),
-			'sourceTags'  => $use_picture ? $this->get_source_tags() : [],
-			'usePicture'  => $use_picture,
+			'sourceTags'  => $picture ? $this->get_source_tags() : [],
+			'picture'  => $picture,
 			'originalUrl' => $this->get_base_url(),
 			'alt'         => $this->get_alt_text(),
 		], $this->config );
