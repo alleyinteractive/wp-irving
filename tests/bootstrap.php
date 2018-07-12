@@ -12,8 +12,11 @@ if ( ! $_tests_dir ) {
 }
 
 if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
+	// PHPCS is complaining about this line not being translated, but it not really relevant for this file.
+	// phpcs:disable
 	echo "Could not find $_tests_dir/includes/functions.php, have you run bin/install-wp-tests.sh ?" . PHP_EOL;
 	exit( 1 );
+	// phpcs:enable
 }
 
 // Give access to tests_add_filter() function.
