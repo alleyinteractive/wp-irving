@@ -11,6 +11,7 @@ notifications:
 branches:
   only:
     - master
+    - production
 
 cache:
   directories:
@@ -20,6 +21,8 @@ matrix:
   include:
     - php: 7.2
       env: WP_VERSION=latest
+    - php: 7.2
+      env: WP_TRAVISCI=phpcs
     - php: 7.1
       env: WP_VERSION=trunk
     - php: 7.0

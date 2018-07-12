@@ -27,8 +27,8 @@ class Footer extends Component {
 	public function default_config() {
 		return [
 			'copyright' => sprintf(
-				/* translators: 1: current year */
-				esc_html__( 'Copyright &copy; %1$d - Alley', 'wp-irving' ),
+				/* translators: %d: current year */
+				esc_html__( 'Copyright &copy;%d Alley Interactive', 'wp-irving' ),
 				date( 'Y' )
 			),
 		];
