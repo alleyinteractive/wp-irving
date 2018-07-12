@@ -47,12 +47,13 @@ class Image extends Component {
 	public function default_config() {
 		return [
 			'attachment_id' => 0,
+			'post_id'       => 0,
 			'image_size'    => 'full',
 			'alt'           => '',
 			'src'           => '',
-			'classes'       => '',
 			'srcset'        => '',
 			'source_tags'   => [],
+			'original_url'  => '',
 			'url'           => '',
 			'crops'         => '',
 			'sources'       => [],
@@ -117,14 +118,16 @@ class Image extends Component {
 	/**
 	 * Setup this component using a post.
 	 *
-	 * @param int $attachment_id Post ID.
+	 * @param int $post_id Post ID.
 	 * @return Component Current instance of this class.
 	 */
-	public function set_attachment_id( $attachment_id ) {
+	public function set_post_id( $post_id ) {
 		// Get the URL.
+		$attachment_id = get_post_thumbnail_id( $post_id );
 		$url = strtok( wp_get_attachment_image_url( absint( $attachment_id ), 'full' ), '?' );
 
 		$this->set_config( 'attachment_id', $attachment_id );
+		$this->set_config( 'post_id', $post_id );
 		$this->set_config( 'url', $url );
 
 		// Get crops from post meta.
@@ -146,12 +149,24 @@ class Image extends Component {
 	}
 
 	/**
-	 * Loads a predefined array of settings from the static sizes array.
+	 * Set alt text for image.
 	 *
-	 * @param  string $image_size Key of the size.
+	 * @param string $alt Alt text for image.
 	 * @return Component Current instance of this class.
 	 */
-	public function size( string $image_size ) {
+	public function alt( string $alt ) {
+		$this->set_config( 'alt', $alt );
+		return $this;
+	}
+
+	/**
+	 * Loads a predefined array of settings from the static sizes array.
+	 *
+	 * @param string $image_size Key of the size.
+	 * @param bool $use_picture Use a <picture> element?
+	 * @return Component Current instance of this class.
+	 */
+	public function set_config_for_size( string $image_size, $use_picture = false ) {
 		$sizes = self::$sizes;
 		$size_config = [];
 		$crops = $this->config['crops'];
@@ -182,22 +197,38 @@ class Image extends Component {
 			$this->set_config( 'sources', $sources );
 		}
 
+		$this->configure_data( $use_picture );
+
 		return $this;
 	}
 
 	/**
-	 * Prepare config for use with an <img> tag.
+	 * Prepare config for use with an <img> or <picture> tag.
 	 *
+	 * @param bool $use_picture Use a <picture> element?
 	 * @return void
 	 */
-	public function set_config_for_img() {
+	public function configure_data( $use_picture ) {
 		$this->config = wp_parse_args( [
-			'src' => esc_url( $this->get_lqip_src()->config['url'] ),
-			'classes' => esc_attr( implode( [ 'lazyload', 'image', 'image-lazyload' ], ' ' ) ),
-			'srcset' => $this->get_srcset(),
+			'src'         => esc_url( $this->get_lqip_src()->config['url'] ),
+			'srcset'      => $this->get_srcset(),
+			'sourceTags'  => $use_picture ? $this->get_source_tags() : [],
+			'usePicture'  => $use_picture,
+			'originalUrl' => $this->get_base_url(),
+			'alt'         => $this->get_alt_text(),
 		], $this->config );
 
 		return $this;
+	}
+
+	public function get_alt_text() {
+		$alt = $this->config['alt'] ?? wp_get_attachment_caption( $this->config['attachemnt_id'] );
+
+		if ( empty( $alt ) && ! empty( get_the_excerpt( $this->config['attachment_id'] ) ) ) {
+			return get_the_excerpt( $this->config['attachment_id'] );
+		}
+
+		return $alt;
 	}
 
     /**
@@ -205,7 +236,7 @@ class Image extends Component {
 	 *
 	 * @return void
 	 */
-	public function set_config_for_picture() {
+	public function get_source_tags() {
 		$source_tags = [];
 		$sources = (array) $this->config['sources'];
 
@@ -226,19 +257,11 @@ class Image extends Component {
 			// Construct source tag.
 			$source_tags[] = [
 				'srcset' => $srcset_string,
-				'media' => esc_attr( $this->get_media( $params['media'] ) ),
+				'media' => esc_attr( $this->get_media( $params['media'] ?? '' ) ),
 			];
 		}
 
-		// This prints <source> tags, all of which have been esacaped.
-		$this->config = wp_parse_args( [
-			'src' => esc_url( $component->get_lqip_src()->config['url'] ),
-			'classes' => esc_attr( implode( [ 'lazyload', 'image', 'image-lazyload' ] ), ' ' ),
-			'srcset' => $this->get_base_url(),
-			'source_tags' => $source_tags,
-		], $this->config );
-
-		return $this;
+		return $source_tags;
 	}
 
 	/**
