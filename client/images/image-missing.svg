@@ -1,16 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="395px" height="81px" viewBox="0 0 395 81" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 51 (57462) - http://www.bohemiancoding.com/sketch -->
-    <title>Image missing check</title>
-    <desc>Created with Sketch.</desc>
-    <defs></defs>
-    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" font-family="HelveticaNeue-Bold, Helvetica Neue" font-size="24" font-weight="bold" letter-spacing="0.4113282">
-        <text id="Image-missing-check" fill="#4A4A4A">
-            <tspan x="111.570367" y="18">Image missing</tspan>
-            <tspan x="197.5" y="46"></tspan>
-            <tspan x="-0.2898537" y="74" font-family="HelveticaNeue, Helvetica Neue" font-size="14" font-weight="normal">check your image size and the provided post or attachment </tspan>
-            <tspan x="181.827679" y="90" font-family="HelveticaNeue, Helvetica Neue" font-size="14" font-weight="normal">exist</tspan>
-            <tspan x="197.5" y="106" font-size="13"></tspan>
-        </text>
-    </g>
-</svg>
+<svg width="395" height="81" xmlns="http://www.w3.org/2000/svg"><text fill="#4A4A4A" fill-rule="evenodd" font-family="HelveticaNeue-Bold, Helvetica Neue" font-size="24" font-weight="bold" letter-spacing=".411"><tspan x="111.57" y="18">Image missing</tspan>  <tspan x="-.29" y="74" font-family="HelveticaNeue, Helvetica Neue" font-size="14" font-weight="normal">check your image size and the provided post or attachment </tspan> <tspan x="181.828" y="90" font-family="HelveticaNeue, Helvetica Neue" font-size="14" font-weight="normal">exist</tspan> </text></svg>
