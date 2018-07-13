@@ -123,8 +123,9 @@ class Image extends Component {
 	 */
 	public function set_post_id( $post_id ) {
 		// Get the URL.
-		$attachment_id = get_post_thumbnail_id( $post_id );
-		$url           = strtok( wp_get_attachment_image_url( absint( $attachment_id ), 'full' ), '?' );
+		$attachment_id  = get_post_thumbnail_id( $post_id );
+		$attachment_url = strtok( wp_get_attachment_image_url( absint( $attachment_id ), 'full' ), '?' ) ?? WP_IRVING_PATH . 'client/images/image-missing.svg';
+		$url = ! empty( $attachment_url ) ? $attachment_url : WP_IRVING_URL . '/client/images/image-missing.svg';
 
 		$this->set_config( 'attachment_id', $attachment_id );
 		$this->set_config( 'post_id', $post_id );
@@ -171,9 +172,9 @@ class Image extends Component {
 		$size_config = [];
 		$crops       = $this->config['crops'];
 
-		// Sizes is a shortcut to set this components data.
 		if ( empty( $sizes[ $image_size ] ) ) {
-			return;
+			// Return empty component if missing image size or URL
+			return $this;
 		} else {
 			$size_config = $sizes[ $image_size ];
 			$this->set_config( 'image_size', $image_size );
@@ -197,7 +198,7 @@ class Image extends Component {
 			$this->set_config( 'sources', $sources );
 		}
 
-		$this->configure_data( $picture );
+		$this->configure( $picture );
 
 		return $this;
 	}
@@ -208,7 +209,7 @@ class Image extends Component {
 	 * @param bool $picture Whether or not to use a <picture> element.
 	 * @return Component Current instance of this class.
 	 */
-	public function configure_data( $picture ) {
+	public function configure( $picture ) {
 		$this->config = wp_parse_args( [
 			'src'         => esc_url( $this->get_lqip_src()->config['url'] ),
 			'srcset'      => $this->get_srcset(),
