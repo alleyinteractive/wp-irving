@@ -125,7 +125,7 @@ class Image extends Component {
 		// Get the URL.
 		$attachment_id  = get_post_thumbnail_id( $post_id );
 		$attachment_url = strtok( wp_get_attachment_image_url( absint( $attachment_id ), 'full' ), '?' );
-		$url = ! empty( $attachment_url ) ? $attachment_url : WP_IRVING_URL . '/client/images/image-missing.svg';
+		$url            = ! empty( $attachment_url ) ? $attachment_url : WP_IRVING_URL . '/client/images/image-missing.svg';
 
 		$this->set_config( 'attachment_id', $attachment_id );
 		$this->set_config( 'post_id', $post_id );
@@ -173,7 +173,7 @@ class Image extends Component {
 		$crops       = $this->config['crops'];
 
 		if ( empty( $sizes[ $image_size ] ) ) {
-			// Return empty component if missing image size or URL
+			// Return empty component if missing image size or URL.
 			$this->config['src'] = $this->config['url'];
 			return $this;
 		} else {
