@@ -56,13 +56,14 @@ class Content extends Component {
 
 	/**
 	 * Map a block array to a Component instance.
-	 * todo: Create "columns" and "column" components that can handle placing child blocks within the wrapping markup.
+	 *
+	 * @todo: Create "columns" and "column" components that can handle placing child blocks within the wrapping markup.
 	 *
 	 * @param array $block A parsed block associative array.
 	 * @return Component
 	 */
 	private function map_block( array $block ) {
-		// The presence of html means this is a a non dynamic block.
+		// The presence of html means this is a non dynamic block.
 		if ( ! empty( $block['innerHTML'] ) ) {
 			// Clean up extraneous whitespace characters.
 			$content = preg_replace( '/[\r\n\t\f\v]/', '', $block['innerHTML'] );
