@@ -26,7 +26,7 @@ class Menu extends Component {
 	 */
 	public function default_config() {
 		return [
-			'classes'      => [],
+			'classNames'   => [],
 			'menuLocation' => '',
 			'menuTitle'    => '',
 		];
