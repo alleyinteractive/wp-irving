@@ -12,6 +12,7 @@
  */
 
 define( 'WP_IRVING_PATH', dirname( __FILE__ ) );
+define( 'WP_IRVING_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_IRVING_VERSION', '1.0' );
 
 // Base classes.
