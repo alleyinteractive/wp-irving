@@ -73,6 +73,7 @@ class Menu extends Component {
 	/**
 	 * Recursive function to build a complete menu with children menu items.
 	 *
+	 * @param  Menu    $menu Instance of menu class.
 	 * @param  array   $menu_items Menu items.
 	 * @param  integer $parent_id  Parent menu ID.
 	 * @return array All menu items.
@@ -96,7 +97,7 @@ class Menu extends Component {
 				// Remove from loop.
 				unset( $menu_items[ $key ] );
 
-				if ( in_array( $menu_item_id, wp_list_pluck( $menu_items, 'menu_item_parent' ) ) ) {
+				if ( in_array( $menu_item_id, wp_list_pluck( $menu_items, 'menu_item_parent' ), true ) ) {
 					// Recursively build children menu items.
 					$clean_menu_item->children[] = $this->build_menu( menu( 'menu',
 						[
