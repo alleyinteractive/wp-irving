@@ -46,7 +46,7 @@ class Content extends Component {
 		} else {
 			$blocks = gutenberg_parse_blocks( $post->post_content );
 			// Filter any empty parsed blocks.
-			$blocks = array_values( array_filter( $blocks, function ( $block ) {
+			$blocks         = array_values( array_filter( $blocks, function ( $block ) {
 				return ! preg_match( '/^\s+$/', $block['innerHTML'] );
 			}));
 			$this->children = array_map( [ $this, 'map_block' ], $blocks );
