@@ -33,6 +33,7 @@ class Menu_Item extends Component {
 		return apply_filters(
 			'wp_irving_components_default_menu_item',
 			[
+				'id'    => '',
 				'label' => '',
 				'url'   => '',
 			]
@@ -56,6 +57,7 @@ class Menu_Item extends Component {
 		$label = ( 'custom' === $menu_object->type ) ? $menu_object->post_title : $menu_object->title;
 
 		// Default fields.
+		$this->set_config( 'id', $menu_object->ID );
 		$this->set_config( 'label', $label );
 		$this->set_config( 'url', $menu_object->url );
 

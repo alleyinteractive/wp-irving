@@ -26,9 +26,9 @@ class Menu extends Component {
 	 */
 	public function default_config() {
 		return [
-			'classNames'   => [],
-			'menuLocation' => '',
-			'menuTitle'    => '',
+			'classNames' => [],
+			'location'   => '',
+			'title'      => '',
 		];
 	}
 
@@ -40,7 +40,7 @@ class Menu extends Component {
 	 */
 	public function parse_wp_menu_by_location( string $menu_location ) {
 
-		$this->config['menuLocation'] = $menu_location;
+		$this->config['location'] = $menu_location;
 
 		// Get menu locations.
 		$locations = get_nav_menu_locations();
@@ -97,12 +97,15 @@ class Menu extends Component {
 				// Remove from loop.
 				unset( $menu_items[ $key ] );
 
-				if ( in_array( $menu_item_id, wp_list_pluck( $menu_items, 'menu_item_parent' ), true ) ) {
+				// Normalize parent IDs for comparison.
+				$parent_ids = array_map( 'absint', wp_list_pluck( $menu_items, 'menu_item_parent' ) );
+
+				if ( in_array( $menu_item_id, $parent_ids, true ) ) {
 					// Recursively build children menu items.
 					$clean_menu_item->children[] = $this->build_menu( menu( 'menu',
 						[
-							'menuLocation' => 'submenu',
-							'menuTitle'    => $menu_item->title,
+							'location' => 'submenu',
+							'title'    => $menu_item->title,
 						]
 					), $menu_items, $menu_item_id );
 				}
