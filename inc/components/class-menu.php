@@ -26,9 +26,9 @@ class Menu extends Component {
 	 */
 	public function default_config() {
 		return [
-			'classNames'   => [],
-			'location'     => '',
-			'title'        => '',
+			'classNames' => [],
+			'location'   => '',
+			'title'      => '',
 		];
 	}
 
@@ -97,7 +97,7 @@ class Menu extends Component {
 				// Remove from loop.
 				unset( $menu_items[ $key ] );
 
-				// Normalize parent IDs for comparison
+				// Normalize parent IDs for comparison.
 				$parent_ids = array_map( 'absint', wp_list_pluck( $menu_items, 'menu_item_parent' ) );
 
 				if ( in_array( $menu_item_id, $parent_ids, true ) ) {
