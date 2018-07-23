@@ -10,7 +10,7 @@ namespace WP_Irving\Component;
 /**
  * Defines the general component class.
  */
-class Component {
+class Component implements \JsonSerializable {
 
 	/**
 	 * Unique component slug.
@@ -103,6 +103,15 @@ class Component {
 			'config'   => (object) $this->config,
 			'children' => $this->children,
 		];
+	}
+
+	/**
+	 * Use custom to_array method when component is serialized for API response.
+	 *
+	 * @return array
+	 */
+	public function jsonSerialize() {
+		return $this->to_array();
 	}
 }
 
