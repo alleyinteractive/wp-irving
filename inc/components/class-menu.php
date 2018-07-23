@@ -26,7 +26,9 @@ class Menu extends Component {
 	 */
 	public function default_config() {
 		return [
-			'classes' => [],
+			'classNames'   => [],
+			'menuLocation' => '',
+			'menuTitle'    => '',
 		];
 	}
 
@@ -37,6 +39,8 @@ class Menu extends Component {
 	 * @return Menu An instance of the Menu class.
 	 */
 	public function parse_wp_menu_by_location( string $menu_location ) {
+
+		$this->config['menuLocation'] = $menu_location;
 
 		// Get menu locations.
 		$locations = get_nav_menu_locations();
@@ -61,7 +65,7 @@ class Menu extends Component {
 	public function parse_wp_menu( \WP_Term $menu ) {
 		$menu_items = wp_get_nav_menu_items( $menu );
 
-		$this->children = $this->build_menu( $menu_items );
+		$this->build_menu( $this, $menu_items );
 
 		return $this;
 	}
@@ -69,15 +73,12 @@ class Menu extends Component {
 	/**
 	 * Recursive function to build a complete menu with children menu items.
 	 *
+	 * @param  Menu    $menu Instance of menu class.
 	 * @param  array   $menu_items Menu items.
 	 * @param  integer $parent_id  Parent menu ID.
 	 * @return array All menu items.
 	 */
-	public function build_menu( $menu_items, $parent_id = 0 ) {
-
-		// Start building menu.
-		$menu = [];
-
+	public function build_menu( $menu, $menu_items, $parent_id = 0 ) {
 		// Loop through all menu items.
 		foreach ( (array) $menu_items as $key => $menu_item ) {
 
@@ -96,15 +97,17 @@ class Menu extends Component {
 				// Remove from loop.
 				unset( $menu_items[ $key ] );
 
-				// Recursively build children menu items.
-				$children_of_menu_item = $this->build_menu( $menu_items, $menu_item_id );
-
-				// If children menu items exist, set them as children.
-				if ( ! empty( $children_of_menu_item ) ) {
-					$clean_menu_item->set_children( $children_of_menu_item );
+				if ( in_array( $menu_item_id, wp_list_pluck( $menu_items, 'menu_item_parent' ), true ) ) {
+					// Recursively build children menu items.
+					$clean_menu_item->children[] = $this->build_menu( menu( 'menu',
+						[
+							'menuLocation' => 'submenu',
+							'menuTitle'    => $menu_item->title,
+						]
+					), $menu_items, $menu_item_id );
 				}
 
-				$menu[] = $clean_menu_item;
+				$menu->children[] = $clean_menu_item;
 			}
 		}
 

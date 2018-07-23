@@ -100,7 +100,7 @@ class Component implements \JsonSerializable {
 	public function to_array() : array {
 		return [
 			'name'     => $this->name,
-			'config'   => $this->config,
+			'config'   => (object) $this->config,
 			'children' => $this->children,
 		];
 	}
