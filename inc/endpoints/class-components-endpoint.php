@@ -198,7 +198,7 @@ class Components_Endpoint extends Endpoint {
 	 * @param array $vars Array of current query vars.
 	 * @return array $vars Array of query vars.
 	 */
-	function modify_query_vars( $vars ) {
+	public function modify_query_vars( $vars ) {
 		$vars[] = 'irving-path';
 		return $vars;
 	}
