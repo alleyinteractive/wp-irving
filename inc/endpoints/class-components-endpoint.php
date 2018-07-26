@@ -17,7 +17,7 @@ class Components_Endpoint extends Endpoint {
 	 *
 	 * @var string
 	 */
-	public static $path = '';
+	public $path = '';
 
 	/**
 	 * Context of request.
@@ -89,7 +89,7 @@ class Components_Endpoint extends Endpoint {
 		$this->context = $request->get_param( 'context' ) ?? '';
 
 		// Parse query.
-		$this->query = $this->get_query_by_path( self::$path );
+		$this->query = $this->get_query_by_path( $this->path );
 
 		/**
 		 * Modify the output of the components route.
@@ -106,7 +106,7 @@ class Components_Endpoint extends Endpoint {
 			$this->data,
 			$this->query,
 			$this->context,
-			self::$path,
+			$this->path,
 			$request
 		);
 
@@ -139,14 +139,14 @@ class Components_Endpoint extends Endpoint {
 		 *
 		 * @param  string $raw_path Raw path value from request.
 		 */
-		self::$path = (string) apply_filters( 'wp_irving_components_path', $raw_path );
+		$this->path = (string) apply_filters( 'wp_irving_components_path', $raw_path );
 
 		/**
 		 * Action fired on the sanitized path value.
 		 *
 		 * @param  string $raw_path Raw path value from request.
 		 */
-		do_action( 'wp_irving_components_path', self::$path );
+		do_action( 'wp_irving_components_path', $this->path );
 	}
 
 	/**
