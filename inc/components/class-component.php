@@ -106,6 +106,18 @@ class Component implements \JsonSerializable {
 	}
 
 	/**
+	 * Helper to change a components name.
+	 *
+	 * @param  string $name New component name.
+	 * @return mixed An instance of this class.
+	 */
+	public function set_name( string $name ) {
+		$this->name = $name;
+
+		return $this;
+	}
+
+	/**
 	 * Helper to output this class as an array.
 	 *
 	 * @return array
