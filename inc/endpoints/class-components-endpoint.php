@@ -17,7 +17,7 @@ class Components_Endpoint extends Endpoint {
 	 *
 	 * @var string
 	 */
-	public $path = '';
+	public static $path = '';
 
 	/**
 	 * Context of request.
@@ -49,6 +49,7 @@ class Components_Endpoint extends Endpoint {
 	public function __construct() {
 		parent::__construct();
 
+		add_filter( 'query_vars', [ $this, 'modify_query_vars' ] );
 		add_filter( 'post_row_actions', [ $this, 'add_api_link' ], 10, 2 );
 		add_filter( 'page_row_actions', [ $this, 'add_api_link' ], 10, 2 );
 	}
@@ -88,7 +89,7 @@ class Components_Endpoint extends Endpoint {
 		$this->context = $request->get_param( 'context' ) ?? '';
 
 		// Parse query.
-		$this->query = $this->get_query_by_path( $this->path );
+		$this->query = $this->get_query_by_path( self::$path );
 
 		/**
 		 * Modify the output of the components route.
@@ -105,7 +106,7 @@ class Components_Endpoint extends Endpoint {
 			$this->data,
 			$this->query,
 			$this->context,
-			$this->path,
+			self::$path,
 			$request
 		);
 
@@ -138,14 +139,14 @@ class Components_Endpoint extends Endpoint {
 		 *
 		 * @param  string $raw_path Raw path value from request.
 		 */
-		$this->path = (string) apply_filters( 'wp_irving_components_path', $raw_path );
+		self::$path = (string) apply_filters( 'wp_irving_components_path', $raw_path );
 
 		/**
 		 * Action fired on the sanitized path value.
 		 *
 		 * @param  string $raw_path Raw path value from request.
 		 */
-		do_action( 'wp_irving_components_path', $this->path );
+		do_action( 'wp_irving_components_path', self::$path );
 	}
 
 	/**
@@ -161,14 +162,14 @@ class Components_Endpoint extends Endpoint {
 		$query = '';
 
 		// Get path, remove leading slash.
-		$path = ltrim( $path, '/' );
+		$trimmed_path = ltrim( $path, '/' );
 
 		// Loop through rewrite rules.
 		$rewrites = $wp_rewrite->wp_rewrite_rules();
 		foreach ( $rewrites as $match => $query ) {
 
 			// Rewrite rule match.
-			if ( preg_match( "#^$match#", $path, $matches ) ) {
+			if ( preg_match( "#^$match#", $trimmed_path, $matches ) ) {
 
 				// Prep query for use in WP_Query.
 				$query = preg_replace( '!^.+\?!', '', $query );
@@ -178,7 +179,28 @@ class Components_Endpoint extends Endpoint {
 			}
 		}
 
+		// Add irving-path to the query.
+		$query = add_query_arg(
+			'irving-path',
+			$path,
+			$query
+		);
+
+		// add_query_arg will encode the url, which we don't want.
+		$query = urldecode( $query );
+
 		return new \WP_Query( $query );
+	}
+
+	/**
+	 * Add custom query vars.
+	 *
+	 * @param array $vars Array of current query vars.
+	 * @return array $vars Array of query vars.
+	 */
+	function modify_query_vars( $vars ) {
+		$vars[] = 'irving-path';
+		return $vars;
 	}
 
 	/**
