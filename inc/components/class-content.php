@@ -38,10 +38,11 @@ class Content extends Component {
 		// If gutenberg is not enabled return the post's content as raw HTML.
 		if ( ! function_exists( 'gutenberg_parse_blocks' ) ) {
 			$this->children = [
-				new Component(
-					'rawHTML',
-					[ 'content' => apply_filters( 'the_content', $post->post_content ) ]
-				),
+				new HTML( [
+					'config' => [
+						'content' => apply_filters( 'the_content', $post->post_content ),
+					],
+				] ),
 			];
 		} else {
 			$blocks = gutenberg_parse_blocks( $post->post_content );
@@ -68,11 +69,10 @@ class Content extends Component {
 		if ( ! empty( $block['innerHTML'] ) ) {
 			// Clean up extraneous whitespace characters.
 			$content = preg_replace( '/[\r\n\t\f\v]/', '', $block['innerHTML'] );
-			return new Component(
-				'rawHTML',
-				array_merge( $block['attrs'] ?? [], [ 'content' => $content ] ),
-				array_map( [ $this, 'map_block' ], $block['innerBlocks'] ?? [] )
-			);
+			return new Html( [
+				'config' => array_merge( $block['attrs'] ?? [], [ 'content' => $content ] ),
+				'children' => array_map( [ $this, 'map_block' ], $block['innerBlocks'] ?? [] ),
+			] );
 		}
 
 		// A dynamic block. All attributes will be available.

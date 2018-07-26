@@ -124,11 +124,22 @@ class Image extends Component {
 	public function set_post_id( $post_id ) {
 		// Get the URL.
 		$attachment_id  = get_post_thumbnail_id( $post_id );
+		$this->set_config( 'post_id', $post_id );
+
+		return $this->set_attachment_id( $attachment_id );
+	}
+
+	/**
+	 * Setup this component using an attachment.
+	 *
+	 * @param int $attachment_id Attachemnt ID.
+	 * @return Component Current instance of this class.
+	 */
+	public function set_attachment_id( $attachment_id ) {
 		$attachment_url = strtok( wp_get_attachment_image_url( absint( $attachment_id ), 'full' ), '?' );
 		$url            = ! empty( $attachment_url ) ? $attachment_url : WP_IRVING_URL . '/client/images/image-missing.svg';
 
 		$this->set_config( 'attachment_id', $attachment_id );
-		$this->set_config( 'post_id', $post_id );
 		$this->set_config( 'url', $url );
 
 		// Get crops from post meta.

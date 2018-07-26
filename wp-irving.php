@@ -34,6 +34,7 @@ require_once WP_IRVING_PATH . '/inc/components/class-image.php';
 require_once WP_IRVING_PATH . '/inc/components/class-load-more.php';
 require_once WP_IRVING_PATH . '/inc/components/class-menu-item.php';
 require_once WP_IRVING_PATH . '/inc/components/class-menu.php';
+require_once WP_IRVING_PATH . '/inc/components/class-html.php';
 require_once WP_IRVING_PATH . '/inc/components/class-content.php';
 
 // Integrations.
