@@ -242,8 +242,13 @@ class Image extends Component {
 	public function get_alt_text() {
 		$alt = $this->config['alt'] ?? wp_get_attachment_caption( $this->config['attachemnt_id'] );
 
-		if ( empty( $alt ) && ! empty( get_the_excerpt( $this->config['attachment_id'] ) ) ) {
-			return get_the_excerpt( $this->config['attachment_id'] );
+		if ( empty( $alt ) ) {
+			// We can't rely on get_the_excerpt(), because it relies on The Loop
+			// global variables that are not correctly set within the Irving context.
+			$post = get_post( $this->config['attachment_id'] );
+			if ( $post ) {
+				return esc_attr( $post->post_excerpt );
+			}
 		}
 
 		return $alt;
