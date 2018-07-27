@@ -70,7 +70,7 @@ class Content extends Component {
 			// Clean up extraneous whitespace characters.
 			$content = preg_replace( '/[\r\n\t\f\v]/', '', $block['innerHTML'] );
 			return new Html( [
-				'config' => array_merge( $block['attrs'] ?? [], [ 'content' => $content ] ),
+				'config'   => array_merge( $block['attrs'] ?? [], [ 'content' => $content ] ),
 				'children' => array_map( [ $this, 'map_block' ], $block['innerBlocks'] ?? [] ),
 			] );
 		}

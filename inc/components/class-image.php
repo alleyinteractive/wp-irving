@@ -123,7 +123,7 @@ class Image extends Component {
 	 */
 	public function set_post_id( $post_id ) {
 		// Get the URL.
-		$attachment_id  = get_post_thumbnail_id( $post_id );
+		$attachment_id = get_post_thumbnail_id( $post_id );
 		$this->set_config( 'post_id', $post_id );
 
 		return $this->set_attachment_id( $attachment_id );
