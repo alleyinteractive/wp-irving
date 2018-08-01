@@ -102,7 +102,7 @@ class Menu extends Component {
 
 				if ( in_array( $menu_item_id, $parent_ids, true ) ) {
 					// Recursively build children menu items.
-					$clean_menu_item->children[] = $this->build_menu( menu( 'menu',
+					$clean_menu_item->children[] = $this->build_menu( new Menu( 'menu',
 						[
 							'location' => 'submenu',
 							'title'    => $menu_item->title,
@@ -116,16 +116,4 @@ class Menu extends Component {
 
 		return (array) $menu;
 	}
-}
-
-/**
- * Helper to get the component.
- *
- * @param  string $name     Component name or array of properties.
- * @param  array  $config   Component config.
- * @param  array  $children Component children.
- * @return Menu An instance of the Menu class.
- */
-function menu( $name = '', array $config = [], array $children = [] ) {
-	return new Menu( $name, $config, $children );
 }
