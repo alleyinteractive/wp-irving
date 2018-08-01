@@ -22,7 +22,7 @@ class Menu extends Component {
 	/**
 	 * Define a default config shape.
 	 *
-	 * @return array Default config.
+	 * @return array Default config values for this component.
 	 */
 	public function default_config() {
 		return [
