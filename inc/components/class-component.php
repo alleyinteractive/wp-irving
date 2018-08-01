@@ -34,6 +34,13 @@ class Component implements \JsonSerializable {
 	public $children = [];
 
 	/**
+	 * Determine which config keys should be passed into result.
+	 *
+	 * @var array
+	 */
+	public $whitelist_config = [];
+
+	/**
 	 * Component constructor.
 	 *
 	 * @param string $name     Unique component slug or array of name, config,
@@ -125,10 +132,52 @@ class Component implements \JsonSerializable {
 	public function to_array() : array {
 		return [
 			'name'     => $this->name,
-			'config'   => (object) $this->config,
+			'config'   => (object) $this->camel_case_keys( $this->config ),
 			'children' => $this->children,
 		];
 	}
+
+    public function whitelist_keys( $array ) {
+
+    }
+
+    /**
+     * Convert under_score type array's Keys to camelCase type array's keys
+     *
+     * @param array $array        Array to convert.
+     * @param array $array_holder Parent array holder for recursive array.
+     * @return array Updated array with camel-cased keys.
+     */
+    public function camel_case_keys( $array, $array_holder = [] ) {
+
+    	// Do we have
+        $camel_case_array = ! empty( $array_holder ) ? $array_holder : [];
+
+        // Loop through each key.
+        foreach ( $array as $key => $value ) {
+
+        	// Explode each part by underscore.
+            $new_key = @explode( '_', $key );
+
+            // Capitalize each key part.
+            array_walk( $new_key, create_function( '&$v', '$v = ucwords($v);' ) );
+
+            // Reassemble key.
+            $new_key = @implode( '', $new_key );
+
+            // Lowercase the first character.
+            $new_key[0] = strtolower( $new_key[0] );
+
+            if ( ! is_array( $value ) ) {
+            	// Set new key value.
+                $camel_case_array[ $new_key ] = $value;
+            } else {
+            	// Set new key value, but process the nested array.
+                $camel_case_array[ $new_key ] = $this->camel_case_keys( $value, $camel_case_array[ $new_key ] );
+            }
+        }
+        return $camel_case_array;
+    }
 
 	/**
 	 * Use custom to_array method when component is serialized for API response.
