@@ -212,6 +212,11 @@ class Components_Endpoint extends Endpoint {
 	 */
 	public function add_api_link( array $actions, \WP_Post $post ) : array {
 
+		// Only apply to published posts.
+		if ( 'publish' !== $post->post_status ) {
+			return $actions;
+		}
+
 		// Get post permalink.
 		$permalink = get_permalink( $post );
 
