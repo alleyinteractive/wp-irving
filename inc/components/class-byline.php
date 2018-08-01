@@ -26,11 +26,11 @@ class Byline extends Component {
 	 */
 	public function default_config() {
 		return [
-			'avatar'       => null,
-			'display_name' => '',
-			'id'           => 0,
-			'link'         => '',
-			'slug'         => '',
+			'avatar'      => null,
+			'displayName' => '',
+			'id'          => 0,
+			'link'        => '',
+			'slug'        => '',
 		];
 	}
 
@@ -49,7 +49,7 @@ class Byline extends Component {
 
 		// Set byline configs.
 		$this->set_config( 'id', $coauthor->ID );
-		$this->set_config( 'display_name', $coauthor->display_name );
+		$this->set_config( 'displayName', $coauthor->display_name );
 		$this->set_config( 'slug', $coauthor->user_login );
 		$this->set_config( 'link', get_author_posts_url( $coauthor->ID, $coauthor->user_nicename ) );
 
