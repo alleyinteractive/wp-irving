@@ -58,4 +58,29 @@ class Term extends Component {
 
 		return $this;
 	}
+
+	/**
+	 * Get an array of Term components from an array of terms or term ids.
+	 *
+	 * @return array Term components.
+	 */
+
+	/**
+	 * Get an array of Term components from an array of terms or term ids.
+	 *
+	 * @param  array  $terms    Array of WP_Terms or term ids.
+	 * @param  string $taxonomy Taxonomy slug, required when $terms is an array
+	 *                          of ids.
+	 * @return array Term components.
+	 */
+	public static function get_term_components( array $terms, $taxonomy = '' ) {
+		return array_filter(
+			array_map(
+				function( $term ) use ( $taxonomy ) {
+					return ( new Term() )->set_term( $term, $taxonomy );
+				},
+				$terms
+			)
+		);
+	}
 }
