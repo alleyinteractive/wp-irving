@@ -346,7 +346,7 @@ class Image extends Component {
 			// Add retina source to srcset, if applicable.
 			if ( $this->config['retina'] ) {
 				$this->apply_transforms( $params['transforms'], 2 );
-				$retina_descriptor = $descriptor * 2;
+				$retina_descriptor = absint( $descriptor ) * 2;
 				$srcset[]          = "{$this->config['url']} {$retina_descriptor}w";
 			}
 
