@@ -26,7 +26,6 @@ class Byline extends Component {
 	 */
 	public function default_config() {
 		return [
-			'avatar'      => null,
 			'displayName' => '',
 			'id'          => 0,
 			'link'        => '',
@@ -56,12 +55,9 @@ class Byline extends Component {
 		// Set the avatar image.
 		$avatar_id = get_post_thumbnail_id( $coauthor->ID );
 		if ( 0 !== absint( $avatar_id ) ) {
-			$this->set_config(
-				'avatar',
-				( new \WP_Irving\Component\Image() )
-					->set_attachment_id( $avatar_id )
-					->set_config_for_size( $avatar_size )
-			);
+			$this->children[] = ( new \WP_Irving\Component\Image() )
+				->set_attachment_id( $avatar_id )
+				->set_config_for_size( $avatar_size );
 		}
 
 		return $this;
