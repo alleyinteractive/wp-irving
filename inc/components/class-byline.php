@@ -40,7 +40,7 @@ class Byline extends Component {
 	 * @param Object $coauthor CAP guest author object.
 	 * @return Byline An instance of this object.
 	 */
-	public function set_coauthor( $coauthor ) {
+	public function set_coauthor( $coauthor, $avatar_size = 'avatar' ) {
 
 		// Validate object.
 		if ( 'guest-author' !== ( $coauthor->type ?? '' ) ) {
@@ -60,6 +60,7 @@ class Byline extends Component {
 				'avatar',
 				( new \WP_Irving\Component\Image() )
 					->set_attachment_id( $avatar_id )
+					->set_config_for_size( $avatar_size )
 			);
 		}
 
