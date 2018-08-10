@@ -97,11 +97,19 @@ class Component implements \JsonSerializable {
 	/**
 	 * Helper to set children components.
 	 *
-	 * @param  array $children Children for this component.
+	 * @param  array   $children Children for this component.
+	 * @param  boolean $append   Append children to existing children.
 	 * @return mixed An instance of this class.
 	 */
-	public function set_children( array $children ) {
-		$this->children = array_filter( $children );
+	public function set_children( array $children, $append = false ) {
+		if ( $append ) {
+			$this->children = array_merge(
+				$this->children,
+				array_filter( $children )
+			);
+		} else {
+			$this->children = array_filter( $children );
+		}
 		return $this;
 	}
 
