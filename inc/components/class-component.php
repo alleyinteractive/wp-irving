@@ -124,6 +124,7 @@ class Component implements \JsonSerializable {
 	 * @return mixed An instance of this class.
 	 */
 	public function set_name_of_children( string $name ) {
+
 		// Map through all children.
 		$this->children = array_map( function( $child ) use ( $name ) {
 
@@ -131,6 +132,8 @@ class Component implements \JsonSerializable {
 			if ( method_exists( $child, 'set_name' ) ) {
 				$child->set_name( $name );
 			}
+
+			return $child;
 		}, $this->children );
 
 		return $this;
