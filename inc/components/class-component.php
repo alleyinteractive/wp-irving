@@ -38,7 +38,7 @@ class Component implements \JsonSerializable {
 	 *
 	 * @var array
 	 */
-	public $whitelist_config = [];
+	public $whitelist = [];
 
 	/**
 	 * Component constructor.
@@ -159,47 +159,56 @@ class Component implements \JsonSerializable {
 		];
 	}
 
-    public function whitelist_keys( $array ) {
+	/**
+	 * Convert all array keys to camel case.
+	 *
+	 * @param array $array        Array to convert.
+	 * @param array $array_holder Parent array holder for recursive array.
+	 * @return array Updated array with camel-cased keys.
+	 */
+	public function camel_case_keys( $array, $array_holder = [] ) {
 
-    }
+		// Setup for recursion.
+		$camel_case_array = ! empty( $array_holder ) ? $array_holder : [];
 
-    /**
-     * Convert under_score type array's Keys to camelCase type array's keys
-     *
-     * @param array $array        Array to convert.
-     * @param array $array_holder Parent array holder for recursive array.
-     * @return array Updated array with camel-cased keys.
-     */
-    public function camel_case_keys( $array, $array_holder = [] ) {
+		// Loop through each key.
+		foreach ( $array as $key => $value ) {
 
-    	// Do we have
-        $camel_case_array = ! empty( $array_holder ) ? $array_holder : [];
+			// Only return keys that are white-listed. Leave $whitelist empty
+			// to disable.
+			if (
+				! empty( $this->whitelist )
+				&& ! in_array( $key, $this->whitelist, true )
+			) {
+				unset( $array[ $key ] );
+				continue;
+			}
 
-        // Loop through each key.
-        foreach ( $array as $key => $value ) {
+			// Explode each part by underscore.
+			$words = explode( '_', $key );
 
-        	// Explode each part by underscore.
-            $new_key = @explode( '_', $key );
+			// Capitalize each key part.
+			array_walk( $words, function( &$word ) {
+				$word = ucwords( $word );
+			} );
 
-            // Capitalize each key part.
-            array_walk( $new_key, create_function( '&$v', '$v = ucwords($v);' ) );
+			// Reassemble key.
+			$new_key = implode( '', $words );
 
-            // Reassemble key.
-            $new_key = @implode( '', $new_key );
+			// Lowercase the first character.
+			$new_key[0] = strtolower( $new_key[0] );
 
-            // Lowercase the first character.
-            $new_key[0] = strtolower( $new_key[0] );
+			if ( ! is_array( $value ) ) {
+				// Set new key value.
+				$camel_case_array[ $new_key ] = $value;
+			} else {
+				// Set new key value, but process the nested array.
+				$camel_case_array[ $new_key ] = $this->camel_case_keys( $value, $camel_case_array[ $new_key ] );
+			}
+		}
 
-            if ( ! is_array( $value ) ) {
-            	// Set new key value.
-                $camel_case_array[ $new_key ] = $value;
-            } else {
-            	// Set new key value, but process the nested array.
-                $camel_case_array[ $new_key ] = $this->camel_case_keys( $value, $camel_case_array[ $new_key ] );
-            }
-        }
-        return $camel_case_array;
-    }
+		return $camel_case_array;
+	}
 
 	/**
 	 * Use custom to_array method when component is serialized for API response.
