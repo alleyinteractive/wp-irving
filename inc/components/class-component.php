@@ -125,6 +125,28 @@ class Component implements \JsonSerializable {
 	}
 
 	/**
+	 * Helper to change the name of all children components.
+	 *
+	 * @param  string $name New component name.
+	 * @return mixed An instance of this class.
+	 */
+	public function set_name_of_children( string $name ) {
+
+		// Map through all children.
+		$this->children = array_map( function( $child ) use ( $name ) {
+
+			// Check if `set_name()` exists and call it.
+			if ( method_exists( $child, 'set_name' ) ) {
+				$child->set_name( $name );
+			}
+
+			return $child;
+		}, $this->children );
+
+		return $this;
+	}
+
+	/**
 	 * Helper to output this class as an array.
 	 *
 	 * @return array
