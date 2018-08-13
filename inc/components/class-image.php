@@ -231,7 +231,7 @@ class Image extends Component {
 			'picture'     => $picture,
 			'originalUrl' => $this->get_base_url(),
 			'alt'         => $this->get_alt_text(),
-			'caption'     => wp_get_attachment_caption( $this->config['attachment_id'] ),
+			'caption'     => ! empty( $this->config['attachment_id'] ) ? wp_get_attachment_caption( $this->config['attachment_id'] ) : '',
 		], $this->config );
 
 		return $this;
@@ -249,23 +249,25 @@ class Image extends Component {
 
 		$attachment_id = $this->config['attachment_id'];
 
-		// First check attachment alt text field
-		$image_alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
-		if ( ! empty( $image_alt ) ) {
-			return esc_attr( $image_alt );
-		}
+		if ( ! empty( $attachment_id ) ) {
+			// First check attachment alt text field
+			$image_alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+			if ( ! empty( $image_alt ) ) {
+				return esc_attr( $image_alt );
+			}
 
-		// Use image caption as a fallback
-		if ( ! empty( $this->config['caption'] ) ) {
-			return esc_attr( $this->config['caption'] );
-		}
+			// Use image caption as a fallback
+			if ( ! empty( $this->config['caption'] ) ) {
+				return esc_attr( $this->config['caption'] );
+			}
 
-		// Use image description as final fallback
-		$post = get_post( $attachment_id );
-		if ( $post ) {
-			// We can't rely on get_the_excerpt(), because it relies on The Loop
-			// global variables that are not correctly set within the Irving context.
-			return esc_attr( $post->post_excerpt );
+			// Use image description as final fallback
+			$post = get_post( $attachment_id );
+			if ( $post ) {
+				// We can't rely on get_the_excerpt(), because it relies on The Loop
+				// global variables that are not correctly set within the Irving context.
+				return esc_attr( $post->post_excerpt );
+			}
 		}
 
 		return '';
