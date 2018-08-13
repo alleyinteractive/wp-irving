@@ -97,11 +97,19 @@ class Component implements \JsonSerializable {
 	/**
 	 * Helper to set children components.
 	 *
-	 * @param  array $children Children for this component.
+	 * @param  array   $children Children for this component.
+	 * @param  boolean $append   Append children to existing children.
 	 * @return mixed An instance of this class.
 	 */
-	public function set_children( array $children ) {
-		$this->children = array_filter( $children );
+	public function set_children( array $children, $append = false ) {
+		if ( $append ) {
+			$this->children = array_merge(
+				$this->children,
+				array_filter( $children )
+			);
+		} else {
+			$this->children = array_filter( $children );
+		}
 		return $this;
 	}
 
@@ -113,6 +121,28 @@ class Component implements \JsonSerializable {
 	 */
 	public function set_name( string $name ) {
 		$this->name = $name;
+
+		return $this;
+	}
+
+	/**
+	 * Helper to change the name of all children components.
+	 *
+	 * @param  string $name New component name.
+	 * @return mixed An instance of this class.
+	 */
+	public function set_name_of_children( string $name ) {
+
+		// Map through all children.
+		$this->children = array_map( function( $child ) use ( $name ) {
+
+			// Check if `set_name()` exists and call it.
+			if ( method_exists( $child, 'set_name' ) ) {
+				$child->set_name( $name );
+			}
+
+			return $child;
+		}, $this->children );
 
 		return $this;
 	}

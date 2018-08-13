@@ -366,7 +366,7 @@ class Image extends Component {
 			if ( is_numeric( $descriptor ) ) {
 				if ( $this->config['retina'] ) {
 					$this->apply_transforms( $params['transforms'], 2 );
-					$retina_descriptor = $descriptor * 2;
+					$retina_descriptor = absint( $descriptor ) * 2;
 					$srcset[]          = "{$this->config['url']} {$retina_descriptor}w";
 				}
 
