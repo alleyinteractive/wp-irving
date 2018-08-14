@@ -37,6 +37,8 @@ class Byline extends Component {
 	 * Create this component form a CAP guest author object.
 	 *
 	 * @param Object $coauthor CAP guest author object.
+	 * @param string $avatar_size The registered media size to retun the
+	 *                            avatar.
 	 * @return Byline An instance of this object.
 	 */
 	public function set_coauthor( $coauthor, $avatar_size = 'avatar' ) {
