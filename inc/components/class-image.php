@@ -50,6 +50,7 @@ class Image extends Component {
 			'post_id'       => 0,
 			'image_size'    => 'full',
 			'alt'           => '',
+			'caption'       => '',
 			'src'           => '',
 			'srcset'        => '',
 			'source_tags'   => [],
@@ -225,10 +226,12 @@ class Image extends Component {
 		$this->config = wp_parse_args( [
 			'src'         => esc_url( $this->get_lqip_src()->config['url'] ),
 			'srcset'      => $this->get_srcset(),
+			'sizes'       => $this->get_sizes(),
 			'sourceTags'  => $picture ? $this->get_source_tags() : [],
 			'picture'     => $picture,
 			'originalUrl' => $this->get_base_url(),
 			'alt'         => $this->get_alt_text(),
+			'caption'     => ! empty( $this->config['attachment_id'] ) ? wp_get_attachment_caption( $this->config['attachment_id'] ) : '',
 		], $this->config );
 
 		return $this;
@@ -240,18 +243,34 @@ class Image extends Component {
 	 * @return string
 	 */
 	public function get_alt_text() {
-		$alt = $this->config['alt'] ?? wp_get_attachment_caption( $this->config['attachemnt_id'] );
+		if ( ! empty( $this->config['alt'] ) ) {
+			return esc_attr( $this->config['alt'] );
+		}
 
-		if ( empty( $alt ) ) {
-			// We can't rely on get_the_excerpt(), because it relies on The Loop
-			// global variables that are not correctly set within the Irving context.
-			$post = get_post( $this->config['attachment_id'] );
+		$attachment_id = $this->config['attachment_id'];
+
+		if ( ! empty( $attachment_id ) ) {
+			// First check attachment alt text field
+			$image_alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+			if ( ! empty( $image_alt ) ) {
+				return esc_attr( $image_alt );
+			}
+
+			// Use image caption as a fallback
+			if ( ! empty( $this->config['caption'] ) ) {
+				return esc_attr( $this->config['caption'] );
+			}
+
+			// Use image description as final fallback
+			$post = get_post( $attachment_id );
 			if ( $post ) {
+				// We can't rely on get_the_excerpt(), because it relies on The Loop
+				// global variables that are not correctly set within the Irving context.
 				return esc_attr( $post->post_excerpt );
 			}
 		}
 
-		return $alt;
+		return '';
 	}
 
 	/**
@@ -344,16 +363,48 @@ class Image extends Component {
 			$descriptor = $params['descriptor'];
 
 			// Add retina source to srcset, if applicable.
-			if ( $this->config['retina'] ) {
-				$this->apply_transforms( $params['transforms'], 2 );
-				$retina_descriptor = absint( $descriptor ) * 2;
-				$srcset[]          = "{$this->config['url']} {$retina_descriptor}w";
-			}
+			if ( is_numeric( $descriptor ) ) {
+				if ( $this->config['retina'] ) {
+					$this->apply_transforms( $params['transforms'], 2 );
+					$retina_descriptor = absint( $descriptor ) * 2;
+					$srcset[]          = "{$this->config['url']} {$retina_descriptor}w";
+				}
 
-			$srcset[] = "{$src_url} {$descriptor}w";
+				$srcset[] = "{$src_url} {$descriptor}w";
+			} else {
+				$srcset[] = "{$src_url} {$descriptor}";
+			}
 		}
 
 		return esc_attr( implode( $srcset, ',' ) );
+	}
+
+	/**
+	 * Prepare config for use with an <picture> tag.
+	 *
+	 * @return array
+	 */
+	public function get_sizes() {
+		$sizes   = [];
+		$sources = (array) $this->config['sources'];
+		$default = false;
+
+		foreach ( $sources as $params ) {
+			if ( is_numeric( $params['descriptor'] ) ) {
+				if ( ! empty( $params['default'] ) ) {
+					$default = "{$params['descriptor']}px";
+					continue;
+				}
+
+				if ( ! empty( $params['media'] ) ) {
+					$sizes[] = "{$this->get_media( $params['media'] )} {$params['descriptor']}px";
+				}
+			}
+		}
+
+		$sizes[] = ! empty( $default ) ? $default : '100vw';
+
+		return esc_attr( implode( $sizes, ',' ) );
 	}
 
 	/**
@@ -532,7 +583,7 @@ class Image extends Component {
 	 * @return Component Current instance of this class.
 	 */
 	public function apply_transform( $transform_args ) {
-		return $this->set_config( 'url', add_query_arg( $transform_args, $this->config['url'] ) );
+		return $this->set_config( 'url', add_query_arg( $transform_args, $this->get_base_url() ) );
 	}
 
 	/**
