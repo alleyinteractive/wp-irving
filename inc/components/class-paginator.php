@@ -7,8 +7,6 @@
 
 namespace WP_Irving\Component;
 
-use DOMDocument;
-
 /**
  * Defines the Paginator component.
  */
@@ -31,7 +29,7 @@ class Paginator extends Component {
 	}
 
 	/**
-	 * Mutate the Paginator class with the current query object.
+	 * Mutate the Paginator class with the current Irving query object.
 	 *
 	 * @param \WP_Query $wp_query - The Irving context WP_Query object.
 	 * @return Paginator
@@ -43,7 +41,7 @@ class Paginator extends Component {
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride
 		$GLOBALS['wp_query'] = $wp_query;
 		$links = paginate_links([
-			'base' => '%_%',
+			'base' => '/%_%', // Use relative urls, so the app can handle them.
 			'type' => 'array',
 		]);
 		// Then we just kind of slide this guy back in like nothing happened...
@@ -62,7 +60,7 @@ class Paginator extends Component {
 	 * @return Component
 	 */
 	protected function map_link( $link ) {
-		$doc = new DOMDocument();
+		$doc = new \DOMDocument();
 		$doc->loadHTML( $link );
 		$span = $doc->getElementsByTagName( 'span' )[0];
 		$anchor = $doc->getElementsByTagName( 'a' )[0];
@@ -82,7 +80,11 @@ class Paginator extends Component {
 		}
 
 		if ( $anchor ) {
-			$data['url'] = $anchor->getAttribute( 'href' );
+			// Strip the api query args from the url.
+			$data['url'] = remove_query_arg(
+				[ 'context', 'path' ],
+				$anchor->getAttribute( 'href' )
+			);
 		}
 
 		return new Component( 'pagination-link', $data );
