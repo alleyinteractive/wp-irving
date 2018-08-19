@@ -163,7 +163,6 @@ class Components_Endpoint extends Endpoint {
 	 */
 	public function build_query( $path, $params ) {
 		global $wp_rewrite, $wp_the_query;
-		global $wp_rewrite;
 
 		// Query to execute.
 		$query = '';
