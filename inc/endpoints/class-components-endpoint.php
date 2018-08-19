@@ -84,12 +84,17 @@ class Components_Endpoint extends Endpoint {
 		 */
 		do_action( 'wp_irving_components_request', $request );
 
+		$params = $request->get_params();
 		// Parse path and context.
-		$this->parse_path( $request->get_param( 'path' ) ?? '' );
-		$this->context = $request->get_param( 'context' ) ?? '';
+		$this->parse_path( $params['path'] ?? '' );
+		$this->context = $params['context'] ?? '';
 
-		// Parse query.
-		$this->query = $this->get_query_by_path( $this->path );
+		// Pass any extra included params.
+		$params = array_filter( $params, function( $key ) {
+			return ! in_array( $key, [ 'path', 'context' ] );
+		}, ARRAY_FILTER_USE_KEY );
+
+		$this->query = $this->build_query( $this->path, $params );
 
 		/**
 		 * Modify the output of the components route.
@@ -153,10 +158,12 @@ class Components_Endpoint extends Endpoint {
 	 * Returns a WP_Query object based on path.
 	 *
 	 * @param  string $path Path of request.
-	 * @return WP_Query Resulting query.
+	 * @param  array  $params The request query params.
+	 * @return \WP_Query Resulting query.
 	 */
-	public function get_query_by_path( $path ) {
+	public function build_query( $path, $params ) {
 		global $wp_rewrite, $wp_the_query;
+		global $wp_rewrite;
 
 		// Query to execute.
 		$query = '';
@@ -202,6 +209,11 @@ class Components_Endpoint extends Endpoint {
 			$path,
 			$query
 		);
+
+		// Add any extra included params.
+		foreach ( $params as $key => $value ) {
+			$query = add_query_arg( $key, $value, $query );
+		}
 
 		// add_query_arg will encode the url, which we don't want.
 		$query = urldecode( $query );
