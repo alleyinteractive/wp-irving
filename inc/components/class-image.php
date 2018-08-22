@@ -194,7 +194,7 @@ class Image extends Component {
 			$this->set_config( 'sources', $size_config['sources'] );
 
 			// You can set certain config values on a per-size basis instead of per-component
-			$this->set_config( 'aspect_ratio', $size_config['aspect_ratio'] ?? $this->config['aspect_ratio'] );
+			$this->set_config( 'aspect_ratio', $size_config['aspect_ratio'] ?? $this->config['aspect_ratio'] ?? '' );
 			$this->set_config( 'retina', $size_config['retina'] ?? $this->config['retina'] );
 			$this->set_config( 'lazyload', $size_config['lazyload'] ?? $this->config['lazyload'] );
 		}
@@ -369,7 +369,7 @@ class Image extends Component {
 
 			// Add retina source to srcset, if applicable.
 			if ( is_numeric( $descriptor ) ) {
-				if ( $this->config['retina'] && ( empty( $params['retina'] ) || $params['retina'] ) ) {
+				if ( $this->config['retina'] && ( empty( $params['retina'] ?? '' ) || $params['retina'] ) ) {
 					$this->apply_transforms( $params['transforms'], 2 );
 					$retina_descriptor = absint( $descriptor ) * 2;
 					$srcset[]          = "{$this->config['url']} {$retina_descriptor}w";
