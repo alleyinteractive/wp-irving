@@ -193,7 +193,7 @@ class Image extends Component {
 			$this->set_config( 'image_size', $image_size );
 			$this->set_config( 'sources', $size_config['sources'] );
 
-			// You can set certain config values on a per-size basis instead of per-component
+			// You can set certain config values on a per-size basis instead of per-component.
 			$this->set_config( 'aspect_ratio', $size_config['aspect_ratio'] ?? $this->config['aspect_ratio'] ?? '' );
 			$this->set_config( 'retina', $size_config['retina'] ?? $this->config['retina'] );
 			$this->set_config( 'lazyload', $size_config['lazyload'] ?? $this->config['lazyload'] );
