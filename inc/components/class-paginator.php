@@ -48,7 +48,7 @@ class Paginator extends Component {
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride
 		$GLOBALS['wp_query'] = $loop_query;
 
-		$this->set_children( array_map( [ $this, 'map_link' ], $links ) );
+		$this->set_children( array_map( [ $this, 'map_link' ], $links ?? [] ) );
 
 		return $this;
 	}
