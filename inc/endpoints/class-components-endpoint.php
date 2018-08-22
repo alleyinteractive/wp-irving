@@ -185,7 +185,7 @@ class Components_Endpoint extends Endpoint {
 					// This is a verbose page match, let's check to be sure about it.
 					$page = get_page_by_path( $matches[ $varmatch[1] ] );
 					if ( ! $page ) {
-				 		continue;
+						continue;
 					}
 
 					// Ensure that this post type is publicly queryable.
@@ -223,6 +223,7 @@ class Components_Endpoint extends Endpoint {
 		$query = new \WP_Query( $query );
 
 		// Map to main query.
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
 		$wp_the_query = $query;
 
 		return $query;
