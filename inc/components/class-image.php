@@ -255,18 +255,18 @@ class Image extends Component {
 		$attachment_id = $this->config['attachment_id'];
 
 		if ( ! empty( $attachment_id ) ) {
-			// First check attachment alt text field
+			// First check attachment alt text field.
 			$image_alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
 			if ( ! empty( $image_alt ) ) {
 				return esc_attr( $image_alt );
 			}
 
-			// Use image caption as a fallback
+			// Use image caption as a fallback.
 			if ( ! empty( $this->config['caption'] ) ) {
 				return esc_attr( $this->config['caption'] );
 			}
 
-			// Use image description as final fallback
+			// Use image description as final fallback.
 			$post = get_post( $attachment_id );
 			if ( $post ) {
 				// We can't rely on get_the_excerpt(), because it relies on The Loop
