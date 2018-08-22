@@ -163,7 +163,7 @@ class Components_Endpoint extends Endpoint {
 	 * @return \WP_Query Resulting query.
 	 */
 	public function build_query( $path, $params ) {
-		global $wp_rewrite;
+		global $wp_rewrite, $wp_the_query;
 
 		// Query to execute.
 		$query = '';
@@ -177,6 +177,24 @@ class Components_Endpoint extends Endpoint {
 
 			// Rewrite rule match.
 			if ( preg_match( "#^$match#", $trimmed_path, $matches ) ) {
+
+				if (
+					$wp_rewrite->use_verbose_page_rules
+					&& preg_match( '/pagename=\$matches\[([0-9]+)\]/', $query, $varmatch )
+				) {
+					// This is a verbose page match, let's check to be sure about it.
+					$page = get_page_by_path( $matches[ $varmatch[1] ] );
+					if ( ! $page ) {
+				 		continue;
+					}
+
+					// Ensure that this post type is publicly queryable.
+					$post_status_obj = get_post_status_object( $page->post_status );
+					if ( ! $post_status_obj->public && ! $post_status_obj->protected
+						&& ! $post_status_obj->private && $post_status_obj->exclude_from_search ) {
+						continue;
+					}
+				}
 
 				// Prep query for use in WP_Query.
 				$query = preg_replace( '!^.+\?!', '', $query );
@@ -201,7 +219,13 @@ class Components_Endpoint extends Endpoint {
 		// add_query_arg will encode the url, which we don't want.
 		$query = urldecode( $query );
 
-		return new \WP_Query( $query );
+		// Execute query.
+		$query = new \WP_Query( $query );
+
+		// Map to main query.
+		$wp_the_query = $query;
+
+		return $query;
 	}
 
 	/**
