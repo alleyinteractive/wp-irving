@@ -50,8 +50,9 @@ class Components_Endpoint extends Endpoint {
 		parent::__construct();
 
 		add_filter( 'query_vars', [ $this, 'modify_query_vars' ] );
-		add_filter( 'post_row_actions', [ $this, 'add_api_link' ], 10, 2 );
-		add_filter( 'page_row_actions', [ $this, 'add_api_link' ], 10, 2 );
+		add_filter( 'post_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
+		add_filter( 'page_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
+		add_filter( 'tag_row_actions', [ $this, 'add_api_link_to_terms' ], 10, 2 );
 	}
 
 	/**
@@ -245,7 +246,7 @@ class Components_Endpoint extends Endpoint {
 	 * @param  \WP_Post $post    WP_Post object.
 	 * @return array Updated action links.
 	 */
-	public function add_api_link( array $actions, \WP_Post $post ) : array {
+	public function add_api_link_to_posts( array $actions, \WP_Post $post ) : array {
 
 		// Only apply to published posts.
 		if ( 'publish' !== $post->post_status ) {
@@ -268,12 +269,49 @@ class Components_Endpoint extends Endpoint {
 			site_url( rest_get_url_prefix() . '/irving/v1/components' )
 		);
 
+		$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, $post );
+
 		// Add new link.
 		$actions['api'] = sprintf(
 			'<a href="%1$s">API</a>',
 			esc_url( $path_url )
 		);
 
+		return $actions;
+	}
+
+	/**
+	 * Add API endpoint link to term row actions.
+	 *
+	 * @param  array    $actions Action links.
+	 * @param  \WP_Term $term    WP_Term object.
+	 * @return array Updated action links.
+	 */
+	public function add_api_link_to_terms( array $actions, \WP_Term $term ) : array {
+
+		// Get term permalink.
+		$permalink = get_term_link( $term );
+
+		// Extract path.
+		$path = wp_parse_url( $permalink, PHP_URL_PATH );
+
+		// Apply path to rest URL for Irving components endpoint.
+		// Use site_url() instead of rest_url() because WP-Irving uses WP_HOME
+		// as the Irving App, and rest_url() uses WP_HOME instead of
+		// WP_SITEURL, which is what we need to use.
+		$path_url = add_query_arg(
+			'path',
+			$path,
+			site_url( rest_get_url_prefix() . '/irving/v1/components' )
+		);
+
+		$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
+
+		// Add new link.
+		$actions['api'] = sprintf(
+			'<a href="%1$s">API</a>',
+			esc_url( $path_url )
+		);
 		return $actions;
 	}
 }
