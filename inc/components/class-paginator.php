@@ -29,6 +29,16 @@ class Paginator extends Component {
 	}
 
 	/**
+	 * Default Irving query args to strip from pagination requests.
+	 *
+	 * @var array
+	 */
+	public $irving_query_args_to_remove = [
+		'context',
+		'path',
+	];
+
+	/**
 	 * Mutate the Paginator class with the current Irving query object.
 	 *
 	 * @param \WP_Query $wp_query - The Irving context WP_Query object.
@@ -36,11 +46,16 @@ class Paginator extends Component {
 	 */
 	public function set_from_wp_query( \WP_Query $wp_query ) {
 
+		$path = trailingslashit( $wp_query->get( 'irving-path' ) );
+
 		// Determine the base.
 		if ( $wp_query->is_search() ) {
 			$base = '/';
+		} elseif ( ! $wp_query->is_paged() ) {
+			$base = $path;
 		} else {
-			$base = trailingslashit( $wp_query->get( 'irving-path' ) );
+			$path_parts = explode( '/page/', $path );
+			$base = trailingslashit( $path_parts[0] );
 		}
 
 		// Use relative urls, so the app can handle them.
@@ -95,7 +110,7 @@ class Paginator extends Component {
 		if ( $anchor ) {
 			// Strip the api query args from the url.
 			$data['url'] = remove_query_arg(
-				[ 'context', 'path' ],
+				apply_filters( 'wp_irving_pagination_query_args_to_remove', $this->irving_query_args_to_remove ),
 				$anchor->getAttribute( 'href' )
 			);
 		}
