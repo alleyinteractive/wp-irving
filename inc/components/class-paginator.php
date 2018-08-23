@@ -35,6 +35,17 @@ class Paginator extends Component {
 	 * @return Paginator
 	 */
 	public function set_from_wp_query( \WP_Query $wp_query ) {
+
+		// Determine the base.
+		if ( $wp_query->is_search() ) {
+			$base = '/';
+		} else {
+			$base = trailingslashit( $wp_query->get( 'irving-path' ) );
+		}
+
+		// Use relative urls, so the app can handle them.
+		$base .= '%_%';
+
 		$loop_query = $GLOBALS['wp_query'];
 		// We need to carefully insert the Irving query as the global query so
 		// the various core functions reference the correct query.
@@ -42,7 +53,7 @@ class Paginator extends Component {
 		$GLOBALS['wp_query'] = $wp_query;
 		$links = paginate_links(
 			[
-				'base' => '/%_%', // Use relative urls, so the app can handle them.
+				'base' => $base,
 				'type' => 'array',
 			]
 		);
