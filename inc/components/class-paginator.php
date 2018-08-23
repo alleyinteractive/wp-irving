@@ -29,12 +29,38 @@ class Paginator extends Component {
 	}
 
 	/**
+	 * Default Irving query args to strip from pagination requests.
+	 *
+	 * @var array
+	 */
+	public $query_arg_blacklist = [
+		'context',
+		'path',
+	];
+
+	/**
 	 * Mutate the Paginator class with the current Irving query object.
 	 *
 	 * @param \WP_Query $wp_query - The Irving context WP_Query object.
 	 * @return Paginator
 	 */
 	public function set_from_wp_query( \WP_Query $wp_query ) {
+
+		$path = trailingslashit( $wp_query->get( 'irving-path' ) );
+
+		// Determine the base.
+		if ( $wp_query->is_search() ) {
+			$base = '/';
+		} elseif ( ! $wp_query->is_paged() ) {
+			$base = $path;
+		} else {
+			$path_parts = explode( '/page/', $path );
+			$base = trailingslashit( $path_parts[0] );
+		}
+
+		// Use relative urls, so the app can handle them.
+		$base .= '%_%';
+
 		$loop_query = $GLOBALS['wp_query'];
 		// We need to carefully insert the Irving query as the global query so
 		// the various core functions reference the correct query.
@@ -42,7 +68,7 @@ class Paginator extends Component {
 		$GLOBALS['wp_query'] = $wp_query;
 		$links = paginate_links(
 			[
-				'base' => '/%_%', // Use relative urls, so the app can handle them.
+				'base' => $base,
 				'type' => 'array',
 			]
 		);
@@ -84,7 +110,7 @@ class Paginator extends Component {
 		if ( $anchor ) {
 			// Strip the api query args from the url.
 			$data['url'] = remove_query_arg(
-				[ 'context', 'path' ],
+				apply_filters( 'wp_irving_pagination_query_arg_blacklist', $this->query_arg_blacklist ),
 				$anchor->getAttribute( 'href' )
 			);
 		}
