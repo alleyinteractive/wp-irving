@@ -33,7 +33,7 @@ class Paginator extends Component {
 	 *
 	 * @var array
 	 */
-	public $irving_query_args_to_remove = [
+	public $query_arg_blacklist = [
 		'context',
 		'path',
 	];
@@ -110,7 +110,7 @@ class Paginator extends Component {
 		if ( $anchor ) {
 			// Strip the api query args from the url.
 			$data['url'] = remove_query_arg(
-				apply_filters( 'wp_irving_pagination_query_args_to_remove', $this->irving_query_args_to_remove ),
+				apply_filters( 'wp_irving_pagination_query_arg_blacklist', $this->query_arg_blacklist ),
 				$anchor->getAttribute( 'href' )
 			);
 		}
