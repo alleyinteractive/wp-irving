@@ -38,12 +38,14 @@ class Head extends Component {
 		$title_component = ( new Component( 'title' ) )
 			->set_children( [ $value ] );
 		foreach ( $this->children as $index => $component ) {
+			// Update title.
 			if ( 'title' === $component->name ) {
 				$this->children[ $index ] = $title_component;
 				return $this;
 			}
 		}
 
+		// Set new title.
 		return $this->set_children( [ $title_component ], true );
 	}
 
@@ -59,6 +61,6 @@ class Head extends Component {
 			( new Component( 'meta' ) )
 				->set_config( 'property', $property )
 				->set_config( 'content', $content ),
-		]);
+		], true );
 	}
 }
