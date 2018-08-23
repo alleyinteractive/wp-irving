@@ -40,15 +40,17 @@ class Paginator extends Component {
 		// the various core functions reference the correct query.
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride
 		$GLOBALS['wp_query'] = $wp_query;
-		$links = paginate_links([
-			'base' => '/%_%', // Use relative urls, so the app can handle them.
-			'type' => 'array',
-		]);
+		$links = paginate_links(
+			[
+				'base' => '/%_%', // Use relative urls, so the app can handle them.
+				'type' => 'array',
+			]
+		);
 		// Then we just kind of slide this guy back in like nothing happened...
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride
 		$GLOBALS['wp_query'] = $loop_query;
 
-		$this->set_children( array_map( [ $this, 'map_link' ], $links ) );
+		$this->set_children( array_map( [ $this, 'map_link' ], (array) $links ) );
 
 		return $this;
 	}
