@@ -60,6 +60,22 @@ class Byline extends Component {
 			$this->children[] = ( new \WP_Irving\Component\Image() )
 				->set_attachment_id( $avatar_id )
 				->set_config_for_size( $avatar_size );
+		} else {
+			$user = get_user_by( 'login', $coauthor->linked_account ?? '' );
+			// Use default gravatar fallback regardless of whether or not there's a linked user.
+			$gravatar_url = get_avatar_url(
+				$user->ID ?? $user->data->user_email ?? 0,
+				[
+					'size' => '300',
+				]
+			);
+
+			if ( ! empty( $gravatar_url ) ) {
+				$this->children[] = ( new \WP_Irving\Component\Image() )
+					->set_url( $gravatar_url )
+					// Don't set a size so the image component only uses the `src` attribute.
+					->set_config_for_size( '' );
+			}
 		}
 
 		return $this;
