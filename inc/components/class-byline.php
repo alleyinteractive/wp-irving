@@ -70,10 +70,12 @@ class Byline extends Component {
 				]
 			);
 
-			$this->children[] = ( new \WP_Irving\Component\Image() )
-				->set_url( $gravatar_url )
-				// Don't set a size so the image component only uses the `src` attribute.
-				->set_config_for_size( '' );
+			if ( ! empty( $gravatar_url ) ) {
+				$this->children[] = ( new \WP_Irving\Component\Image() )
+					->set_url( $gravatar_url )
+					// Don't set a size so the image component only uses the `src` attribute.
+					->set_config_for_size( '' );
+			}
 		}
 
 		return $this;
