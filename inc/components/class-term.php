@@ -49,7 +49,7 @@ class Term extends Component {
 		// $term is a valid WP_Term object.
 		if ( $term instanceof \WP_Term ) {
 			$this->set_config( 'id', $term->term_id );
-			$this->set_config( 'name', $term->name );
+			$this->set_config( 'name', html_entity_decode( $term->name ) );
 			$this->set_config( 'slug', $term->slug );
 			$this->set_config( 'link', get_term_link( $term ) );
 		} else {
