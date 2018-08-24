@@ -44,11 +44,14 @@ class Head extends Component {
 	 * @todo  Clean up this function and make it more verbose.
 	 *
 	 * @param \WP_Query $wp_query WP_Query object.
+	 * @return Head
 	 */
 	public function set_from_query( $wp_query ) {
 		if ( $wp_query->is_single() ) {
 			$this->set_title( $wp_query->post->post_title );
 		}
+
+		return $this;
 	}
 
 	/**
