@@ -21,18 +21,12 @@ class Head extends Component {
 
 	/**
 	 * Initalize this component.
-	 *
-	 * @param null|\WP_Query $wp_query WP_Query object or null.
 	 */
-	public function __construct( $wp_query = null ) {
+	public function __construct() {
 		parent::__construct();
 
 		// Set the default title.
 		$this->set_title( get_bloginfo( 'name' ) );
-
-		if ( $wp_query instanceof \WP_Query ) {
-			$this->parse_from_query( $wp_query );
-		}
 	}
 
 	/**
@@ -51,7 +45,7 @@ class Head extends Component {
 	 *
 	 * @param \WP_Query $wp_query WP_Query object.
 	 */
-	public function parse_from_query( $wp_query ) {
+	public function set_from_query( $wp_query ) {
 		if ( $wp_query->is_single() ) {
 			$this->set_title( $wp_query->post->post_title );
 		}
@@ -61,11 +55,13 @@ class Head extends Component {
 	 * Set a title tag as a child of the Head component.
 	 *
 	 * @param string $value The title value.
-	 * @return Head The instance of this component.
+	 * @return Head
 	 */
 	public function set_title( $value ) {
 		$title_component = ( new Component( 'title' ) )
 			->set_children( [ $value ] );
+
+		// Loop through children to replace an existing child component.
 		foreach ( $this->children as $index => $component ) {
 			// Update title.
 			if ( 'title' === $component->name ) {
@@ -82,7 +78,7 @@ class Head extends Component {
 	 * Helper function for setting a canonical url.
 	 *
 	 * @param  string $url Canonical URL.
-	 * @return Head The instance of this component.
+	 * @return Head
 	 */
 	public function set_canonical_url( $url ) {
 		return $this->add_link( 'canonical', $url );
@@ -93,7 +89,7 @@ class Head extends Component {
 	 *
 	 * @param string $property Property value.
 	 * @param string $content  Content value.
-	 * @return Head The instance of this component.
+	 * @return Head
 	 */
 	public function add_meta( $property, $content ) {
 		return $this->add_tag(
@@ -110,7 +106,7 @@ class Head extends Component {
 	 *
 	 * @param string $rel  Rel value.
 	 * @param string $href Href value.
-	 * @return Head The instance of this component.
+	 * @return Head
 	 */
 	public function add_link( $rel, $href ) {
 		return $this->add_tag(
@@ -127,7 +123,7 @@ class Head extends Component {
 	 *
 	 * @param  string $tag        Tag value.
 	 * @param  array  $attributes Tag attributes.
-	 * @return Head The instance of this component.
+	 * @return Head
 	 */
 	protected function add_tag( $tag, $attributes = [] ) {
 
