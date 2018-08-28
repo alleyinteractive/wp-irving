@@ -65,6 +65,10 @@ class Content extends Component {
 	 * @return Component
 	 */
 	private function map_block( array $block ) {
+		if ( strpos( $block['blockName'], 'core-embed' ) === 0 ) {
+			return ( new Embed() )->set_from_block( $block );
+		}
+
 		// The presence of html means this is a non dynamic block.
 		if ( ! empty( $block['innerHTML'] ) ) {
 			// Clean up extraneous whitespace characters.
