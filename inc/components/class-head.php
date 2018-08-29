@@ -122,6 +122,26 @@ class Head extends Component {
 	}
 
 	/**
+	 * Helper function for add a new script tag.
+	 *
+	 * @param string $src Script tag src url.
+	 * @param bool   $defer If script should defer loading until DOMContentLoaded.
+	 * @param bool   $async If script should load asynchronous.
+	 *
+	 * @return Head
+	 */
+	public function add_script( $src, $defer = true, $async = true ) {
+		return $this->add_tag(
+			'script',
+			[
+				'src' => $src,
+				'defer' => $defer,
+				'async' => $async,
+			]
+		);
+	}
+
+	/**
 	 * Helper function to quickly add a new tag.
 	 *
 	 * @param  string $tag        Tag value.
