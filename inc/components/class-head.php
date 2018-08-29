@@ -122,6 +122,24 @@ class Head extends Component {
 	}
 
 	/**
+	 * @param $src
+	 * @param bool $defer
+	 * @param bool $async
+	 *
+	 * @return Head
+	 */
+	public function add_script( $src, $defer = true, $async = true ) {
+		return $this->add_tag(
+			'script',
+			[
+				'src' => $src,
+				'defer' => $defer,
+				'async' => $async,
+			]
+		);
+	}
+
+	/**
 	 * Helper function to quickly add a new tag.
 	 *
 	 * @param  string $tag        Tag value.
