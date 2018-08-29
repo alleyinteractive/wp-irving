@@ -122,9 +122,11 @@ class Head extends Component {
 	}
 
 	/**
-	 * @param $src
-	 * @param bool $defer
-	 * @param bool $async
+	 * Helper function for add a new script tag.
+	 *
+	 * @param string $src Script tag src url.
+	 * @param bool   $defer If script should defer loading until DOMContentLoaded.
+	 * @param bool   $async If script should load asynchronous.
 	 *
 	 * @return Head
 	 */
