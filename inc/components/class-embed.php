@@ -45,7 +45,7 @@ class Embed extends Component {
 	 * @param array $script_attrs - The attributes of a script tag.
 	 */
 	public static function add_script( array $script_attrs ) {
-		$scripts[] = $script_attrs;
+		static::$scripts[] = $script_attrs;
 	}
 
 	/**
