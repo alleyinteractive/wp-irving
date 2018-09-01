@@ -48,6 +48,9 @@ class Menu extends Component {
 		// Get object id by location.
 		$menu_term = wp_get_nav_menu_object( $locations[ $menu_location ] ?? null );
 
+		// Get the menu title.
+		$this->config['title'] = $menu_term->name;
+
 		// If valid menu term.
 		if ( $menu_term instanceof \WP_Term ) {
 			$this->parse_wp_menu( $menu_term );
