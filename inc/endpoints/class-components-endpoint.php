@@ -387,7 +387,7 @@ class Components_Endpoint extends Endpoint {
 
 		// Redirect permanently.
 		wp_redirect( $request_url, 301 );
-		exit();
+		exit;
 	}
 }
 
