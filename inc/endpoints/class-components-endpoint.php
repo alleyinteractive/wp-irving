@@ -112,7 +112,7 @@ class Components_Endpoint extends Endpoint {
 
 		$this->query = $this->build_query();
 
-		// Ensure all non-file requests have a trailing slash.
+		// Force trailing slashes on paths.
 		$this->force_trailing_slashes();
 
 		/**
@@ -363,7 +363,7 @@ class Components_Endpoint extends Endpoint {
 	}
 
 	/**
-	 * Force trailing slashes on all non-404 requests.
+	 * Force trailing slashes on all non-404, and non-file requests.
 	 */
 	public function force_trailing_slashes() {
 
