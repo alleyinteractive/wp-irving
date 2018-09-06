@@ -52,6 +52,7 @@ class Image extends Component {
 			'alt'           => '',
 			'caption'       => '',
 			'src'           => '',
+			'lqipSrc'      => '',
 			'srcset'        => '',
 			'source_tags'   => [],
 			'original_url'  => '',
@@ -229,7 +230,8 @@ class Image extends Component {
 	 */
 	public function configure( $picture ) {
 		$this->config = wp_parse_args( [
-			'src'         => esc_url( $this->get_lqip_src()->config['url'] ),
+			'src'         => esc_url( $this->get_base_url() ),
+			'lqipSrc'     => esc_url( $this->get_lqip_src()->config['url'] ),
 			'srcset'      => $this->get_srcset(),
 			'sizes'       => $this->get_sizes(),
 			'sourceTags'  => $picture ? $this->get_source_tags() : [],
