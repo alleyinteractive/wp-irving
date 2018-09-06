@@ -163,7 +163,7 @@ class Component implements \JsonSerializable {
 		return [
 			'name'     => $this->name,
 			'config'   => (object) $this->camel_case_keys( $this->config ),
-			'children' => $this->children,
+			'children' => array_filter( $this->children ),
 		];
 	}
 
