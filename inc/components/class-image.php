@@ -199,7 +199,7 @@ class Image extends Component {
 			$this->set_config( 'lazyload', $size_config['lazyload'] ?? $this->config['lazyload'] );
 		}
 
-		// Set aspect ratio
+		// Set aspect ratio.
 		$this->set_config( 'aspect_ratio', $this->get_aspect_ratio( $size_config ) );
 
 		// If the size key matches a crop option, apply that transform.
@@ -375,7 +375,7 @@ class Image extends Component {
 	public function get_lqip_src() {
 		$aspect_ratio = $this->config['aspect_ratio'];
 
-		// Return early if no aspect ratio is set
+		// Return early if no aspect ratio is set.
 		if ( empty( $aspect_ratio ) ) {
 			return $this;
 		}
