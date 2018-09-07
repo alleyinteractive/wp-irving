@@ -178,7 +178,7 @@ class Components_Endpoint extends Endpoint {
 	/**
 	 * Returns a WP_Query object based on path.
 	 *
-	 * @param \WP_Query Resulting query.
+	 * @return \WP_Query Resulting query.
 	 */
 	public function build_query() {
 		global $wp_rewrite, $wp_the_query;
@@ -281,6 +281,8 @@ class Components_Endpoint extends Endpoint {
 	 * Fix rest url.
 	 *
 	 * @see https://github.com/WordPress/gutenberg/issues/1761
+	 *
+	 * @param string $url Rest URL.
 	 */
 	public function fix_rest_url( $url ) {
 		$path = wp_parse_url( $url, PHP_URL_PATH );
