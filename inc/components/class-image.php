@@ -46,22 +46,24 @@ class Image extends Component {
 	 */
 	public function default_config() {
 		return [
+			'aspect_ratio'  => 9 / 16,
 			'attachment_id' => 0,
-			'post_id'       => 0,
-			'image_size'    => 'full',
 			'alt'           => '',
 			'caption'       => '',
-			'src'           => '',
-			'lqipSrc'      => '',
-			'srcset'        => '',
-			'source_tags'   => [],
-			'original_url'  => '',
-			'url'           => '',
 			'crops'         => '',
-			'sources'       => [],
-			'retina'        => true,
-			'aspect_ratio'  => 9 / 16,
+			'height'        => 0,
+			'image_size'    => 'full',
 			'lazyload'      => true,
+			'lqipSrc'      => '',
+			'original_url'  => '',
+			'post_id'       => 0,
+			'retina'        => true,
+			'sources'       => [],
+			'source_tags'   => [],
+			'src'           => '',
+			'srcset'        => '',
+			'url'           => '',
+			'width'         => 0,
 		];
 	}
 
@@ -193,12 +195,12 @@ class Image extends Component {
 			$size_config = $sizes[ $image_size ];
 			$this->set_config( 'image_size', $image_size );
 			$this->set_config( 'sources', $size_config['sources'] );
-
-			// You can set certain config values on a per-size basis instead of per-component.
-			$this->set_config( 'aspect_ratio', $size_config['aspect_ratio'] ?? $this->config['aspect_ratio'] ?? '' );
 			$this->set_config( 'retina', $size_config['retina'] ?? $this->config['retina'] );
 			$this->set_config( 'lazyload', $size_config['lazyload'] ?? $this->config['lazyload'] );
 		}
+
+		// Set aspect ratio
+		$this->set_config( 'aspect_ratio', $this->get_aspect_ratio( $size_config ) );
 
 		// If the size key matches a crop option, apply that transform.
 		if ( ! empty( $crops[ $image_size ] ) ) {
@@ -229,19 +231,45 @@ class Image extends Component {
 	 * @return Component Current instance of this class.
 	 */
 	public function configure( $picture ) {
+		$image_meta = wp_get_attachment_metadata( $this->config['attachment_id'] );
+
 		$this->config = wp_parse_args( [
-			'src'         => esc_url( $this->get_base_url() ),
-			'lqipSrc'     => esc_url( $this->get_lqip_src()->config['url'] ),
-			'srcset'      => $this->get_srcset(),
-			'sizes'       => $this->get_sizes(),
-			'sourceTags'  => $picture ? $this->get_source_tags() : [],
-			'picture'     => $picture,
-			'originalUrl' => $this->get_base_url(),
 			'alt'         => $this->get_alt_text(),
 			'caption'     => ! empty( $this->config['attachment_id'] ) ? wp_get_attachment_caption( $this->config['attachment_id'] ) : '',
+			'height'      => $image_meta['height'] ?? 0,
+			'lqipSrc'     => esc_url( $this->get_lqip_src()->config['url'] ),
+			'originalUrl' => $this->get_base_url(),
+			'picture'     => $picture,
+			'sizes'       => $this->get_sizes(),
+			'sourceTags'  => $picture ? $this->get_source_tags() : [],
+			'src'         => esc_url( $this->get_base_url() ),
+			'srcset'      => $this->get_srcset(),
+			'width'       => $image_meta['width'] ?? 0,
 		], $this->config );
 
 		return $this;
+	}
+
+	/**
+	 * Retrieve aspect ratio value from either image size config, image component config, or original width and height values
+	 *
+	 * @param array $size_config Configuration for current image size.
+	 * @return string
+	 */
+	public function get_aspect_ratio( $size_config ) {
+		$aspect_ratio = $size_config['aspect_ratio'] ?? $this->config['aspect_ratio'] ?? false;
+
+		// Useful if you're ouptutting an image with only one constrained dimension (like a max height or max width, but no specific aspect ratio). Usually involves `fit`, `w`, or `h` transforms.
+		if ( 'auto' === $aspect_ratio ) {
+			$image_meta = wp_get_attachment_metadata( $this->config['attachment_id'] );
+			if ( ! empty( $image_meta['width'] ) && ! empty( $image_meta['height'] ) ) {
+				return intval( $image_meta['height'] ) / intval( $image_meta['width'] );
+			}
+
+			return false;
+		}
+
+		return $aspect_ratio;
 	}
 
 	/**
@@ -346,6 +374,12 @@ class Image extends Component {
 	 */
 	public function get_lqip_src() {
 		$aspect_ratio = $this->config['aspect_ratio'];
+
+		// Return early if no aspect ratio is set
+		if ( empty( $aspect_ratio ) ) {
+			return $this;
+		}
+
 		return $this->apply_transforms( [
 			'quality' => [ 60 ],
 			'resize'  => [ 60, 60 * $aspect_ratio ],
