@@ -63,10 +63,12 @@ class Components_Endpoint extends Endpoint {
 	public function __construct() {
 		parent::__construct();
 
+		add_filter( 'rest_url', [ $this, 'fix_rest_url' ] );
 		add_filter( 'query_vars', [ $this, 'modify_query_vars' ] );
 		add_filter( 'post_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'page_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'tag_row_actions', [ $this, 'add_api_link_to_terms' ], 10, 2 );
+		add_filter( 'admin_bar_menu', [ $this, 'add_api_link_to_admin_bar' ], 999 );
 	}
 
 	/**
@@ -176,7 +178,7 @@ class Components_Endpoint extends Endpoint {
 	/**
 	 * Returns a WP_Query object based on path.
 	 *
-	 * @return \WP_Query Resulting query.
+	 * @param \WP_Query Resulting query.
 	 */
 	public function build_query() {
 		global $wp_rewrite, $wp_the_query;
@@ -276,6 +278,16 @@ class Components_Endpoint extends Endpoint {
 	}
 
 	/**
+	 * Fix rest url.
+	 *
+	 * @see https://github.com/WordPress/gutenberg/issues/1761
+	 */
+	public function fix_rest_url( $url ) {
+		$path = wp_parse_url( $url, PHP_URL_PATH );
+		return site_url( $path );
+	}
+
+	/**
 	 * Add custom query vars.
 	 *
 	 * @param array $vars Array of current query vars.
@@ -360,6 +372,54 @@ class Components_Endpoint extends Endpoint {
 			esc_url( $path_url )
 		);
 		return $actions;
+	}
+
+	/**
+	 * Add api link node to the admin bar from post edit screens.
+	 *
+	 * @param  \WP_Admin_Bar $admin_bar WP Admin Bar object.
+	 */
+	public function add_api_link_to_admin_bar( $admin_bar ) {
+
+		// Get screen and check for a post base.
+		$screen = get_current_screen();
+
+		if (
+			'post' === ( $screen->base ?? '' )
+			&& isset( $_GET['post'] )
+		) {
+
+			// Get and validate post ID.
+			$post_id = absint( $_GET['post'] );
+			if ( 0 === $post_id ) {
+				return;
+			}
+
+			// Get post permalink.
+			$permalink = get_the_permalink( $post_id );
+
+			// Parse the path.
+			$path = wp_parse_url( $permalink, PHP_URL_PATH );
+
+			// Apply path to base components endpoint.
+			$api_url = add_query_arg(
+				'path',
+				$path,
+				rest_url( 'irving/v1/components/' )
+			);
+
+			// Filter as if it were the post row.
+			$api_url = apply_filters( 'wp_irving_post_row_action_path_url', $api_url, get_post( $post_id ) );
+
+			// Add node to admin bar.
+			$admin_bar->add_node(
+				[
+					'id'    => 'wp_irving_api',
+					'title' => __( 'WP-Irving API', 'wp-irving' ),
+					'href'  => $api_url,
+				]
+			);
+		}
 	}
 
 	/**
