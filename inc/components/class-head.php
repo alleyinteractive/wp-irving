@@ -61,6 +61,10 @@ class Head extends Component {
 	 * @return Head
 	 */
 	public function set_title( $value ) {
+
+		// Decode HTML title.
+		$value = html_entity_decode( $value );
+
 		$title_component = ( new Component( 'title' ) )
 			->set_children( [ $value ] );
 
@@ -99,7 +103,7 @@ class Head extends Component {
 			'meta',
 			[
 				'property' => $property,
-				'content'  => $content,
+				'content'  => html_entity_decode( $content ),
 			]
 		);
 	}
