@@ -26,9 +26,10 @@ class Menu extends Component {
 	 */
 	public function default_config() {
 		return [
-			'classNames' => [],
-			'location'   => '',
-			'title'      => '',
+			'classNames'      => [],
+			'location'        => '',
+			'title'           => '',
+			'menu_item_class' => '\WP_Irving\Component\Menu_Item',
 		];
 	}
 
@@ -94,8 +95,14 @@ class Menu extends Component {
 			// Is the current menu item a child of the parent item.
 			if ( $menu_item_parent_id === $parent_id ) {
 
+				$menu_item_class = $this->get_config( 'menu_item_class' );
+
+				if ( ! class_exists( $menu_item_class ) ) {
+					return;
+				}
+
 				// Get parsed menu item.
-				$clean_menu_item = menu_item()->parse_menu_post( $menu_item );
+				$clean_menu_item = ( new $menu_item_class() )->parse_menu_post( $menu_item );
 
 				// Remove from loop.
 				unset( $menu_items[ $key ] );
