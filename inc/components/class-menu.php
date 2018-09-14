@@ -95,7 +95,7 @@ class Menu extends Component {
 			// Is the current menu item a child of the parent item.
 			if ( $menu_item_parent_id === $parent_id ) {
 
-				$menu_item_class = $this->get_config('menu_item_class');
+				$menu_item_class = $this->get_config( 'menu_item_class' );
 
 				if ( ! class_exists( $menu_item_class ) ) {
 					return;
