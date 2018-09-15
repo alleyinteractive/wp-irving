@@ -226,6 +226,25 @@ class Component implements \JsonSerializable {
 	public function jsonSerialize() {
 		return $this->to_array();
 	}
+
+	/**
+	 * Helper function to add an Image component child.
+	 *
+	 * @param int    $attachment_id Attachment ID.
+	 * @param string $size          Image size.
+	 */
+	public function add_child_image( int $attachment_id, string $size = 'full' ) {
+
+		// Create an Image component.
+		$image_component = ( new \WP_Irving\Component\Image() )
+			->set_attachment_id( absint( $attachment_id ) )
+			->set_config_for_size( $size );
+
+		// Validate and append to children.
+		if ( 0 !== absint( $image_component->get_config( 'attachment_id' ) ) ) {
+			$this->children[] = $image_component;
+		}
+	}
 }
 
 /**
