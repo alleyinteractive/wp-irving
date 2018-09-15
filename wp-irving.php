@@ -44,3 +44,8 @@ require_once WP_IRVING_PATH . '/inc/components/class-embed.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
+
+// CLI scripts.
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once WP_IRVING_PATH . '/inc/cli/class-scaffold-cli-command.php';
+}
