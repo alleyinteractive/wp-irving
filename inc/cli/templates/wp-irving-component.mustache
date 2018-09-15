@@ -10,14 +10,14 @@ namespace {{namespace}}\Component;
 /**
  * Defines the {{label}} component.
  */
-class {{class}} extends \WP_Irving\Component\Component {
+class {{wp_class}} extends \WP_Irving\Component\Component {
 
 	/**
 	 * Unique component slug.
 	 *
 	 * @var string
 	 */
-	public $name = '{{slug}}';
+	public $name = '{{wp_slug}}';
 
 	/**
 	 * Label for FM fields.
@@ -56,7 +56,7 @@ class {{class}} extends \WP_Irving\Component\Component {
 	 * Parse data from a saved FM field.
 	 *
 	 * @param array $fm_data Array of FM data for this component.
-	 * @return {{class}} Instance of this class.
+	 * @return {{wp_class}} Instance of this class.
 	 */
 	public function parse_from_fm_data( array $fm_data ) : self {
 		{{#fields}}

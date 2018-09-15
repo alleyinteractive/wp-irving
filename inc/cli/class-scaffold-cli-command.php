@@ -22,8 +22,8 @@ class Scaffold_CLI_Command extends \Scaffold_Command {
 	 *
 	 * ## OPTIONS
 	 *
-	 * <slug>
-	 * : Component slug.
+	 * <name>
+	 * : Component name.
 	 *
 	 * [--force]
 	 * : Override existing code.
@@ -39,33 +39,84 @@ class Scaffold_CLI_Command extends \Scaffold_Command {
 	 */
 	public function irving_component( $args, $assoc_args ) {
 
-		// Validate component slug.
-		$component_slug = $args[0] ?? '';
-		if ( empty( $component_slug ) ) {
-			WP_CLI::error( __( 'Component slug missing or invalid', 'wp-irving' ) );
+		// Component name.
+		$component_name = $args[0] ?? '';
+		if ( empty( $component_name ) ) {
+			WP_CLI::error( __( 'Component name missing or invalid', 'wp-irving' ) );
 		}
+
+		// Get slugs based on component name.
+		$slugs = $this->get_slugs( $component_name );
 
 		// Construct data needed for the template.
 		$theme_name = wp_get_theme()->get( 'Name' );
 		$data       = [
-			'class'     => $this->slug_to_label( $component_slug, '_' ),
 			'domain'    => strtolower( str_replace( ' ', '-', $theme_name ) ),
 			'fields'    => $this->build_fields(),
-			'label'     => $this->slug_to_label( $component_slug ),
 			'namespace' => $theme_name,
 			'package'   => $theme_name,
-			'slug'      => $component_slug,
 		];
 
+		// Merge $slugs into $data.
+		$data = array_merge( $data, $slugs );
+
 		// Determine where to put these files.
-		$components_dir = get_template_directory() . '/inc/components';
+		$wp_dir  = get_template_directory() . '/inc/components';
+		$app_dir = rtrim( ABSPATH, '/' ) . '-irving/components';
+
 		$this->create_files(
 			[
 
-				"$components_dir/class-{$component_slug}.php" => $this->mustache_render( 'wp-irving-component.mustache', $data ),
+				"$wp_dir/class-{$slugs['wp_slug']}.php"                  => $this->mustache_render( 'wp-irving-component.mustache', $data ),
+				"$app_dir/{$slugs['app_slug']}/index.js"                 => $this->mustache_render( 'core-irving-component.mustache', $data ),
+				"$app_dir/{$slugs['app_slug']}/{$slugs['app_slug']}.css" => $this->mustache_render( 'core-irving-style.mustache', $data ),
 			],
 			(bool) ( $assoc_args['force'] ?? false )
 		);
+	}
+
+	/**
+	 * Get different slugs based on component name.
+	 *
+	 * # Input
+	 *     'Featured-Grid'
+	 *     'featured-grid'
+	 *
+	 * # Output
+	 *     [
+	 *         'wp_slug'   => 'featured-grid',
+	 *         'wp_class'  => 'Featured_Grid',
+	 *         'app_slug'  => 'featuredGrid',
+	 *         'app_class' => 'FeaturedGrid',
+	 *     ]
+	 *
+	 * @param  string $name Component name.
+	 * @return array
+	 */
+	public function get_slugs( $name ) {
+
+		// Slightly hacky. Gives support for name being passed in different
+		// formats like `Featured-Grid` or `feature_grid` to support ssh
+		// connections to WP_CLI.
+		$name = str_replace( '-', ' ', $name );
+		$name = str_replace( '_', ' ', $name );
+
+		// Prep parts for conversion into slugs.
+		$parts = explode( ' ', $name );
+		$parts = array_map( 'ucfirst', $parts );
+
+		$label = implode( ' ', $parts );
+
+		// Build different slugs.
+		$slugs = [
+			'app_class' => str_replace( ' ', '', $label ),
+			'app_slug'  => lcfirst( str_replace( ' ', '', $label ) ),
+			'label'     => $label,
+			'wp_class'  => str_replace( ' ', '_', $label ),
+			'wp_slug'   => strtolower( str_replace( ' ', '-', $label ) ),
+		];
+
+		return $slugs;
 	}
 
 	/**
