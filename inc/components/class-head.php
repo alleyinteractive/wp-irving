@@ -82,6 +82,22 @@ class Head extends Component {
 	}
 
 	/**
+	 * Add inline JS code.
+	 *
+	 * @param string $value JavaScript code as a string.
+	 * @return Head
+	 */
+	public function add_js_code( $value ) {
+
+		$component = ( new Component( 'script' ) )
+			->set_config( 'type', 'text/javascript' )
+			->set_children( [ $value ] );
+
+		$this->children[] = $component;
+		return $this;
+	}
+
+	/**
 	 * Helper function for setting a canonical url.
 	 *
 	 * @param  string $url Canonical URL.
@@ -134,14 +150,17 @@ class Head extends Component {
 	 *
 	 * @return Head
 	 */
-	public function add_script( $src, $defer = true, $async = true ) {
+	public function add_script( $src, $defer = true, $async = true, $additional_args = [] ) {
 		return $this->add_tag(
 			'script',
-			[
-				'src' => $src,
-				'defer' => $defer,
-				'async' => $async,
-			]
+			array_merge(
+				[
+					'src'   => $src,
+					'defer' => $defer,
+					'async' => $async,
+				],
+				$additional_args
+			)
 		);
 	}
 
