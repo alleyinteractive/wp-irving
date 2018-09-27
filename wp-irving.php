@@ -29,18 +29,19 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
 // Default components.
 require_once WP_IRVING_PATH . '/inc/components/class-admin-bar.php';
 require_once WP_IRVING_PATH . '/inc/components/class-byline.php';
+require_once WP_IRVING_PATH . '/inc/components/class-content.php';
+require_once WP_IRVING_PATH . '/inc/components/class-embed.php';
 require_once WP_IRVING_PATH . '/inc/components/class-footer.php';
+require_once WP_IRVING_PATH . '/inc/components/class-google-analytics.php';
+require_once WP_IRVING_PATH . '/inc/components/class-head.php';
 require_once WP_IRVING_PATH . '/inc/components/class-header.php';
+require_once WP_IRVING_PATH . '/inc/components/class-html.php';
 require_once WP_IRVING_PATH . '/inc/components/class-image.php';
 require_once WP_IRVING_PATH . '/inc/components/class-load-more.php';
 require_once WP_IRVING_PATH . '/inc/components/class-menu-item.php';
 require_once WP_IRVING_PATH . '/inc/components/class-menu.php';
-require_once WP_IRVING_PATH . '/inc/components/class-html.php';
-require_once WP_IRVING_PATH . '/inc/components/class-content.php';
-require_once WP_IRVING_PATH . '/inc/components/class-term.php';
 require_once WP_IRVING_PATH . '/inc/components/class-paginator.php';
-require_once WP_IRVING_PATH . '/inc/components/class-head.php';
-require_once WP_IRVING_PATH . '/inc/components/class-embed.php';
+require_once WP_IRVING_PATH . '/inc/components/class-term.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
