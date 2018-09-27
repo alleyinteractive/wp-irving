@@ -31,15 +31,3 @@ class Header extends Component {
 		];
 	}
 }
-
-/**
- * Helper to get the component.
- *
- * @param  string $name     Component name or array of properties.
- * @param  array  $config   Component config.
- * @param  array  $children Component children.
- * @return Header An instance of the Header class.
- */
-function header( $name = '', array $config = [], array $children = [] ) {
-	return new Header( $name, $config, $children );
-}

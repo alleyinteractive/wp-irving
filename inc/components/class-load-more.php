@@ -112,15 +112,3 @@ class Load_More extends Component {
 		return add_query_arg( $query, $url );
 	}
 }
-
-/**
- * Helper to get the content grid component.
- *
- * @param  string $name     Component name or array of properties.
- * @param  array  $config   Component config.
- * @param  array  $children Component children.
- * @return Load_More An instance of the Load_More class.
- */
-function load_more( $name = '', array $config = [], array $children = [] ) {
-	return new Load_More( $name, $config, $children );
-}

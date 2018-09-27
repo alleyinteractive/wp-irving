@@ -20,10 +20,15 @@ class Head extends Component {
 	public $name = 'head';
 
 	/**
-	 * Initalize this component.
+	 * Component constructor.
+	 *
+	 * @param string $name     Unique component slug or array of name, config,
+	 *                         and children value.
+	 * @param array  $config   Component config.
+	 * @param array  $children Component children.
 	 */
-	public function __construct() {
-		parent::__construct();
+	public function __construct( string $name = '', array $config = [], array $children = [] ) {
+		parent::__construct( $name, $config, $children );
 
 		// Set the default title.
 		$this->set_title( get_bloginfo( 'name' ) );

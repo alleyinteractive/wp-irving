@@ -657,22 +657,11 @@ class Image extends Component {
 	 */
 	public function render_picture() {
 		\ai_get_template_part(
-			$this->get_component_path( 'picture' ), array(
+			$this->get_component_path( 'picture' ),
+			[
 				'component'  => $this,
 				'stylesheet' => 'image',
-			)
+			]
 		);
 	}
-}
-
-/**
- * Helper to get the component.
- *
- * @param  string $name     Component name or array of properties.
- * @param  array  $config   Component config.
- * @param  array  $children Component children.
- * @return Image An instance of the Image class.
- */
-function image( $name = '', array $config = [], array $children = [] ) {
-	return new Image( $name, $config, $children );
 }

@@ -20,10 +20,15 @@ class Google_Analytics extends Component {
 	public $name = 'google-analytics';
 
 	/**
-	 * Initalize this component.
+	 * Component constructor.
+	 *
+	 * @param string $name     Unique component slug or array of name, config,
+	 *                         and children value.
+	 * @param array  $config   Component config.
+	 * @param array  $children Component children.
 	 */
-	public function __construct() {
-		parent::__construct();
+	public function __construct( string $name = '', array $config = [], array $children = [] ) {
+		parent::__construct( $name, $config, $children );
 
 		// Easily set the tracking ID using this filter.
 		$this->set_config(

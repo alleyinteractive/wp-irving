@@ -20,9 +20,16 @@ class Admin_Bar extends Component {
 	public $name = 'admin-bar';
 
 	/**
-	 * Class constructor.
+	 * Component constructor.
+	 *
+	 * @param string $name     Unique component slug or array of name, config,
+	 *                         and children value.
+	 * @param array  $config   Component config.
+	 * @param array  $children Component children.
 	 */
-	public function __construct() {
+	public function __construct( $name = '', array $config = [], array $children = [] ) {
+		parent::__construct( $name, $config, $children );
+
 		$this->children = [
 			$this->create_button(
 				[
@@ -112,16 +119,4 @@ class Admin_Bar extends Component {
 			'children' => $button_children,
 		];
 	}
-}
-
-/**
- * Helper to get the component.
- *
- * @param  string $name     Component name or array of properties.
- * @param  array  $config   Component config.
- * @param  array  $children Component children.
- * @return Admin_Bar An instance of the Admin_Bar class.
- */
-function admin_bar( $name = '', array $config = [], array $children = [] ) {
-	return new Admin_Bar( $name, $config, $children );
 }

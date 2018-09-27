@@ -34,15 +34,3 @@ class Footer extends Component {
 		];
 	}
 }
-
-/**
- * Helper to get the component.
- *
- * @param  string $name     Component name or array of properties.
- * @param  array  $config   Component config.
- * @param  array  $children Component children.
- * @return Footer An instance of the Footer class.
- */
-function footer( $name = '', array $config = [], array $children = [] ) {
-	return new Footer( $name, $config, $children );
-}

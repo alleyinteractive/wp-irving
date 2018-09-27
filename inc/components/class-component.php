@@ -48,7 +48,7 @@ class Component implements \JsonSerializable {
 	 * @param array  $config   Component config.
 	 * @param array  $children Component children.
 	 */
-	public function __construct( $name = '', array $config = [], array $children = [] ) {
+	public function __construct( string $name = '', array $config = [], array $children = [] ) {
 
 		// Allow $name to be passed as a config array.
 		if ( is_array( $name ) ) {
@@ -247,16 +247,4 @@ class Component implements \JsonSerializable {
 			$this->children[] = $image_component;
 		}
 	}
-}
-
-/**
- * Helper to generate a generic component.
- *
- * @param  string $name     Component name or array of properties.
- * @param  array  $config   Component config.
- * @param  array  $children Component children.
- * @return Component An instance of the Component class.
- */
-function component( $name = '', array $config = [], array $children = [] ) {
-	return new Component( $name, $config, $children );
 }
