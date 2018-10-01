@@ -25,6 +25,7 @@ require_once WP_IRVING_PATH . '/inc/traits/trait-content-list.php';
 
 // API.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
+require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
 
 // Default components.
 require_once WP_IRVING_PATH . '/inc/components/class-admin-bar.php';
