@@ -12,20 +12,12 @@ namespace WP_Irving\REST_API;
  */
 class Form_Endpoint extends Endpoint {
 	/**
-	 * Form endpoints to register
-	 *
-	 * @var array
-	 */
-	public $form_endpoints = [];
-
-	/**
 	 * Attach to required hooks for form endpoint
 	 */
 	public function __construct() {
 		parent::__construct();
 
 		add_action( 'rest_api_init', [ $this, 'register_rest_routes' ] );
-		add_filter( 'rest_url', [ $this, 'fix_rest_url' ] );
 	}
 
 	/**
@@ -42,10 +34,7 @@ class Form_Endpoint extends Endpoint {
 		 *     @type string $callback response callback to use when the endpoint is called.
 		 * }
 		 */
-		$form_endpoints = (array) apply_filters(
-			'wp_irving_form_endpoints',
-			$this->form_endpoints
-		);
+		$form_endpoints = (array) apply_filters( 'wp_irving_form_endpoints', [] );
 
 		if ( empty( $form_endpoints ) ) {
 			return;
@@ -61,18 +50,6 @@ class Form_Endpoint extends Endpoint {
 				]
 			);
 		}
-	}
-
-	/**
-	 * Fix rest url.
-	 *
-	 * @see https://github.com/WordPress/gutenberg/issues/1761
-	 *
-	 * @param string $url Rest URL.
-	 */
-	public function fix_rest_url( $url ) {
-		$path = wp_parse_url( $url, PHP_URL_PATH );
-		return site_url( $path );
 	}
 }
 
