@@ -51,6 +51,16 @@ class Head extends Component {
 			$this->set_title( $wp_query->post->post_title );
 		}
 
+		// If queried object is a valid article post type.
+		$queried_object = $wp_query->get_queried_object();
+		if ( $queried_object instanceof \WP_Post ) {
+			$post_id = $queried_object->ID;
+
+			$this->apply_meta( $post_id );
+			$this->apply_social_meta( $post_id );
+			$this->set_title( $this->get_meta_title( $post_id ) );
+		}
+
 		return $this;
 	}
 
@@ -168,6 +178,156 @@ class Head extends Component {
 				$component,
 			],
 			true
+		);
+	}
+
+	/**
+	 * Apply basic meta tags.
+	 *
+	 * @param  integer $post_id Post ID.
+	 */
+	public function apply_meta( $post_id ) {
+
+		// Meta description.
+		$meta_description = $this->get_meta_description( $post_id );
+		if ( ! empty( $meta_description ) ) {
+			$this->add_meta( 'description', esc_attr( $meta_description ) );
+		}
+
+		// Meta keywords.
+		$meta_keywords = (string) get_post_meta( $post_id, '_meta_keywords', true );
+		if ( ! empty( $meta_keywords ) ) {
+			$this->add_meta( 'keywords', esc_attr( $meta_keywords ) );
+		}
+	}
+
+	/**
+	 * Apply social meta tags.
+	 *
+	 * @param  integer $post_id Post ID.
+	 */
+	public function apply_social_meta( $post_id ) {
+
+		// Open graph meta.
+		$this->add_meta( 'og:url', get_the_permalink( $post_id ) );
+		$this->add_meta( 'og:type', 'article' );
+		$this->add_meta( 'og:title', $this->get_social_title( $post_id ) );
+		$this->add_meta( 'og:description', $this->get_social_description( $post_id ) );
+
+		// Optional meta.
+		$image_url = $this->get_social_image_url( $post_id, [ 'resize' => '1200,630' ] );
+		if ( ! empty( $image_url ) ) {
+			$this->add_meta( 'og:image', $image_url );
+		}
+
+		// Twitter specific meta.
+		$this->add_meta( 'twitter:card', 'summary' );
+	}
+
+	/**
+	 * Get the meta title for a post.
+	 *
+	 * @param  integer $post_id Post ID.
+	 * @return string Meta title.
+	 */
+	public function get_meta_title( $post_id ) : string {
+
+		// Return WP-SEO title.
+		$meta_title = (string) get_post_meta( $post_id, '_meta_title', true );
+		if ( ! empty( $meta_title ) ) {
+			return $meta_title;
+		}
+
+		return (string) get_the_title( $post_id );
+	}
+
+	/**
+	 * Get the social title for a post.
+	 *
+	 * @param  integer $post_id Post ID.
+	 * @return string Social title.
+	 */
+	public function get_social_title( $post_id ) : string {
+
+		// Use social title, or fallback to meta title.
+		$social_title = get_post_meta( $post_id, 'social_title', true );
+		if ( ! empty( $social_title ) ) {
+			return $social_title;
+		}
+
+		return (string) $this->get_meta_title( $post_id );
+	}
+
+	/**
+	 * Get the meta descrption for a post.
+	 *
+	 * @param  integer $post_id Post ID.
+	 * @return string Meta description.
+	 */
+	public function get_meta_description( $post_id ) : string {
+
+		// Return WP-SEO description.
+		$meta_description = (string) get_post_meta( $post_id, '_meta_description', true );
+		if ( ! empty( $meta_description ) ) {
+			return $meta_description;
+		}
+
+		// Modify global state.
+		global $post;
+
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		$backup_post = $post;
+
+		// Setup post data for this item.
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		$post = get_post( $post_id );
+		setup_postdata( $post );
+		$excerpt = get_the_excerpt();
+
+		// Undo global modification.
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		$post = $backup_post;
+		setup_postdata( $post );
+
+		return $excerpt;
+	}
+
+	/**
+	 * Get the social description for a post.
+	 *
+	 * @param  integer $post_id Post ID.
+	 * @return string Social description.
+	 */
+	public function get_social_description( $post_id ) : string {
+
+		// Use social description, or fallback to meta description.
+		$social_description = get_post_meta( $post_id, 'social_description', true );
+		if ( ! empty( $social_description ) ) {
+			return $social_description;
+		}
+
+		return (string) $this->get_meta_description( $post_id );
+	}
+
+	/**
+	 * Get the social image for a post.
+	 *
+	 * @param  integer $post_id     Post ID.
+	 * @param  array   $photon_args Photon API arguments.
+	 * @return string Social image url.
+	 */
+	public function get_social_image_url( $post_id, $photon_args = [] ) {
+
+		// Get image url.
+		$image_id = absint( get_post_meta( $post_id, 'social_image_id', true ) );
+		$image_url = wp_get_attachment_image_url( $image_id, 'original' );
+		if ( empty( $image_url ) ) {
+			return '';
+		}
+
+		return add_query_arg(
+			$photon_args,
+			$image_url
 		);
 	}
 }
