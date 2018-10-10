@@ -58,17 +58,37 @@ class Components_Endpoint extends Endpoint {
 	];
 
 	/**
+	 * Capability required to see API links.
+	 *
+	 * @var string
+	 */
+	public $api_link_cap;
+
+	/**
 	 * Initialize class.
 	 */
 	public function __construct() {
 		parent::__construct();
 
+		add_action( 'init', [ $this, 'set_cap' ] );
 		add_filter( 'rest_url', [ $this, 'fix_rest_url' ] );
 		add_filter( 'query_vars', [ $this, 'modify_query_vars' ] );
 		add_filter( 'post_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'page_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'tag_row_actions', [ $this, 'add_api_link_to_terms' ], 10, 2 );
 		add_filter( 'admin_bar_menu', [ $this, 'add_api_link_to_admin_bar' ], 999 );
+	}
+
+	/**
+	 * Set the capability for WP-Irving API links.
+	 */
+	public function set_cap() {
+		/**
+		 * Filter the capability required to view links to the WP-Irving API.
+		 *
+		 * @param string $capability. Defaults to `manage_options`.
+		 */
+		$this->api_link_cap = apply_filters( 'wp_irving_api_link_cap', 'manage_options' );
 	}
 
 	/**
@@ -333,10 +353,12 @@ class Components_Endpoint extends Endpoint {
 		$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, $post );
 
 		// Add new link.
-		$actions['api'] = sprintf(
-			'<a href="%1$s">API</a>',
-			esc_url( $path_url )
-		);
+		if ( current_user_can( $this->api_link_cap ) ) {
+			$actions['api'] = sprintf(
+				'<a href="%1$s">API</a>',
+				esc_url( $path_url )
+			);
+		}
 
 		return $actions;
 	}
@@ -369,10 +391,12 @@ class Components_Endpoint extends Endpoint {
 		$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
 
 		// Add new link.
-		$actions['api'] = sprintf(
-			'<a href="%1$s">API</a>',
-			esc_url( $path_url )
-		);
+		if ( current_user_can( $this->api_link_cap ) ) {
+			$actions['api'] = sprintf(
+				'<a href="%1$s">API</a>',
+				esc_url( $path_url )
+			);
+		}
 		return $actions;
 	}
 
@@ -382,6 +406,9 @@ class Components_Endpoint extends Endpoint {
 	 * @param  \WP_Admin_Bar $admin_bar WP Admin Bar object.
 	 */
 	public function add_api_link_to_admin_bar( $admin_bar ) {
+		if ( ! current_user_can( $this->api_link_cap ) ) {
+			return;
+		}
 
 		// Get screen and check for a post base.
 		$screen = get_current_screen();
