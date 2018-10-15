@@ -638,7 +638,7 @@ class Image extends Component {
 		// Reset URL to base url before applying a new set of transforms.
 		$this->set_config( 'url', $this->get_base_url() );
 
-		// Loop through transforms
+		// Loop through transforms.
 		foreach ( $transforms as $transform => $values ) {
 			if ( ! method_exists( $this, $transform ) ) {
 				continue;
