@@ -624,7 +624,7 @@ class Image extends Component {
 	 * @return Component Current instance of this class.
 	 */
 	public function apply_transform( $transform_args ) {
-		return $this->set_config( 'url', add_query_arg( $transform_args, $this->get_base_url() ) );
+		return $this->set_config( 'url', add_query_arg( $transform_args, $this->get_config( 'url' ) ) );
 	}
 
 	/**
@@ -635,6 +635,10 @@ class Image extends Component {
 	 * @return Component Current instance of this class.
 	 */
 	public function apply_transforms( array $transforms, $density_multiplier = 1 ) {
+		// Reset URL to base url before applying a new set of transforms.
+		$this->set_config( 'url', $this->get_base_url() );
+
+		// Loop through transforms
 		foreach ( $transforms as $transform => $values ) {
 			if ( ! method_exists( $this, $transform ) ) {
 				continue;
