@@ -52,7 +52,7 @@ class Head extends Component {
 		}
 
 		// If queried object is a valid article post type.
-		$queried_object = $wp_query->get_queried_object();
+		$queried_object = $wp_query->get_queried_object() ?? $wp_query->post;
 		if ( $queried_object instanceof \WP_Post ) {
 			$post_id = $queried_object->ID;
 
@@ -319,8 +319,15 @@ class Head extends Component {
 	public function get_social_image_url( $post_id, $photon_args = [] ) {
 
 		// Get image url.
-		$image_id = absint( get_post_meta( $post_id, 'social_image_id', true ) );
+		$image_id  = absint( get_post_meta( $post_id, 'social_image_id', true ) );
 		$image_url = wp_get_attachment_image_url( $image_id, 'original' );
+
+		// Fallback to featured image.
+		if ( empty( $image_url ) ) {
+			$image     = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), 'full' );
+			$image_url = $image[0] ?? '';
+		}
+
 		if ( empty( $image_url ) ) {
 			return '';
 		}
