@@ -48,7 +48,6 @@ class Head extends Component {
 	 */
 	public function set_from_query( $wp_query ) {
 		if ( $wp_query->is_single() ) {
-			$this->set_title( $wp_query->post->post_title );
 		}
 
 		// If queried object is a valid article post type.
