@@ -128,9 +128,13 @@ class Components_Endpoint extends Endpoint {
 		$this->context = $this->params['context'] ?? '';
 
 		// Pass any extra included params.
-		$this->custom_params = array_filter( $this->params, function( $key ) {
-			return ! in_array( $key, [ 'path', 'context' ] );
-		}, ARRAY_FILTER_USE_KEY );
+		$this->custom_params = array_filter(
+			$this->params,
+			function( $key ) {
+				return ! in_array( $key, [ 'path', 'context' ], true );
+			},
+			ARRAY_FILTER_USE_KEY
+		);
 
 		$this->query = $this->build_query();
 

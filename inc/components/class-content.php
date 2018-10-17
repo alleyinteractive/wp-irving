@@ -82,8 +82,8 @@ class Content extends Component {
 
 		// A dynamic block. All attributes will be available.
 		return new Component(
-			$block['blockName'],
-			$block['attrs'],
+			$block['blockName'] ?? '',
+			$block['attrs'] ?? '',
 			array_map( [ $this, 'map_block' ], $block['innerBlocks'] ?? [] )
 		);
 	}
