@@ -47,8 +47,6 @@ class Head extends Component {
 	 * @return Head
 	 */
 	public function set_from_query( $wp_query ) {
-		if ( $wp_query->is_single() ) {
-		}
 
 		// If queried object is a valid article post type.
 		$queried_object = $wp_query->get_queried_object() ?? $wp_query->post;
@@ -319,7 +317,7 @@ class Head extends Component {
 
 		// Get image url.
 		$image_id  = absint( get_post_meta( $post_id, 'social_image_id', true ) );
-		$image_url = wp_get_attachment_image_url( $image_id, 'original' );
+		$image_url = wp_get_attachment_image_url( $image_id, 'full' );
 
 		// Fallback to featured image.
 		if ( empty( $image_url ) ) {
@@ -330,6 +328,9 @@ class Head extends Component {
 		if ( empty( $image_url ) ) {
 			return '';
 		}
+
+		// Remove existing photon arg if present.
+		$image_url = remove_query_arg( [ 'fit' ], $image_url );
 
 		return add_query_arg(
 			$photon_args,
