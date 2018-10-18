@@ -47,8 +47,6 @@ class Head extends Component {
 	 * @return Head
 	 */
 	public function set_from_query( $wp_query ) {
-		if ( $wp_query->is_single() ) {
-		}
 
 		// If queried object is a valid article post type.
 		$queried_object = $wp_query->get_queried_object() ?? $wp_query->post;
