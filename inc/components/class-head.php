@@ -20,16 +20,6 @@ class Head extends Component {
 	public $name = 'head';
 
 	/**
-	 * Initalize this component.
-	 */
-	public function __construct() {
-		parent::__construct();
-
-		// Set the default title.
-		$this->set_title( get_bloginfo( 'name' ) );
-	}
-
-	/**
 	 * Define the default config of a head.
 	 *
 	 * @return array A default config.
@@ -159,7 +149,7 @@ class Head extends Component {
 	 * @param  array  $attributes Tag attributes.
 	 * @return Head
 	 */
-	protected function add_tag( $tag, $attributes = [] ) {
+	public function add_tag( $tag, $attributes = [] ) {
 
 		// Initalize a new component for this tag.
 		$component = new Component( $tag );
