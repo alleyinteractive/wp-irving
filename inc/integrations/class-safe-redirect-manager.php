@@ -58,7 +58,7 @@ class Safe_Redirect_Manager {
 	 * @return string Path parameter.
 	 */
 	public function set_srm_requested_path( string $path ) : string {
-		return $this->params['path'];
+		return $this->params['path'] ?? $path;
 	}
 
 	/**
