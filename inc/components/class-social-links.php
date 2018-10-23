@@ -41,7 +41,7 @@ class Social_Links extends Component {
 	 * @param array  $config   Component config.
 	 * @param array  $children Component children.
 	 */
-	public function __construct( $name, $config, $children ) {
+	public function __construct( $name = '', array $config = [], array $children = [] ) {
 		parent::__construct( $name, $config, $children );
 
 		// Set up default services
