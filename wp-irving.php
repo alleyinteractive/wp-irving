@@ -43,6 +43,8 @@ require_once WP_IRVING_PATH . '/inc/components/class-menu-item.php';
 require_once WP_IRVING_PATH . '/inc/components/class-menu.php';
 require_once WP_IRVING_PATH . '/inc/components/class-paginator.php';
 require_once WP_IRVING_PATH . '/inc/components/class-term.php';
+require_once WP_IRVING_PATH . '/inc/components/class-social-links.php';
+require_once WP_IRVING_PATH . '/inc/components/class-social-links-item.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';

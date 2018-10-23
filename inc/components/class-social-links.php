@@ -11,6 +11,7 @@ namespace WP_Irving\Component;
  * Defines the Social Links component.
  */
 class Social_Links extends Component {
+
 	/**
 	 * Unique component slug.
 	 *
@@ -19,11 +20,71 @@ class Social_Links extends Component {
 	public $name = 'social-links';
 
 	/**
-	 * Label for FM fields.
+	 * Label for custom fields.
 	 *
 	 * @var string
 	 */
 	public $label = 'Social Links';
+
+	/**
+	 * Label for custom fields.
+	 *
+	 * @var string
+	 */
+	public static $services = [];
+
+	/**
+	 * Component constructor.
+	 *
+	 * @param string $name     Unique component slug or array of name, config,
+	 *                         and children value.
+	 * @param array  $config   Component config.
+	 * @param array  $children Component children.
+	 */
+	public function __construct( $name, $config, $children ) {
+		parent::__construct( $name, $config, $children );
+
+		// Set up default services
+		self::$services = [
+			'facebook'  => __( 'Facebook', 'wp-irving' ),
+			'twitter'   => __( 'Twitter', 'wp-irving' ),
+			'linkedin'  => __( 'LinkedIn', 'wp-irving' ),
+			'pinterest' => __( 'Pinterest', 'wp-irving' ),
+			'whatsapp'  => __( 'WhatsApp', 'wp-irving' ),
+		];
+	}
+
+	/**
+	 * Helper for adding social link services.
+	 *
+	 * @param mixed  $slug A slug for the service, usually corresponds to a custom field name.
+	 * @param string $label A text label for the services, usually used as a label for a custom field.
+	 */
+	public static function add_services( $slug, $label = '' ) {
+		// Allow an array of services to be merged with defaults
+		if ( is_array( $slug ) ) {
+			self::$services = array_merge( self::$services, $slug );
+		} else {
+			self::$services[ $slug ] = $label;
+		}
+	}
+
+	/**
+	 * Helper for removing social link services.
+	 *
+	 * @param mixed $slug A slug for the service, usually corresponds to a custom field name.
+	 * @return Social_Links Instance of this class.
+	 */
+	public static function remove_services( $slug ) {
+		// Allow an array of services to be unset
+		if ( is_array( $slug ) ) {
+			foreach ( $slug as $service ) {
+				unset( self::$services[ $service ] );
+			}
+		} else {
+			unset( self::$services[ $slug ] );
+		}
+	}
 
 	/**
 	 * Define a default config shape.
@@ -32,62 +93,48 @@ class Social_Links extends Component {
 	 */
 	public function default_config() {
 		return [
-			'display_icons' => true,
-			'location'     => 'social-links',
-			'services'     => [
-				'facebook'  => __( 'Facebook', 'wp-irving' ),
-				'twitter'   => __( 'Twitter', 'wp-irving' ),
-				'linkedin'  => __( 'LinkedIn', 'wp-irving' ),
-				'pinterest' => __( 'Pinterest', 'wp-irving' ),
-				'whatsapp'  => __( 'WhatsApp', 'wp-irving' ),
-			],
+			'display_icons'     => true,
 		];
 	}
 
 	/**
-	 * Component Fieldmanager fields.
+	 * Parse data from an array of links.
 	 *
-	 * @return array Fieldmanager fields.
-	 */
-	public function get_fm_fields() {
-		return [
-			'links'        => new \Fieldmanager_Group( [
-				'label'          => __( 'Social Link', 'wp-irving' ),
-				'add_more_label' => __( 'Add Another Social Link', 'wp-irving' ),
-				'limit'          => 0,
-				'extra_elements' => 0,
-				'sortable'       => true,
-				'children'       => [
-					'type' => new \Fieldmanager_Select( [
-						'label'   => __( 'Social Platform', 'wp-irving' ),
-						'options' => $this->get_config( 'services' ),
-					] ),
-					'url'  => new \Fieldmanager_Link( [
-						'label' => __( 'URL', 'wp-irving' ),
-					] ),
-				],
-			] ),
-		];
-	}
-
-	/**
-	 * Parse data from a saved FM field.
-	 *
+	 * @param array $links Array of config arrays for creating child Social_Links_Item components.
 	 * @return Social_Links Instance of this class.
 	 */
-	public function parse_from_fm_data() : self {
-		$links = get_option( 'social-links', [] );
-		$display_icons = $this->get_config( 'display_icons' );
-
-		if ( ! empty( $links['links'] ) ) {
+	public function add_links( $links ) : self {
+		if ( ! empty( $links ) ) {
 			// Hydrate the items.
 			foreach ( $links['links'] as $link ) {
-				$this->children[] = ( new Social_Links_Item( '', [
-					'type' => $link['type'] ?? '',
-					'url' => $link['url'] ?? '',
-					'display_icon' => $display_icons,
-				] ) );
+				$link['display_icon'] = $this->get_config( 'display_icons' );
+				$this->add_link_from_array( $link );
 			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Create child link component from a config array.
+	 *
+	 * @param array $config Configuration array for a Social_Links_Item component
+	 * @return Social_Links Instance of this class.
+	 */
+	public function add_link( $config ) : self {
+		$type = $config['type'] ?? '';
+		$service_types = array_keys( $this->get_config( 'services' ) );
+
+		// Don't add if it's not a configured service
+		if ( ! empty( $config ) && in_array( $type, $service_types ) ) {
+			$this->set_children( [
+				new Social_Links_Item( '', [
+					'type'         => $config['type'] ?? '',
+					'url'          => $config['url'] ?? '',
+					'display_icon' => $config['display_icon'] ?? '',
+				] ),
+				true
+			] );
 		}
 
 		return $this;

@@ -11,6 +11,7 @@ namespace WP_Irving\Component;
  * Defines the Social Links Item component.
  */
 class Social_Links_Item extends Component {
+
 	/**
 	 * Unique component slug.
 	 *
@@ -27,7 +28,7 @@ class Social_Links_Item extends Component {
 		return [
 			'type'        => '',
 			'url'         => '',
-			'displayIcon' => true,
+			'display_icon' => true,
 		];
 	}
 
