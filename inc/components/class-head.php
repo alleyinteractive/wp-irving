@@ -38,6 +38,9 @@ class Head extends Component {
 	 */
 	public function set_from_query( $wp_query ) {
 
+		// Set default title.
+		$this->set_title( get_bloginfo( 'name' ) );
+
 		// If queried object is a valid article post type.
 		$queried_object = $wp_query->get_queried_object() ?? $wp_query->post;
 		if ( $queried_object instanceof \WP_Post ) {
@@ -46,6 +49,8 @@ class Head extends Component {
 			$this->apply_meta( $post_id );
 			$this->apply_social_meta( $post_id );
 			$this->set_title( $this->get_meta_title( $post_id ) );
+		} elseif ( $queried_object instanceof \WP_Term ) {
+			$this->set_title( $queried_object->name );
 		}
 
 		return $this;
