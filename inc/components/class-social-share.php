@@ -50,7 +50,7 @@ class Social_Share extends Component {
 			'params'    => [
 				'text' => 'get_title',
 				'url'  => 'get_url',
-			]
+			],
 		],
 		'whatsapp'  => [
 			'share_url' => 'https://api.whatsapp.com/send/',
@@ -86,7 +86,7 @@ class Social_Share extends Component {
 		foreach ( self::$services as $service => $config ) {
 			$url = $config['share_url'];
 
-			foreach( $config['params'] as $param => $value_function ) {
+			foreach ( $config['params'] as $param => $value_function ) {
 				$url = add_query_arg(
 					$param,
 					call_user_func_array( [ $this, $value_function ], [ $post ] ),
@@ -108,7 +108,7 @@ class Social_Share extends Component {
 	 * Retrieve a shareable url.
 	 *
 	 * @param WP_Post $post Post object to retrieve url for.
-	 * return string
+	 * @return string.
 	 */
 	public function get_url( $post ) {
 		return urlencode( get_permalink( $post ) );
@@ -118,7 +118,7 @@ class Social_Share extends Component {
 	 * Retrieve a shareable title.
 	 *
 	 * @param WP_Post $post Post object to retrieve title for.
-	 * return string
+	 * @return string
 	 */
 	public function get_title( $post ) {
 		return urlencode( get_the_title( $post ) );
@@ -128,7 +128,7 @@ class Social_Share extends Component {
 	 * Retrieve a shareable excerpt.
 	 *
 	 * @param WP_Post $post Post object to retrieve excerpt for.
-	 * return string
+	 * @return string
 	 */
 	public function get_excerpt( $post ) {
 		return urlencode( $post->post_excerpt );
@@ -138,7 +138,7 @@ class Social_Share extends Component {
 	 * Retrieve shareable call to action text.
 	 *
 	 * @param WP_Post $post Post object to retrieve call to action text for.
-	 * return string
+	 * @return string
 	 */
 	public function get_cta( $post ) {
 		return urlencode( sprintf(

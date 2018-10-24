@@ -15,11 +15,11 @@ trait Social {
 	/**
 	 * Helper for adding social link services.
 	 *
-	 * @param mixed  $service A slug for the service or an array of services.
-	 * @param string $label A text label for the services, usually used as a label for a custom field.
+	 * @param mixed $service A slug for the service or an array of services.
+	 * @param array $config Configuration array for provided service.
 	 */
 	public static function add_service( $service, $config = [] ) {
-		// Allow an array of services to be merged with defaults
+		// Allow an array of services to be merged with defaults.
 		if ( is_array( $service ) ) {
 			self::$services = array_merge( self::$services, $service );
 		} else {
@@ -31,10 +31,9 @@ trait Social {
 	 * Helper for removing social link services.
 	 *
 	 * @param mixed $service A slug for the service or an array of services.
-	 * @return Social Instance of this class.
 	 */
 	public static function remove_service( $service ) {
-		// Allow an array of services to be unset
+		// Allow an array of services to be unset.
 		if ( is_array( $service ) ) {
 			foreach ( $service as $slug ) {
 				unset( self::$services[ $slug ] );
@@ -83,7 +82,7 @@ trait Social {
 		$type = $config['type'] ?? '';
 		$service_types = array_keys( self::$services );
 
-		// Don't add if it's not a configured service
+		// Don't add if it's not a configured service.
 		if ( ! empty( $config ) && in_array( $type, $service_types ) ) {
 			$this->set_children( [
 				new Component\Social_Item( '', [
