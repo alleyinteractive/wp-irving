@@ -27,7 +27,7 @@ class Social_Item extends Component {
 	public function default_config() {
 		return [
 			'type'        => '',
-			'url'         => '',
+			'url'          => '',
 			'display_icon' => true,
 		];
 	}
