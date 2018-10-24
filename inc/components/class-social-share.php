@@ -138,6 +138,7 @@ class Social_Share extends Component {
 	 * Retrieve shareable call to action text.
 	 *
 	 * @param WP_Post $post Post object to retrieve call to action text for.
+	 * return string
 	 */
 	public function get_cta( $post ) {
 		return urlencode( sprintf(
