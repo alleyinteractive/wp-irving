@@ -118,6 +118,7 @@ class Social_Share extends Component {
 	 * Retrieve a shareable title.
 	 *
 	 * @param WP_Post $post Post object to retrieve title for.
+	 * return string
 	 */
 	public function get_title( $post ) {
 		return urlencode( get_the_title( $post ) );
