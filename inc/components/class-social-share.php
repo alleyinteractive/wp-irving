@@ -108,6 +108,7 @@ class Social_Share extends Component {
 	 * Retrieve a shareable url.
 	 *
 	 * @param WP_Post $post Post object to retrieve url for.
+	 * return string
 	 */
 	public function get_url( $post ) {
 		return urlencode( get_permalink( $post ) );
