@@ -128,6 +128,7 @@ class Social_Share extends Component {
 	 * Retrieve a shareable excerpt.
 	 *
 	 * @param WP_Post $post Post object to retrieve excerpt for.
+	 * return string
 	 */
 	public function get_excerpt( $post ) {
 		return urlencode( $post->post_excerpt );
