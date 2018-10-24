@@ -17,7 +17,7 @@ class Social_Item extends Component {
 	 *
 	 * @var string
 	 */
-	public $name = 'social-links-item';
+	public $name = 'social-item';
 
 	/**
 	 * Define a default config shape.

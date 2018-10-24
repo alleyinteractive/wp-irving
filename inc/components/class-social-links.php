@@ -22,22 +22,31 @@ class Social_Links extends Component {
 	public $name = 'social-links';
 
 	/**
-	 * Component constructor.
+	 * Define a default config shape.
 	 *
-	 * @param string $name     Unique component slug or array of name, config,
-	 *                         and children value.
-	 * @param array  $config   Component config.
-	 * @param array  $children Component children.
+	 * @return array Default config.
 	 */
-	public function __construct( $name = '', array $config = [], array $children = [] ) {
-		parent::__construct( $name, $config, $children );
+	public function default_config() {
+		return [
+			'service_labels' => [
+				'facebook'  => __( 'Facebook', 'wp-irving' ),
+				'twitter'   => __( 'Twitter', 'wp-irving' ),
+				'linkedin'  => __( 'LinkedIn', 'wp-irving' ),
+				'pinterest' => __( 'Pinterest', 'wp-irving' ),
+				'whatsapp'  => __( 'WhatsApp', 'wp-irving' ),
+			],
+			'display_icons'  => true,
+		];
+	}
 
-		self::add_services( [
-			'facebook'  => __( 'Facebook', 'wp-irving' ),
-			'twitter'   => __( 'Twitter', 'wp-irving' ),
-			'linkedin'  => __( 'LinkedIn', 'wp-irving' ),
-			'pinterest' => __( 'Pinterest', 'wp-irving' ),
-			'whatsapp'  => __( 'WhatsApp', 'wp-irving' ),
-		] );
+	/**
+	 * Retrieve service labels for use in custom fields.
+	 *
+	 * @return array Array of services with labels.
+	 */
+	public function get_service_labels() {
+		return array_filter( $this->get_config( 'service_labels' ), function ( $key ) {
+			return in_array( $key, self::$services );
+		}, ARRAY_FILTER_USE_KEY );
 	}
 }
