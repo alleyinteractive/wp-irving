@@ -76,7 +76,7 @@ trait Social {
 	/**
 	 * Create child link component from a config array.
 	 *
-	 * @param array $config Configuration array for a Social_Item component
+	 * @param array $config Configuration array for a Social_Item component.
 	 * @return Social Instance of this class.
 	 */
 	public function add_link( $config ) : self {
