@@ -1,6 +1,6 @@
 <?php
 /**
- * Class file for the Social Item component.
+ * Class file for the Social Links component.
  *
  * @package WP_Irving
  */
@@ -8,9 +8,9 @@
 namespace WP_Irving\Component;
 
 /**
- * Defines the Social Item component.
+ * Defines the Social Links component.
  */
-class Social_Links extends Component {
+class Social_Share extends Component {
 
 	use \WP_Irving\Social;
 
@@ -19,7 +19,7 @@ class Social_Links extends Component {
 	 *
 	 * @var string
 	 */
-	public $name = 'social-links';
+	public $name = 'social-share';
 
 	/**
 	 * Component constructor.
@@ -33,11 +33,21 @@ class Social_Links extends Component {
 		parent::__construct( $name, $config, $children );
 
 		self::add_services( [
-			'facebook'  => __( 'Facebook', 'wp-irving' ),
-			'twitter'   => __( 'Twitter', 'wp-irving' ),
-			'linkedin'  => __( 'LinkedIn', 'wp-irving' ),
-			'pinterest' => __( 'Pinterest', 'wp-irving' ),
-			'whatsapp'  => __( 'WhatsApp', 'wp-irving' ),
+			'facebook'  => [
+				'share_url' => 'https://www.facebook.com/sharer.php/',
+			],
+			'twitter'   => [
+				'share_url' => 'https://twitter.com/share/',
+			],
+			'whatsapp'  => [
+				'share_url' => 'https://api.whatsapp.com/send/',
+			],
+			'linkedin'  => [
+				'share_url' => 'https://www.linkedin.com/shareArticle/',
+			],
+			'pinterest' => [
+				'share_url' => 'https://pinterest.com/pin/create/button/',
+			],
 		] );
 	}
 }

@@ -22,6 +22,7 @@ require_once WP_IRVING_PATH . '/inc/components/class-component.php';
 // Traits.
 require_once WP_IRVING_PATH . '/inc/traits/trait-content-item.php';
 require_once WP_IRVING_PATH . '/inc/traits/trait-content-list.php';
+require_once WP_IRVING_PATH . '/inc/traits/trait-social.php';
 
 // API.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
@@ -43,8 +44,9 @@ require_once WP_IRVING_PATH . '/inc/components/class-menu-item.php';
 require_once WP_IRVING_PATH . '/inc/components/class-menu.php';
 require_once WP_IRVING_PATH . '/inc/components/class-paginator.php';
 require_once WP_IRVING_PATH . '/inc/components/class-term.php';
+require_once WP_IRVING_PATH . '/inc/components/class-social-item.php';
 require_once WP_IRVING_PATH . '/inc/components/class-social-links.php';
-require_once WP_IRVING_PATH . '/inc/components/class-social-links-item.php';
+require_once WP_IRVING_PATH . '/inc/components/class-social-share.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';

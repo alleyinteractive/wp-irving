@@ -1,6 +1,6 @@
 <?php
 /**
- * Class file for the Social Links Item component.
+ * Class file for the Social Item component.
  *
  * @package WP_Irving
  */
@@ -8,9 +8,9 @@
 namespace WP_Irving\Component;
 
 /**
- * Defines the Social Links Item component.
+ * Defines the Social Item component.
  */
-class Social_Links_Item extends Component {
+class Social_Item extends Component {
 
 	/**
 	 * Unique component slug.
