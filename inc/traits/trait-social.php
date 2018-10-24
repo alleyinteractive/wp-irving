@@ -1,6 +1,6 @@
 <?php
 /**
- * Class file for the Social Links component.
+ * Trait for use by social links and sharing.
  *
  * @package WP_Irving
  */
