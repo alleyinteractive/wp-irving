@@ -22,6 +22,19 @@ class Social_Links extends Component {
 	public $name = 'social-links';
 
 	/**
+	 * Array of services.
+	 *
+	 * @var string
+	 */
+	public static $services = [
+		'facebook',
+		'twitter',
+		'linkedin',
+		'pinterest',
+		'whatsapp',
+	];
+
+	/**
 	 * Define a default config shape.
 	 *
 	 * @return array Default config.
