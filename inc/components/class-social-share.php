@@ -30,7 +30,8 @@ class Social_Share extends Component {
 		return [
 			'post_id'        => 0,
 			'display_icons'  => true,
-			'cta_template'   => esc_html__( 'Check out this story: %1s %2s' ),
+			// Translators: %1$s: Article title, %2$s: Article URL.
+			'cta_template'   => esc_html__( 'Check out this story: %1$s %2$s', 'wp-irving' ),
 		];
 	}
 
