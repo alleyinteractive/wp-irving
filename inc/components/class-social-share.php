@@ -30,7 +30,7 @@ class Social_Share extends Component {
 		return [
 			'post_id'        => 0,
 			'display_icons'  => true,
-			'cta_template'   => 'Check out this story: %1s %2s',
+			'cta_template'   => esc_html__( 'Check out this story: %1s %2s' ),
 		];
 	}
 
