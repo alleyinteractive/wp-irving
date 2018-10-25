@@ -30,6 +30,7 @@ class Social_Share extends Component {
 		return [
 			'post_id'        => 0,
 			'display_icons'  => true,
+			'cta_template'   => 'Check out this story: %1s %2s',
 		];
 	}
 
@@ -145,7 +146,7 @@ class Social_Share extends Component {
 			// Decode HTML entities first or we might end up with some lingering in the share text.
 			html_entity_decode(
 				sprintf(
-					'Check out this story, %1s from Thrive global: %2s',
+					$this->get_config( 'cta_template' ),
 					get_the_title( $post ),
 					get_permalink( $post )
 				)
