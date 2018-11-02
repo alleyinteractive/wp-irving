@@ -204,102 +204,113 @@ class Components_Endpoint extends Endpoint {
 	 *
 	 * @return \WP_Query Resulting query.
 	 */
-	public function build_query() {
-		global $wp_rewrite, $wp_the_query;
+    public function build_query() {
+        global $wp_rewrite, $wp_the_query;
 
-		// Query to execute.
-		$query = '';
+        // Query to execute.
+        $query = '';
 
-		// Get path, remove leading slash.
-		$trimmed_path = ltrim( $this->path, '/' );
+        // Get path, remove leading slash.
+        $trimmed_path = ltrim( $this->path, '/' );
 
-		// Loop through rewrite rules.
-		$rewrites = $wp_rewrite->wp_rewrite_rules();
-		foreach ( $rewrites as $match => $query ) {
+        // Loop through rewrite rules.
+        $rewrites = $wp_rewrite->wp_rewrite_rules();
 
-			// Rewrite rule match.
-			if ( preg_match( "#^$match#", $trimmed_path, $matches ) ) {
+        $is_404 = false;
 
-				if (
-					$wp_rewrite->use_verbose_page_rules
-					&& preg_match( '/pagename=\$matches\[([0-9]+)\]/', $query, $varmatch )
-				) {
+        foreach ( $rewrites as $match => $query ) {
 
-					/**
-					 * Allow the page type used to check a root path for a valid
-					 * page to be modified.
-					 *
-					 * @param string $post_type Post type to use as a page check.
-					 */
-					$page_type = apply_filters( 'wp_irving_page_type', 'page' );
+            // Rewrite rule match.
+            if ( preg_match( "#^$match#", $trimmed_path, $matches ) ) {
 
-					// This is a verbose page match, let's check to be sure about it.
-					$page = get_page_by_path( $matches[ $varmatch[1] ], OBJECT, $page_type );
-					if ( ! $page ) {
-						continue;
-					}
+                if (
+                    $wp_rewrite->use_verbose_page_rules
+                    && preg_match( '/pagename=\$matches\[([0-9]+)\]/', $query, $varmatch )
+                ) {
 
-					// Ensure that this post type is publicly queryable.
-					$post_status_obj = get_post_status_object( $page->post_status );
-					if ( ! $post_status_obj->public && ! $post_status_obj->protected
-						&& ! $post_status_obj->private && $post_status_obj->exclude_from_search ) {
-						continue;
-					}
-				}
+                    /**
+                     * Allow the page type used to check a root path for a valid
+                     * page to be modified.
+                     *
+                     * @param string $post_type Post type to use as a page check.
+                     */
+                    $page_type = apply_filters( 'wp_irving_page_type', 'page' );
 
-				// Prep query for use in WP_Query.
-				$query = preg_replace( '!^.+\?!', '', $query );
-				$query = addslashes( \WP_MatchesMapRegex::apply( $query, $matches ) );
-				parse_str( $query, $perma_query_vars );
-				break;
-			}
-		}
+                    // This is a verbose page match, let's check to be sure about it.
+                    $page = get_page_by_path( $matches[ $varmatch[1] ], OBJECT, $page_type );
 
-		// Add irving-path to the query.
-		$query = add_query_arg(
-			'irving-path',
-			$this->path,
-			$query
-		);
+                    if ( ! $page ) {
+                        $is_404 = true;
+                        continue;
+                    }
 
-		// Add any extra included params.
-		foreach ( $this->custom_params as $key => $value ) {
-			$query = add_query_arg( $key, $value, $query );
-		}
+                    $is_404 = false;
 
-		// add_query_arg will encode the url, which we don't want.
-		$query = urldecode( $query );
+                    // Ensure that this post type is publicly queryable.
+                    $post_status_obj = get_post_status_object( $page->post_status );
+                    if ( ! $post_status_obj->public && ! $post_status_obj->protected
+                        && ! $post_status_obj->private && $post_status_obj->exclude_from_search ) {
+                        continue;
+                    }
+                }
 
-		/**
-		 * Modify the query vars.
-		 *
-		 * @param string $query                Query string from path parsing.
-		 * @param string $this->path           Request path.
-		 * @param string $this->custom_params  Custom params.
-		 * @param string $this->params         Request params.
-		 */
-		$query = apply_filters( 'wp_irving_components_query_string', $query, $this->path, $this->custom_params, $this->params );
+                // Prep query for use in WP_Query.
+                $query = preg_replace( '!^.+\?!', '', $query );
+                $query = addslashes( \WP_MatchesMapRegex::apply( $query, $matches ) );
+                parse_str( $query, $perma_query_vars );
+                break;
+            }
+        }
 
-		// Execute query.
-		$wp_query = new \WP_Query( $query );
+        // Add irving-path to the query.
+        $query = add_query_arg(
+            'irving-path',
+            $this->path,
+            $query
+        );
 
-		/**
-		 * Modify the executed query.
-		 *
-		 * @param \WP_Query $query                WP_Query object corresponding
-		 *                                        to this request.
-		 * @param string    $this->path           Request path.
-		 * @param string    $this->custom_params  Custom params.
-		 * @param string    $this->params         Request params.
-		 */
-		$wp_query = apply_filters( 'wp_irving_components_wp_query', $wp_query, $this->path, $this->custom_params, $this->params );
+        // Add any extra included params.
+        foreach ( $this->custom_params as $key => $value ) {
+            $query = add_query_arg( $key, $value, $query );
+        }
 
-		// Map to main query.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
-		$wp_the_query = $wp_query;
+        // add_query_arg will encode the url, which we don't want.
+        $query = urldecode( $query );
 
-		return $wp_query;
-	}
+        /**
+         * Modify the query vars.
+         *
+         * @param string $query                Query string from path parsing.
+         * @param string $this->path           Request path.
+         * @param string $this->custom_params  Custom params.
+         * @param string $this->params         Request params.
+         */
+        $query = apply_filters( 'wp_irving_components_query_string', $query, $this->path, $this->custom_params, $this->params );
+
+        // Execute query.
+        $wp_query = new \WP_Query( $query );
+
+        /**
+         * Modify the executed query.
+         *
+         * @param \WP_Query $query                WP_Query object corresponding
+         *                                        to this request.
+         * @param string    $this->path           Request path.
+         * @param string    $this->custom_params  Custom params.
+         * @param string    $this->params         Request params.
+         */
+        $wp_query = apply_filters( 'wp_irving_components_wp_query', $wp_query, $this->path, $this->custom_params, $this->params );
+
+        if($is_404) {
+            $wp_query->set_404();
+        }
+
+        // Map to main query.
+        // phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+
+        $wp_the_query = $wp_query;
+        return $wp_query;
+    }
 
 	/**
 	 * Fix rest url.
