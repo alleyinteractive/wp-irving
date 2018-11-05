@@ -47,9 +47,9 @@ class Content extends Component {
 		} else {
 			$blocks = gutenberg_parse_blocks( $post->post_content );
 			// Filter any empty parsed blocks.
-			$blocks         = array_values( array_filter( $blocks, function ( $block ) {
+			$blocks = array_values( array_filter( $blocks, function ( $block ) {
 				return ! preg_match( '/^\s+$/', $block['innerHTML'] );
-			}));
+			} ) );
 			$this->children = array_map( [ $this, 'map_block' ], $blocks );
 		}
 
@@ -72,8 +72,14 @@ class Content extends Component {
 
 		// The presence of html means this is a non dynamic block.
 		if ( ! empty( $block['innerHTML'] ) ) {
+			// Missing blockName means it's a "classic" block, run the_content
+			if ( empty( $block['blockName'] ) ) {
+				$content = apply_filters( 'the_content', $block['innerHTML'] );
+			}
+
 			// Clean up extraneous whitespace characters.
-			$content = preg_replace( '/[\r\n\t\f\v]/', '', $block['innerHTML'] );
+			$content = preg_replace( '/[\r\n\t\f\v]/', '', $content );
+
 			return new Html( [
 				'config'   => array_merge( $block['attrs'] ?? [], [ 'content' => $content ] ),
 				'children' => array_map( [ $this, 'map_block' ], $block['innerBlocks'] ?? [] ),
