@@ -43,6 +43,13 @@ class Head extends Component {
 
 		if ( $wp_query->is_404() ) {
 			$this->set_title( __( '404 - Page not found', 'wp-irving' ) );
+		} elseif ( $wp_query->is_search() ) {
+			$title = sprintf(
+				/* translators: search term */
+				__( 'Search results: %s', 'wp-irving' ),
+				$wp_query->get( 's' )
+			);
+			$this->set_title( $title );
 		} else {
 			// If queried object is a valid article post type.
 			$queried_object = $wp_query->get_queried_object() ?? $wp_query->post;
