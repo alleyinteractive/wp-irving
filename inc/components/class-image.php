@@ -257,7 +257,7 @@ class Image extends Component {
 	 * @return string
 	 */
 	public function get_aspect_ratio( $size_config ) {
-		$aspect_ratio = isset( $size_config['aspect_ratio'] ) ?
+		$aspect_ratio = ( $size_config['aspect_ratio'] ?? $this->config['aspect_ratio'] ) ?? false;
 			$size_config['aspect_ratio'] :
 			( $this->config['aspect_ratio'] ?? false );
 
