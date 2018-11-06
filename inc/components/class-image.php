@@ -237,7 +237,7 @@ class Image extends Component {
 			'alt'         => $this->get_alt_text(),
 			'caption'     => ! empty( $this->config['attachment_id'] ) ? wp_get_attachment_caption( $this->config['attachment_id'] ) : '',
 			'height'      => $image_meta['height'] ?? 0,
-			'lqipSrc'     => $this->get_lqip_src()->config['url'],
+			'lqipSrc'     => $this->get_lqip_src(),
 			'originalUrl' => $this->get_base_url(),
 			'picture'     => $picture,
 			'sizes'       => $this->get_sizes(),
@@ -257,7 +257,9 @@ class Image extends Component {
 	 * @return string
 	 */
 	public function get_aspect_ratio( $size_config ) {
-		$aspect_ratio = $size_config['aspect_ratio'] ?? $this->config['aspect_ratio'] ?? false;
+		$aspect_ratio = isset( $size_config['aspect_ratio'] ) ?
+			$size_config['aspect_ratio'] :
+			( $this->config['aspect_ratio'] ?? false );
 
 		// Useful if you're ouptutting an image with only one constrained dimension (like a max height or max width, but no specific aspect ratio). Usually involves `fit`, `w`, or `h` transforms.
 		if ( 'auto' === $aspect_ratio ) {
@@ -377,13 +379,13 @@ class Image extends Component {
 
 		// Return early if no aspect ratio is set.
 		if ( empty( $aspect_ratio ) ) {
-			return $this;
+			return '';
 		}
 
 		return $this->apply_transforms( [
 			'quality' => [ 60 ],
 			'resize'  => [ 60, 60 * $aspect_ratio ],
-		] );
+		] )->config['url'];
 	}
 
 	/**
