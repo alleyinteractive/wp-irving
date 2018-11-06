@@ -215,6 +215,9 @@ class Components_Endpoint extends Endpoint {
 
 		// Loop through rewrite rules.
 		$rewrites = $wp_rewrite->wp_rewrite_rules();
+
+		$is_404 = false;
+
 		foreach ( $rewrites as $match => $query ) {
 
 			// Rewrite rule match.
@@ -236,8 +239,11 @@ class Components_Endpoint extends Endpoint {
 					// This is a verbose page match, let's check to be sure about it.
 					$page = get_page_by_path( $matches[ $varmatch[1] ], OBJECT, $page_type );
 					if ( ! $page ) {
+						$is_404 = true;
 						continue;
 					}
+
+					$is_404 = false;
 
 					// Ensure that this post type is publicly queryable.
 					$post_status_obj = get_post_status_object( $page->post_status );
@@ -293,6 +299,10 @@ class Components_Endpoint extends Endpoint {
 		 * @param string    $this->params         Request params.
 		 */
 		$wp_query = apply_filters( 'wp_irving_components_wp_query', $wp_query, $this->path, $this->custom_params, $this->params );
+
+		if ( $is_404 ) {
+			$wp_query->set_404();
+		}
 
 		// Map to main query.
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
