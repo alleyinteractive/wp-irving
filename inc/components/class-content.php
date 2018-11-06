@@ -72,6 +72,8 @@ class Content extends Component {
 
 		// The presence of html means this is a non dynamic block.
 		if ( ! empty( $block['innerHTML'] ) ) {
+			$content = $block['innerHTML'];
+
 			// Missing blockName means it's a "classic" block, run the_content.
 			if ( empty( $block['blockName'] ) ) {
 				$content = apply_filters( 'the_content', $block['innerHTML'] );
@@ -80,10 +82,12 @@ class Content extends Component {
 			// Clean up extraneous whitespace characters.
 			$content = preg_replace( '/[\r\n\t\f\v]/', '', $content );
 
-			return new Html( [
-				'config'   => array_merge( $block['attrs'] ?? [], [ 'content' => $content ] ),
-				'children' => array_map( [ $this, 'map_block' ], $block['innerBlocks'] ?? [] ),
-			] );
+			return new Html(
+				[
+					'config'   => array_merge( $block['attrs'] ?? [], [ 'content' => $content ] ),
+					'children' => array_map( [ $this, 'map_block' ], $block['innerBlocks'] ?? [] ),
+				]
+			);
 		}
 
 		// A dynamic block. All attributes will be available.
