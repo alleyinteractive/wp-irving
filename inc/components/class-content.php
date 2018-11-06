@@ -72,6 +72,8 @@ class Content extends Component {
 
 		// The presence of html means this is a non dynamic block.
 		if ( ! empty( $block['innerHTML'] ) ) {
+			$content = $block['innerHTML'];
+
 			// Missing blockName means it's a "classic" block, run the_content.
 			if ( empty( $block['blockName'] ) ) {
 				$content = apply_filters( 'the_content', $block['innerHTML'] );
