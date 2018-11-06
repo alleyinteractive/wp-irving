@@ -63,6 +63,10 @@ class Head extends Component {
 				$this->set_title( $queried_object->name );
 			}
 		}
+
+		// Allow for further customizations.
+		do_action( 'wp_irving_head', $this, $wp_query );
+
 		return $this;
 	}
 
