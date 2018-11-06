@@ -257,9 +257,7 @@ class Image extends Component {
 	 * @return string
 	 */
 	public function get_aspect_ratio( $size_config ) {
-		$aspect_ratio = isset( $size_config['aspect_ratio'] ) ?
-			$size_config['aspect_ratio'] :
-			( $this->config['aspect_ratio'] ?? false );
+		$aspect_ratio = ( $size_config['aspect_ratio'] ?? $size_config['aspect_ratio'] ) ?? false;
 
 		// Useful if you're ouptutting an image with only one constrained dimension (like a max height or max width, but no specific aspect ratio). Usually involves `fit`, `w`, or `h` transforms.
 		if ( 'auto' === $aspect_ratio ) {
@@ -374,7 +372,7 @@ class Image extends Component {
 	 *
 	 * @return string LQIP source URL
 	 */
-	public function get_lqip_src() {
+	public function get_lqip_src(): string {
 		$aspect_ratio = $this->config['aspect_ratio'];
 
 		// Return early if no aspect ratio is set.
