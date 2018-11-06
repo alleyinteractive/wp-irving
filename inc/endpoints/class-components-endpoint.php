@@ -217,7 +217,7 @@ class Components_Endpoint extends Endpoint {
 		$rewrites = $wp_rewrite->wp_rewrite_rules();
 
 		$is_404 = false;
-		
+
 		foreach ( $rewrites as $match => $query ) {
 
 			// Rewrite rule match.
@@ -300,7 +300,7 @@ class Components_Endpoint extends Endpoint {
 		 */
 		$wp_query = apply_filters( 'wp_irving_components_wp_query', $wp_query, $this->path, $this->custom_params, $this->params );
 
-		if( $is_404 ) {
+		if ( $is_404 ) {
 			$wp_query->set_404();
 		}
 
