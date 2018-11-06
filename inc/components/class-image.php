@@ -237,7 +237,7 @@ class Image extends Component {
 			'alt'         => $this->get_alt_text(),
 			'caption'     => ! empty( $this->config['attachment_id'] ) ? wp_get_attachment_caption( $this->config['attachment_id'] ) : '',
 			'height'      => $image_meta['height'] ?? 0,
-			'lqipSrc'     => esc_url( $this->get_lqip_src()->config['url'] ),
+			'lqipSrc'     => $this->get_lqip_src()->config['url'],
 			'originalUrl' => $this->get_base_url(),
 			'picture'     => $picture,
 			'sizes'       => $this->get_sizes(),
