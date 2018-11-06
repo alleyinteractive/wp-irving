@@ -41,10 +41,9 @@ class Head extends Component {
 		// Set default title.
 		$this->set_title( get_bloginfo( 'name' ) );
 
-		if( $wp_query->is_404() ) {
+		if ( $wp_query->is_404() ) {
 			$this->set_title( __( '404 - Page not found', 'wp-irving' ) );
-		}
-		else {
+		} else {
 			// If queried object is a valid article post type.
 			$queried_object = $wp_query->get_queried_object() ?? $wp_query->post;
 			if ( $queried_object instanceof \WP_Post ) {
