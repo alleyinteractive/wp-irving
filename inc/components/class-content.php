@@ -82,7 +82,7 @@ class Content extends Component {
 			// Clean up extraneous whitespace characters.
 			$content = preg_replace( '/[\r\n\t\f\v]/', '', $content );
 
-			// Normalize attributes.
+			// Normalize attributes. For some reason, empty attrs are objects, non-empty are arrays.
 			$attrs = [];
 
 			if ( is_array( $block['attrs'] ) ) {
