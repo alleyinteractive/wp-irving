@@ -64,7 +64,7 @@ class Content extends Component {
 	 * @param array $block A parsed block associative array.
 	 * @return Component
 	 */
-	private function map_block( array $block ) {
+	private function map_block( $block ) {
 		// Handle gutenberg embeds.
 		if ( strpos( $block['blockName'] ?? '', 'core-embed' ) === 0 ) {
 			return ( new Embed() )->set_from_block( $block );
