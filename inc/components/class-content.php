@@ -65,6 +65,7 @@ class Content extends Component {
 	 * @return Component
 	 */
 	private function map_block( $block ) {
+		$block = (array) $block;
 		// Handle gutenberg embeds.
 		if ( strpos( $block['blockName'] ?? '', 'core-embed' ) === 0 ) {
 			return ( new Embed() )->set_from_block( $block );
