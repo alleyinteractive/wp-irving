@@ -103,7 +103,7 @@ class Content extends Component {
 		return new Component(
 			$block['blockName'] ?? '',
 			$block['attrs'] ?? '',
-			array_map( [ $this, 'map_block' ], $block['innerBlocks'] ?? [] )
+			array_map( [ $this, 'map_block' ], (array) $block['innerBlocks'] ?? [] )
 		);
 	}
 }
