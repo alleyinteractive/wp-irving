@@ -197,13 +197,25 @@ class Head extends Component {
 		// Meta description.
 		$meta_description = $this->get_meta_description( $post_id );
 		if ( ! empty( $meta_description ) ) {
-			$this->add_meta( 'description', esc_attr( $meta_description ) );
+			$this->add_tag(
+				'meta',
+				[
+					'name'    => 'description',
+					'content' => esc_attr( $meta_description ),
+				]
+			);
 		}
 
 		// Meta keywords.
 		$meta_keywords = (string) get_post_meta( $post_id, '_meta_keywords', true );
 		if ( ! empty( $meta_keywords ) ) {
-			$this->add_meta( 'keywords', esc_attr( $meta_keywords ) );
+			$this->add_tag(
+				'meta',
+				[
+					'name'    => 'keywords',
+					'content' => esc_attr( $meta_keywords ),
+				]
+			);
 		}
 	}
 
