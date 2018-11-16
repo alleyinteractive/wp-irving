@@ -69,11 +69,19 @@ class Embed extends Component {
 	/**
 	 * Set embed configuration from a parsed Gutenberg embed block data.
 	 *
-	 * @param array $block - The saved markup of an embed block.
+	 * @param array|object $block - The saved markup of an embed block.
 	 * @return Embed
 	 */
-	public function set_from_block( array $block ) {
+	public function set_from_block( $block ) {
+		// Typecast to handle differences between Gutenberg versions.
+		$block = (array) $block;
+		$block['attrs'] = ( (array) $block['attrs'] ) ?? [];
 		$html = wp_oembed_get( $block['attrs']['url'] );
+
+		if ( false === $html ) {
+			return $this;
+		}
+
 		$doc = new \DOMDocument();
 		// Ignore errors related to HTML5 tags being parsed.
 		libxml_use_internal_errors( true );
