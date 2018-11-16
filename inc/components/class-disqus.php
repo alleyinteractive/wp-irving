@@ -44,7 +44,7 @@ class Disqus extends Component {
 	/**
 	 * Configure this component based on a provided post
 	 *
-	 * @param \WP_Post $post Current post
+	 * @param \WP_Post $post Current post.
 	 */
 	public function set_config_from_post( \WP_Post $post ) {
 		$this->set_config( 'page_url', get_the_permalink( $post ) );
