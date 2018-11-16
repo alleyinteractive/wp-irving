@@ -27,7 +27,7 @@ class Disqus extends Component {
 	public function default_config() {
 		return [
 			'page_url'        => '',
-			'page_identifier' => $post->ID . ' ' . $post->guid,
+			'page_identifier' => '',
 			'forum_shortname' => $this->get_forum_shortname(),
 		];
 	}
@@ -39,5 +39,17 @@ class Disqus extends Component {
 	 */
 	public function get_forum_shortname() {
         return apply_filters( 'wp_irving_disqus_forum_shortname', get_option( 'disqus_forum_shortname' ) );
+    }
+
+	/**
+	 * Configure this component based on a provided post
+	 *
+	 * @param \WP_Post $post Current post
+	 */
+    public function set_config_from_post( \WP_Post $post ) {
+		$this->set_config( 'page_url', get_the_permalink( $post ) );
+		$this->set_config( 'page_identifier', $post->ID . ' ' . $post->guid );
+
+		return $this;
     }
 }
