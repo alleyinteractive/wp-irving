@@ -417,7 +417,7 @@ class Image extends Component {
 			}
 		}
 
-		return esc_attr( implode( $srcset, ',' ) );
+		return html_entity_decode( esc_attr( implode( $srcset, ',' ) ) );
 	}
 
 	/**
