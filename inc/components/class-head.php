@@ -41,17 +41,31 @@ class Head extends Component {
 		// Set default title.
 		$this->set_title( get_bloginfo( 'name' ) );
 
-		// If queried object is a valid article post type.
-		$queried_object = $wp_query->get_queried_object() ?? $wp_query->post;
-		if ( $queried_object instanceof \WP_Post ) {
-			$post_id = $queried_object->ID;
+		if ( $wp_query->is_404() ) {
+			$this->set_title( __( '404 - Page not found', 'wp-irving' ) );
+		} elseif ( $wp_query->is_search() ) {
+			$title = sprintf(
+				/* translators: search term */
+				__( 'Search results: %s', 'wp-irving' ),
+				$wp_query->get( 's' )
+			);
+			$this->set_title( $title );
+		} else {
+			// If queried object is a valid article post type.
+			$queried_object = $wp_query->get_queried_object() ?? $wp_query->post;
+			if ( $queried_object instanceof \WP_Post ) {
+				$post_id = $queried_object->ID;
 
-			$this->apply_meta( $post_id );
-			$this->apply_social_meta( $post_id );
-			$this->set_title( $this->get_meta_title( $post_id ) );
-		} elseif ( $queried_object instanceof \WP_Term ) {
-			$this->set_title( $queried_object->name );
+				$this->apply_meta( $post_id );
+				$this->apply_social_meta( $post_id );
+				$this->set_title( $this->get_meta_title( $post_id ) );
+			} elseif ( $queried_object instanceof \WP_Term ) {
+				$this->set_title( $queried_object->name );
+			}
 		}
+
+		// Allow for further customizations.
+		do_action( 'wp_irving_head', $this, $wp_query );
 
 		return $this;
 	}
@@ -183,13 +197,25 @@ class Head extends Component {
 		// Meta description.
 		$meta_description = $this->get_meta_description( $post_id );
 		if ( ! empty( $meta_description ) ) {
-			$this->add_meta( 'description', esc_attr( $meta_description ) );
+			$this->add_tag(
+				'meta',
+				[
+					'name'    => 'description',
+					'content' => esc_attr( $meta_description ),
+				]
+			);
 		}
 
 		// Meta keywords.
 		$meta_keywords = (string) get_post_meta( $post_id, '_meta_keywords', true );
 		if ( ! empty( $meta_keywords ) ) {
-			$this->add_meta( 'keywords', esc_attr( $meta_keywords ) );
+			$this->add_tag(
+				'meta',
+				[
+					'name'    => 'keywords',
+					'content' => esc_attr( $meta_keywords ),
+				]
+			);
 		}
 	}
 

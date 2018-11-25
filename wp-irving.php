@@ -35,6 +35,7 @@ require_once WP_IRVING_PATH . '/inc/components/class-content.php';
 require_once WP_IRVING_PATH . '/inc/components/class-embed.php';
 require_once WP_IRVING_PATH . '/inc/components/class-footer.php';
 require_once WP_IRVING_PATH . '/inc/components/class-google-analytics.php';
+require_once WP_IRVING_PATH . '/inc/components/class-disqus.php';
 require_once WP_IRVING_PATH . '/inc/components/class-head.php';
 require_once WP_IRVING_PATH . '/inc/components/class-header.php';
 require_once WP_IRVING_PATH . '/inc/components/class-html.php';
@@ -50,6 +51,9 @@ require_once WP_IRVING_PATH . '/inc/components/class-social-share.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
+
+// Redirects.
+require_once WP_IRVING_PATH . '/inc/redirects.php';
 
 // CLI scripts.
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
