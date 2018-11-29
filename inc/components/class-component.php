@@ -171,13 +171,12 @@ class Component implements \JsonSerializable {
 	 * Convert all array keys to camel case.
 	 *
 	 * @param array $array        Array to convert.
-	 * @param array $array_holder Parent array holder for recursive array.
 	 * @return array Updated array with camel-cased keys.
 	 */
-	public function camel_case_keys( $array, $array_holder = [] ) {
+	public function camel_case_keys( $array ) {
 
 		// Setup for recursion.
-		$camel_case_array = ! empty( $array_holder ) ? $array_holder : [];
+		$camel_case_array = [];
 
 		// Loop through each key.
 		foreach ( $array as $key => $value ) {
@@ -192,8 +191,8 @@ class Component implements \JsonSerializable {
 				continue;
 			}
 
-			// Explode each part by underscore.
-			$words = explode( '_', $key );
+			// Explode each part by underscore or hyphen.
+			$words = preg_split( '/(_|-)/', $key );
 
 			// Capitalize each key part.
 			array_walk( $words, function( &$word ) {
@@ -211,7 +210,7 @@ class Component implements \JsonSerializable {
 				$camel_case_array[ $new_key ] = $value;
 			} else {
 				// Set new key value, but process the nested array.
-				$camel_case_array[ $new_key ] = $this->camel_case_keys( $value, $camel_case_array[ $new_key ] );
+				$camel_case_array[ $new_key ] = $this->camel_case_keys( $value );
 			}
 		}
 
