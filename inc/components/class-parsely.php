@@ -13,6 +13,13 @@ namespace WP_Irving\Component;
 class Parsely extends Component {
 
 	/**
+	 * Name of site option associated with parsely
+	 *
+	 * @var string
+	 */
+	public static $option_field = 'parsely_site';
+
+	/**
 	 * Unique component slug.
 	 *
 	 * @var string
@@ -26,8 +33,15 @@ class Parsely extends Component {
 	 */
 	public function default_config() {
 		return [
-			'site' => $this->get_parsely_site(),
+			'site'        => $this->get_parsely_site(),
 		];
+	}
+
+	/**
+	 * Initialize parsely
+	 */
+	public function setup_head() {
+		add_action( 'wp_irving_head', [ $this, 'setup_parsely_meta' ], 10, 2 );
 	}
 
 	/**
@@ -36,7 +50,7 @@ class Parsely extends Component {
 	 * @return array Filtered value for disqus forum shortname
 	 */
 	public function get_parsely_site() {
-		return apply_filters( 'wp_irving_parsely_site', get_option( 'parsely_site' ) );
+		return apply_filters( 'wp_irving_parsely_site', get_option( Parsely::$option_field ) );
 	}
 
 	/**
@@ -46,12 +60,11 @@ class Parsely extends Component {
 	 * @param \WP_Query                 $wp_query WP_Query object.
 	 */
 	public function setup_parsely_meta( $head, $wp_query ) {
-
 		// Add Parsely meta tags.
 		if ( $wp_query->is_single() && ! empty( $wp_query->post ) ) {
 
 			// Get meta values.
-			$parsely_meta = get_parsely_meta( $wp_query->post );
+			$parsely_meta = $this->get_parsely_meta( $wp_query->post );
 
 			// Apply meta values.
 			foreach ( $parsely_meta as $name => $content ) {
@@ -74,14 +87,15 @@ class Parsely extends Component {
 	 * @return array
 	 */
 	function get_parsely_meta( \WP_Post $post ) : array {
+
 		// Base properties.
 		$meta['parsely-link']    = get_the_permalink( $post );
 		$meta['parsely-post-id'] = $post->ID;
 		$meta['parsely-pub']     = get_the_time( 'c', $post );
 		$meta['parsely-title']   = get_the_title( $post );
 		$meta['parsely-type']    = 'article';
-		$meta['parsely-tags']    = get_parsely_tags_string( $post );
-		$meta['parsely-author']  = get_parsely_authors_string( $post );
+		$meta['parsely-tags']    = $this->get_parsely_tags_string( $post );
+		$meta['parsely-author']  = $this->get_parsely_authors_string( $post );
 
 		// Featured image.
 		if ( has_post_thumbnail( $post ) ) {
