@@ -44,7 +44,7 @@ class Parsely extends Component {
 	 * @return array Filtered value for disqus forum shortname
 	 */
 	public function get_parsely_site() {
-		return apply_filters( 'wp_irving_parsely_site', get_option( 'parsely_site' ) );
+		return apply_filters( 'wp_irving_parsely_site', get_option( 'analytics_settings' )['parsely_site'] ?? '' );
 	}
 
 	/**
