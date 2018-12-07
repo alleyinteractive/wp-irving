@@ -42,6 +42,8 @@ class Parsely extends Component {
 	 */
 	public function setup_head() {
 		add_action( 'wp_irving_head', [ $this, 'setup_parsely_meta' ], 10, 2 );
+
+		return $this;
 	}
 
 	/**
