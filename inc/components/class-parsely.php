@@ -89,13 +89,15 @@ class Parsely extends Component {
 	public function get_parsely_meta( \WP_Post $post ) : array {
 
 		// Base properties.
-		$meta['parsely-link']    = get_the_permalink( $post );
-		$meta['parsely-post-id'] = $post->ID;
-		$meta['parsely-pub']     = get_the_time( 'c', $post );
-		$meta['parsely-title']   = get_the_title( $post );
-		$meta['parsely-type']    = 'article';
-		$meta['parsely-tags']    = $this->get_parsely_tags_string( $post );
-		$meta['parsely-author']  = $this->get_parsely_authors_string( $post );
+		$meta = [
+			'parsely-link'    => get_the_permalink( $post ),
+			'parsely-post-id' => $post->ID,
+			'parsely-pub'     => get_the_time( 'c', $post ),
+			'parsely-title'   => get_the_title( $post ),
+			'parsely-type'    => 'article',
+			'parsely-tags'    => $this->get_parsely_tags_string( $post ),
+			'parsely-author'  => $this->get_parsely_authors_string( $post ),
+		];
 
 		// Featured image.
 		if ( has_post_thumbnail( $post ) ) {
