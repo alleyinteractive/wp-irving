@@ -11,14 +11,6 @@ namespace WP_Irving\Component;
  * Defines the Parsely component.
  */
 class Parsely extends Component {
-
-	/**
-	 * Name of site option associated with parsely
-	 *
-	 * @var string
-	 */
-	public static $option_field = 'parsely_site';
-
 	/**
 	 * Unique component slug.
 	 *
@@ -52,7 +44,7 @@ class Parsely extends Component {
 	 * @return array Filtered value for disqus forum shortname
 	 */
 	public function get_parsely_site() {
-		return apply_filters( 'wp_irving_parsely_site', get_option( self::$option_field ) );
+		return apply_filters( 'wp_irving_parsely_site', 'parsely_site' );
 	}
 
 	/**
