@@ -33,7 +33,7 @@ class Parsely extends Component {
 	 */
 	public function default_config() {
 		return [
-			'site'        => $this->get_parsely_site(),
+			'site' => $this->get_parsely_site(),
 		];
 	}
 
@@ -50,7 +50,7 @@ class Parsely extends Component {
 	 * @return array Filtered value for disqus forum shortname
 	 */
 	public function get_parsely_site() {
-		return apply_filters( 'wp_irving_parsely_site', get_option( Parsely::$option_field ) );
+		return apply_filters( 'wp_irving_parsely_site', get_option( self::$option_field ) );
 	}
 
 	/**
@@ -86,7 +86,7 @@ class Parsely extends Component {
 	 * @param  \WP_Post $post Post object.
 	 * @return array
 	 */
-	function get_parsely_meta( \WP_Post $post ) : array {
+	public function get_parsely_meta( \WP_Post $post ) : array {
 
 		// Base properties.
 		$meta['parsely-link']    = get_the_permalink( $post );
@@ -111,7 +111,7 @@ class Parsely extends Component {
 	 * @param  \WP_Post $post Post object.
 	 * @return string
 	 */
-	function get_parsely_authors_string( \WP_Post $post ) : string {
+	public function get_parsely_authors_string( \WP_Post $post ) : string {
 		if ( ! function_exists( 'get_coauthors' ) ) {
 			return get_the_author_meta( 'display_name', $post->post_author ) ?? '';
 		}
@@ -142,7 +142,7 @@ class Parsely extends Component {
 	 * @param  \WP_Post $post Post object.
 	 * @return string
 	 */
-	function get_parsely_tags_string( \WP_Post $post ) : string {
+	public function get_parsely_tags_string( \WP_Post $post ) : string {
 		// Build tags string.
 		$tags = [];
 
