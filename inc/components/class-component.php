@@ -79,12 +79,16 @@ class Component implements \JsonSerializable {
 	/**
 	 * Helper to set a top level config value.
 	 *
-	 * @param  string $key   Config key.
-	 * @param  mixed  $value Config value.
-	 * @return mixed An instance of this class.
+	 * @param array|string $key   Config key or entire config array.
+	 * @param mixed        $value Config value.
+	 * @return self
 	 */
-	public function set_config( $key, $value ) {
-		$this->config[ $key ] = $value;
+	public function set_config( $key, $value = null ) {
+		if ( is_array( $key ) && is_null( $value ) ) {
+			$this->config = $key;
+		} else {
+			$this->config[ $key ] = $value;
+		}
 		return $this;
 	}
 
