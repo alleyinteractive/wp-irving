@@ -34,7 +34,7 @@ class Byline extends Component {
 	}
 
 	/**
-	 * Create this component form a CAP guest author object.
+	 * Create this component from a CAP guest author object.
 	 *
 	 * @param Object $coauthor CAP guest author object.
 	 * @param string $avatar_size The registered media size to retun the
@@ -43,9 +43,14 @@ class Byline extends Component {
 	 */
 	public function set_coauthor( $coauthor, $avatar_size = 'avatar' ) {
 
-		// Validate object.
+		// Actually a user.
+		if ( $coauthor instanceof \WP_User ) {
+			return $this->set_user( $coauthor, $avatar_size );
+		}
+
+		// Unknown object.
 		if ( 'guest-author' !== ( $coauthor->type ?? '' ) ) {
-			return null;
+			return;
 		}
 
 		// Set byline configs.
@@ -76,6 +81,40 @@ class Byline extends Component {
 					// Don't set a size so the image component only uses the `src` attribute.
 					->set_config_for_size( '' );
 			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Create this component from a User object.
+	 *
+	 * @param Object $user        \WP_User object.
+	 * @param string $avatar_size The registered media size to retun the
+	 *                            avatar.
+	 * @return Byline An instance of this object.
+	 */
+	public function set_user( $user, $avatar_size = 'avatar' ) {
+
+		// Set byline configs.
+		$this->set_config( 'id', $user->data->ID );
+		$this->set_config( 'displayName', $user->data->display_name );
+		$this->set_config( 'slug', $user->data->user_login );
+		$this->set_config( 'link', get_author_posts_url( $user->data->ID, $user->data->user_nicename ) );
+
+		// Use default gravatar fallback.
+		$gravatar_url = get_avatar_url(
+			$user->data->user_email,
+			[
+				'size' => '300',
+			]
+		);
+
+		if ( ! empty( $gravatar_url ) ) {
+			$this->children[] = ( new \WP_Irving\Component\Image() )
+				->set_url( $gravatar_url )
+				// Don't set a size so the image component only uses the `src` attribute.
+				->set_config_for_size( '' );
 		}
 
 		return $this;
