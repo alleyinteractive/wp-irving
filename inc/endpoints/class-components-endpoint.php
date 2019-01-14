@@ -263,8 +263,10 @@ class Components_Endpoint extends Endpoint {
 
 		// Add irving-path to the query.
 		$query = add_query_arg(
-			'irving-path',
-			$this->path,
+			[
+				'irving-path'   => $this->path,
+				'irving-path-params' => $this->custom_params,
+			],
 			$query
 		);
 
@@ -331,6 +333,7 @@ class Components_Endpoint extends Endpoint {
 	 */
 	public function modify_query_vars( $vars ) {
 		$vars[] = 'irving-path';
+		$vars[] = 'irving-path-params';
 		return $vars;
 	}
 

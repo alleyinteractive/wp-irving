@@ -81,8 +81,18 @@ class Content extends Component {
 				$content = apply_filters( 'the_content', $block['innerHTML'] );
 			}
 
-			// Clean up extraneous whitespace characters.
-			$content = preg_replace( '/[\r\n\t\f\v]/', '', $content );
+			/**
+			 * Clean up extraneous whitespace characters.
+			 *
+			 * Temporary solution to a whitespace issue in Gutenberg.
+			 *
+			 * @see https://github.com/WordPress/gutenberg/pull/12166
+			 *
+			 * When this issue is resolved, replace ' ' with '' and remove
+			 * the trim function call.
+			 */
+			$content = preg_replace( '/[\r\n\t\f\v]/', ' ', $content );
+			$content = trim( $content );
 
 			// Normalize attributes. For some reason, empty attrs are objects, non-empty are arrays.
 			$attrs = [];
