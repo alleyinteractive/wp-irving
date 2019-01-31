@@ -89,7 +89,7 @@ class Embed extends Component {
 		$skip_html_and_body_wrapper = LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD;
 		$doc->loadHTML( $html, $skip_html_and_body_wrapper );
 
-		// phpcs:disable WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$script_elements = $doc->getElementsByTagName( 'script' );
 		// Extract scripts from raw HTML and save them to be rendered separately.
 		foreach ( $script_elements as $script ) {
@@ -101,7 +101,7 @@ class Embed extends Component {
 
 			$script->parentNode->removeChild( $script );
 		}
-		// phpcs:enable WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$content = str_replace( $block['attrs']['url'], $doc->saveHTML(), $block['innerHTML'] );
 
 		// Restore original error optional value.

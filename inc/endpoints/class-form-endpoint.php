@@ -51,6 +51,41 @@ class Form_Endpoint extends Endpoint {
 			);
 		}
 	}
+
+
+	/**
+	 * Generic internal server error response.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public static function response_error() {
+		$response = new \WP_REST_Response( [ 'ok' => false ] );
+		$response->set_status( 500 );
+		return $response;
+	}
+
+	/**
+	 * Generic success response.
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public static function response_success() {
+		$response = new \WP_REST_Response( [ 'ok' => true ] );
+		$response->set_status( 200 );
+		return $response;
+	}
+
+	/**
+	 * Invalid input response.
+	 *
+	 * @param array $validation Validation array in which keys are input names and values are messages.
+	 * @return \WP_REST_Response
+	 */
+	public static function response_invalid( $validation ) {
+		$response = new \WP_REST_Response( [ 'validation' => $validation ] );
+		$response->set_status( 400 );
+		return $response;
+	}
 }
 
 new Form_Endpoint();
