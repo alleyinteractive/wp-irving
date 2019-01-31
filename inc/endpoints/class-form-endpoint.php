@@ -56,7 +56,7 @@ class Form_Endpoint extends Endpoint {
 	/**
 	 * Generic internal server error response.
 	 *
-	 * @return WP_REST_Response
+	 * @return \WP_REST_Response
 	 */
 	public static function response_error() {
 		$response = new \WP_REST_Response( [ 'ok' => false ] );
@@ -67,7 +67,7 @@ class Form_Endpoint extends Endpoint {
 	/**
 	 * Generic success response.
 	 *
-	 * @return WP_REST_Response
+	 * @return \WP_REST_Response
 	 */
 	public static function response_success() {
 		$response = new \WP_REST_Response( [ 'ok' => true ] );
@@ -79,7 +79,7 @@ class Form_Endpoint extends Endpoint {
 	 * Invalid input response.
 	 *
 	 * @param array $validation Validation array in which keys are input names and values are messages.
-	 * @return WP_REST_Response
+	 * @return \WP_REST_Response
 	 */
 	public static function response_invalid( $validation ) {
 		$response = new \WP_REST_Response( [ 'validation' => $validation ] );
