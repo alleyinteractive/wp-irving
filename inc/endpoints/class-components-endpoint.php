@@ -307,7 +307,7 @@ class Components_Endpoint extends Endpoint {
 		}
 
 		// Map to main query.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$wp_the_query = $wp_query;
 
 		return $wp_query;

@@ -293,17 +293,17 @@ class Head extends Component {
 		// Modify global state.
 		global $post;
 
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$backup_post = $post;
 
 		// Setup post data for this item.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$post = get_post( $post_id );
 		setup_postdata( $post );
 		$excerpt = get_the_excerpt();
 
 		// Undo global modification.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$post = $backup_post;
 		setup_postdata( $post );
 
