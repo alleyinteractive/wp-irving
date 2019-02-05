@@ -239,7 +239,27 @@ class Head extends Component {
 		}
 
 		// Twitter specific meta.
-		$this->add_meta( 'twitter:card', 'summary' );
+		$twitter_meta = [
+			'twitter:card'        => 'summary_large_image',
+			'twitter:title'       => $this->get_social_title( $post_id ),
+			'twitter:description' => $this->get_social_description( $post_id ),
+			'twitter:image'       => $image_url,
+		];
+
+		// Add Twitter tags.
+		foreach ( $twitter_meta as $name => $content ) {
+			if ( empty( $content ) ) {
+				return;
+			}
+
+			$this->add_tag(
+				'meta',
+				[
+					'name'    => $name,
+					'content' => $content,
+				]
+			);
+		}
 	}
 
 	/**
@@ -297,13 +317,13 @@ class Head extends Component {
 		$backup_post = $post;
 
 		// Setup post data for this item.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
 		$post = get_post( $post_id );
 		setup_postdata( $post );
 		$excerpt = get_the_excerpt();
 
 		// Undo global modification.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
 		$post = $backup_post;
 		setup_postdata( $post );
 
