@@ -120,7 +120,7 @@ class Paginator extends Component {
 
 		$pagination_link = ( new Pagination_Link() );
 
-		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		$pagination_link->set_config( 'text', $doc->textContent );
 
 		// Handle classes.
