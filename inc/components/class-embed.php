@@ -99,6 +99,7 @@ class Embed extends Component {
 				'async' => $script->hasAttribute( 'async' ),
 			]);
 
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
 			$script->parentNode->removeChild( $script );
 		}
 		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase

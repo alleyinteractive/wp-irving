@@ -239,7 +239,27 @@ class Head extends Component {
 		}
 
 		// Twitter specific meta.
-		$this->add_meta( 'twitter:card', 'summary' );
+		$twitter_meta = [
+			'twitter:card'        => 'summary_large_image',
+			'twitter:title'       => $this->get_social_title( $post_id ),
+			'twitter:description' => $this->get_social_description( $post_id ),
+			'twitter:image'       => $image_url,
+		];
+
+		// Add Twitter tags.
+		foreach ( $twitter_meta as $name => $content ) {
+			if ( empty( $content ) ) {
+				return;
+			}
+
+			$this->add_tag(
+				'meta',
+				[
+					'name'    => $name,
+					'content' => $content,
+				]
+			);
+		}
 	}
 
 	/**
