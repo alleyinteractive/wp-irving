@@ -193,6 +193,7 @@ class Component implements \JsonSerializable {
 	public function camel_case_keys( $array, $array_holder = [] ) {
 		// Don't transform array with this key.
 		if ( array_key_exists( '_preserve_keys', $array ) ) {
+			unset( $array['_preserve_keys'] );
 			return $array;
 		}
 
