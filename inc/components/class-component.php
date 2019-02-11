@@ -41,6 +41,16 @@ class Component implements \JsonSerializable {
 	public $whitelist = [];
 
 	/**
+	 * Determine which config keys should not be transformed into camelCase.
+	 *
+	 * NOTE: this will not prevent the key itself from being camelcased,
+	 * only the keys of the config value if it is an array.
+	 *
+	 * @var array
+	 */
+	public $preserve_keys = [];
+
+	/**
 	 * Component constructor.
 	 *
 	 * @param string $name     Unique component slug or array of name, config,
@@ -179,13 +189,11 @@ class Component implements \JsonSerializable {
 	 * @return array Updated array with camel-cased keys.
 	 */
 	public function camel_case_keys( $array, $array_holder = [] ) {
-
 		// Setup for recursion.
 		$camel_case_array = ! empty( $array_holder ) ? $array_holder : [];
 
 		// Loop through each key.
 		foreach ( $array as $key => $value ) {
-
 			// Only return keys that are white-listed. Leave $whitelist empty
 			// to disable.
 			if (
@@ -200,9 +208,12 @@ class Component implements \JsonSerializable {
 			$words = explode( '_', $key );
 
 			// Capitalize each key part.
-			array_walk( $words, function( &$word ) {
-				$word = ucwords( $word );
-			} );
+			array_walk(
+				$words,
+				function( &$word ) {
+					$word = ucwords( $word );
+				}
+			);
 
 			// Reassemble key.
 			$new_key = implode( '', $words );
@@ -210,7 +221,11 @@ class Component implements \JsonSerializable {
 			// Lowercase the first character.
 			$new_key[0] = strtolower( $new_key[0] );
 
-			if ( ! is_array( $value ) ) {
+			if (
+				! is_array( $value )
+				// Don't recursively camelCase if this key is in the $preserve_keys property.
+				|| ( ! empty( $this->preserve_keys ) && in_array( $key, $this->preserve_keys, true ) )
+			) {
 				// Set new key value.
 				$camel_case_array[ $new_key ] = $value;
 			} else {
