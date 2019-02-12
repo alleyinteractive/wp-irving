@@ -48,7 +48,7 @@ class Component implements \JsonSerializable {
 	 *
 	 * @var array
 	 */
-	public $preserve_keys = [];
+	public $preserve_inner_keys = [];
 
 	/**
 	 * Component constructor.
@@ -223,8 +223,8 @@ class Component implements \JsonSerializable {
 
 			if (
 				! is_array( $value )
-				// Don't recursively camelCase if this key is in the $preserve_keys property.
-				|| ( ! empty( $this->preserve_keys ) && in_array( $key, $this->preserve_keys, true ) )
+				// Don't recursively camelCase if this key is in the $preserve_inner_keys property.
+				|| ( ! empty( $this->preserve_inner_keys ) && in_array( $key, $this->preserve_inner_keys, true ) )
 			) {
 				// Set new key value.
 				$camel_case_array[ $new_key ] = $value;
