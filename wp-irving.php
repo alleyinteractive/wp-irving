@@ -56,8 +56,3 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
-
-// CLI scripts.
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	require_once WP_IRVING_PATH . '/inc/cli/class-scaffold-cli-command.php';
-}
