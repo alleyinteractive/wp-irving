@@ -288,6 +288,12 @@ class Components_Endpoint extends Endpoint {
 		 */
 		$query = apply_filters( 'wp_irving_components_query_string', $query, $this->path, $this->custom_params, $this->params );
 
+		// Check post type.
+		$post_type = explode( '=', $query );
+		if ( ! empty( $post_type[0] ) && post_type_exists( $post_type[0]) ) {
+			$query = str_replace( "{$post_type[0]}=", $query, "post_type={$post_type[0]}&name={$post_type[1]}" );
+		}
+
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
