@@ -290,7 +290,7 @@ class Components_Endpoint extends Endpoint {
 
 		// Check post type.
 		$post_type = explode( '=', $query );
-		if ( ! empty( $post_type[0] ) && post_type_exists( $post_type[0]) ) {
+		if ( ! empty( $post_type[0] ) && post_type_exists( $post_type[0] ) ) {
 			$query = str_replace( "{$post_type[0]}=", $query, "post_type={$post_type[0]}&name={$post_type[1]}" );
 		}
 
