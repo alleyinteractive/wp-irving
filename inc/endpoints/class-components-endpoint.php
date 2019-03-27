@@ -257,6 +257,29 @@ class Components_Endpoint extends Endpoint {
 				$query = preg_replace( '!^.+\?!', '', $query );
 				$query = addslashes( \WP_MatchesMapRegex::apply( $query, $matches ) );
 				parse_str( $query, $perma_query_vars );
+
+				// Temporarily convert the args into an array.
+				$args = [];
+				parse_str( $query, $args );
+
+				// Ensure custom post types get mapped correctly. Loop through
+				// all post types, ensure they're viewable, then map the
+				// post_type and name appropriately.
+				foreach ( get_post_types( [], 'objects' ) as $post_type_object ) {
+					if ( is_post_type_viewable( $post_type_object ) && $post_type_object->query_var ) {
+						if ( isset( $args[ $post_type_object->query_var ] ) ) {
+							$args['post_type'] = $post_type_object->query_var;
+							$args['name'] = $args[ $post_type_object->query_var ];
+						}
+					}
+				}
+
+				// Convert the array back into a string.
+				$query = add_query_arg(
+					$args,
+					$query
+				);
+
 				break;
 			}
 		}
