@@ -7,6 +7,9 @@
 
 namespace WP_Irving\REST_API;
 
+use function WP_Irving\INC\wp_irving_rest_namespace;
+use function WP_Irving\INC\wp_irving_rest_version;
+
 /**
  * Components endpoint.
  */
@@ -96,7 +99,7 @@ class Components_Endpoint extends Endpoint {
 	 */
 	public function register_rest_routes() {
 		register_rest_route(
-			$this->namespace,
+			wp_irving_rest_namespace() . '/' . wp_irving_rest_version(),
 			'/components/',
 			[
 				'methods'  => \WP_REST_Server::READABLE,

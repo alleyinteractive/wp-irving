@@ -13,13 +13,6 @@ namespace WP_Irving\REST_API;
 class Endpoint {
 
 	/**
-	 * REST API namespace.
-	 *
-	 * @var string
-	 */
-	protected $namespace = 'irving/v1';
-
-	/**
 	 * Constructor.
 	 */
 	public function __construct() {
