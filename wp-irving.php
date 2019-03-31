@@ -15,9 +15,6 @@ define( 'WP_IRVING_PATH', dirname( __FILE__ ) );
 define( 'WP_IRVING_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_IRVING_VERSION', '1.0' );
 
-// Functions.
-require_once WP_IRVING_PATH . '/inc/functions.php';
-
 // Base classes.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
 

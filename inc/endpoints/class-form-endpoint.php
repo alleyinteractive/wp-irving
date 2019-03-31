@@ -42,7 +42,7 @@ class Form_Endpoint extends Endpoint {
 
 		foreach ( $form_endpoints as $idx => $endpoint ) {
 			register_rest_route(
-				$this->namespace,
+				self::get_namespace(),
 				'/form/' . $endpoint['slug'],
 				[
 					'methods'  => \WP_REST_Server::CREATABLE,
