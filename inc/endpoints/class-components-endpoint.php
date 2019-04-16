@@ -216,17 +216,14 @@ class Components_Endpoint extends Endpoint {
 		// Loop through rewrite rules.
 		$rewrites = $wp_rewrite->wp_rewrite_rules();
 
-		$is_404 = false;
+		$is_404 = true;
 
 		foreach ( $rewrites as $match => $query ) {
 
 			// Rewrite rule match.
 			if ( preg_match( "#^$match#", $trimmed_path, $matches ) ) {
 
-				if (
-					$wp_rewrite->use_verbose_page_rules
-					&& preg_match( '/pagename=\$matches\[([0-9]+)\]/', $query, $varmatch )
-				) {
+				if ( preg_match( '/pagename=\$matches\[([0-9]+)\]/', $query, $varmatch ) ) {
 
 					/**
 					 * Allow the page type used to check a root path for a valid
@@ -238,20 +235,25 @@ class Components_Endpoint extends Endpoint {
 
 					// This is a verbose page match, let's check to be sure about it.
 					$page = get_page_by_path( $matches[ $varmatch[1] ], OBJECT, $page_type );
+
 					if ( ! $page ) {
-						$is_404 = true;
 						continue;
 					}
-
-					$is_404 = false;
 
 					// Ensure that this post type is publicly queryable.
 					$post_status_obj = get_post_status_object( $page->post_status );
-					if ( ! $post_status_obj->public && ! $post_status_obj->protected
-						&& ! $post_status_obj->private && $post_status_obj->exclude_from_search ) {
+					if (
+						! $post_status_obj->public &&
+						! $post_status_obj->protected &&
+						! $post_status_obj->private &&
+						$post_status_obj->exclude_from_search
+					) {
 						continue;
 					}
+
 				}
+
+				$is_404 = false;
 
 				// Prep query for use in WP_Query.
 				$query = preg_replace( '!^.+\?!', '', $query );
@@ -284,6 +286,13 @@ class Components_Endpoint extends Endpoint {
 			}
 		}
 
+		/**
+		 * Add a redirect, if needed.
+		 *
+		 * @param bool $is_404 True if the original path was a 404.
+		 */
+		do_action( 'wp_irving_redirect', $is_404 );
+
 		// Add irving-path to the query.
 		$query = add_query_arg(
 			[
@@ -310,6 +319,8 @@ class Components_Endpoint extends Endpoint {
 		 * @param string $this->params         Request params.
 		 */
 		$query = apply_filters( 'wp_irving_components_query_string', $query, $this->path, $this->custom_params, $this->params );
+
+		error_log( 'QUERY ' . $query );
 
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
