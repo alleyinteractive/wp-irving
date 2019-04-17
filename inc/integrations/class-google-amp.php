@@ -18,12 +18,12 @@ class Google_AMP {
 	public function __construct() {
 
 		// Ensure the AMP plugin exists and is enabled.
-        if ( ! function_exists( 'is_amp_endpoint' ) ) {
-            return;
-        }
-        
-        // Hook into template redirect to render AMP template.
-        add_action( 'template_redirect', [ $this, 'amp_template_redirect' ], 9 );
+		if ( ! function_exists( 'is_amp_endpoint' ) ) {
+			return;
+		}
+
+		// Hook into template redirect to render AMP template.
+		add_action( 'template_redirect', [ $this, 'amp_template_redirect' ], 9 );
 	}
 
 	/**
