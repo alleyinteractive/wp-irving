@@ -38,6 +38,9 @@ class Google_AMP {
 	}
 }
 
-add_action( 'init', function() {
-	new \WP_Irving\Google_AMP();
-} );
+add_action(
+	'init',
+	function() {
+		new \WP_Irving\Google_AMP();
+	}
+);
