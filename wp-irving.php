@@ -24,6 +24,7 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
