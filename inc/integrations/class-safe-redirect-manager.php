@@ -72,7 +72,7 @@ class Safe_Redirect_Manager {
 		$params = $this->params;
 
 		// The path may be either a full URL, or a relative path.
-		$path = parse_url( $path, PHP_URL_PATH );
+		$path = wp_parse_url( $path, PHP_URL_PATH );
 
 		// Replace request path with our redirect to path.
 		$params['path'] = $path;
