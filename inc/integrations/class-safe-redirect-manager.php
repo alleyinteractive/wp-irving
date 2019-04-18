@@ -71,10 +71,13 @@ class Safe_Redirect_Manager {
 		// Get stored request params.
 		$params = $this->params;
 
+		// The path may be either a full URL, or a relative path.
+		$path = parse_url( $path, PHP_URL_PATH );
+
 		// Replace request path with our redirect to path.
 		$params['path'] = $path;
 
-		// Build and reutrn full API url.
+		// Build and return full API url.
 		return add_query_arg( $params );
 	}
 }
