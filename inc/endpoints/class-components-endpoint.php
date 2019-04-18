@@ -165,6 +165,7 @@ class Components_Endpoint extends Endpoint {
 
 		// Add a custom status code.
 		if ( $this->query->is_404() ) {
+			$this->handle_redirect( $request );
 			$status = 404;
 		} else {
 			$status = 200;
@@ -319,8 +320,6 @@ class Components_Endpoint extends Endpoint {
 		 * @param string $this->params         Request params.
 		 */
 		$query = apply_filters( 'wp_irving_components_query_string', $query, $this->path, $this->custom_params, $this->params );
-
-		error_log( 'QUERY ' . $query );
 
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
@@ -534,6 +533,28 @@ class Components_Endpoint extends Endpoint {
 		// Redirect permanently.
 		wp_redirect( $request_url, 301 );
 		exit;
+	}
+
+	/**
+	 * Handles a redirect, if needed.
+	 *
+	 * @param \WP_REST_Request $request  WP_REST_Request object.
+	 */
+	public function handle_redirect( $request ) {
+		/**
+		 * Hook to add a redirect.
+		 *
+		 * @param \WP_REST_Request $request  WP_REST_Request object.
+		 * @param WP_Query         $query    WP_Query object corresponding to this
+		 *                                   request.
+		 * @param string           $path     The path for this request.
+		 */
+		do_action(
+			'wp_irving_handle_redirect',
+			$request,
+			$this->query,
+			$this->path
+		);
 	}
 }
 

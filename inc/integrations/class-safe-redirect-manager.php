@@ -30,7 +30,7 @@ class Safe_Redirect_Manager {
 		}
 
 		// Store the request parameters and kickoff the redirect check.
-		add_action( 'wp_irving_components_request', [ $this, 'parse_request' ] );
+		add_action( 'wp_irving_handle_redirect', [ $this, 'parse_request' ] );
 	}
 
 	/**
