@@ -163,8 +163,30 @@ class Components_Endpoint extends Endpoint {
 		// Create the response object.
 		$response = new \WP_REST_Response( $data );
 
-		// Add a custom status code.
-		$status = apply_filters( 'wp_irving_components_route_status', 200 );
+		// Add a custom status code, and handle redirects if needed.
+		if ( $this->query->is_404() ) {
+
+			/**
+			 * Hook to add a redirect.
+			 *
+			 * @param \WP_REST_Request $request  WP_REST_Request object.
+			 * @param WP_Query         $query    WP_Query object corresponding to this
+			 *                                   request.
+			 * @param string           $path     The path for this request.
+			 */
+			do_action(
+				'wp_irving_handle_redirect',
+				$request,
+				$this->query,
+				$this->path
+			);
+
+			$status = 404;
+		} else {
+			$status = 200;
+		}
+
+		$status = apply_filters( 'wp_irving_components_route_status', $status );
 		$response->set_status( $status );
 
 		return $response;
@@ -216,17 +238,17 @@ class Components_Endpoint extends Endpoint {
 		// Loop through rewrite rules.
 		$rewrites = $wp_rewrite->wp_rewrite_rules();
 
-		$is_404 = false;
-
-		foreach ( $rewrites as $match => $query ) {
+		// Loop through rewrites to find a match.
+		// Roughly based on core's WP::parse_request().
+		// phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar
+		// @see https://github.com/WordPress/WordPress/blob/master/wp-includes/class-wp.php#L216-L243
+		foreach ( $rewrites as $match => $rewrite_query ) {
 
 			// Rewrite rule match.
 			if ( preg_match( "#^$match#", $trimmed_path, $matches ) ) {
 
-				if (
-					$wp_rewrite->use_verbose_page_rules
-					&& preg_match( '/pagename=\$matches\[([0-9]+)\]/', $query, $varmatch )
-				) {
+				// Handle Pages differently.
+				if ( preg_match( '/pagename=\$matches\[([0-9]+)\]/', $rewrite_query, $varmatch ) ) {
 
 					/**
 					 * Allow the page type used to check a root path for a valid
@@ -238,23 +260,25 @@ class Components_Endpoint extends Endpoint {
 
 					// This is a verbose page match, let's check to be sure about it.
 					$page = get_page_by_path( $matches[ $varmatch[1] ], OBJECT, $page_type );
+
 					if ( ! $page ) {
-						$is_404 = true;
 						continue;
 					}
 
-					$is_404 = false;
-
 					// Ensure that this post type is publicly queryable.
 					$post_status_obj = get_post_status_object( $page->post_status );
-					if ( ! $post_status_obj->public && ! $post_status_obj->protected
-						&& ! $post_status_obj->private && $post_status_obj->exclude_from_search ) {
+					if (
+						! $post_status_obj->public &&
+						! $post_status_obj->protected &&
+						! $post_status_obj->private &&
+						$post_status_obj->exclude_from_search
+					) {
 						continue;
 					}
 				}
 
 				// Prep query for use in WP_Query.
-				$query = preg_replace( '!^.+\?!', '', $query );
+				$query = preg_replace( '!^.+\?!', '', $rewrite_query );
 				$query = addslashes( \WP_MatchesMapRegex::apply( $query, $matches ) );
 				parse_str( $query, $perma_query_vars );
 
@@ -284,22 +308,24 @@ class Components_Endpoint extends Endpoint {
 			}
 		}
 
-		// Add irving-path to the query.
-		$query = add_query_arg(
-			[
-				'irving-path'   => $this->path,
-				'irving-path-params' => $this->custom_params,
-			],
-			$query
-		);
+		if ( ! empty( $query ) ) {
+			// Add irving-path to the query.
+			$query = add_query_arg(
+				[
+					'irving-path'   => $this->path,
+					'irving-path-params' => $this->custom_params,
+				],
+				$query
+			);
 
-		// Add any extra included params.
-		foreach ( $this->custom_params as $key => $value ) {
-			$query = add_query_arg( $key, $value, $query );
+			// Add any extra included params.
+			foreach ( $this->custom_params as $key => $value ) {
+				$query = add_query_arg( $key, $value, $query );
+			}
+
+			// add_query_arg will encode the url, which we don't want.
+			$query = urldecode( $query );
 		}
-
-		// add_query_arg will encode the url, which we don't want.
-		$query = urldecode( $query );
 
 		/**
 		 * Modify the query vars.
@@ -314,6 +340,10 @@ class Components_Endpoint extends Endpoint {
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
+		if ( empty( $wp_query->posts ) ) {
+			$wp_query->set_404();
+		}
+
 		/**
 		 * Modify the executed query.
 		 *
@@ -324,10 +354,6 @@ class Components_Endpoint extends Endpoint {
 		 * @param string    $this->params         Request params.
 		 */
 		$wp_query = apply_filters( 'wp_irving_components_wp_query', $wp_query, $this->path, $this->custom_params, $this->params );
-
-		if ( $is_404 ) {
-			$wp_query->set_404();
-		}
 
 		// Map to main query.
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited

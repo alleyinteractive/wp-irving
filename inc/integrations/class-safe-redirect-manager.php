@@ -29,8 +29,12 @@ class Safe_Redirect_Manager {
 			return;
 		}
 
-		// Store the request parameters and kickoff the redirect check.
-		add_action( 'wp_irving_components_request', [ $this, 'parse_request' ] );
+		// Re-use SRM's filter to redirect only on 404s.
+		if ( apply_filters( 'srm_redirect_only_on_404', false ) ) {
+			add_action( 'wp_irving_handle_redirect', [ $this, 'parse_request' ] );
+		} else {
+			add_action( 'wp_irving_components_request', [ $this, 'parse_request' ] );
+		}
 	}
 
 	/**
@@ -71,10 +75,13 @@ class Safe_Redirect_Manager {
 		// Get stored request params.
 		$params = $this->params;
 
+		// The path may be either a full URL, or a relative path.
+		$path = wp_parse_url( $path, PHP_URL_PATH );
+
 		// Replace request path with our redirect to path.
 		$params['path'] = $path;
 
-		// Build and reutrn full API url.
+		// Build and return full API url.
 		return add_query_arg( $params );
 	}
 }
