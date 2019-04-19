@@ -163,9 +163,24 @@ class Components_Endpoint extends Endpoint {
 		// Create the response object.
 		$response = new \WP_REST_Response( $data );
 
-		// Add a custom status code.
+		// Add a custom status code, and handle redirects if needed.
 		if ( $this->query->is_404() ) {
-			$this->handle_redirect( $request );
+
+			/**
+			 * Hook to add a redirect.
+			 *
+			 * @param \WP_REST_Request $request  WP_REST_Request object.
+			 * @param WP_Query         $query    WP_Query object corresponding to this
+			 *                                   request.
+			 * @param string           $path     The path for this request.
+			 */
+			do_action(
+				'wp_irving_handle_redirect',
+				$request,
+				$this->query,
+				$this->path
+			);
+
 			$status = 404;
 		} else {
 			$status = 200;
@@ -223,13 +238,15 @@ class Components_Endpoint extends Endpoint {
 		// Loop through rewrite rules.
 		$rewrites = $wp_rewrite->wp_rewrite_rules();
 
-		$is_404 = true;
-
+		// Loop through rewrites to find a match.
+		// Roughly based on core's WP::parse_request().
+		// @see https://github.com/WordPress/WordPress/blob/master/wp-includes/class-wp.php#L216-L243
 		foreach ( $rewrites as $match => $rewrite_query ) {
 
 			// Rewrite rule match.
 			if ( preg_match( "#^$match#", $trimmed_path, $matches ) ) {
 
+				// Handle Pages differently
 				if ( preg_match( '/pagename=\$matches\[([0-9]+)\]/', $rewrite_query, $varmatch ) ) {
 
 					/**
@@ -257,8 +274,6 @@ class Components_Endpoint extends Endpoint {
 					) {
 						continue;
 					}
-
-					$is_404 = false;
 				}
 
 				// Prep query for use in WP_Query.
@@ -324,10 +339,8 @@ class Components_Endpoint extends Endpoint {
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
-		// @todo this is maybe over-simplified
-		// @see https://github.com/WordPress/WordPress/blob/master/wp-includes/class-wp.php#L642
-		if ( $wp_query->posts ) {
-			$is_404 = false;
+		if ( empty( $wp_query->posts ) ) {
+			$wp_query->set_404();
 		}
 
 		/**
@@ -340,10 +353,6 @@ class Components_Endpoint extends Endpoint {
 		 * @param string    $this->params         Request params.
 		 */
 		$wp_query = apply_filters( 'wp_irving_components_wp_query', $wp_query, $this->path, $this->custom_params, $this->params );
-
-		if ( $is_404 ) {
-			$wp_query->set_404();
-		}
 
 		// Map to main query.
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -533,28 +542,6 @@ class Components_Endpoint extends Endpoint {
 		// Redirect permanently.
 		wp_redirect( $request_url, 301 );
 		exit;
-	}
-
-	/**
-	 * Handles a redirect, if needed.
-	 *
-	 * @param \WP_REST_Request $request  WP_REST_Request object.
-	 */
-	public function handle_redirect( $request ) {
-		/**
-		 * Hook to add a redirect.
-		 *
-		 * @param \WP_REST_Request $request  WP_REST_Request object.
-		 * @param WP_Query         $query    WP_Query object corresponding to this
-		 *                                   request.
-		 * @param string           $path     The path for this request.
-		 */
-		do_action(
-			'wp_irving_handle_redirect',
-			$request,
-			$this->query,
-			$this->path
-		);
 	}
 }
 

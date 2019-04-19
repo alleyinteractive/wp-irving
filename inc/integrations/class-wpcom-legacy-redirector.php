@@ -20,16 +20,19 @@ class WPCOM_Legacy_Redirector {
 	public function __construct() {
 
 		// Ensure WPCOM Legacy Redirector exists and is enabled.
-		if ( ! class_exists( '\WPCOM_Legacy_Redirector' ) ) {
+		if (
+			! class_exists( '\WPCOM_Legacy_Redirector' ) ||
+			! method_exists( '\WPCOM_Legacy_Redirector', 'get_redirect_uri' )
+		) {
 			return;
 		}
 
-		// Store the request parameters and kickoff the redirect check.
+		// Handle Irving redirects.
 		add_action( 'wp_irving_handle_redirect', [ $this, 'handle_redirect' ], 10, 3 );
 	}
 
 	/**
-	 * Store the request parameters.
+	 * Handle the redirect, if one is found.
 	 *
 	 * @see based on \WPCOM_Legacy_Redirector::maybe_do_redirect()
 	 *
@@ -47,22 +50,19 @@ class WPCOM_Legacy_Redirector {
 		// Store all request parameters.
 		$params = $request->get_params();
 
-		// Break apart the URL to get the path
-		$url = wp_parse_url( $path, PHP_URL_PATH );
-		$query_string = wp_parse_url( $path, PHP_URL_QUERY );
-
-		if ( ! empty( $query_string ) ) {
-			$url .= '?' . $query_string;
+		if ( empty( $params['path'] ) ) {
+			return;
 		}
 
-		$request_path = apply_filters( 'wpcom_legacy_redirector_request_path', $url );
+		// Get the path parameter.
+		$request_path = apply_filters( 'wpcom_legacy_redirector_request_path', $params['path'] );
 
 		if ( $request_path ) {
 			$redirect_uri = \WPCOM_Legacy_Redirector::get_redirect_uri( $request_path );
 
 			if ( $redirect_uri ) {
 				header( 'X-legacy-redirect: HIT' );
-				$redirect_status = apply_filters( 'wpcom_legacy_redirector_redirect_status', 301, $url );
+				$redirect_status = apply_filters( 'wpcom_legacy_redirector_redirect_status', 301, $redirect_uri );
 
 				// The path may be either a full URL, or a relative path.
 				$redirect_path = wp_parse_url( $redirect_uri, PHP_URL_PATH );
