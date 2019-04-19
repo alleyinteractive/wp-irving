@@ -240,13 +240,14 @@ class Components_Endpoint extends Endpoint {
 
 		// Loop through rewrites to find a match.
 		// Roughly based on core's WP::parse_request().
+		// phpcs:ignore Squiz.Commenting.InlineComment.InvalidEndChar
 		// @see https://github.com/WordPress/WordPress/blob/master/wp-includes/class-wp.php#L216-L243
 		foreach ( $rewrites as $match => $rewrite_query ) {
 
 			// Rewrite rule match.
 			if ( preg_match( "#^$match#", $trimmed_path, $matches ) ) {
 
-				// Handle Pages differently
+				// Handle Pages differently.
 				if ( preg_match( '/pagename=\$matches\[([0-9]+)\]/', $rewrite_query, $varmatch ) ) {
 
 					/**

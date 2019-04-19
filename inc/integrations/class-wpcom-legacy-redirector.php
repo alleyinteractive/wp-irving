@@ -70,7 +70,7 @@ class WPCOM_Legacy_Redirector {
 				// Replace request path with our redirect to path.
 				$params['path'] = $redirect_path;
 
-				// Build the full URL
+				// Build the full URL.
 				$rest_redirect_uri = add_query_arg( $params );
 
 				wp_safe_redirect( $rest_redirect_uri, $redirect_status );
