@@ -11,6 +11,7 @@ namespace WP_Irving\REST_API;
  * Form Endpoint.
  */
 class Form_Endpoint extends Endpoint {
+
 	/**
 	 * Attach to required hooks for form endpoint
 	 */
@@ -51,7 +52,6 @@ class Form_Endpoint extends Endpoint {
 			);
 		}
 	}
-
 
 	/**
 	 * Generic internal server error response.
