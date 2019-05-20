@@ -340,7 +340,7 @@ class Components_Endpoint extends Endpoint {
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
-		if ( empty( $wp_query->posts ) ) {
+		if ( empty( $wp_query->posts ) && ! $wp_query->is_search() ) {
 			$wp_query->set_404();
 		}
 
