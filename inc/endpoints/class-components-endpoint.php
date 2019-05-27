@@ -309,6 +309,13 @@ class Components_Endpoint extends Endpoint {
 		}
 
 		if ( ! empty( $query ) ) {
+
+			// Fix an issue where `add_query_arg` doesn't work with already
+			// encoded strings missing the equal.
+			if ( false === strpos( $query, '=' ) ) {
+				$query .= '=';
+			}
+
 			// Add irving-path to the query.
 			$query = add_query_arg(
 				[
