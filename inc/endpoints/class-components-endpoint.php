@@ -384,6 +384,7 @@ class Components_Endpoint extends Endpoint {
 	 * @see https://github.com/WordPress/WordPress/blob/master/wp-includes/class-wp.php#L580
 	 */
 	public function register_globals() {
+		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
 		global $wp_the_query;
 
 		// Extract updated query vars back into global namespace.
@@ -404,6 +405,7 @@ class Components_Endpoint extends Endpoint {
 		if ( $wp_the_query->is_author() && isset( $wp_the_query->post ) ) {
 			$GLOBALS['authordata'] = get_userdata( $wp_the_query->post->post_author );
 		}
+		// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
 	}
 
 	/**
