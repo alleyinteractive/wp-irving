@@ -29,8 +29,9 @@ class Archiveless {
 	/**
 	 * Hide archiveless posts on non-singular pages.
 	 *
-	 * @param  string $where MySQL WHERE clause.
-	 * @param  WP_Query $query Current WP_Query object.
+	 * @param string    $where MySQL WHERE clause.
+	 * @param \WP_Query $query Current WP_Query object.
+	 *
 	 * @return string WHERE clause, potentially with 'archiveless' post status
 	 *                      removed.
 	 */
