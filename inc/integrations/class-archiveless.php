@@ -41,18 +41,16 @@ class Archiveless {
 		$archiveless_status = \Archiveless::$status;
 
 		if (
-			empty( $query->get( 'irving-path' ) ) ||
-			$query->is_singular() ||
-			false === strpos( $where, " OR {$wpdb->posts}.post_status = '{$archiveless_status}'" )
+			! is_admin() &&
+			! $query->is_singular() &&
+			false !== strpos( $where, " OR {$wpdb->posts}.post_status = '{$archiveless_status}'" )
 		) {
-			return $where;
+			$where = str_replace(
+				" OR {$wpdb->posts}.post_status = '{$archiveless_status}'",
+				'',
+				$where
+			);
 		}
-
-		$where = str_replace(
-			" OR {$wpdb->posts}.post_status = '{$archiveless_status}'",
-			'',
-			$where
-		);
 
 		return $where;
 	}
