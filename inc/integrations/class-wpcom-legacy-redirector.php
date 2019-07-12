@@ -28,30 +28,23 @@ class WPCOM_Legacy_Redirector {
 		}
 
 		// Handle Irving redirects.
-		add_action( 'wp_irving_handle_redirect', [ $this, 'handle_redirect' ], 10, 3 );
+		add_action( 'wp_irving_components_route', [ $this, 'handle_redirect' ], 10, 5 );
 	}
 
 	/**
-	 * Handle the redirect, if one is found.
+	 * Find any matching redirect for requested path and include in response data.
 	 *
-	 * @see based on \WPCOM_Legacy_Redirector::maybe_do_redirect()
-	 *
-	 * @param \WP_REST_Request $request  WP_REST_Request object.
-	 * @param \WP_Query        $query    WP_Query object corresponding to this
-	 *                                   request.
-	 * @param string           $path     The path for this request.
+	 * @param array     $data    WP Irving response data.
+	 * @param \WP_Query $query   WP_Query object corresponding to this request.
+	 * @param string    $context Request context (site or page).
+	 * @param string    $path    Request path parameter.
+	 * @param \WP_REST_Response $request  REST request.
 	 */
-	public function handle_redirect(
-		\WP_REST_Request $request,
-		\WP_Query $query,
-		string $path
-	) : void {
-
-		// Store all request parameters.
+	public function handle_redirect( $data, $query, $context, $path, $request ) : array {
 		$params = $request->get_params();
 
 		if ( empty( $params['path'] ) ) {
-			return;
+			return $data;
 		}
 
 		// Get the path parameter.
@@ -65,18 +58,28 @@ class WPCOM_Legacy_Redirector {
 				$redirect_status = apply_filters( 'wpcom_legacy_redirector_redirect_status', 301, $redirect_uri );
 
 				// The path may be either a full URL, or a relative path.
-				$redirect_path = wp_parse_url( $redirect_uri, PHP_URL_PATH );
+				if ( 0 === strpos( $redirect_uri, '/' ) ) {
+					$params['path'] = wp_parse_url( $redirect_uri, PHP_URL_PATH );
 
-				// Replace request path with our redirect to path.
-				$params['path'] = $redirect_path;
+					// Build the full URL.
+					$redirect_to = add_query_arg( $params );
+				} else {
+					$redirect_to = $redirect_uri;
+				}
 
-				// Build the full URL.
-				$rest_redirect_uri = add_query_arg( $params );
+				// Include redirect URL and status in response.
+				$data['redirectURL'] = empty( $data['redirectURL'] ) ?
+					$redirect_to ?? '' :
+					$data['redirectURL'];
+				$data['redirectStatus'] = empty( $data['redirectStatus'] ) ?
+					$redirect_status ?? 0 :
+					$data['redirectStatus'];
 
-				wp_safe_redirect( $rest_redirect_uri, $redirect_status );
-				exit;
+				return $data;
 			}
 		}
+
+		return $data;
 	}
 }
 
