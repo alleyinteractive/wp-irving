@@ -63,7 +63,7 @@ class Components_Endpoint extends Endpoint {
 		'defaults'       => [],
 		'page'           => [],
 		'providers'      => [],
-		'redirectURL'    => [],
+		'redirectTo'    => [],
 		'redirectStatus' => [],
 	];
 
@@ -174,9 +174,7 @@ class Components_Endpoint extends Endpoint {
 		$response = new \WP_REST_Response( $data );
 
 		// Add a custom status code, and handle redirects if needed.
-		if ( $data['redirectStatus'] ) {
-			$status = $data['redirectStatus'];
-		} else if ( $this->query->is_404() ) {
+		if ( $this->query->is_404() ) {
 			$status = 404;
 		} else {
 			$status = 200;

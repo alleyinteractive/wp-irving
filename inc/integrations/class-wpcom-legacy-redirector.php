@@ -59,18 +59,16 @@ class WPCOM_Legacy_Redirector {
 
 				// The path may be either a full URL, or a relative path.
 				if ( 0 === strpos( $redirect_uri, '/' ) ) {
-					$params['path'] = wp_parse_url( $redirect_uri, PHP_URL_PATH );
-
-					// Build the full URL.
-					$redirect_to = add_query_arg( $params );
+					// Build a full URL.
+					$redirect_to = home_url( $redirect_uri );
 				} else {
 					$redirect_to = $redirect_uri;
 				}
 
 				// Include redirect URL and status in response.
-				$data['redirectURL'] = empty( $data['redirectURL'] ) ?
+				$data['redirectTo'] = empty( $data['redirectTo'] ) ?
 					$redirect_to ?? '' :
-					$data['redirectURL'];
+					$data['redirectTo'];
 				$data['redirectStatus'] = empty( $data['redirectStatus'] ) ?
 					$redirect_status ?? 0 :
 					$data['redirectStatus'];

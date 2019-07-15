@@ -66,9 +66,9 @@ class Safe_Redirect_Manager {
 		$this->srm->get_redirect_match();
 
 		// Add SRM redirect
-		$data['redirectURL'] = empty( $data['redirectURL'] ) ?
+		$data['redirectTo'] = empty( $data['redirectTo'] ) ?
 			$this->srm->redirect_to ?? '' :
-			$data['redirectURL'];
+			$data['redirectTo'];
 		$data['redirectStatus'] = empty( $data['redirectStatus'] ) ?
 			$this->srm->status_code ?? 0 :
 			$data['redirectStatus'];
@@ -92,20 +92,13 @@ class Safe_Redirect_Manager {
 	 * @param string $path Redirect to url.
 	 */
 	public function set_srm_redirect_to( $path ) {
-		// Get stored request params.
-		$params = $this->params;
-
 		// The path may be either a full URL, or a relative path.
 		if ( 0 === strpos( $path, '/' ) ) {
-			$path = wp_parse_url( $path, PHP_URL_PATH );
-		} else {
-			return $path;
+			// Build a full URL.
+			return home_url( $path );
 		}
-		// Replace request path with our redirect to path.
-		$params['path'] = $path;
 
-		// Build and return full API url.
-		return add_query_arg( $params );
+		return $path;
 	}
 }
 
