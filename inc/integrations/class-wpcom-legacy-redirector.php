@@ -34,11 +34,11 @@ class WPCOM_Legacy_Redirector {
 	/**
 	 * Find any matching redirect for requested path and include in response data.
 	 *
-	 * @param array     $data    WP Irving response data.
-	 * @param \WP_Query $query   WP_Query object corresponding to this request.
-	 * @param string    $context Request context (site or page).
-	 * @param string    $path    Request path parameter.
-	 * @param \WP_REST_Response $request  REST request.
+	 * @param array             $data    WP Irving response data.
+	 * @param \WP_Query         $query   WP_Query object corresponding to this request.
+	 * @param string            $context Request context (site or page).
+	 * @param string            $path    Request path parameter.
+	 * @param \WP_REST_Response $request REST request.
 	 */
 	public function handle_redirect( $data, $query, $context, $path, $request ) : array {
 		$params = $request->get_params();
