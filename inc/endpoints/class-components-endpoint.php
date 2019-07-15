@@ -358,7 +358,7 @@ class Components_Endpoint extends Endpoint {
 		$wp_query = apply_filters( 'wp_irving_components_wp_query', $wp_query, $this->path, $this->custom_params, $this->params );
 
 		// Map to main query and set up globals.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$wp_the_query = $wp_query;
 		$this->register_globals();
 
@@ -371,7 +371,7 @@ class Components_Endpoint extends Endpoint {
 	 * @see https://github.com/WordPress/WordPress/blob/master/wp-includes/class-wp.php#L580
 	 */
 	public function register_globals() {
-		// phpcs:disable WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
 		global $wp_the_query;
 
 		// Extract updated query vars back into global namespace.
@@ -392,7 +392,7 @@ class Components_Endpoint extends Endpoint {
 		if ( $wp_the_query->is_author() && isset( $wp_the_query->post ) ) {
 			$GLOBALS['authordata'] = get_userdata( $wp_the_query->post->post_author );
 		}
-		// phpcs:enable WordPress.WP.GlobalVariablesOverride.OverrideProhibited
+		// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
 	}
 
 	/**
