@@ -13,6 +13,13 @@ namespace WP_Irving;
 class Safe_Redirect_Manager {
 
 	/**
+	 * Reference to Safe Redirect Manager SRM_Redirect singleton instance.
+	 *
+	 * @var array
+	 */
+	private $srm;
+
+	/**
 	 * Store request parameters.
 	 *
 	 * @var array
@@ -23,36 +30,50 @@ class Safe_Redirect_Manager {
 	 * Constructor for class.
 	 */
 	public function __construct() {
-
 		// Ensure Safe Redirect Manager exists and is enabled.
 		if ( ! class_exists( '\SRM_Redirect' ) ) {
 			return;
 		}
 
+		$this->srm = \SRM_Redirect::factory();
+
+		// Remove redirect actions from SRM.
+		remove_action( 'parse_request', [ $this->srm, 'maybe_redirect' ], 0 );
+		remove_action( 'template_redirect', [ $this->srm, 'maybe_redirect' ], 0 );
+
 		// Re-use SRM's filter to redirect only on 404s.
-		if ( apply_filters( 'srm_redirect_only_on_404', false ) ) {
-			add_action( 'wp_irving_handle_redirect', [ $this, 'parse_request' ] );
-		} else {
-			add_action( 'wp_irving_components_request', [ $this, 'parse_request' ] );
-		}
+		add_filter( 'wp_irving_components_route', [ $this, 'get_srm_redirect' ], 10, 5 );
 	}
 
 	/**
-	 * Store the request parameters.
+	 * Find any matching redirect for requested path and include in response data.
 	 *
-	 * @param \WP_REST_Request $request Request object.
+	 * @param array             $data     WP Irving response data.
+	 * @param \WP_Query         $query    WP_Query object corresponding to this request.
+	 * @param string            $context  Request context (site or page).
+	 * @param string            $path     Request path parameter.
+	 * @param \WP_REST_Response $request  REST request.
 	 */
-	public function parse_request( \WP_REST_Request $request ) {
-
-		// Store all request parameters.
+	public function get_srm_redirect( $data, $query, $context, $path, $request ) : array {
+		// Store request path.
 		$this->params = $request->get_params();
 
 		// Filter the path and redirect values.
 		add_filter( 'srm_requested_path', [ $this, 'set_srm_requested_path' ] );
 		add_filter( 'srm_redirect_to', [ $this, 'set_srm_redirect_to' ] );
 
-		$srm = new \SRM_Redirect();
-		$srm->maybe_redirect();
+		// Find matching redirect for current path.
+		$redirect_match = $this->srm->get_redirect_match();
+
+		// Add redirect_to and status_code from SRM match.
+		$data['redirectTo'] = empty( $data['redirectTo'] ) ?
+			$redirect_match['redirect_to'] ?? '' :
+			$data['redirectTo'];
+		$data['redirectStatus'] = empty( $data['redirectStatus'] ) ?
+			$redirect_match['status_code'] ?? 0 :
+			$data['redirectStatus'];
+
+		return $data;
 	}
 
 	/**
@@ -71,22 +92,13 @@ class Safe_Redirect_Manager {
 	 * @param string $path Redirect to url.
 	 */
 	public function set_srm_redirect_to( $path ) {
-
-		// Get stored request params.
-		$params = $this->params;
-
 		// The path may be either a full URL, or a relative path.
 		if ( 0 === strpos( $path, '/' ) ) {
-			$path = wp_parse_url( $path, PHP_URL_PATH );
-		} else {
-			return $path;
+			// Build a full URL.
+			return home_url( $path );
 		}
 
-		// Replace request path with our redirect to path.
-		$params['path'] = $path;
-
-		// Build and return full API url.
-		return add_query_arg( $params );
+		return $path;
 	}
 }
 

@@ -60,8 +60,11 @@ class Components_Endpoint extends Endpoint {
 	 * @var array
 	 */
 	public $data = [
-		'defaults' => [],
-		'page'     => [],
+		'defaults'       => [],
+		'page'           => [],
+		'providers'      => [],
+		'redirectTo'    => [],
+		'redirectStatus' => [],
 	];
 
 	/**
@@ -172,22 +175,6 @@ class Components_Endpoint extends Endpoint {
 
 		// Add a custom status code, and handle redirects if needed.
 		if ( $this->query->is_404() ) {
-
-			/**
-			 * Hook to add a redirect.
-			 *
-			 * @param \WP_REST_Request $request  WP_REST_Request object.
-			 * @param WP_Query         $query    WP_Query object corresponding to this
-			 *                                   request.
-			 * @param string           $path     The path for this request.
-			 */
-			do_action(
-				'wp_irving_handle_redirect',
-				$request,
-				$this->query,
-				$this->path
-			);
-
 			$status = 404;
 		} else {
 			$status = 200;
