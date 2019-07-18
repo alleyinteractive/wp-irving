@@ -123,6 +123,7 @@ class Components_Endpoint extends Endpoint {
 	 * @return array
 	 */
 	public function get_route_response( $request ) {
+		print_r( $request );
 
 		/**
 		 * Action fired on the request.
@@ -230,7 +231,7 @@ class Components_Endpoint extends Endpoint {
 		$trimmed_path = ltrim( $this->path, '/' );
 
 		// Loop through rewrite rules.
-		$rewrites = $wp_rewrite->wp_rewrite_rules();
+		$rewrites = ! empty( $wp_rewrite->wp_rewrite_rules() ) ? $wp_rewrite->wp_rewrite_rules() : [];
 
 		// Loop through rewrites to find a match.
 		// Roughly based on core's WP::parse_request().
