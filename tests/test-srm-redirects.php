@@ -33,14 +33,80 @@ class SRM_Redirects_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test relative redirects
+	 * Test relative redirect
 	 */
-	public function test_relative_redirects() {
+	public function test_relative_to_relative() {
 		srm_create_redirect( '/foo/', '/bar/' );
 
 		$request = self::$helpers->create_rest_request( '/foo/' );
 		$response = self::$components_endpoint->get_route_response( $request );
 
-		print_r( $response );
+		$this->assertEquals( 'http://example.org/bar/', $response->data['redirectTo'] );
+	}
+
+	/**
+	 * Test redirects from a relative URL to an absolute URL
+	 */
+	public function test_relative_to_absolute() {
+		// Internal, absolute URL destination.
+		srm_create_redirect( '/foo/bar/', 'http://example.org/baz/' );
+
+		$request = self::$helpers->create_rest_request( '/foo/bar/' );
+		$response = self::$components_endpoint->get_route_response( $request );
+		$this->assertEquals( 'http://example.org/baz/', $response->data['redirectTo'] );
+
+		// External, absolute URL destination.
+		srm_create_redirect( '/foo/bar/baz/', 'http://another-example.org/baz/' );
+
+		$request = self::$helpers->create_rest_request( '/foo/bar/baz/' );
+		$response = self::$components_endpoint->get_route_response( $request );
+		$this->assertEquals( 'http://another-example.org/baz/', $response->data['redirectTo'] );
+	}
+
+	/**
+	 * Test redirects from an absolute, internal URL to a relative URL
+	 */
+	public function test_absolute_to_relative() {
+		srm_create_redirect( 'http://example.org/foo/', '/bar/' );
+
+		$request = self::$helpers->create_rest_request( '/foo/' );
+		$response = self::$components_endpoint->get_route_response( $request );
+		$this->assertEquals( 'http://example.org/bar/', $response->data['redirectTo'] );
+	}
+
+	/**
+	 * Test redirects from one absolute URL to another.
+	 */
+	public function test_absolute_to_absolute() {
+		// Internal, absolute URL destination.
+		srm_create_redirect( 'http://example.org/foo/bar/', 'http://example.org/baz/' );
+
+		$request = self::$helpers->create_rest_request( '/foo/bar/' );
+		$internal_response = self::$components_endpoint->get_route_response( $request );
+		$this->assertEquals( 'http://example.org/baz/', $internal_response->data['redirectTo'] );
+
+		// External URL destination.
+		srm_create_redirect( 'http://example.org/foo/bar/baz/', 'http://another-example.org/baz/' );
+
+		$request = self::$helpers->create_rest_request( '/foo/bar/baz/' );
+		$external_response = self::$components_endpoint->get_route_response( $request );
+		$this->assertEquals( 'http://another-example.org/baz/', $external_response->data['redirectTo'] );
+	}
+
+	/**
+	 * Test redirect_from URLs with and without a trailling slash will still match.
+	 */
+	public function test_trailing_slashes() {
+		srm_create_redirect( '/trailing-slash/', '/destination/' );
+
+		// With trailing slash.
+		$request = self::$helpers->create_rest_request( '/trailing-slash/' );
+		$response = self::$components_endpoint->get_route_response( $request );
+		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
+
+		// Without trailing slash
+		$request = self::$helpers->create_rest_request( '/trailing-slash' );
+		$response = self::$components_endpoint->get_route_response( $request );
+		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
 	}
 }

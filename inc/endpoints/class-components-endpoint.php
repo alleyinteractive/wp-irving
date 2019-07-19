@@ -123,8 +123,6 @@ class Components_Endpoint extends Endpoint {
 	 * @return array
 	 */
 	public function get_route_response( $request ) {
-		print_r( $request );
-
 		/**
 		 * Action fired on the request.
 		 *

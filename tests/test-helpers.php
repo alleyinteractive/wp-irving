@@ -13,14 +13,14 @@ namespace WP_Irving;
 class Test_Helpers {
 
 	public function create_rest_request( $path ) {
-		$full_path = add_query_arg(
-			[
-				'path' => $path,
-			],
-			'/wp-json/irving/v1/components/'
-		);
-		$request = new \WP_REST_Request( 'GET', $full_path );
-		$_SERVER['REQUEST_URI'] = $full_path;
+		$base_url = 'http://example.org/wp-json/irving/v1/components/';
+		$params = [
+			'path' => $path,
+		];
+		$full_url = add_query_arg( $base_url, $params );
+		$request = new \WP_REST_Request( 'GET', $base_url );
+		$request->set_query_params( $params );
+		$_SERVER['REQUEST_URI'] = $full_url;
 
 		return $request;
 	}

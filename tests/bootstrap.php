@@ -28,6 +28,7 @@ require_once $_tests_dir . '/includes/functions.php';
 function _manually_load_plugin() {
 	require dirname( dirname( __FILE__ ) ) . '/wp-irving.php';
 	require dirname( __DIR__, 2 ) . '/safe-redirect-manager/safe-redirect-manager.php';
+	require dirname( __DIR__, 2 ) . '/wpcom-legacy-redirector/wpcom-legacy-redirector.php';
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
