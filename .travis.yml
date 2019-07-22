@@ -50,7 +50,8 @@ before_script:
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
       # Set up the plugin.
-      # mkdir -p "${WP_CORE_DIR}wp-content/plugins/wp-irving"
+      mkdir -p "${WP_CORE_DIR}wp-content/plugins/wp-irving"
+      cwd
       # cp -R . "${WP_CORE_DIR}wp-content/plugins/wp-irving/"
       # # Hop into plugins directory.
       cd ${WP_CORE_DIR}wp-content/plugins
