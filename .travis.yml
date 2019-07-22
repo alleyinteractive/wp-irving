@@ -58,7 +58,7 @@ before_script:
       cd ../
       wget https://downloads.wordpress.org/plugin/safe-redirect-manager.zip
       unzip safe-redirect-manager.zip
-      git clone https://github.com/Automattic/WPCOM-Legacy-Redirector.git
+      git clone https://github.com/Automattic/WPCOM-Legacy-Redirector.git wpcom-legacy-redirector
       cd wp-irving
     fi
 
