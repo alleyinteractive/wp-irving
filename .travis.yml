@@ -47,6 +47,16 @@ before_script:
       composer global require wp-coding-standards/wpcs
       phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
     fi
+  - |
+    # Set up the plugin.
+    mkdir -p "${WP_CORE_DIR}wp-content/plugins/wp-irving"
+    cp -R . "${WP_CORE_DIR}wp-content/plugins/wp-irving/"
+    # Hop into plugins directory.
+    cd ${WP_CORE_DIR}wp-content/plugins
+    wget https://downloads.wordpress.org/plugin/safe-redirect-manager.zip
+    unzip safe-redirect-manager.zip
+    git clone https://github.com/Automattic/WPCOM-Legacy-Redirector.git
+    cd wp-irving
 
 script:
   - |
