@@ -25,8 +25,8 @@ matrix:
       env: WP_TRAVISCI=phpcs
     - php: 7.1
       env: WP_VERSION=trunk
-    - php: 5.3
-      env: WP_VERSION=4.5
+    - php: 5.6
+      env: WP_VERSION=4.8
       dist: precise
 
 before_script:
