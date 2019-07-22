@@ -3,6 +3,7 @@
  * Class Legacy_Redirector_Tests
  *
  * @package WP_Irving
+ * @todo should the `$validate` param of `insert_legacy_redirect` be set to `true`?
  */
 
 /**
