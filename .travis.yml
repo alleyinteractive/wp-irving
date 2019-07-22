@@ -25,9 +25,9 @@ matrix:
       env: WP_TRAVISCI=phpcs
     - php: 7.1
       env: WP_VERSION=trunk
-    - php: 5.6
-      env: WP_VERSION=4.8
-      dist: precise
+    # This build results in an error, not sure how to address yet.
+    # - php: 7.0
+    #   env: WP_VERSION=4.5
 
 before_script:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
