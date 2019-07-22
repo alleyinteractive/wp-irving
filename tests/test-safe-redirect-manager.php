@@ -1,24 +1,24 @@
 <?php
 /**
- * Class SRM_Redirects_Test
+ * Class Safe_Redirect_Manager_Tests
  *
  * @package WP_Irving
  */
 
 /**
- * Tests for Safe Redirect Maanger redirects
+ * Tests for integration with Safe Redirect Maanger.
  */
-class SRM_Redirects_Test extends WP_UnitTestCase {
+class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 
 	/**
-	 * Helpers class instance
+	 * Helpers class instance.
 	 *
 	 * \WP_Irving_Test_Helpers
 	 */
 	static $helpers;
 
 	/**
-	 * Components endpoint instance
+	 * Components endpoint instance.
 	 *
 	 * \WP_Irving\REST_API\Components_Endpoint
 	 */
@@ -33,7 +33,7 @@ class SRM_Redirects_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test relative redirect
+	 * Test relative redirect.
 	 */
 	public function test_relative_to_relative() {
 		srm_create_redirect( '/foo/', '/bar/' );
@@ -45,7 +45,7 @@ class SRM_Redirects_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test redirects from a relative URL to an absolute URL
+	 * Test redirects from a relative URL to an absolute URL.
 	 */
 	public function test_relative_to_absolute() {
 		// Internal, absolute URL destination.
@@ -64,7 +64,7 @@ class SRM_Redirects_Test extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test redirects from an absolute, internal URL to a relative URL
+	 * Test redirects from an absolute, internal URL to a relative URL.
 	 */
 	public function test_absolute_to_relative() {
 		srm_create_redirect( 'http://example.org/foo/', '/bar/' );
@@ -104,7 +104,7 @@ class SRM_Redirects_Test extends WP_UnitTestCase {
 		$response = self::$components_endpoint->get_route_response( $request );
 		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
 
-		// Without trailing slash
+		// Without trailing slash.
 		$request = self::$helpers->create_rest_request( '/trailing-slash' );
 		$response = self::$components_endpoint->get_route_response( $request );
 		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
