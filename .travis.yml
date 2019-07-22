@@ -52,6 +52,7 @@ before_script:
       # Set up the plugin.
       mkdir -p "${WP_CORE_DIR}wp-content/plugins/wp-irving"
       pwd
+      echo "${WP_CORE_DIR}"
       cp -R . "${WP_CORE_DIR}wp-content/plugins/wp-irving/"
       # Hop into plugins directory.
       cd ${WP_CORE_DIR}wp-content/plugins
