@@ -29,84 +29,81 @@ class Legacy_Redirector_Tests extends WP_UnitTestCase {
 	 */
 	public static function setUpBeforeClass() {
 		self::$helpers = new \WP_Irving\Test_Helpers();
-		self::$components_endpoint = new \WP_Irving\REST_API\Components_Endpoint();
+		add_filter( 'wpcom_legacy_redirector_allow_insert', '__return_true', 10, 1 );
 	}
 
 	/**
 	 * Test relative redirect.
 	 */
 	public function test_relative_to_relative() {
-		WPCOM_Legacy_Redirector::insert_legacy_redirect( '/foo/', '/bar/' );
-
-		$request = self::$helpers->create_rest_request( '/foo/' );
-		$response = self::$components_endpoint->get_route_response( $request );
-
+		WPCOM_Legacy_Redirector::insert_legacy_redirect( '/foo/', '/bar/', false );
+		$response = self::$helpers->get_components_endpoint_response( '/foo/' );
 		$this->assertEquals( 'http://example.org/bar/', $response->data['redirectTo'] );
 	}
 
 	/**
 	 * Test redirects from a relative URL to an absolute URL
 	 */
-	// public function test_relative_to_absolute() {
-	// 	// Internal, absolute URL destination.
-	// 	srm_create_redirect( '/foo/bar/', 'http://example.org/baz/' );
+	public function test_relative_to_absolute() {
+		// Internal, absolute URL destination.
+		WPCOM_Legacy_Redirector::insert_legacy_redirect( '/foo/bar/', 'http://example.org/baz/', false );
+		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/' );
+		$this->assertEquals( 'http://example.org/baz/', $response->data['redirectTo'] );
 
-	// 	$request = self::$helpers->create_rest_request( '/foo/bar/' );
-	// 	$response = self::$components_endpoint->get_route_response( $request );
-	// 	$this->assertEquals( 'http://example.org/baz/', $response->data['redirectTo'] );
+		// External, absolute URL destination.
+		WPCOM_Legacy_Redirector::insert_legacy_redirect( '/foo/bar/baz/', 'http://another-example.org/baz/', false );
+		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/baz/' );
+		$this->assertEquals( 'http://another-example.org/baz/', $response->data['redirectTo'] );
+	}
 
-	// 	// External, absolute URL destination.
-	// 	srm_create_redirect( '/foo/bar/baz/', 'http://another-example.org/baz/' );
+	/**
+	 * Test redirects from an absolute, internal URL to a relative URL
+	 */
+	public function test_absolute_to_relative() {
+		WPCOM_Legacy_Redirector::insert_legacy_redirect( 'http://example.org/foo/', '/bar/', false );
+		$response = self::$helpers->get_components_endpoint_response( '/foo/' );
+		$this->assertEquals( 'http://example.org/bar/', $response->data['redirectTo'] );
+	}
 
-	// 	$request = self::$helpers->create_rest_request( '/foo/bar/baz/' );
-	// 	$response = self::$components_endpoint->get_route_response( $request );
-	// 	$this->assertEquals( 'http://another-example.org/baz/', $response->data['redirectTo'] );
-	// }
+	/**
+	 * Test redirects from one absolute URL to another.
+	 */
+	public function test_absolute_to_absolute() {
+		// Internal, absolute URL destination.
+		WPCOM_Legacy_Redirector::insert_legacy_redirect( 'http://example.org/foo/bar/', 'http://example.org/baz/', false );
+		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/' );
+		$this->assertEquals( 'http://example.org/baz/', $response->data['redirectTo'] );
 
-	// /**
-	//  * Test redirects from an absolute, internal URL to a relative URL
-	//  */
-	// public function test_absolute_to_relative() {
-	// 	srm_create_redirect( 'http://example.org/foo/', '/bar/' );
+		// External URL destination.
+		WPCOM_Legacy_Redirector::insert_legacy_redirect( 'http://example.org/foo/bar/baz/', 'http://another-example.org/baz/', false );
+		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/baz/' );
+		$this->assertEquals( 'http://another-example.org/baz/', $response->data['redirectTo'] );
+	}
 
-	// 	$request = self::$helpers->create_rest_request( '/foo/' );
-	// 	$response = self::$components_endpoint->get_route_response( $request );
-	// 	$this->assertEquals( 'http://example.org/bar/', $response->data['redirectTo'] );
-	// }
+	/**
+	 * Test redirect_from URLs with and without a trailling slash will still match.
+	 */
+	public function test_trailing_slashes() {
+		// Redirect from with trailing slash.
+		WPCOM_Legacy_Redirector::insert_legacy_redirect( '/trailing-slash/', '/destination/', false );
 
-	// /**
-	//  * Test redirects from one absolute URL to another.
-	//  */
-	// public function test_absolute_to_absolute() {
-	// 	// Internal, absolute URL destination.
-	// 	srm_create_redirect( 'http://example.org/foo/bar/', 'http://example.org/baz/' );
+		// With trailing slash.
+		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash/' );
+		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
 
-	// 	$request = self::$helpers->create_rest_request( '/foo/bar/' );
-	// 	$internal_response = self::$components_endpoint->get_route_response( $request );
-	// 	$this->assertEquals( 'http://example.org/baz/', $internal_response->data['redirectTo'] );
+		// Without trailing slash
+		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash' );
+		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
 
-	// 	// External URL destination.
-	// 	srm_create_redirect( 'http://example.org/foo/bar/baz/', 'http://another-example.org/baz/' );
+		// Redirect from without trailing slash.
+		WPCOM_Legacy_Redirector::insert_legacy_redirect( '/trailing-slash', '/destination/' );
 
-	// 	$request = self::$helpers->create_rest_request( '/foo/bar/baz/' );
-	// 	$external_response = self::$components_endpoint->get_route_response( $request );
-	// 	$this->assertEquals( 'http://another-example.org/baz/', $external_response->data['redirectTo'] );
-	// }
+		// Request with trailing slash.
+		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash/' );
+		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
 
-	// /**
-	//  * Test redirect_from URLs with and without a trailling slash will still match.
-	//  */
-	// public function test_trailing_slashes() {
-	// 	srm_create_redirect( '/trailing-slash/', '/destination/' );
-
-	// 	// With trailing slash.
-	// 	$request = self::$helpers->create_rest_request( '/trailing-slash/' );
-	// 	$response = self::$components_endpoint->get_route_response( $request );
-	// 	$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
-
-	// 	// Without trailing slash
-	// 	$request = self::$helpers->create_rest_request( '/trailing-slash' );
-	// 	$response = self::$components_endpoint->get_route_response( $request );
-	// 	$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
-	// }
+		// Request without trailing slash.
+		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash' );
+		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
+	}
 }
