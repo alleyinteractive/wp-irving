@@ -25,7 +25,7 @@ matrix:
       env: WP_TRAVISCI=phpcs
     - php: 7.1
       env: WP_VERSION=trunk
-    - php: 7.0
+    - php: 5.3
       env: WP_VERSION=4.5
 
 before_script:
@@ -49,12 +49,6 @@ before_script:
     fi
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
-      # Set up the plugin.
-      # mkdir -p "${WP_CORE_DIR}wp-content/plugins/wp-irving"
-      # pwd
-      # echo ${WP_CORE_DIR}
-      # cp -R . "${WP_CORE_DIR}wp-content/plugins/wp-irving/"
-      # Hop into plugins directory.
       cd ../
       git clone https://github.com/alleyinteractive/safe-redirect-manager.git
       git clone https://github.com/Automattic/WPCOM-Legacy-Redirector.git wpcom-legacy-redirector
