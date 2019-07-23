@@ -48,13 +48,15 @@ class WPCOM_Legacy_Redirector {
 		}
 
 		// Get the path parameter.
-		$request_path = apply_filters( 'wpcom_legacy_redirector_request_path', $params['path'] );
+		$request_path = trailingslashit( apply_filters( 'wpcom_legacy_redirector_request_path', $params['path'] ) );
 
 		if ( $request_path ) {
 			$redirect_uri = \WPCOM_Legacy_Redirector::get_redirect_uri( $request_path );
 
 			if ( $redirect_uri ) {
-				header( 'X-legacy-redirect: HIT' );
+				if ( ! defined( 'WP_IRVING_TEST' ) || ! WP_IRVING_TEST ) {
+					header( 'X-legacy-redirect: HIT' );
+				}
 				$redirect_status = apply_filters( 'wpcom_legacy_redirector_redirect_status', 301, $redirect_uri );
 
 				// The path may be either a full URL, or a relative path.
