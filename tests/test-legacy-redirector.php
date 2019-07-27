@@ -82,9 +82,9 @@ class Legacy_Redirector_Tests extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test redirect_from URLs with and without a trailling slash will still match.
+	 * Test redirect_from URLs with a trailing slash.
 	 */
-	public function test_trailing_slashes() {
+	public function test_with_trailing_slashes() {
 		// Redirect from with trailing slash.
 		WPCOM_Legacy_Redirector::insert_legacy_redirect( '/trailing-slash/', '/destination/', false );
 
@@ -95,9 +95,14 @@ class Legacy_Redirector_Tests extends WP_UnitTestCase {
 		// Without trailing slash
 		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash' );
 		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
+	}
 
+	/**
+	 * Test redirect_from URLs without a trailing slash.
+	 */
+	public function test_without_trailing_slashes() {
 		// Redirect from without trailing slash.
-		WPCOM_Legacy_Redirector::insert_legacy_redirect( '/trailing-slash', '/destination/' );
+		WPCOM_Legacy_Redirector::insert_legacy_redirect( '/trailing-slash', '/destination/', false );
 
 		// Request with trailing slash.
 		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash/' );
