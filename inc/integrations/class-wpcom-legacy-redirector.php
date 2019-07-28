@@ -48,10 +48,16 @@ class WPCOM_Legacy_Redirector {
 		}
 
 		// Get the path parameter.
-		$request_path = trailingslashit( apply_filters( 'wpcom_legacy_redirector_request_path', $params['path'] ) );
+		$request_path = apply_filters( 'wpcom_legacy_redirector_request_path', $params['path'] );
 
 		if ( $request_path ) {
-			$redirect_uri = \WPCOM_Legacy_Redirector::get_redirect_uri( $request_path );
+			// Look for an entry at the slashed version.
+			$redirect_uri = \WPCOM_Legacy_Redirector::get_redirect_uri( trailingslashit( $request_path ) );
+
+			// If we don't find a hit, check the unslashed version.
+			if ( empty( $redirect_uri ) ) {
+				$redirect_uri = \WPCOM_Legacy_Redirector::get_redirect_uri( rtrim( $request_path, '/' ) );
+			}
 
 			if ( $redirect_uri ) {
 				if ( ! defined( 'WP_IRVING_TEST' ) || ! WP_IRVING_TEST ) {
