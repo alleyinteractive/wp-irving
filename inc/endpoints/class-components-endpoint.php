@@ -63,8 +63,8 @@ class Components_Endpoint extends Endpoint {
 		'defaults'       => [],
 		'page'           => [],
 		'providers'      => [],
-		'redirectTo'    => [],
-		'redirectStatus' => [],
+		'redirectTo'     => '',
+		'redirectStatus' => 0,
 	];
 
 	/**
