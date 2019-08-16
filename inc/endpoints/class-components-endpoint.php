@@ -109,8 +109,9 @@ class Components_Endpoint extends Endpoint {
 			self::get_namespace(),
 			'/components/',
 			[
-				'methods'  => \WP_REST_Server::READABLE,
-				'callback' => [ $this, 'get_route_response' ],
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => [ $this, 'get_route_response' ],
+				'permission_callback' => [ $this, 'permissions_check' ],
 			]
 		);
 	}
@@ -362,6 +363,23 @@ class Components_Endpoint extends Endpoint {
 		$this->register_globals();
 
 		return $wp_query;
+	}
+
+	/**
+	 * Permissions check.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return bool|WP_Error
+	 */
+	public function permissions_check( $request ) {
+
+		/**
+		 * Filter the permissions check.
+		 *
+		 * @param bool|WP_Error   $retval  Returned value.
+		 * @param WP_REST_Request $request The request sent to the API.
+		 */
+		return apply_filters( 'wp_irving_components_route_permissions_check', true, $request );
 	}
 
 	/**
