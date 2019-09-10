@@ -143,7 +143,7 @@ class Purge_Cache {
 				<?php settings_fields( $this->id ); ?>
 
 				<h3>
-					<?php esc_attr_e( 'Clear Site Cache', 'wp-irving' ); ?>
+					<?php esc_html_e( 'Clear Site Cache', 'wp-irving' ); ?>
 				</h3>
 
 				<p>
