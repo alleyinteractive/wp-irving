@@ -151,7 +151,7 @@ class Purge_Cache {
 				</p>
 
 				<p class="submit">
-					<input type="submit" name="submit" id="submit" class="button" value="<?php echo esc_attr( 'Clear Cache', 'wp-irving' ); ?>">
+					<input type="submit" name="submit" id="submit" class="button" value="<?php echo esc_attr_e( 'Clear Cache', 'wp-irving' ); ?>">
 				</p>
 			</form>
 
