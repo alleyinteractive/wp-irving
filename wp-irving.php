@@ -32,5 +32,5 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
 
-// Purge Page Cache.
-require_once WP_IRVING_PATH . '/inc/class-purge-page-cache.php';
+// Purge Cache.
+require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
