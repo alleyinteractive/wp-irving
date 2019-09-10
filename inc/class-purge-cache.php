@@ -119,7 +119,7 @@ class Purge_Cache {
 			__( 'WP-Irving Cache', 'wp-irving' ),
 			'manage_options',
 			'wp-irving-cache',
-			[ $this, 'render' ],
+			[ $this, 'render' ]
 		);
 	}
 
