@@ -13,20 +13,6 @@ namespace WP_Irving;
 class Purge_Cache {
 
 	/**
-	 * Slug to delete page/post cache
-	 *
-	 * @var string
-	 */
-	public $page_cache_slug = 'bust-endpoint-cache';
-
-	/**
-	 * Slug to wipe entire cache.
-	 *
-	 * @var string
-	 */
-	public $wipe_cache_slug = 'bust-entire-cache';
-
-	/**
 	 * Settings ID.
 	 *
 	 * @var string
@@ -110,11 +96,17 @@ class Purge_Cache {
 		);
 
 		// Build URL.
-		$request_url = add_query_arg( [ 'endpoint' => $key ], 'http://192.168.50.1:3001/' . $this->page_cache_slug );
-		// // home_url( '/bust-endpoint-cache' )
+		$request_url = add_query_arg( [ 'endpoint' => $key ], home_url( '/bust-endpoint-cache' ) );
 
 		// Fire the request.
 		wp_remote_get( $request_url );
+	}
+
+	/**
+	 * Fire wipe out request.
+	 */
+	protected function fire_wipe_request() : void {
+		wp_remote_get( '/bust-entire-cache' );
 	}
 
 	/**
@@ -135,6 +127,12 @@ class Purge_Cache {
 	 * Render the settings page.
 	 */
 	public function render() : void {
+		
+		// Firing request to clean cache.
+		if ( isset( $_POST['submit'] ) ) {
+			$this->fire_wipe_request();
+		} 
+
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline">
@@ -143,15 +141,23 @@ class Purge_Cache {
 
 			<hr class="wp-header-end">
 
-			<div>
-				<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
-					<?php
-					settings_fields( $this->id );
-					do_settings_sections( $this->page );
-					submit_button();
-					?>
-				</form>
-			</div>
+			<form method="post">
+				<?php settings_fields( $this->id ); ?>
+
+				<h3>
+					<?php esc_attr_e( 'Clear Site Cache', 'wp-irving' ); ?>
+				</h3>
+
+				<p>
+					<?php esc_attr_e( 'Use with care. Clearing the entire site cache will negatively impact performance for a short period of time.', 'wp-irving' ); ?>
+				</p>
+
+				<p class="submit">
+					<input type="submit" name="submit" id="submit" class="button" value="<?php echo esc_attr( 'Clear Cache', 'wp-irving' ); ?>">
+				</p>
+			</form>
+
+			<hr>
 		</div>
 		<?php
 	}
