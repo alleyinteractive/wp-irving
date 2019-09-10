@@ -27,9 +27,26 @@ class Purge_Cache {
 	public $wipe_cache_slug = 'bust-entire-cache';
 
 	/**
+	 * Settings ID.
+	 *
+	 * @var string
+	 */
+	protected $id = 'irving-cache';
+
+	/**
+	 * Page ID.
+	 *
+	 * @var string
+	 */
+	protected $page = 'wp-irving';
+
+	/**
 	 * Constructor for class.
 	 */
 	public function __construct() {
+		add_action( 'admin_menu', [ $this, 'register_admin' ] );
+
+		// Purging actions.
 		add_action( 'wp_insert_post', [ $this, 'on_update_post' ], 10, 2 );
 		add_action( 'transition_post_status', [ $this, 'on_post_status_transition' ], 10, 3 );
 		add_action( 'before_delete_post', [ $this, 'on_before_delete_post' ] );
@@ -46,7 +63,7 @@ class Purge_Cache {
 			return;
 		}
 		
-		// Purge post redis cache.
+		// Purge cache.
 	 	$this->fire_purge_request( $post_id );
 	}
 
@@ -62,7 +79,7 @@ class Purge_Cache {
 			return;
 		}
 
-		// Purge post redis cache.
+		// Purge cache.
 		$this->fire_purge_request( $post->ID );
 	}
 
@@ -72,7 +89,6 @@ class Purge_Cache {
 	 * @param int $post_id Post ID.
 	 */
 	public function on_before_delete_post( $post_id ) : void {
-		// Purge post redis cache.
 	 	$this->fire_purge_request( $post_id );
 	}
 
@@ -99,6 +115,45 @@ class Purge_Cache {
 
 		// Fire the request.
 		wp_remote_get( $request_url );
+	}
+
+	/**
+	 * Render the settings page.
+	 */
+	public function register_admin() : void {
+		add_submenu_page(
+			'options-general.php',
+			__( 'WP-Irving Cache', 'wp-irving' ),
+			__( 'WP-Irving Cache', 'wp-irving' ),
+			'manage_options',
+			'wp-irving-cache',
+			[ $this, 'render' ],
+		);
+	}
+
+	/**
+	 * Render the settings page.
+	 */
+	public function render() : void {
+		?>
+		<div class="wrap">
+			<h1 class="wp-heading-inline">
+				<?php esc_html_e( 'WP-Irving - Site Cache', 'wp-irving' ); ?>
+			</h1>
+
+			<hr class="wp-header-end">
+
+			<div>
+				<form method="post" action="<?php echo esc_url( admin_url( 'options.php' ) ); ?>">
+					<?php
+					settings_fields( $this->id );
+					do_settings_sections( $this->page );
+					submit_button();
+					?>
+				</form>
+			</div>
+		</div>
+		<?php
 	}
 }
 
