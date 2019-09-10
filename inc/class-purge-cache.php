@@ -106,7 +106,7 @@ class Purge_Cache {
 	 * Fire wipe out request.
 	 */
 	protected function fire_wipe_request() : void {
-		wp_remote_get( '/bust-entire-cache' );
+		wp_remote_get(  home_url( '/bust-entire-cache' ) );
 	}
 
 	/**
