@@ -147,7 +147,7 @@ class Purge_Cache {
 				</h3>
 
 				<p>
-					<?php esc_attr_e( 'Use with care. Clearing the entire site cache will negatively impact performance for a short period of time.', 'wp-irving' ); ?>
+					<?php esc_html_e( 'Use with care. Clearing the entire site cache will negatively impact performance for a short period of time.', 'wp-irving' ); ?>
 				</p>
 
 				<p class="submit">
