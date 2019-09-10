@@ -48,9 +48,9 @@ class Purge_Cache {
 		if ( 'publish' !== $post->post_status ) {
 			return;
 		}
-		
+
 		// Purge cache.
-	 	$this->fire_purge_request( $post_id );
+		$this->fire_purge_request( $post_id );
 	}
 
 	/**
@@ -75,12 +75,12 @@ class Purge_Cache {
 	 * @param int $post_id Post ID.
 	 */
 	public function on_before_delete_post( $post_id ) : void {
-	 	$this->fire_purge_request( $post_id );
+		$this->fire_purge_request( $post_id );
 	}
 
 	/**
 	 * Fire purge request.
-	 * 
+	 *
 	 * @param int $post_id Post ID.
 	 */
 	protected function fire_purge_request( $post_id ) : void {
@@ -127,12 +127,10 @@ class Purge_Cache {
 	 * Render the settings page.
 	 */
 	public function render() : void {
-		
 		// Firing request to clean cache.
-		if ( isset( $_POST['submit'] ) ) {
+		if ( isset( $_POST['submit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$this->fire_wipe_request();
-		} 
-
+		}
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline">
