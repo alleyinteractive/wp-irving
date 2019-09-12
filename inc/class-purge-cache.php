@@ -79,7 +79,7 @@ class Purge_Cache {
 		$key = sprintf( '%1$s,%2$s,%3$s',
 			$path,
 			'', // Empty on purpose.
-			'page'
+			'site'
 		);
 
 		// Build URL.
