@@ -13,23 +13,10 @@ namespace WP_Irving;
 class Purge_Cache {
 
 	/**
-	 * Settings ID.
-	 *
-	 * @var string
-	 */
-	protected $id = 'irving-cache';
-
-	/**
-	 * Page ID.
-	 *
-	 * @var string
-	 */
-	protected $page = 'wp-irving';
-
-	/**
-	 * Constructor for class.
+	 * Class constructor.
 	 */
 	public function __construct() {
+		// Register admin page.
 		add_action( 'admin_menu', [ $this, 'register_admin' ] );
 
 		// Purging actions.
@@ -44,7 +31,7 @@ class Purge_Cache {
 	 * @param int     $post_id Post ID.
 	 * @param WP_Post $post    Post object.
 	 */
-	public function on_update_post( $post_id, $post ) : void {
+	public function on_update_post( $post_id, $post ) {
 		if ( 'publish' !== $post->post_status ) {
 			return;
 		}
@@ -60,7 +47,7 @@ class Purge_Cache {
 	 * @param string  $old_status Old Status.
 	 * @param WP_Post $post       Post object.
 	 */
-	public function on_post_status_transition( $new_status, $old_status, $post ) : void {
+	public function on_post_status_transition( $new_status, $old_status, $post ) {
 		if ( 'publish' !== $new_status && 'publish' !== $old_status ) {
 			return;
 		}
@@ -74,7 +61,7 @@ class Purge_Cache {
 	 *
 	 * @param int $post_id Post ID.
 	 */
-	public function on_before_delete_post( $post_id ) : void {
+	public function on_before_delete_post( $post_id ) {
 		$this->fire_purge_request( $post_id );
 	}
 
@@ -83,7 +70,7 @@ class Purge_Cache {
 	 *
 	 * @param int $post_id Post ID.
 	 */
-	protected function fire_purge_request( $post_id ) : void {
+	protected function fire_purge_request( $post_id ) {
 
 		// Get the path.
 		$path = wp_parse_url( get_the_permalink( $post_id ), PHP_URL_PATH );
@@ -91,12 +78,17 @@ class Purge_Cache {
 		// Build the key.
 		$key = sprintf( '%1$s,%2$s,%3$s',
 			$path,
-			'',
+			'', // Empty on purpose.
 			'page'
 		);
 
 		// Build URL.
-		$request_url = add_query_arg( [ 'endpoint' => $key ], home_url( '/bust-endpoint-cache' ) );
+		$request_url = add_query_arg(
+			[
+				'endpoint' => $key
+			],
+			home_url( '/bust-endpoint-cache' )
+		);
 
 		// Fire the request.
 		wp_remote_get( $request_url );
@@ -105,14 +97,14 @@ class Purge_Cache {
 	/**
 	 * Fire wipe out request.
 	 */
-	protected function fire_wipe_request() : void {
+	protected function fire_wipe_request() {
 		wp_remote_get( home_url( '/bust-entire-cache' ) );
 	}
 
 	/**
 	 * Render the settings page.
 	 */
-	public function register_admin() : void {
+	public function register_admin() {
 		add_submenu_page(
 			'options-general.php',
 			__( 'WP-Irving Cache', 'wp-irving' ),
@@ -126,7 +118,7 @@ class Purge_Cache {
 	/**
 	 * Render the settings page.
 	 */
-	public function render() : void {
+	public function render() {
 		// Firing request to clean cache.
 		if ( isset( $_POST['submit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$this->fire_wipe_request();
@@ -140,7 +132,7 @@ class Purge_Cache {
 			<hr class="wp-header-end">
 
 			<form method="post">
-				<?php settings_fields( $this->id ); ?>
+				<?php settings_fields( 'irving-cache' ); ?>
 
 				<h3>
 					<?php esc_html_e( 'Clear Site Cache', 'wp-irving' ); ?>
