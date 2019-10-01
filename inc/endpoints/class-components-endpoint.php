@@ -524,6 +524,10 @@ class Components_Endpoint extends Endpoint {
 			return;
 		}
 
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return;
+		}
+
 		// Get screen and check for a post base.
 		$screen = get_current_screen();
 
