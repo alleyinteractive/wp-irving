@@ -474,14 +474,14 @@ class Components_Endpoint extends Endpoint {
 		$permalink = get_permalink( $post );
 
 		// Get the API URL, allowing it to be filtered.
-		$api_url = self::get_wp_irving_api_url( $permalink );
-		$api_url = apply_filters( 'wp_irving_post_row_action_path_url', $api_url, $post );
+		$path_url = self::get_wp_irving_api_url( $permalink );
+		$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, $post );
 
 		// Add new link.
 		if ( current_user_can( $this->api_link_cap ) ) {
 			$actions['api'] = sprintf(
 				'<a href="%1$s">API</a>',
-				esc_url( $api_url )
+				esc_url( $path_url )
 			);
 		}
 
@@ -501,14 +501,14 @@ class Components_Endpoint extends Endpoint {
 		$permalink = get_term_link( $term );
 
 		// Get the API URL, allowing it to be filtered.
-		$api_url = self::get_wp_irving_api_url( $permalink );
-		$api_url = apply_filters( 'wp_irving_term_row_action_path_url', $api_url, $term );
+		$path_url = self::get_wp_irving_api_url( $permalink );
+		$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
 
 		// Add new link.
 		if ( current_user_can( $this->api_link_cap ) ) {
 			$actions['api'] = sprintf(
 				'<a href="%1$s">API</a>',
-				esc_url( $api_url )
+				esc_url( $path_url )
 			);
 		}
 		return $actions;
@@ -546,15 +546,15 @@ class Components_Endpoint extends Endpoint {
 			$permalink = get_the_permalink( $post_id );
 
 			// Get the API URL, allowing it to be filtered.
-			$api_url = self::get_wp_irving_api_url( $permalink );
-			$api_url = apply_filters( 'wp_irving_post_row_action_path_url', $api_url, get_post( $post_id ) );
+			$path_url = self::get_wp_irving_api_url( $permalink );
+			$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, get_post( $post_id ) );
 
 			// Add node to admin bar.
 			$admin_bar->add_node(
 				[
 					'id'    => 'wp_irving_api',
 					'title' => __( 'WP-Irving API', 'wp-irving' ),
-					'href'  => $api_url,
+					'href'  => $path_url,
 				]
 			);
 		}
