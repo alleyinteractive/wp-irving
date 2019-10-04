@@ -1,6 +1,6 @@
 <?php
 /**
- * Class file for Components endpoint.
+ * Redirects.
  *
  * @package WP_Irving
  */

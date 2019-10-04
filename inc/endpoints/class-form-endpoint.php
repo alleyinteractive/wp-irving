@@ -26,7 +26,7 @@ class Form_Endpoint extends Endpoint {
 	 */
 	public function register_rest_routes() {
 		/**
-		 * Modify the output of the components route.
+		 * Modify the output of the forms route.
 		 *
 		 * @param array $form_endpoints {
 		 *     Form endpoint slugs and callback functions.
