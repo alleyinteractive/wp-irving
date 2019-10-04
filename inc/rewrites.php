@@ -15,19 +15,15 @@ namespace WP_Irving;
  */
 function add_additional_rest_routes( $rules ) {
 
-	// Nothing special needed for single sites.
-	if ( ! is_multisite() ) {
-		return $rules;
-	}
-
 	$site_paths = get_site_paths();
+	$prefix     = rest_get_url_prefix();
 
 	foreach ( $site_paths as $path ) {
 		$rest_api = [
-			"^{$path}/wp-json/?$"              => 'index.php?rest_route=/',
-			"^{$path}/wp-json/(.*)?"           => 'index.php?rest_route=/$matches[1]',
-			"^index.php/{$path}/wp-json/?$"    => 'index.php?rest_route=/',
-			"^index.php/{$path}/wp-json/(.*)?" => 'index.php?rest_route=/$matches[1]',
+			"^{$path}/{$prefix}/?$"              => 'index.php?rest_route=/',
+			"^{$path}/{$prefix}/(.*)?"           => 'index.php?rest_route=/$matches[1]',
+			"^index.php/{$path}/{$prefix}/?$"    => 'index.php?rest_route=/',
+			"^index.php/{$path}/{$prefix}/(.*)?" => 'index.php?rest_route=/$matches[1]',
 		];
 
 		$rules = array_merge( $rest_api, $rules );
@@ -42,7 +38,12 @@ add_filter( 'rewrite_rules_array', __NAMESPACE__ . '\add_additional_rest_routes'
  *
  * @return array
  */
-function get_site_paths() {
+function get_site_paths(): array {
+
+	if ( ! is_multisite() ) {
+		return [];
+	}
+
 	$sites = get_sites();
 	$paths = wp_list_pluck( $sites, 'path' );
 	return array_filter(
