@@ -13,7 +13,7 @@ namespace WP_Irving\REST_API;
 class Data_Endpoint extends Endpoint {
 
 	/**
-	 * Attach to required hooks for form endpoint
+	 * Attach to required hooks for data endpoint.
 	 */
 	public function __construct() {
 		parent::__construct();
@@ -26,7 +26,7 @@ class Data_Endpoint extends Endpoint {
 	 */
 	public function register_rest_routes() {
 		/**
-		 * Modify the output of the components route.
+		 * Modify the output of the data route.
 		 *
 		 * @param array $data_endpoints {
 		 *     Data endpoint slugs and callback functions.

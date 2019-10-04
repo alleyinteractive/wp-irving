@@ -446,7 +446,7 @@ class Components_Endpoint extends Endpoint {
 	public static function get_wp_irving_api_url( $url ) {
 
 		// Get the path.
-		$path = str_replace( get_site_url(), '', $url );
+		$path = str_replace( get_home_url(), '', $url );
 
 		// Apply path to base components endpoint.
 		return add_query_arg(
