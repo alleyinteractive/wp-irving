@@ -82,3 +82,67 @@ function render_query(
 	return $data;
 }
 add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\render_query', 100, 5 );
+
+/**
+ * Add a welcome message if nothing has been modified in previous hooks.
+ *
+ * @param array            $data     Data for response.
+ * @param \WP_Query        $wp_query WP_Query object corresponding to this
+ *                                   request.
+ * @param string           $context  The context for this request.
+ * @param string           $path     The path for this request.
+ * @param \WP_REST_Request $request  WP_REST_Request object.
+ * @return  array Data for response.
+ */
+function add_welcome_message(
+	array $data,
+	\WP_Query $wp_query,
+	string $context,
+	string $path,
+	\WP_REST_Request $request
+): array {
+
+	if (
+		empty( $data['defaults'] )
+		&& empty( $data['page'] )
+		&& empty( $data['providers'] )
+		&& '' === $data['redirectTo']
+		&& 0 === $data['redirectStatus']
+	) {
+
+		// Build defaults.
+		if ( 'site' === $context ) {
+			$data['defaults'] = [
+				[
+					'name'     => 'body',
+					'config'   => [],
+					'children' => [],
+				],
+			];
+		}
+
+		// Build page.
+		$data['page'] = [
+			[
+				'name'     => 'body',
+				'config'   => [],
+				'children' => [
+					[
+						'name' => 'html',
+						'config' => [
+							'content' => sprintf(
+								'<h2>%s</h2><p>%s</p>',
+								__( 'Welcome to WP-Irving!', 'wp_irving' ),
+								__( "If you're unsure how to get started, check out the wiki on GitHub.", 'wp_irving' ),
+							),
+						],
+						'children' => [],
+					],
+				],
+			]
+		];
+	}
+
+	return $data;
+}
+add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\add_welcome_message', 1000, 5 );
