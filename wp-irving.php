@@ -38,3 +38,6 @@ require_once WP_IRVING_PATH . '/inc/redirects.php';
 
 // Rewrite rules.
 require_once WP_IRVING_PATH . '/inc/rewrites.php';
+
+// Debugging helpers.
+require_once WP_IRVING_PATH . '/inc/debug.php';
