@@ -133,7 +133,7 @@ function add_welcome_message(
 							'content' => sprintf(
 								'<h2>%s</h2><p>%s</p>',
 								__( 'Welcome to WP-Irving!', 'wp_irving' ),
-								__( "If you're unsure how to get started, check out the wiki on GitHub.", 'wp_irving' ),
+								__( "If you're unsure how to get started, check out the wiki on GitHub.", 'wp_irving' )
 							),
 						],
 						'children' => [],
