@@ -103,45 +103,46 @@ function add_welcome_message(
 ): array {
 
 	if (
-		empty( $data['defaults'] )
-		&& empty( $data['page'] )
-		&& empty( $data['providers'] )
-		&& '' === $data['redirectTo']
-		&& 0 === $data['redirectStatus']
+		! empty( $data['defaults'] )
+		|| ! empty( $data['page'] )
+		|| ! empty( $data['providers'] )
+		|| '' !== $data['redirectTo']
+		|| 0 !== $data['redirectStatus']
 	) {
+		return $data;
+	}
 
-		// Build defaults.
-		if ( 'site' === $context ) {
-			$data['defaults'] = [
-				[
-					'name'     => 'body',
-					'config'   => [],
-					'children' => [],
-				],
-			];
-		}
-
-		// Build page.
-		$data['page'] = [
+	// Build defaults.
+	if ( 'site' === $context ) {
+		$data['defaults'] = [
 			[
 				'name'     => 'body',
 				'config'   => [],
-				'children' => [
-					[
-						'name' => 'html',
-						'config' => [
-							'content' => sprintf(
-								'<h2>%s</h2><p>%s</p>',
-								__( 'Welcome to WP-Irving!', 'wp-irving' ),
-								__( "If you're unsure how to get started, check out the wiki on GitHub.", 'wp-irving' )
-							),
-						],
-						'children' => [],
-					],
-				],
+				'children' => [],
 			],
 		];
 	}
+
+	// Build page.
+	$data['page'] = [
+		[
+			'name'     => 'body',
+			'config'   => [],
+			'children' => [
+				[
+					'name' => 'html',
+					'config' => [
+						'content' => sprintf(
+							'<h2>%s</h2><p>%s</p>',
+							__( 'Welcome to WP-Irving!', 'wp-irving' ),
+							__( "If you're unsure how to get started, check out the wiki on GitHub.", 'wp-irving' )
+						),
+					],
+					'children' => [],
+				],
+			],
+		],
+	];
 
 	return $data;
 }
