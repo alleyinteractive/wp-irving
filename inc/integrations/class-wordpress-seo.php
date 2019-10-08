@@ -28,28 +28,39 @@ class WordPress_SEO {
 			return;
         }
         
-		add_filter( 'wp_irving_components_route', [ $this, 'get_webmaster_tools_codes' ], 10, 1 );
+		add_filter( 'wp_components_head_meta_webmaster_tools_codes', [ $this, 'get_webmaster_tools_codes' ] );
     }
     
     /**
-	 * Find any matching redirect for requested path and include in response data.
+	 * Adding WordPress engines codes.
 	 *
-	 * @param array             $data     WP Irving response data.
-	 * @param \WP_REST_Response $request  REST request.
+	 * @param array $codes Array of engine codes.
 	 */
-	public function get_webmaster_tools_codes( $data ) : array {
-		$yoast_meta                = get_option( $this->meta_key );
-		$data['verificationCodes'] = [];
-        $engines                   = [
-            'bing'   => 'msverify',
-            'baidu'  => 'baiduverify',
-            'google' => 'googleverify',
-            'yandex' => 'yandexverify',
-        ];
+	public function get_webmaster_tools_codes( array $data ) : array {
+		$yoast_meta = get_option( $this->meta_key );
 
-        foreach ( $engines as $name => $meta ) {
-			$data['verificationCodes'][ $name ] = $yoast_meta[ $meta ] ?? '';
-        }
+		if ( empty( $yoast_meta ) ) {
+			return $data;
+		}
+
+        foreach ( $yoast_meta as $name => $meta ) {
+			switch( $name ) {
+				case 'msverify':
+					$data['msvalidate.01'] = $meta ?? '';
+					break;
+				case 'baiduverify':
+					$data['baidu-site-verification'] = $meta ?? '';
+					break;
+				case 'googleverify':
+					$data['google-site-verification'] = $meta ?? '';
+					break;
+				case 'yandexverify':
+					$data['yandex-verification'] = $meta ?? '';
+					break;
+				default:
+					break;
+			}
+		}
 
 		return $data;
 	}
