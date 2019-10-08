@@ -32,6 +32,7 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.p
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-wordpress-seo.php';
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
