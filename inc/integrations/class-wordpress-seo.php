@@ -27,14 +27,14 @@ class WordPress_SEO {
 		if ( ! class_exists( '\WPSEO_Options' ) ) {
 			return;
 		}
-		
+
 		add_filter( 'wp_components_head_meta_webmaster_tools_codes', [ $this, 'get_webmaster_tools_codes' ] );
 	}
-	
+
 	/**
 	 * Adding WordPress engines codes.
 	 *
-	 * @param array $codes Array of engine codes.
+	 * @param array $data Array of codes.
 	 */
 	public function get_webmaster_tools_codes( array $data ) : array {
 		$yoast_meta = get_option( $this->meta_key );
@@ -44,7 +44,7 @@ class WordPress_SEO {
 		}
 
 		foreach ( $yoast_meta as $name => $meta ) {
-			switch( $name ) {
+			switch ( $name ) {
 				case 'msverify':
 					$data['msvalidate.01'] = $meta ?? '';
 					break;
