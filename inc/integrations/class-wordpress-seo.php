@@ -12,7 +12,7 @@ namespace WP_Irving;
  */
 class WordPress_SEO {
 
-    /**
+	/**
 	 * Yoast option meta key.
 	 *
 	 * @var string
@@ -26,12 +26,12 @@ class WordPress_SEO {
 		// Ensure Yoast plugin exists and is enabled.
 		if ( ! class_exists( '\WPSEO_Options' ) ) {
 			return;
-        }
-        
+		}
+		
 		add_filter( 'wp_components_head_meta_webmaster_tools_codes', [ $this, 'get_webmaster_tools_codes' ] );
-    }
-    
-    /**
+	}
+	
+	/**
 	 * Adding WordPress engines codes.
 	 *
 	 * @param array $codes Array of engine codes.
@@ -43,7 +43,7 @@ class WordPress_SEO {
 			return $data;
 		}
 
-        foreach ( $yoast_meta as $name => $meta ) {
+		foreach ( $yoast_meta as $name => $meta ) {
 			switch( $name ) {
 				case 'msverify':
 					$data['msvalidate.01'] = $meta ?? '';
