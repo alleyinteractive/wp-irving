@@ -148,7 +148,6 @@ class Components_Endpoint extends Endpoint {
 
 		$this->query = $this->build_query();
 
-		// Force trailing slashes on paths.
 		$this->force_trailing_slashes();
 
 		/**
@@ -564,7 +563,6 @@ class Components_Endpoint extends Endpoint {
 	 * Force trailing slashes on all non-404, and non-file requests.
 	 */
 	public function force_trailing_slashes() {
-
 		// Return if there is already a trailing slash, or no posts were
 		// returned by the path's query.
 		if (
@@ -574,18 +572,8 @@ class Components_Endpoint extends Endpoint {
 			return;
 		}
 
-		// Apply a trailing slash to the path.
-		$this->params['path'] = trailingslashit( $this->path );
-
-		// Apply all params to the rest url for this endpoint.
-		$request_url = add_query_arg(
-			$this->params,
-			rest_url( 'irving/v1/components' )
-		);
-
-		// Redirect permanently.
-		wp_redirect( $request_url, 301 );
-		exit;
+		$this->data['redirectTo']     = trailingslashit( $this->path );
+		$this->data['redirectStatus'] = 301;
 	}
 }
 
