@@ -148,6 +148,7 @@ class Components_Endpoint extends Endpoint {
 
 		$this->query = $this->build_query();
 
+		// Force trailing slashes on paths.
 		$this->force_trailing_slashes();
 
 		/**
