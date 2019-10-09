@@ -215,7 +215,7 @@ class Yoast {
 		   'msvalidate.01'            => \WPSEO_Options::get( 'msverify', '' ),
 		   'google-site-verification' => \WPSEO_Options::get( 'googleverify', '' ),
 		   'yandex-verification'      => \WPSEO_Options::get( 'yandexverify', '' ),
-		   'p:d omain_verify'         => \WPSEO_Options::get( 'pinterestverify', '' ),
+		   'p:domain_verify'          => \WPSEO_Options::get( 'pinterestverify', '' ),
 	   ];
 
 	   return array_merge( $tags, $new_tags );
