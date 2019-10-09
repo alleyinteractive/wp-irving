@@ -219,7 +219,7 @@ class Yoast {
 		];
 
 		return array_merge( $tags, $new_tags );
-   }
+	}
 }
 
 add_action(
