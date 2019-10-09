@@ -211,11 +211,11 @@ class Yoast {
 	 */
    	public function get_yoast_webmaster_tools_tags( array $tags ) : array {
 	   $new_tags = [
-		   'baidu-site-verification'  => WPSEO_Options::get( 'baiduverify', '' ),
-		   'msvalidate.01'            => WPSEO_Options::get( 'msverify', '' ),
-		   'google-site-verification' => WPSEO_Options::get( 'googleverify', '' ),
-		   'yandex-verification'      => WPSEO_Options::get( 'yandexverify', '' ),
-		   'p:d omain_verify'         => WPSEO_Options::get( 'pinterestverify', '' ),
+		   'baidu-site-verification'  => \WPSEO_Options::get( 'baiduverify', '' ),
+		   'msvalidate.01'            => \WPSEO_Options::get( 'msverify', '' ),
+		   'google-site-verification' => \WPSEO_Options::get( 'googleverify', '' ),
+		   'yandex-verification'      => \WPSEO_Options::get( 'yandexverify', '' ),
+		   'p:d omain_verify'         => \WPSEO_Options::get( 'pinterestverify', '' ),
 	   ];
 
 	   return array_merge( $tags, $new_tags );
