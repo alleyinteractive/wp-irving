@@ -29,8 +29,13 @@ class Yoast {
 			);
 
 			add_filter(
-				'wp_components_head_social_title',
-				[ $this, 'get_yoast_social_title' ]
+				'wp_components_head_og_title',
+				[ $this, 'get_yoast_og_title' ]
+			);
+
+			add_filter(
+				'wp_components_head_twitter_title',
+				[ $this, 'get_yoast_twitter_title' ]
 			);
 
 			add_filter(
@@ -39,8 +44,13 @@ class Yoast {
 			);
 
 			add_filter(
-				'wp_components_head_social_description',
-				[ $this, 'get_yoast_social_description' ]
+				'wp_components_head_og_description',
+				[ $this, 'get_yoast_og_description' ]
+			);
+
+			add_filter(
+				'wp_components_head_twitter_description',
+				[ $this, 'get_yoast_twitter_description' ]
 			);
 
 			add_filter(
@@ -70,12 +80,12 @@ class Yoast {
 	}
 
 	/**
-	 * Filter to return the social title.
+	 * Filter to return the Open Graph title.
 	 *
-	 * @param string $social_title Already existing social title.
-	 * @return string Updated social title value.
+	 * @param string $social_title Already existing title.
+	 * @return string Updated title value.
 	 */
-	public function get_yoast_social_title( string $social_title ) : string {
+	public function get_yoast_og_title( string $social_title ) : string {
 		global $wp_query;
 		global $wpseo_og;
 
@@ -89,6 +99,22 @@ class Yoast {
 		}
 
 		return $wpseo_og->og_title( false );
+	}
+
+	/**
+	 * Filter to return the Twitter title.
+	 *
+	 * @param string $social_title Already existing title.
+	 * @return string Updated title value.
+	 */
+	public function get_yoast_twitter_title( string $social_title ) : string {
+		$twitter_title = \WPSEO_Meta::get_value( 'twitter-title', get_the_id() );
+
+		if ( empty( $twitter_title ) ) {
+			$twitter_title = \WPSEO_Frontend::get_instance()->title( '' );
+		}
+
+		return $twitter_title;
 	}
 
 	/**
@@ -106,12 +132,12 @@ class Yoast {
 	}
 
 	/**
-	 * Filter to return the social description.
+	 * Filter to return the Open Graph description.
 	 *
-	 * @param string $social_description Already existing social description.
-	 * @return string Updated social description value.
+	 * @param string $social_description Already existing description.
+	 * @return string Updated description value.
 	 */
-	public function get_yoast_social_description( string $social_description ) : string {
+	public function get_yoast_og_description( string $social_description ) : string {
 		// Workaround for is_singular() not being set.
 		global $wp_query;
 		$wp_query->is_singular = true;
@@ -125,6 +151,26 @@ class Yoast {
 		}
 
 		return $wpseo_og->description( false );
+	}
+
+	/**
+	 * Filter to return the Twitter description.
+	 *
+	 * @param string $social_description Already existing description.
+	 * @return string Updated description value.
+	 */
+	public function get_yoast_twitter_description( string $social_description ) : string {
+		// Workaround for is_singular() not being set.
+		global $wp_query;
+		$wp_query->is_singular = true;
+
+		$twitter_description = \WPSEO_Meta::get_value( 'twitter-description', get_the_id() );
+
+		if ( empty( $twitter_description ) ) {
+			$twitter_description = \WPSEO_Frontend::get_instance()->metadesc( '' );
+		}
+
+		return $twitter_description;
 	}
 
 	/**
