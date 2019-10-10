@@ -72,8 +72,11 @@ class Purge_Cache {
 	 */
 	protected function fire_purge_request( $post_id ) {
 
+		// Get post permalink.
+		$permalink = get_the_permalink( $post_id );
+
 		// Get the path.
-		$path = wp_parse_url( get_the_permalink( $post_id ), PHP_URL_PATH );
+		$path = wp_parse_url( $permalink, PHP_URL_PATH );
 
 		// Build the key.
 		$key = sprintf( '%1$s,%2$s,%3$s',
@@ -90,8 +93,16 @@ class Purge_Cache {
 			home_url( '/bust-endpoint-cache' )
 		);
 
-		// Fire the request.
+		// Fire the request to the irving cache.
 		wp_remote_get( $request_url );
+
+		// Fire the request to WordPress VIP Varnish cache.
+		wp_remote_request(
+			$this->get_irving_api_url( $permalink, $post_id ),
+			[
+				'method' => 'PURGE',
+			]
+		);
 	}
 
 	/**
@@ -99,6 +110,28 @@ class Purge_Cache {
 	 */
 	protected function fire_wipe_request() {
 		wp_remote_get( home_url( '/bust-entire-cache' ) );
+	}
+
+	/**
+	 * Get irving api url.
+	 *
+	 * @param string $url     Post permalink.
+	 * @param int    $post_id Post ID.
+	 * @return string
+	 */
+	private function get_irving_api_url( $url, $post_id ) {
+
+		// Get the path.
+		$path = str_replace( get_home_url(), '', $url );
+
+		// Apply path to base components endpoint.
+		$path_url = add_query_arg(
+			'path',
+			$path,
+			rest_url( 'irving/v1/components/' )
+		);
+
+		return apply_filters( 'wp_irving_post_row_action_path_url', $path_url, get_post( $post_id ) );
 	}
 
 	/**
