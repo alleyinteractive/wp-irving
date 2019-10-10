@@ -413,7 +413,9 @@ class Components_Endpoint extends Endpoint {
 	}
 
 	/**
-	 * Fix rest url.
+	 * Fix rest url. Specifically, filter it to use site_url instead of
+	 * home_url, which is what it uses by default. With a decoupled FE,
+	 * home_url and site_url are no longer interchangeable.
 	 *
 	 * @see https://github.com/WordPress/gutenberg/issues/1761
 	 *
@@ -421,8 +423,7 @@ class Components_Endpoint extends Endpoint {
 	 * @return string
 	 */
 	public function fix_rest_url( $url ) : string {
-		$path = wp_parse_url( $url, PHP_URL_PATH );
-		return site_url( $path );
+		return str_replace( home_url(), site_url(), $url );
 	}
 
 	/**
@@ -435,6 +436,25 @@ class Components_Endpoint extends Endpoint {
 		$vars[] = 'irving-path';
 		$vars[] = 'irving-path-params';
 		return $vars;
+	}
+
+	/**
+	 * Get the WP Irving API endpoint for a specific URL.
+	 *
+	 * @param string $url URL.
+	 * @return string
+	 */
+	public static function get_wp_irving_api_url( $url ) {
+
+		// Get the path.
+		$path = str_replace( get_home_url(), '', $url );
+
+		// Apply path to base components endpoint.
+		return add_query_arg(
+			'path',
+			$path,
+			rest_url( 'irving/v1/components/' )
+		);
 	}
 
 	/**
@@ -454,19 +474,8 @@ class Components_Endpoint extends Endpoint {
 		// Get post permalink.
 		$permalink = get_permalink( $post );
 
-		// Extract path.
-		$path = wp_parse_url( $permalink, PHP_URL_PATH );
-
-		// Apply path to rest URL for Irving components endpoint.
-		// Use site_url() instead of rest_url() because WP-Irving uses WP_HOME
-		// as the Irving App, and rest_url() uses WP_HOME instead of
-		// WP_SITEURL, which is what we need to use.
-		$path_url = add_query_arg(
-			'path',
-			$path,
-			site_url( rest_get_url_prefix() . '/irving/v1/components' )
-		);
-
+		// Get the API URL, allowing it to be filtered.
+		$path_url = self::get_wp_irving_api_url( $permalink );
 		$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, $post );
 
 		// Add new link.
@@ -492,19 +501,8 @@ class Components_Endpoint extends Endpoint {
 		// Get term permalink.
 		$permalink = get_term_link( $term );
 
-		// Extract path.
-		$path = wp_parse_url( $permalink, PHP_URL_PATH );
-
-		// Apply path to rest URL for Irving components endpoint.
-		// Use site_url() instead of rest_url() because WP-Irving uses WP_HOME
-		// as the Irving App, and rest_url() uses WP_HOME instead of
-		// WP_SITEURL, which is what we need to use.
-		$path_url = add_query_arg(
-			'path',
-			$path,
-			site_url( rest_get_url_prefix() . '/irving/v1/components' )
-		);
-
+		// Get the API URL, allowing it to be filtered.
+		$path_url = self::get_wp_irving_api_url( $permalink );
 		$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
 
 		// Add new link.
@@ -527,6 +525,10 @@ class Components_Endpoint extends Endpoint {
 			return;
 		}
 
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return;
+		}
+
 		// Get screen and check for a post base.
 		$screen = get_current_screen();
 
@@ -544,25 +546,16 @@ class Components_Endpoint extends Endpoint {
 			// Get post permalink.
 			$permalink = get_the_permalink( $post_id );
 
-			// Parse the path.
-			$path = wp_parse_url( $permalink, PHP_URL_PATH );
-
-			// Apply path to base components endpoint.
-			$api_url = add_query_arg(
-				'path',
-				$path,
-				rest_url( 'irving/v1/components/' )
-			);
-
-			// Filter as if it were the post row.
-			$api_url = apply_filters( 'wp_irving_post_row_action_path_url', $api_url, get_post( $post_id ) );
+			// Get the API URL, allowing it to be filtered.
+			$path_url = self::get_wp_irving_api_url( $permalink );
+			$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, get_post( $post_id ) );
 
 			// Add node to admin bar.
 			$admin_bar->add_node(
 				[
 					'id'    => 'wp_irving_api',
 					'title' => __( 'WP-Irving API', 'wp-irving' ),
-					'href'  => $api_url,
+					'href'  => $path_url,
 				]
 			);
 		}
