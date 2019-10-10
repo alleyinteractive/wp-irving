@@ -98,7 +98,7 @@ class Purge_Cache {
 
 		// Fire the request to WordPress VIP Varnish cache.
 		wp_remote_request(
-			$this->get_irving_api_url( $permalink, $post_id ),
+			$permalink,
 			[
 				'method' => 'PURGE',
 			]
@@ -110,28 +110,6 @@ class Purge_Cache {
 	 */
 	protected function fire_wipe_request() {
 		wp_remote_get( home_url( '/bust-entire-cache' ) );
-	}
-
-	/**
-	 * Get irving api url.
-	 *
-	 * @param string $url     Post permalink.
-	 * @param int    $post_id Post ID.
-	 * @return string
-	 */
-	private function get_irving_api_url( $url, $post_id ) {
-
-		// Get the path.
-		$path = str_replace( get_home_url(), '', $url );
-
-		// Apply path to base components endpoint.
-		$path_url = add_query_arg(
-			'path',
-			$path,
-			rest_url( 'irving/v1/components/' )
-		);
-
-		return apply_filters( 'wp_irving_post_row_action_path_url', $path_url, get_post( $post_id ) );
 	}
 
 	/**
