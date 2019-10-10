@@ -62,6 +62,11 @@ class Yoast {
 				'wp_components_head_deindex_url',
 				[ $this, 'get_yoast_is_deindexed' ]
 			);
+
+			add_filter(
+				'wp_components_head_additional_meta_tags',
+				[ $this, 'get_yoast_webmaster_tools_tags' ]
+			);
 		}
 	}
 
@@ -196,6 +201,24 @@ class Yoast {
 
 		$deindex = \WPSEO_Frontend::get_instance()->get_robots();
 		return strpos( $deindex, 'noindex' ) !== false;
+	}
+
+	/**
+	 * Filter to return the webmaster tools tags.
+	 *
+	 * @param array $tags Meta tags.
+	 * @return array
+	 */
+	public function get_yoast_webmaster_tools_tags( array $tags ) : array {
+		$new_tags = [
+			'baidu-site-verification'  => \WPSEO_Options::get( 'baiduverify', '' ),
+			'msvalidate.01'            => \WPSEO_Options::get( 'msverify', '' ),
+			'google-site-verification' => \WPSEO_Options::get( 'googleverify', '' ),
+			'yandex-verification'      => \WPSEO_Options::get( 'yandexverify', '' ),
+			'p:domain_verify'          => \WPSEO_Options::get( 'pinterestverify', '' ),
+		];
+
+		return array_merge( $tags, $new_tags );
 	}
 }
 
