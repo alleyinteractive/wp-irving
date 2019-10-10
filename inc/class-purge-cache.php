@@ -23,6 +23,8 @@ class Purge_Cache {
 		add_action( 'wp_insert_post', [ $this, 'on_update_post' ], 10, 2 );
 		add_action( 'transition_post_status', [ $this, 'on_post_status_transition' ], 10, 3 );
 		add_action( 'before_delete_post', [ $this, 'on_before_delete_post' ] );
+
+		add_action( 'init', [ $this, 'purge_cache_request' ] );
 	}
 
 	/**
@@ -68,12 +70,15 @@ class Purge_Cache {
 	/**
 	 * Fire purge request.
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int    $post_id   Post ID.
+	 * @param string $permalink Permalink.
 	 */
-	protected function fire_purge_request( $post_id ) {
+	protected function fire_purge_request( $post_id = 0, $permalink = '' ) {
 
-		// Get post permalink.
-		$permalink = get_the_permalink( $post_id );
+		// Get post permalink with fallback.
+		if ( empty( $permalink ) ) {
+			$permalink = get_the_permalink( $post_id );
+		}
 
 		// Get the path.
 		$path = wp_parse_url( $permalink, PHP_URL_PATH );
@@ -103,6 +108,17 @@ class Purge_Cache {
 				'method' => 'PURGE',
 			]
 		);
+	}
+
+	/**
+	 * Purge cache on a PURGE request.
+	 */
+	public function purge_cache_request() {
+		global $wp;
+
+		if ( isset( $wp->request ) && 'PURGE' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+			$this->fire_purge_request( 0, home_url( $wp->request ) );
+		}
 	}
 
 	/**
