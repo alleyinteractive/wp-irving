@@ -88,7 +88,7 @@ class Purge_Cache {
 		// Build URL.
 		$request_url = add_query_arg(
 			[
-				'endpoint' => $key
+				'endpoint' => $key,
 			],
 			home_url( '/bust-endpoint-cache' )
 		);
