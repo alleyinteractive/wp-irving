@@ -116,7 +116,7 @@ class Purge_Cache {
 	public function purge_cache_request() {
 		global $wp;
 
-		if ( isset( $wp->request ) && 'PURGE' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+		if ( isset( $wp->request ) && 'PURGE' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) { // phpcs:ignore
 			$this->fire_purge_request( 0, home_url( $wp->request ) );
 		}
 	}
