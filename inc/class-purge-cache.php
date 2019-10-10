@@ -96,7 +96,7 @@ class Purge_Cache {
 		// Fire the request to the irving cache.
 		wp_remote_get( $request_url );
 
-		// Fire the request to WordPress VIP Varnish cache.
+		// Fire the request to WordPress VIP.
 		wp_remote_request(
 			$permalink,
 			[
