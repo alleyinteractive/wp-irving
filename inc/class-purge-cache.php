@@ -118,7 +118,7 @@ class Purge_Cache {
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		if ( isset( $wp->request )
-			&& ! empty( $_SERVER['REQUEST_METHOD'])
+			&& ! empty( $_SERVER['REQUEST_METHOD'] )
 			&& 'PURGE' === strtoupper( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) {
 			$this->fire_purge_request( home_url( $wp->request ) );
 		}
@@ -157,9 +157,9 @@ class Purge_Cache {
 
 		// Checking nonce.
 		if ( ! empty( $_POST['_wpnonce'] ) && ! wp_verify_nonce( wp_unslash( $_POST['_wpnonce'] ), '_wpnonce' ) ) {
-			wp_die( __( "You shouldn't be doing this.", 'wp-irving' ) );
+			wp_die( esc_html__( "You shouldn't be doing this.", 'wp-irving' ) );
 		}
-	 
+
 		// Firing request to clean cache.
 		if ( isset( $_POST['submit'] ) ) {
 			$this->fire_wipe_request();
