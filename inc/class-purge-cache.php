@@ -130,7 +130,7 @@ class Purge_Cache {
 	 * Fire wipe out request.
 	 */
 	protected function fire_wipe_request() {
-		wp_remote_get( home_url( '/bust-entire-cache' ) );
+		wp_remote_get( home_url( '/bust-entire-cache' ) );;
 	}
 
 	/**
@@ -156,7 +156,7 @@ class Purge_Cache {
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 		// Checking nonce.
-		if ( ! empty( $_POST['_wpnonce'] ) && ! wp_verify_nonce( wp_unslash( $_POST['_wpnonce'] ), '_wpnonce' ) ) {
+		if ( ! empty( $_POST['irving-cache'] ) && ! wp_verify_nonce( wp_unslash( $_POST['_wpnonce'] ), 'irving-cache' ) ) {
 			wp_die( esc_html__( "You shouldn't be doing this.", 'wp-irving' ) );
 		}
 
