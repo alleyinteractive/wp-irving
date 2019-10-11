@@ -157,7 +157,7 @@ class Purge_Cache {
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
 		// Checking nonce.
-		if ( isset( $_POST['irving-cache'] ) && ! wp_verify_nonce( $_POST['_wpnonce'], 'irving-cache' ) ) {
+		if ( isset( $_POST['irving-cache'] ) && ! wp_verify_nonce( wp_unslash( $_POST['_wpnonce'] ), 'irving-cache' ) ) {
 			wp_die( esc_html__( 'You should not be doing this.', 'wp-irving' ) );
 		}
 
