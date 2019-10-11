@@ -1,6 +1,6 @@
 <?php
 /**
- * WP Irving Cache.
+ * WP Irving Cache
  *
  * @package WP_Irving
  */
