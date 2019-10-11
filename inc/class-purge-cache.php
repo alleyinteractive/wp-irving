@@ -130,7 +130,7 @@ class Purge_Cache {
 	 * Fire wipe out request.
 	 */
 	protected function fire_wipe_request() {
-		wp_remote_get( home_url( '/bust-entire-cache' ) );;
+		wp_remote_get( home_url( '/bust-entire-cache' ) );
 	}
 
 	/**
@@ -154,10 +154,11 @@ class Purge_Cache {
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
 		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 
 		// Checking nonce.
-		if ( ! empty( $_POST['irving-cache'] ) && ! wp_verify_nonce( wp_unslash( $_POST['_wpnonce'] ), 'irving-cache' ) ) {
-			wp_die( esc_html__( "You shouldn't be doing this.", 'wp-irving' ) );
+		if ( isset( $_POST['irving-cache'] ) && ! wp_verify_nonce( $_POST['_wpnonce'], 'irving-cache' ) ) {
+			wp_die( esc_html__( 'You should not be doing this.', 'wp-irving' ) );
 		}
 
 		// Firing request to clean cache.
@@ -167,6 +168,7 @@ class Purge_Cache {
 
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotValidated
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline">
