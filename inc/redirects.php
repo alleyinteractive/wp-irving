@@ -14,7 +14,7 @@ namespace WP_Irving;
  * @param  array $hosts An array of allowed hosts.
  * @return array
  */
-function allowed_redirect_hosts( $hosts ) : array {
+function allowed_redirect_hosts( $hosts ): array {
 	$hosts[] = wp_parse_url( site_url(), PHP_URL_HOST );
 	return $hosts;
 }

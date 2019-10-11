@@ -39,7 +39,7 @@ class Purge_Cache {
 		}
 
 		// Purge cache.
-		$this->fire_purge_request( $post_id );
+		$this->fire_purge_request( get_the_permalink( $post_id ) );
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Purge_Cache {
 		}
 
 		// Purge cache.
-		$this->fire_purge_request( $post->ID );
+		$this->fire_purge_request( get_the_permalink( $post->ID ) );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Purge_Cache {
 	 * @param int $post_id Post ID.
 	 */
 	public function on_before_delete_post( $post_id ) {
-		$this->fire_purge_request( $post_id );
+		$this->fire_purge_request( get_the_permalink( $post_id ) );
 	}
 
 	/**
@@ -73,11 +73,11 @@ class Purge_Cache {
 	 * @param int    $post_id   Post ID.
 	 * @param string $permalink Permalink.
 	 */
-	protected function fire_purge_request( $post_id = 0, $permalink = '' ) {
+	protected function fire_purge_request( $permalink = '' ) {
 
-		// Get post permalink with fallback.
+		// Bail early.
 		if ( empty( $permalink ) ) {
-			$permalink = get_the_permalink( $post_id );
+			return;
 		}
 
 		// Get the path.
@@ -116,9 +116,11 @@ class Purge_Cache {
 	public function purge_cache_request() {
 		global $wp;
 
-		if ( isset( $wp->request ) && 'PURGE' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) { // phpcs:ignore
-			$this->fire_purge_request( 0, home_url( $wp->request ) );
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		if ( isset( $wp->request ) && 'PURGE' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+			$this->fire_purge_request( home_url( $wp->request ) );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
 	}
 
 	/**
@@ -146,6 +148,12 @@ class Purge_Cache {
 	 * Render the settings page.
 	 */
 	public function render() {
+
+		// Checking nonce.
+		if ( ! empty( $_POST['_wpnonce'] ) && ! wp_verify_nonce( $_POST['_wpnonce'], '_wpnonce' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			wp_die( __( "You shouldn't be doing this.", 'wp-irving' ) );
+		}			 
+	 
 		// Firing request to clean cache.
 		if ( isset( $_POST['submit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			$this->fire_wipe_request();
@@ -161,17 +169,15 @@ class Purge_Cache {
 			<form method="post">
 				<?php settings_fields( 'irving-cache' ); ?>
 
-				<h3>
+				<h2>
 					<?php esc_html_e( 'Clear Site Cache', 'wp-irving' ); ?>
-				</h3>
+				</h2>
 
 				<p>
 					<?php esc_html_e( 'Use with care. Clearing the entire site cache will negatively impact performance for a short period of time.', 'wp-irving' ); ?>
 				</p>
 
-				<p class="submit">
-					<input type="submit" name="submit" id="submit" class="button" value="<?php echo esc_attr_e( 'Clear Cache', 'wp-irving' ); ?>">
-				</p>
+				<?php submit_button( __( 'Clear Cache', 'wp-irving' ) ); ?>
 			</form>
 
 			<hr>
@@ -180,4 +186,9 @@ class Purge_Cache {
 	}
 }
 
-new \WP_Irving\Purge_Cache();
+add_action(
+	'init',
+	function() {
+		new \WP_Irving\Purge_Cache();
+	}
+);
