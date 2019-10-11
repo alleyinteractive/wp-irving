@@ -70,7 +70,6 @@ class Purge_Cache {
 	/**
 	 * Fire purge request.
 	 *
-	 * @param int    $post_id   Post ID.
 	 * @param string $permalink Permalink.
 	 */
 	protected function fire_purge_request( $permalink = '' ) {
@@ -117,10 +116,14 @@ class Purge_Cache {
 		global $wp;
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
-		if ( isset( $wp->request ) && 'PURGE' === strtoupper( $_SERVER['REQUEST_METHOD'] ) ) {
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( isset( $wp->request )
+			&& ! empty( $_SERVER['REQUEST_METHOD'])
+			&& 'PURGE' === strtoupper( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) {
 			$this->fire_purge_request( home_url( $wp->request ) );
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 	}
 
 	/**
@@ -149,15 +152,21 @@ class Purge_Cache {
 	 */
 	public function render() {
 
+		// phpcs:disable WordPress.Security.NonceVerification.Missing
+		// phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+
 		// Checking nonce.
-		if ( ! empty( $_POST['_wpnonce'] ) && ! wp_verify_nonce( $_POST['_wpnonce'], '_wpnonce' ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( ! empty( $_POST['_wpnonce'] ) && ! wp_verify_nonce( wp_unslash( $_POST['_wpnonce'] ), '_wpnonce' ) ) {
 			wp_die( __( "You shouldn't be doing this.", 'wp-irving' ) );
-		}			 
+		}
 	 
 		// Firing request to clean cache.
-		if ( isset( $_POST['submit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+		if ( isset( $_POST['submit'] ) ) {
 			$this->fire_wipe_request();
 		}
+
+		// phpcs:enable WordPress.Security.NonceVerification.Missing
+		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		?>
 		<div class="wrap">
 			<h1 class="wp-heading-inline">
