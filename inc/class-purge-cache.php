@@ -85,7 +85,7 @@ class Purge_Cache {
 		// Build the key.
 		$key = sprintf( '%1$s,%2$s,%3$s',
 			$path,
-			'', // Empty on purpose.
+			'?',
 			'site'
 		);
 
