@@ -31,7 +31,7 @@ class Safe_Redirect_Manager {
 	 */
 	public function __construct() {
 		// Ensure Safe Redirect Manager exists and is enabled.
-		if ( ! class_exists( '\SRM_Redirect' ) ) {
+		if ( ! class_exists( '\SRM_Redirect' ) || ! method_exists( '\SRM_Redirect', 'get_srm_redirect' ) ) {
 			return;
 		}
 
@@ -63,12 +63,7 @@ class Safe_Redirect_Manager {
 		add_filter( 'srm_redirect_to', [ $this, 'set_srm_redirect_to' ] );
 
 		// Find matching redirect for current path.
-
-		if ( method_exists( $this->srm, 'get_srm_redirect' ) ) {
-			$redirect_match = $this->srm->get_redirect_match();
-		} else {
-			$redirect_match = [];
-		}
+		$redirect_match = $this->srm->get_redirect_match();
 
 		// Add redirect_to and status_code from SRM match.
 		$data['redirectTo'] = empty( $data['redirectTo'] ) ?
