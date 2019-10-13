@@ -29,7 +29,7 @@ class Login_Endpoint extends Endpoint {
 			self::get_namespace(),
 			'/login/',
 			[
-				'methods'  => 'GET',
+				'methods'  => \WP_REST_Server::CREATABLE,
 				'callback' => [ $this, 'get_route_response' ],
 				'args'     => array(
 					'username'    => array(
