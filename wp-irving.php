@@ -26,6 +26,7 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-data-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
+require_once WP_IRVING_PATH . '/inc/endpoints/class-login-endpoint.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
