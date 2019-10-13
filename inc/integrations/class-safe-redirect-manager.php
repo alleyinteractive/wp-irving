@@ -37,6 +37,11 @@ class Safe_Redirect_Manager {
 
 		$this->srm = \SRM_Redirect::factory();
 
+		// This method is not part of Safe Redirect Manager core yet.
+		if ( ! method_exists( $this->srm, 'get_srm_redirect' ) ) {
+			return;
+		}
+
 		// Remove redirect actions from SRM.
 		remove_action( 'parse_request', [ $this->srm, 'maybe_redirect' ], 0 );
 		remove_action( 'template_redirect', [ $this->srm, 'maybe_redirect' ], 0 );
