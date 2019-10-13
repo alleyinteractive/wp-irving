@@ -31,10 +31,22 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 		self::$helpers = new \WP_Irving\Test_Helpers();
 	}
 
+	public function setUp() {
+		parent::setUp();
+
+		$this->object = \SRM_Redirect::factory();
+	}
+
 	/**
 	 * Test relative redirect.
 	 */
 	public function test_relative_to_relative() {
+		if ( ! method_exists( $this->object, 'get_redirect_match' ) ) {
+			$this->markTestIncomplete(
+				'get_redirect_match not part of Safe Redirect Manager.'
+			);
+		}
+
 		srm_create_redirect( '/foo/', '/bar/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/' );
 		$this->assertEquals( 'http://example.org/bar/', $response->data['redirectTo'] );
@@ -44,6 +56,12 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	 * Test redirects from a relative URL to an absolute URL.
 	 */
 	public function test_relative_to_absolute() {
+		if ( ! method_exists( $this->object, 'get_redirect_match' ) ) {
+			$this->markTestIncomplete(
+				'get_redirect_match not part of Safe Redirect Manager.'
+			);
+		}
+
 		// Internal, absolute URL destination.
 		srm_create_redirect( '/foo/bar/', 'http://example.org/baz/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/' );
@@ -59,6 +77,12 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	 * Test redirects from an absolute, internal URL to a relative URL.
 	 */
 	public function test_absolute_to_relative() {
+		if ( ! method_exists( $this->object, 'get_redirect_match' ) ) {
+			$this->markTestIncomplete(
+				'get_redirect_match not part of Safe Redirect Manager.'
+			);
+		}
+
 		srm_create_redirect( 'http://example.org/foo/', '/bar/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/' );
 		$this->assertEquals( 'http://example.org/bar/', $response->data['redirectTo'] );
@@ -68,6 +92,12 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	 * Test redirects from one absolute URL to another.
 	 */
 	public function test_absolute_to_absolute() {
+		if ( ! method_exists( $this->object, 'get_redirect_match' ) ) {
+			$this->markTestIncomplete(
+				'get_redirect_match not part of Safe Redirect Manager.'
+			);
+		}
+
 		// Internal, absolute URL destination.
 		srm_create_redirect( 'http://example.org/foo/bar/', 'http://example.org/baz/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/' );
@@ -83,6 +113,12 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	 * Test redirect_from URLs with and without a trailling slash will still match.
 	 */
 	public function test_trailing_slashes() {
+		if ( ! method_exists( $this->object, 'get_redirect_match' ) ) {
+			$this->markTestIncomplete(
+				'get_redirect_match not part of Safe Redirect Manager.'
+			);
+		}
+
 		// Redirect from with trailing slash.
 		srm_create_redirect( '/trailing-slash/', '/destination/' );
 

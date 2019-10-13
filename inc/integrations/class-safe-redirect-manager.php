@@ -37,11 +37,6 @@ class Safe_Redirect_Manager {
 
 		$this->srm = \SRM_Redirect::factory();
 
-		// This method is not part of Safe Redirect Manager core yet.
-		if ( ! method_exists( $this->srm, 'get_srm_redirect' ) ) {
-			return;
-		}
-
 		// Remove redirect actions from SRM.
 		remove_action( 'parse_request', [ $this->srm, 'maybe_redirect' ], 0 );
 		remove_action( 'template_redirect', [ $this->srm, 'maybe_redirect' ], 0 );
@@ -68,7 +63,12 @@ class Safe_Redirect_Manager {
 		add_filter( 'srm_redirect_to', [ $this, 'set_srm_redirect_to' ] );
 
 		// Find matching redirect for current path.
-		$redirect_match = $this->srm->get_redirect_match();
+
+		if ( method_exists( $this->srm, 'get_srm_redirect' ) ) {
+			$redirect_match = $this->srm->get_redirect_match();
+		} else {
+			$redirect_match = [];
+		}
 
 		// Add redirect_to and status_code from SRM match.
 		$data['redirectTo'] = empty( $data['redirectTo'] ) ?
