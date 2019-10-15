@@ -175,7 +175,7 @@ class Yoast {
 			$twitter_description = \WPSEO_Frontend::get_instance()->metadesc( '' );
 		}
 
-		return $twitter_description;
+		return (string) $twitter_description;
 	}
 
 	/**
@@ -185,7 +185,7 @@ class Yoast {
 	 * @return int Updated social image ID.
 	 */
 	public function get_yoast_social_image_id( int $social_image ) : int {
-		return \WPSEO_Meta::get_value( 'opengraph-image-id', get_the_id() );
+		return (int) \WPSEO_Meta::get_value( 'opengraph-image-id', get_the_id() );
 	}
 
 	/**
