@@ -38,6 +38,9 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
 
+// Purge Cache.
+require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
+
 // Rewrite rules.
 require_once WP_IRVING_PATH . '/inc/rewrites.php';
 

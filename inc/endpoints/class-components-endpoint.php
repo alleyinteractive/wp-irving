@@ -420,8 +420,9 @@ class Components_Endpoint extends Endpoint {
 	 * @see https://github.com/WordPress/gutenberg/issues/1761
 	 *
 	 * @param string $url Rest URL.
+	 * @return string
 	 */
-	public function fix_rest_url( $url ) {
+	public function fix_rest_url( $url ) : string {
 		return str_replace( home_url(), site_url(), $url );
 	}
 
