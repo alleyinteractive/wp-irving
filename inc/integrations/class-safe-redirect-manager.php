@@ -31,7 +31,7 @@ class Safe_Redirect_Manager {
 	 */
 	public function __construct() {
 		// Ensure Safe Redirect Manager exists and is enabled.
-		if ( ! class_exists( '\SRM_Redirect' ) ) {
+		if ( ! class_exists( '\SRM_Redirect' ) || ! method_exists( '\SRM_Redirect', 'get_redirect_match' ) ) {
 			return;
 		}
 
