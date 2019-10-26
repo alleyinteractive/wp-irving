@@ -368,16 +368,16 @@ class Components_Endpoint extends Endpoint {
 	/**
 	 * Permissions check.
 	 *
-	 * @param WP_REST_Request $request Full data about the request.
-	 * @return bool|WP_Error
+	 * @param \WP_REST_Request $request Full data about the request.
+	 * @return bool|\WP_Error
 	 */
 	public function permissions_check( $request ) {
 
 		/**
 		 * Filter the permissions check.
 		 *
-		 * @param bool|WP_Error   $retval  Returned value.
-		 * @param WP_REST_Request $request The request sent to the API.
+		 * @param bool|\WP_Error   $retval  Returned value.
+		 * @param \WP_REST_Request $request The request sent to the API.
 		 */
 		return apply_filters( 'wp_irving_components_route_permissions_check', true, $request );
 	}
@@ -520,7 +520,7 @@ class Components_Endpoint extends Endpoint {
 	 *
 	 * @param  \WP_Admin_Bar $admin_bar WP Admin Bar object.
 	 */
-	public function add_api_link_to_admin_bar( $admin_bar ) {
+	public function add_api_link_to_admin_bar( \WP_Admin_Bar $admin_bar ) {
 		if ( ! current_user_can( $this->api_link_cap ) ) {
 			return;
 		}
@@ -529,8 +529,39 @@ class Components_Endpoint extends Endpoint {
 			return;
 		}
 
-		// Get screen and check for a post base.
+		// Get screen and check for a object base.
 		$screen = get_current_screen();
+
+		if ( 'dashboard' === ( $screen->base ?? '' ) ) {
+			$path_url = add_query_arg(
+				'path',
+				'/',
+				rest_url( 'irving/v1/components/' )
+			);
+		}
+
+		if (
+			'term' === ( $screen->base ?? '' )
+			&& isset( $_GET['tag_ID'] )
+			&& isset( $_GET['taxonomy'] )
+		) {
+
+			// Get and validate term ID.
+			$term_id = absint( $_GET['tag_ID'] );
+			if ( 0 === $term_id ) {
+				return;
+			}
+
+			// Get term.
+			$term = get_term_by( 'term_taxonomy_id', absint( $_GET['tag_ID'] ), $_GET['taxonomy'] );
+
+			// Get term permalink.
+			$permalink = get_term_link( $term->term_id ?? 0 );
+
+			// Get the API URL, allowing it to be filtered.
+			$path_url = self::get_wp_irving_api_url( $permalink );
+			$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
+		}
 
 		if (
 			'post' === ( $screen->base ?? '' )
@@ -549,16 +580,21 @@ class Components_Endpoint extends Endpoint {
 			// Get the API URL, allowing it to be filtered.
 			$path_url = self::get_wp_irving_api_url( $permalink );
 			$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, get_post( $post_id ) );
-
-			// Add node to admin bar.
-			$admin_bar->add_node(
-				[
-					'id'    => 'wp_irving_api',
-					'title' => __( 'WP-Irving API', 'wp-irving' ),
-					'href'  => $path_url,
-				]
-			);
 		}
+
+		// Bail early.
+		if ( empty( $path_url ) ) {
+			return;
+		}
+		
+		// Add node to admin bar.
+		$admin_bar->add_node(
+			[
+				'id'    => 'wp_irving_api',
+				'title' => __( 'WP-Irving API', 'wp-irving' ),
+				'href'  => $path_url,
+			]
+		);
 	}
 
 	/**
