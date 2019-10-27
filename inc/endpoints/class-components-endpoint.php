@@ -553,7 +553,7 @@ class Components_Endpoint extends Endpoint {
 			}
 
 			// Get term.
-			$term = get_term_by( 'term_taxonomy_id', absint( wp_unslash( $_GET['tag_ID'] ) ), wp_unslash( $_GET['taxonomy'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$term = get_term_by( 'term_taxonomy_id', $term_id, wp_unslash( $_GET['taxonomy'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 			// Get term permalink.
 			$permalink = get_term_link( $term->term_id ?? 0 );
