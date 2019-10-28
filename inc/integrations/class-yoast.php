@@ -199,6 +199,11 @@ class Yoast {
 		global $wp_query;
 		$wp_query->is_singular = true;
 
+		// Only if the method exists.
+		if ( ! method_exists( '\WPSEO_Frontend', 'get_robots' ) ) {
+			return '';
+		}
+
 		$deindex = \WPSEO_Frontend::get_instance()->get_robots();
 		return strpos( $deindex, 'noindex' ) !== false;
 	}
