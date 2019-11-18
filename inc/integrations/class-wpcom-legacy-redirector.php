@@ -28,7 +28,7 @@ class WPCOM_Legacy_Redirector {
 		}
 
 		// Handle Irving redirects.
-		add_action( 'wp_irving_components_route', [ $this, 'handle_redirect' ], 10, 5 );
+		add_filter( 'wp_irving_components_route', [ $this, 'handle_redirect' ], 5, 5 );
 	}
 
 	/**

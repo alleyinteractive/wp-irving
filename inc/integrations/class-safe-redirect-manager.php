@@ -42,7 +42,7 @@ class Safe_Redirect_Manager {
 		remove_action( 'template_redirect', [ $this->srm, 'maybe_redirect' ], 0 );
 
 		// Re-use SRM's filter to redirect only on 404s.
-		add_filter( 'wp_irving_components_route', [ $this, 'get_srm_redirect' ], 10, 5 );
+		add_filter( 'wp_irving_components_route', [ $this, 'get_srm_redirect' ], 5, 5 );
 	}
 
 	/**
