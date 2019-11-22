@@ -172,7 +172,7 @@ class Yoast {
 		$twitter_description = \WPSEO_Meta::get_value( 'twitter-description', get_the_id() );
 
 		if ( empty( $twitter_description ) ) {
-			$twitter_description = \WPSEO_Frontend::get_instance()->metadesc( '' );
+			$twitter_description = \WPSEO_Frontend::get_instance()->metadesc( false );
 		}
 
 		return (string) $twitter_description;
