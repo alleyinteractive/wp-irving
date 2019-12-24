@@ -74,6 +74,11 @@ class Purge_Cache {
 	 */
 	protected function fire_purge_request( $permalink = '' ) {
 
+		// Do not fire purges while importing.
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
+			return;
+		}
+
 		// Bail early.
 		if ( empty( $permalink ) ) {
 			return;
