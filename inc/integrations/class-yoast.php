@@ -23,6 +23,10 @@ class Yoast {
 		}
 
 		if ( ! is_admin() ) {
+
+			// Remove default trailing title in favor of Yoast.
+			add_filter( 'wp_components_head_append_trailing_title', '__return_false' );
+
 			add_filter(
 				'wp_components_head_meta_title',
 				[ $this, 'get_yoast_title' ]
