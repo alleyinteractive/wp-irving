@@ -620,7 +620,9 @@ class Components_Endpoint extends Endpoint {
 			rest_url( 'irving/v1/components' )
 		);
 
-		// Redirect permanently.
+		// Set headers and redirect permanently.
+		header( 'Access-Control-Allow-Origin: ' . home_url() );
+		header( 'Access-Control-Allow-Credentials: true' );
 		wp_redirect( $request_url, 301 );
 		exit;
 	}
