@@ -441,19 +441,27 @@ class Components_Endpoint extends Endpoint {
 	/**
 	 * Get the WP Irving API endpoint for a specific URL.
 	 *
-	 * @param string $url URL.
+	 * @param string $url     URL.
+	 * @param string $context The context of the request, either `page` or `site`.
 	 * @return string
 	 */
-	public static function get_wp_irving_api_url( $url ) {
+	public static function get_wp_irving_api_url( $url, $context = 'page' ) {
 
-		// Get the path.
+		// Get the path and encode it.
 		$path = str_replace( get_home_url(), '', $url );
+		$path = urlencode( $path );
 
-		// Apply path to base components endpoint.
+		// Ensure context is a valid value.
+		$context = ( 'site' === $context )
+			? 'site'
+			: 'page';
+
 		return add_query_arg(
-			'path',
-			$path,
-			rest_url( 'irving/v1/components/' )
+			[
+				'context' => $context,
+				'path'    => $path,
+			],
+			rest_url( 'irving/v1/components' )
 		);
 	}
 
