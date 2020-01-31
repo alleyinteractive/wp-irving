@@ -447,9 +447,8 @@ class Components_Endpoint extends Endpoint {
 	 */
 	public static function get_wp_irving_api_url( $url, $context = 'page' ) {
 
-		// Get the path and encode it.
+		// Get the path.
 		$path = str_replace( get_home_url(), '', $url );
-		$path = urlencode( $path );
 
 		// Ensure context is a valid value.
 		$context = ( 'site' === $context )
