@@ -37,15 +37,15 @@ class VIP_Go {
 
 		// Get the components endpoint URL equivalents for the current list of purge URLs.
 		foreach ( $purge_urls as $url ) {
-	
+
 			if ( false === strpos( $url, home_url() ) ) {
 				continue;
 			}
-	
+
 			$new_urls[] = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $url, 'site' );
 			$new_urls[] = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $url, 'page' );
 		}
-	
+
 		// Do a hacky replace on the URLs.
 		// @todo remove this once the VIP cache manager plugin is patched.
 		$new_urls = array_map(
@@ -54,10 +54,10 @@ class VIP_Go {
 			},
 			$new_urls
 		);
-	
+
 		// Add the URLs to the purge list.
 		$purge_urls = array_merge( $new_urls, $purge_urls );
-	
+
 		return $purge_urls;
 	}
 }
