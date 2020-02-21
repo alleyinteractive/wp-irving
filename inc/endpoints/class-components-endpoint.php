@@ -389,7 +389,8 @@ class Components_Endpoint extends Endpoint {
 	 */
 	public function register_globals() {
 		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
-		global $wp_the_query;
+		global $wp_the_query, $wp_query;
+		$wp_query = $wp_the_query;
 
 		// Extract updated query vars back into global namespace.
 		foreach ( (array) $wp_the_query->query_vars as $key => $value ) {
