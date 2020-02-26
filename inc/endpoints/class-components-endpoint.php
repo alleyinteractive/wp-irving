@@ -327,7 +327,7 @@ class Components_Endpoint extends Endpoint {
 		// Add_query_arg will encode the url, which we don't want.
 		$query = urldecode( $query );
 
-		// Remove any leading question marks as artifacts from add_query_arg;
+		// Remove any leading question marks as artifacts from add_query_arg.
 		$query = ltrim( $query, '?' );
 
 		/**
