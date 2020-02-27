@@ -88,11 +88,7 @@ class Purge_Cache {
 		$path = wp_parse_url( $permalink, PHP_URL_PATH );
 
 		// Build the key.
-		$key = sprintf( '%1$s,%2$s,%3$s',
-			$path,
-			'?',
-			'site'
-		);
+		$key = sprintf( 'path=%1$s&context=site', $path );
 
 		// Build URL.
 		$request_url = add_query_arg(
