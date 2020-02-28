@@ -56,12 +56,8 @@ class New_Relic {
 
 				$params = $request->get_params();
 
-				if ( ! empty( $params['context'] ) ) {
-					\newrelic_add_custom_parameter( 'wp-api-context', $params['context'] );
-				}
-
-				if ( ! empty( $params['path'] ) ) {
-					\newrelic_add_custom_parameter( 'wp-api-path', $params['path'] );
+				foreach( $params as $param => $content ) {
+					\newrelic_add_custom_parameter( 'wp-api-' . $param, $content );
 				}
 
 				// Ensure this is only run once.
