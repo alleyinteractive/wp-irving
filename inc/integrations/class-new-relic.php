@@ -36,7 +36,8 @@ class New_Relic {
 	 */
 	public function rest_routes_for_newrelic( $dispatch_result, $request, $route, $handler ) {
 		if (
-			defined( 'REST_REQUEST' )
+			extension_loaded( 'newrelic' )
+			&& defined( 'REST_REQUEST' )
 			&& true === REST_REQUEST
 			&& function_exists( 'newrelic_add_custom_parameter' )
 			&& function_exists( 'newrelic_name_transaction' )
@@ -45,8 +46,6 @@ class New_Relic {
 			$path = $GLOBALS['wp']->query_vars['rest_route'];
 			if ( preg_match( '@^' . $route . '@i', $path ) ) {
 				$name = preg_replace( '/\(\?P(<\w+?>).*?\)/', '$1', $route );
-
-				\error_log( 'Test' );
 
 				\newrelic_name_transaction( $name );
 				\newrelic_add_custom_parameter( 'wp-api', 'true' );
