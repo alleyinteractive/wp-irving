@@ -7,6 +7,9 @@
 
 namespace WP_Irving;
 
+/**
+ * Class to integrate New Relic with Irving.
+ */
 class New_Relic {
 
 	/**
