@@ -56,7 +56,7 @@ class New_Relic {
 
 				$params = $request->get_params();
 
-				foreach( $params as $param => $content ) {
+				foreach ( $params as $param => $content ) {
 					\newrelic_add_custom_parameter( 'wp-api-' . $param, $content );
 				}
 
