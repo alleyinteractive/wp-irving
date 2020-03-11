@@ -34,6 +34,7 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
