@@ -28,6 +28,11 @@ class Yoast {
 			add_filter( 'wp_components_head_append_trailing_title', '__return_false' );
 
 			add_filter(
+				'wp_components_head_title',
+				[ $this, 'get_yoast_title' ]
+			);
+
+			add_filter(
 				'wp_components_head_meta_title',
 				[ $this, 'get_yoast_title' ]
 			);
@@ -81,10 +86,6 @@ class Yoast {
 	 * @return string Updated title value.
 	 */
 	public function get_yoast_title( string $title ) : string {
-		// Workaround for is_singular() not being set.
-		global $wp_query;
-		$wp_query->is_singular = true;
-
 		return \WPSEO_Frontend::get_instance()->title( $title );
 	}
 
