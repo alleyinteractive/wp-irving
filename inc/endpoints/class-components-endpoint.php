@@ -20,6 +20,13 @@ class Components_Endpoint extends Endpoint {
 	public $path = '';
 
 	/**
+	 * Static version of the path for accessing globally.
+	 *
+	 * @var string
+	 */
+	public static $irving_path = '';
+
+	/**
 	 * Context of request.
 	 *
 	 * @var string
@@ -205,7 +212,8 @@ class Components_Endpoint extends Endpoint {
 		 *
 		 * @param  string $raw_path Raw path value from request.
 		 */
-		$this->path = (string) apply_filters( 'wp_irving_components_path', $raw_path );
+		$this->path        = (string) apply_filters( 'wp_irving_components_path', $raw_path );
+		self::$irving_path = $this->path;
 
 		/**
 		 * Action fired on the sanitized path value.
