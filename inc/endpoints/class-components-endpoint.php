@@ -302,33 +302,31 @@ class Components_Endpoint extends Endpoint {
 			}
 		}
 
-		// Fix an issue where `add_query_arg` doesn't work with already
-		// encoded strings missing the equal.
 		if ( ! empty( $query ) ) {
+
+			// Fix an issue where `add_query_arg` doesn't work with already
+			// encoded strings missing the equal.
 			if ( false === strpos( $query, '=' ) ) {
 				$query .= '=';
 			}
+
+			// Add irving-path to the query.
+			$query = add_query_arg(
+				[
+					'irving-path'   => $this->path,
+					'irving-path-params' => $this->custom_params,
+				],
+				$query
+			);
+
+			// Add any extra included params.
+			foreach ( $this->custom_params as $key => $value ) {
+				$query = add_query_arg( $key, $value, $query );
+			}
+
+			// add_query_arg will encode the url, which we don't want.
+			$query = urldecode( $query );
 		}
-
-		// Add irving-path to the query.
-		$query = add_query_arg(
-			[
-				'irving-path'        => $this->path,
-				'irving-path-params' => $this->custom_params,
-			],
-			$query
-		);
-
-		// Add any extra included params.
-		foreach ( $this->custom_params as $key => $value ) {
-			$query = add_query_arg( $key, $value, $query );
-		}
-
-		// Add_query_arg will encode the url, which we don't want.
-		$query = urldecode( $query );
-
-		// Remove any leading question marks as artifacts from add_query_arg.
-		$query = ltrim( $query, '?' );
 
 		/**
 		 * Modify the query vars.
