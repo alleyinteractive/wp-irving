@@ -131,6 +131,9 @@ class Components_Endpoint extends Endpoint {
 	 * @return array
 	 */
 	public function get_route_response( $request ) {
+
+		global $wp;
+
 		/**
 		 * Action fired on the request.
 		 *
@@ -138,7 +141,12 @@ class Components_Endpoint extends Endpoint {
 		 */
 		do_action( 'wp_irving_components_request', $request );
 
-		$this->params = $request->get_params();
+		// Remove any request parameters that haven't been allow-listed by the
+		// global $wp object's $public_query_vars array.
+		$this->params = array_intersect_key(
+			$request->get_params(),
+			array_flip( $wp->public_query_vars ),
+		);
 
 		// Parse path and context.
 		$this->parse_path( $this->params['path'] ?? '' );
@@ -442,6 +450,8 @@ class Components_Endpoint extends Endpoint {
 	 * @return array $vars Array of query vars.
 	 */
 	public function modify_query_vars( $vars ) {
+		$vars[] = 'context';
+		$vars[] = 'path';
 		$vars[] = 'irving-path';
 		$vars[] = 'irving-path-params';
 		return $vars;
