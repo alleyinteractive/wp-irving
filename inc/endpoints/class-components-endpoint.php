@@ -132,6 +132,7 @@ class Components_Endpoint extends Endpoint {
 	 */
 	public function get_route_response( $request ) {
 
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
 		global $wp;
 
 		/**
@@ -145,7 +146,7 @@ class Components_Endpoint extends Endpoint {
 		// global $wp object's $public_query_vars array.
 		$this->params = array_intersect_key(
 			$request->get_params(),
-			array_flip( $wp->public_query_vars ),
+			array_flip( $wp->public_query_vars )
 		);
 
 		// Parse path and context.
@@ -374,7 +375,7 @@ class Components_Endpoint extends Endpoint {
 		$wp_query = apply_filters( 'wp_irving_components_wp_query', $wp_query, $this->path, $this->custom_params, $this->params );
 
 		// Map to main query and set up globals.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited, WordPress.WP.GlobalVariablesOverride.OverrideProhibited
 		$wp_the_query = $wp_query;
 		$this->register_globals();
 
@@ -404,7 +405,7 @@ class Components_Endpoint extends Endpoint {
 	 * @see https://github.com/WordPress/WordPress/blob/master/wp-includes/class-wp.php#L580
 	 */
 	public function register_globals() {
-		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
+		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited, WordPress.WP.GlobalVariablesOverride.OverrideProhibited
 		global $wp_the_query, $wp_query;
 		$wp_query = $wp_the_query;
 
