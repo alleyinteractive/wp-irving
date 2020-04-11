@@ -26,6 +26,13 @@ class JWT_Auth {
 	const KEYPAIR_NAME = 'wp-irving-jwt-auth';
 
 	/**
+	 * Cookie domain. Used to enable cross-domain cookie auth.
+	 *
+	 * @var string
+	 */
+	public $cookie_domain = '';
+
+	/**
 	 * Class instance.
 	 *
 	 * @var null|self
@@ -54,6 +61,9 @@ class JWT_Auth {
 	 * the cookie too?
 	 */
 	public function setup() {
+
+		$this->cookie_domain = defined( 'IRVING_TLD' ) ? IRVING_TLD : wp_parse_url( home_url(), PHP_URL_HOST );
+
 		if ( ! isset( $_COOKIE[ self::COOKIE_NAME ] ) ) {
 			add_action( 'admin_init', [ $this, 'set_cookie' ] );
 		} else {
@@ -66,7 +76,17 @@ class JWT_Auth {
 	 */
 	public function set_cookie() {
 		$token_response = $this->get_or_create_token();
-		setcookie( self::COOKIE_NAME, $token_response['access_token'], time() + ( DAY_IN_SECONDS * 7 ) - MINUTE_IN_SECONDS, '/', IRVING_TLD, TRUE, FALSE );
+
+		// Set a cross domain cookie using the JWT.
+		setcookie(
+			self::COOKIE_NAME,
+			$token_response['access_token'],
+			time() + ( DAY_IN_SECONDS * 7 ) - MINUTE_IN_SECONDS,
+			'/',
+			$this->cookie_domain,
+			TRUE,
+			FALSE
+		);
 	}
 
 	/**
@@ -74,7 +94,7 @@ class JWT_Auth {
 	 */
 	public function remove_cookie() {
 		if ( ! is_user_logged_in() ) {
-			setcookie( self::COOKIE_NAME, null, -1, '/', IRVING_TLD );
+			setcookie( self::COOKIE_NAME, null, -1, '/', $this->cookie_domain );
 		}
 	}
 
