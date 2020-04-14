@@ -16,7 +16,7 @@ class JWT_Auth {
 	 *
 	 * @var string
 	 */
-	const COOKIE_NAME = 'authorizationHeader';
+	const COOKIE_NAME = 'authorizationBearerToken';
 
 	/**
 	 * Name for the keypair.
