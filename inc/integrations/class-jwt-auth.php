@@ -1,14 +1,16 @@
 <?php
 /**
- * Previews.
- *
- * This functionality ensures that authenticated previews still work in Irving.
+ * JWT Authentication Integration.
  *
  * @package WP_Irving
  */
 
 namespace WP_Irving;
 
+/**
+ * Singleton class for creating a cross-domain cookie that Irving core can read
+ * and use for Component API authentication.
+ */
 class JWT_Auth {
 
 	/**
@@ -24,13 +26,6 @@ class JWT_Auth {
 	 * @var string
 	 */
 	const KEYPAIR_NAME = 'wp-irving-jwt-auth';
-
-	/**
-	 * Cookie domain. Used to enable cross-domain cookie auth.
-	 *
-	 * @var string
-	 */
-	public $cookie_domain = '';
 
 	/**
 	 * Class instance.
@@ -53,54 +48,106 @@ class JWT_Auth {
 	}
 
 	/**
-	 * Setup the singleton.
-	 *
-	 * @todo Determine if we need to validate the token. This may not be needed
-	 * because the cookie is set to expire right before the auth token does.
-	 * Maybe we should hook into if/when the token is revoked so we can kill
-	 * the cookie too?
+	 * Setup the singleton. Validate JWT is installed, and setup hooks.
 	 */
 	public function setup() {
 
-		$this->cookie_domain = defined( 'IRVING_TLD' ) ? IRVING_TLD : wp_parse_url( home_url(), PHP_URL_HOST );
-
-		if ( ! isset( $_COOKIE[ self::COOKIE_NAME ] ) ) {
-			add_action( 'admin_init', [ $this, 'set_cookie' ] );
-		} else {
-			add_action( 'init', [ $this, 'remove_cookie' ] );
+		// Validate that JWT exists and is enabled.
+		if ( ! defined( 'JWT_AUTH_VERSION' ) ) {
+			return;
 		}
+
+		// Set or unset the cookie upon init.
+		add_action( 'init', [ $this, 'handle_cookie' ] );
+
+		// Don't require the token to be valid. This ensures that even if the
+		// value of the cookie is an invalid token, the unauthenticated
+		// endpoint is returned rather than an error message.
+		add_filter( 'rest_authentication_require_token', '__return_false' );
+	}
+
+	/**
+	 * Handle the cookie logic upon init.
+	 */
+	public function handle_cookie() {
+
+		// Determine the cross domain cookie domain.
+		$this->cookie_domain = apply_filters(
+			'wp_irving_jwt_token_cookie_domain',
+			wp_parse_url( home_url(), PHP_URL_HOST )
+		);
+
+		$this->possibly_set_cookie();
+		$this->possibly_remove_cookie();
 	}
 
 	/**
 	 * Get a clean token and set the cookie.
+	 *
+	 * @todo Display an admin error message if the token and/or cookie wasn't
+	 *       set correctly.
+	 *
+	 * @return bool Was the cookie set successfully?
 	 */
-	public function set_cookie() {
+	public function possibly_set_cookie() {
+
+		if ( isset( $_COOKIE[ self::COOKIE_NAME ] ) ) { // phpcs:ignore
+			return;
+		}
+
+		// Validate this.
 		$token_response = $this->get_or_create_token();
 
+		// Invalid response.
+		if ( ! $token_response ) {
+			return false;
+		}
+
 		// Set a cross domain cookie using the JWT.
+		// phpcs:ignore
 		setcookie(
 			self::COOKIE_NAME,
-			$token_response['access_token'],
-			time() + ( DAY_IN_SECONDS * 7 ) - MINUTE_IN_SECONDS,
+			$token_response['access_token'] ?? '',
+			time() + ( DAY_IN_SECONDS * 7 ) - MINUTE_IN_SECONDS, // Expire the cookie one minute before the token does.
 			'/',
 			$this->cookie_domain,
-			TRUE,
-			FALSE
+			true,
+			false
 		);
+
+		return true;
 	}
 
 	/**
-	 * If the user isn't logged in, ensure the auth cookie is deleted.
+	 * If the user isn't logged in. but has an auth cookie, kill it.
+	 *
+	 * @return bool Was the cookie was removed successfully?
 	 */
-	public function remove_cookie() {
-		if ( ! is_user_logged_in() ) {
-			setcookie( self::COOKIE_NAME, null, -1, '/', $this->cookie_domain );
+	public function possibly_remove_cookie() {
+
+		if (
+			! isset( $_COOKIE[ self::COOKIE_NAME ] ) // phpcs:ignore
+			|| is_user_logged_in()
+		) {
+			 return false;
 		}
+
+		// phpcs:ignore
+		setcookie(
+			self::COOKIE_NAME,
+			null,
+			-1,
+			'/',
+			$this->cookie_domain
+		);
+
+		return true;
 	}
 
 	/**
-	 * [get_or_create_wp_irving_preview_token description]
-	 * @return [type] [description]
+	 * Get or create a JSON Web Token.
+	 *
+	 * @return ?array
 	 */
 	public function get_or_create_token() {
 
@@ -117,7 +164,7 @@ class JWT_Auth {
 
 		// Delete any existing keypairs.
 		foreach ( $keypairs as $index => $keypair ) {
-			if ( $keypair['name'] === self::KEYPAIR_NAME ) {
+			if ( self::KEYPAIR_NAME === $keypair['name'] ) {
 				unset( $keypairs[ $index ] );
 			}
 		}
@@ -132,7 +179,7 @@ class JWT_Auth {
 		];
 
 		// Saving the new key.
-		$keys = (array) $wp_rest_keypair->set_user_key_pairs( $user_id, $keypairs );
+		$wp_rest_keypair->set_user_key_pairs( $user_id, $keypairs );
 
 		// Set the new request with the new key and secret.
 		$token_request = new \WP_REST_Request( \WP_REST_Server::CREATABLE, '/wp/v2/token' );
