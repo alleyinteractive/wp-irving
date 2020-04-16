@@ -8,8 +8,8 @@
 namespace WP_Irving;
 
 /**
- * Singleton class for creating a cross-domain cookie that Irving core can read
- * and use for Component API authentication.
+ * Singleton class for creating a cross-domain cookie with a JSON Web Token
+ * that Irving core can read and use for Component API authentication.
  */
 class JWT_Auth {
 
@@ -71,7 +71,13 @@ class JWT_Auth {
 	 */
 	public function handle_cookie() {
 
-		// Determine the cross domain cookie domain.
+		/**
+		 * Determine the cross domain cookie domain.
+		 *
+		 * @todo Can we swap this for the COOKIE_DOMAIN constant at somepoint?
+		 *
+		 * @var string
+		 */
 		$this->cookie_domain = apply_filters(
 			'wp_irving_jwt_token_cookie_domain',
 			wp_parse_url( home_url(), PHP_URL_HOST )
@@ -89,17 +95,18 @@ class JWT_Auth {
 	 *
 	 * @return bool Was the cookie set successfully?
 	 */
-	public function possibly_set_cookie() {
+	public function possibly_set_cookie(): bool {
 
+		// We've already set the cookie.
 		if ( isset( $_COOKIE[ self::COOKIE_NAME ] ) ) { // phpcs:ignore
-			return;
+			return false;
 		}
 
-		// Validate this.
+		// Get and/or create a token to store in the cookie.
 		$token_response = $this->get_or_create_token();
 
-		// Invalid response.
-		if ( ! $token_response ) {
+		// Invalid response. This needs better error handing.
+		if ( empty( $token_response ) ) {
 			return false;
 		}
 
@@ -123,7 +130,7 @@ class JWT_Auth {
 	 *
 	 * @return bool Was the cookie was removed successfully?
 	 */
-	public function possibly_remove_cookie() {
+	public function possibly_remove_cookie(): bool {
 
 		if (
 			! isset( $_COOKIE[ self::COOKIE_NAME ] ) // phpcs:ignore
@@ -147,9 +154,9 @@ class JWT_Auth {
 	/**
 	 * Get or create a JSON Web Token.
 	 *
-	 * @return ?array
+	 * @return array
 	 */
-	public function get_or_create_token() {
+	public function get_or_create_token() : array {
 
 		$user_id    = get_current_user_id();
 		$api_key    = $user_id . wp_generate_password( 24, false );
@@ -197,7 +204,7 @@ class JWT_Auth {
 			return $token_request->data;
 		}
 
-		return false;
+		return [];
 	}
 }
 
