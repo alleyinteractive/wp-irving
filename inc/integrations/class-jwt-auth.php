@@ -60,10 +60,17 @@ class JWT_Auth {
 		// Set or unset the cookie upon init.
 		add_action( 'init', [ $this, 'handle_cookie' ] );
 
-		// Don't require the token to be valid. This ensures that even if the
-		// value of the cookie is an invalid token, the unauthenticated
-		// endpoint is returned rather than an error message.
-		add_filter( 'rest_authentication_require_token', '__return_false' );
+		// Return the API result instead of an invalid token error. This
+		// ensures invalid tokens don't error out, and instead get the
+		// non-authenticated components API.
+		add_filter(
+			'rest_authentication_invalid_token',
+			function( $token, $result ) {
+				return $result;
+			},
+			10,
+			2
+		);
 	}
 
 	/**
