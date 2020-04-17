@@ -16,6 +16,7 @@
     "alley/alley-coding-standards": "dev-master"
   },
   "scripts": {
-    "phpcs": "phpcs ."
+    "phpcs": "phpcs .",
+    "phpcs:fix": "phpcbf ."
   }
 }

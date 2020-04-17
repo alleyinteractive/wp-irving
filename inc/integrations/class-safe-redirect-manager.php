@@ -66,7 +66,7 @@ class Safe_Redirect_Manager {
 		$redirect_match = $this->srm->get_redirect_match();
 
 		// Add redirect_to and status_code from SRM match.
-		$data['redirectTo'] = empty( $data['redirectTo'] ) ?
+		$data['redirectTo']     = empty( $data['redirectTo'] ) ?
 			$redirect_match['redirect_to'] ?? '' :
 			$data['redirectTo'];
 		$data['redirectStatus'] = empty( $data['redirectStatus'] ) ?
@@ -102,6 +102,9 @@ class Safe_Redirect_Manager {
 	}
 }
 
-add_action( 'init', function() {
-	new \WP_Irving\Safe_Redirect_Manager();
-} );
+add_action(
+	'init',
+	function() {
+		new \WP_Irving\Safe_Redirect_Manager();
+	} 
+);

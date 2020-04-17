@@ -304,7 +304,7 @@ class Components_Endpoint extends Endpoint {
 					if ( is_post_type_viewable( $post_type_object ) && $post_type_object->query_var ) {
 						if ( isset( $args[ $post_type_object->query_var ] ) ) {
 							$args['post_type'] = $post_type_object->query_var;
-							$args['name'] = $args[ $post_type_object->query_var ];
+							$args['name']      = $args[ $post_type_object->query_var ];
 						}
 					}
 				}
@@ -330,7 +330,7 @@ class Components_Endpoint extends Endpoint {
 			// Add irving-path to the query.
 			$query = add_query_arg(
 				[
-					'irving-path'   => $this->path,
+					'irving-path'        => $this->path,
 					'irving-path-params' => $this->custom_params,
 				],
 				$query
@@ -353,7 +353,7 @@ class Components_Endpoint extends Endpoint {
 		 * @param string $this->custom_params  Custom params.
 		 * @param string $this->params         Request params.
 		 */
-		$query = apply_filters( 'wp_irving_components_query_string', $query, $this->path, $this->custom_params, $this->params );
+		$query              = apply_filters( 'wp_irving_components_query_string', $query, $this->path, $this->custom_params, $this->params );
 		$this->query_string = $query;
 
 		// Execute query.

@@ -74,7 +74,7 @@ class WPCOM_Legacy_Redirector {
 				}
 
 				// Include redirect URL and status in response.
-				$data['redirectTo'] = empty( $data['redirectTo'] ) ?
+				$data['redirectTo']     = empty( $data['redirectTo'] ) ?
 					$redirect_to ?? '' :
 					$data['redirectTo'];
 				$data['redirectStatus'] = empty( $data['redirectStatus'] ) ?
@@ -89,6 +89,9 @@ class WPCOM_Legacy_Redirector {
 	}
 }
 
-add_action( 'init', function() {
-	new \WP_Irving\WPCOM_Legacy_Redirector();
-} );
+add_action(
+	'init',
+	function() {
+		new \WP_Irving\WPCOM_Legacy_Redirector();
+	} 
+);

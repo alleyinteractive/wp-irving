@@ -56,7 +56,10 @@ class Archiveless {
 	}
 }
 
-add_action( 'init', function() {
-	new \WP_Irving\Archiveless();
-} );
+add_action(
+	'init',
+	function() {
+		new \WP_Irving\Archiveless();
+	} 
+);
 
