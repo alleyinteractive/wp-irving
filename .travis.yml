@@ -44,6 +44,10 @@ before_script:
       composer install
     fi
   - |
+    if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
+      composer install
+    fi
+  - |
     if [[ ! -z "$WP_VERSION" ]] ; then
       cd ../
       git clone https://github.com/alleyinteractive/safe-redirect-manager.git
