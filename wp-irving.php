@@ -37,7 +37,8 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
 
-// Purge Cache.
+// Replicating WP Core functionality.
+require_once WP_IRVING_PATH . '/inc/class-previews.php';
 require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
 
 // Redirects.

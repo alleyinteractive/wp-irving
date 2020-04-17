@@ -215,4 +215,9 @@ class JWT_Auth {
 	}
 }
 
-( new \WP_Irving\JWT_Auth() )->instance();
+add_action(
+	'plugins_loaded',
+	function() {
+		( new \WP_Irving\JWT_Auth() )->instance();
+	}
+);
