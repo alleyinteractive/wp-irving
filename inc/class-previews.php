@@ -135,7 +135,7 @@ class Previews {
 			return $wp_query;
 		}
 
-		// Get all the revisions
+		// Get all the revisions.
 		$revisions = wp_get_post_revisions( $wp_query->post->ID );
 
 		// Use the preview_id, or fallback to the most recent revision.
