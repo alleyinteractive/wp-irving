@@ -122,12 +122,6 @@ class Previews {
 	 */
 	public function modify_wp_query_for_previews( $wp_query, $path, $custom_params, $params ) {
 
-		// Disable revision preview nonces so we can inject our own logic.
-		// Without this, wp_die() will execute, which means our auth strategy
-		// fails. There isn't anyway to currently filter this behavior, so
-		// we're stuck with this.
-		remove_action( 'init', '_show_post_preview' );
-
 		// Auth and a real route required.
 		if ( ! is_user_logged_in() || ! $wp_query->have_posts() ) {
 			return $wp_query;
@@ -136,19 +130,16 @@ class Previews {
 		$is_preview = wp_validate_boolean( $params['preview'] ?? false );
 		$preview_id = absint( $params['preview_id'] ?? 0 );
 
-		// This is not a preview.
-		if (
-			false === $is_preview
-			|| 0 === $preview_id
-		) {
+		// Require `preview` to be true, and `p` to be an integer.
+		if ( false === $is_preview || 0 === $preview_id ) {
 			return $wp_query;
 		}
 
-		if ( ( $wp_query->post->ID ?? 0 ) === $preview_id ) {
-			$revision = current( wp_get_post_revisions( $preview_id ) );
-		} else {
-			$revision = wp_get_post_revision( $preview_id );
-		}
+		// Get all the revisions
+		$revisions = wp_get_post_revisions( $wp_query->post->ID );
+
+		// Use the preview_id, or fallback to the most recent revision.
+		$revision = $revisions[ $preview_id ] ?? current( $revisions );
 
 		$wp_query->posts[0] = $revision;
 		$wp_query->post     = $revision;
