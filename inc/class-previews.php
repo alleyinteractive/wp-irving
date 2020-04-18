@@ -42,7 +42,7 @@ class Previews {
 		add_filter( 'query_vars', [ $this, 'modify_query_vars' ] );
 
 		// Filter to easily enable public previews.
-		if ( apply_filters( 'wp_irving_enable_public_previews', '__return_false' ) ) {
+		if ( apply_filters( 'wp_irving_enable_public_previews', false ) ) {
 			$this->enable_public_previews();
 		}
 
