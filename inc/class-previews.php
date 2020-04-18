@@ -41,9 +41,14 @@ class Previews {
 		// Allow-list some query vars.
 		add_filter( 'query_vars', [ $this, 'modify_query_vars' ] );
 
-		// Filter to easily enable public previews.
-		if ( apply_filters( 'wp_irving_enable_public_previews', false ) ) {
-			$this->enable_public_previews();
+		// Remove the wp_die() that occurs on preview urls. We need to do this
+		// or the SSR endpoint will fail in a bad way. This alone does not
+		// expose any draft or revision data.
+		remove_action( 'init', '_show_post_preview' );
+
+		// Filter to enable/disable public previews.
+		if ( apply_filters( 'wp_irving_enable_public_previews', true ) ) {
+			add_action( 'wp_irving_components_request', [ $this, 'enabled_public_previews' ] );
 		}
 
 		// After plugins have loaded, check for JWT and modify the preview logic as needed.
@@ -58,7 +63,7 @@ class Previews {
 
 				// Hook into Irving's query string to WP_Query process to modify some
 				// logic for previews.
-				// add_action( 'wp_irving_components_wp_query', [ $this, 'modify_wp_query_for_previews' ], 10, 4 );
+				add_action( 'wp_irving_components_wp_query', [ $this, 'modify_wp_query_for_previews' ], 10, 4 );
 			}
 		);
 	}
@@ -76,36 +81,31 @@ class Previews {
 	}
 
 	/**
-	 * Enable public previews.
+	 * Hook into the component API request and change the draft preview to be
+	 * `publish`, mimicking a public post.
+	 *
+	 * @param \WP_REST_Request $request Request object.
 	 */
-	public function enable_public_previews() {
+	public function enabled_public_previews( \WP_REST_Request $request ) {
 
-		// Disable revision preview nonces.
-		remove_action( 'init', '_show_post_preview' );
+		// Require `preview` to be true, and `p` to be an integer.
+		if (
+			false === wp_validate_boolean( $request->get_param( 'preview' ) )
+			|| 0 === absint( $request->get_param( 'p' ) )
+		) {
+			return;
+		}
 
-		// Hook into the component API request and change the draft preview
-		// to be `publish`, mimicking a public post.
 		add_filter(
-			'wp_irving_components_request',
-			function ( $request ) {
-				if (
-					true === (bool) $request->get_param( 'preview' )
-					|| 0 !== absint( $request->get_param( 'p' ) )
-				) {
-					add_filter(
-						'posts_results',
-						function ( $posts ) {
+			'posts_results',
+			function ( $posts ) {
 
-							if ( empty( $posts ) ) {
-								return $posts;
-							}
-
-							$posts[0]->post_status = 'publish';
-							return $posts;
-						}
-					);
+				if ( empty( $posts ) ) {
+					return $posts;
 				}
 
+				$posts[0]->post_status = 'publish';
+				return $posts;
 			}
 		);
 	}
