@@ -42,18 +42,25 @@ class Previews {
 		add_filter( 'query_vars', [ $this, 'modify_query_vars' ] );
 
 		// Filter to easily enable public previews.
-		if ( apply_filters( 'wp_irving_enable_public_previews', '__return_false' ) ) {
+		if ( apply_filters( 'wp_irving_enable_public_previews', false ) ) {
 			$this->enable_public_previews();
 		}
 
-		// Validate that JWT exists and is enabled.
-		if ( ! defined( 'JWT_AUTH_VERSION' ) ) {
-			return;
-		}
+		// After plugins have loaded, check for JWT and modify the preview logic as needed.
+		add_action(
+			'plugins_loaded',
+			function() {
 
-		// Hook into Irving's query string to WP_Query process to modify some
-		// logic for previews.
-		add_action( 'wp_irving_components_wp_query', [ $this, 'modify_wp_query_for_previews' ], 10, 4 );
+				// Validate that JWT exists and is enabled.
+				if ( ! defined( 'JWT_AUTH_VERSION' ) ) {
+					return;
+				}
+
+				// Hook into Irving's query string to WP_Query process to modify some
+				// logic for previews.
+				// add_action( 'wp_irving_components_wp_query', [ $this, 'modify_wp_query_for_previews' ], 10, 4 );
+			}
+		);
 	}
 
 	/**
