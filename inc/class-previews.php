@@ -130,7 +130,7 @@ class Previews {
 		$is_preview = wp_validate_boolean( $params['preview'] ?? false );
 		$preview_id = absint( $params['preview_id'] ?? 0 );
 
-		// Require `preview` to be true, and `p` to be an integer.
+		// Require `preview` to be true, and `preview_id` to be an integer.
 		if ( false === $is_preview || 0 === $preview_id ) {
 			return $wp_query;
 		}
