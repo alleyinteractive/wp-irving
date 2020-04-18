@@ -138,7 +138,7 @@ class Previews {
 		}
 
 		if ( ( $wp_query->post->ID ?? 0 ) === $preview_id ) {
-			$revision = array_shift( wp_get_post_revisions( $preview_id ) );
+			$revision = current( wp_get_post_revisions( $preview_id ) );
 		} else {
 			$revision = wp_get_post_revision( $preview_id );
 		}
