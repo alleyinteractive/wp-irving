@@ -47,7 +47,7 @@ class Previews {
 		remove_action( 'init', '_show_post_preview' );
 
 		// Filter to enable/disable public previews.
-		if ( apply_filters( 'wp_irving_enable_public_previews', true ) ) {
+		if ( apply_filters( 'wp_irving_enable_public_previews', false ) ) {
 			add_action( 'wp_irving_components_request', [ $this, 'enabled_public_previews' ] );
 		}
 
