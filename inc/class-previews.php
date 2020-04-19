@@ -63,7 +63,7 @@ class Previews {
 
 				// Hook into Irving's query string to WP_Query process to modify some
 				// logic for previews.
-				add_action( 'wp_irving_components_wp_query', [ $this, 'modify_wp_query_for_previews' ], 10, 4 );
+				add_action( 'wp_irving_components_wp_query', [ $this, 'modify_wp_query_for_revisions' ], 10, 4 );
 			}
 		);
 	}
@@ -120,7 +120,7 @@ class Previews {
 	 * @param string    $params        Request params.
 	 * @return \WP_Qury $wp_query WP_Query object for the request.
 	 */
-	public function modify_wp_query_for_previews( $wp_query, $path, $custom_params, $params ) {
+	public function modify_wp_query_for_revisions( $wp_query, $path, $custom_params, $params ) {
 
 		// Auth and a real route required.
 		if ( ! is_user_logged_in() || ! $wp_query->have_posts() ) {
@@ -141,8 +141,42 @@ class Previews {
 		// Use the preview_id, or fallback to the most recent revision.
 		$revision = $revisions[ $preview_id ] ?? current( $revisions );
 
-		$wp_query->posts[0] = $revision;
-		$wp_query->post     = $revision;
+		/**
+		 * Determine which revision fields should override the published post.
+		 * WP Core supports title, content, and excerpt by default.
+		 *
+		 * @var array     Keys to merge from the revision post into the published
+		 *                parent post.
+		 * @var \WP_Query The WP_Query object for Irving.
+		 * @var \WP_Post  WP_Post object for the current revision.
+		 * @var \WP_Post  Array of all revisions for this post.
+		 * @return array
+		 */
+		$keys_to_merge = apply_filters(
+			'wp_irving_preview_revision_keys',
+			[ 'post_title', 'post_content', 'post_excerpt' ],
+			$wp_query,
+			$revision,
+			$revisions
+		);
+
+		foreach ( $keys_to_merge as $key ) {
+			if ( isset( $revision->$key ) ) {
+				$wp_query->posts[0]->$key = $revision->$key; // phpcs:ignore Squiz.PHP.DisallowMultipleAssignments.Found
+				$wp_query->post->$key     = $revision->$key;
+			}
+		}
+
+		/**
+		 * Allow filtering of the wp_query after all other revision logic has
+		 * ran.
+		 *
+		 * @param \WP_Query The WP_Query object for Irving.
+		 * @param \WP_Post  WP_Post object for the current revision.
+		 * @param \WP_Post  Array of all revisions for this post.
+		 * @return \WP_Query
+		 */
+		$wp_query = apply_filters( 'wp_irving_preview_revision_wp_query', $wp_query, $revision, $revisions );
 
 		return $wp_query;
 	}
