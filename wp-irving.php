@@ -28,19 +28,21 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-data-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
 
 // Integrations.
-require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-jwt-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
+
+// Replicating WP Core functionality.
+require_once WP_IRVING_PATH . '/inc/class-previews.php';
+require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
-
-// Purge Cache.
-require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
 
 // Rewrite rules.
 require_once WP_IRVING_PATH . '/inc/rewrites.php';
