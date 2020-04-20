@@ -61,8 +61,6 @@ class Previews {
 					return;
 				}
 
-				add_action( 'wp_irving_components_request', [ $this, 'check_for_previews' ] );
-
 				// Hook into Irving's components request to check if it's for a preview.
 				add_action( 'wp_irving_components_request', [ $this, 'check_for_previews' ] );
 			}
@@ -77,7 +75,6 @@ class Previews {
 	 */
 	public function modify_query_vars( array $vars ): array {
 		$vars[] = 'preview_id';
-		// $vars[] = '_thumbnail_id';
 		$vars[] = 'preview_nonce';
 		return $vars;
 	}
