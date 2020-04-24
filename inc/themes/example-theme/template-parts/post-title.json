@@ -1,0 +1,6 @@
+{
+	"name": "elements/heading",
+	"config": {
+		"tag": "h3"
+	}
+}

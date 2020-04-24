@@ -1,0 +1,12 @@
+{
+	"name": "modules/header",
+	"theme": "header",
+	"children_groups": {
+		"logo": [
+			{
+				"name": "modules/logo",
+				"theme": "header"
+			}
+		]
+	}
+}

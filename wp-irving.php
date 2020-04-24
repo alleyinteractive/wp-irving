@@ -27,6 +27,10 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-data-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
 
+// Themes.
+require_once WP_IRVING_PATH . '/inc/themes/class-themes.php';
+// require_once WP_IRVING_PATH . '/inc/themes/class-parser.php';
+
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
@@ -38,6 +42,7 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.p
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
 
 // Replicating WP Core functionality.
+require_once WP_IRVING_PATH . '/inc/class-admin.php';
 require_once WP_IRVING_PATH . '/inc/class-previews.php';
 require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
 
