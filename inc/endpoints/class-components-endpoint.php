@@ -169,8 +169,6 @@ class Components_Endpoint extends Endpoint {
 		// Force trailing slashes on paths.
 		$this->force_trailing_slashes();
 
-		$this->data = load_template( $this->query, $this->data );
-
 		/**
 		 * Modify the output of the components route.
 		 *
