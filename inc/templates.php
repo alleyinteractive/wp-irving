@@ -20,7 +20,6 @@ add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10,
  * @param WP_Query $query   The current WP_Query object.
  * @param array    $data    Data object to be hydrated by templates.
  * @param string   $context The context for this request.
- *
  * @return array A hydrated data object.
  */
 function load_template( array $data, WP_Query $query, string $context ) : array {
@@ -105,7 +104,8 @@ function load_template( array $data, WP_Query $query, string $context ) : array 
  * which aren't filterable, so this implements a workaround to skip the file_exists checks
  * and return the template files for our own implementation of a locate_template function.
  *
- * @see    https://core.trac.wordpress.org/ticket/48175
+ * See: https://core.trac.wordpress.org/ticket/48175
+ *
  * @return void
  */
 function filter_template_loader() {
@@ -150,7 +150,7 @@ function filter_template_loader() {
  * @param array $templates A list of possible template files to load.
  * @return string The path to the found template.
  */
-function locate_template( $templates ) {
+function locate_template( array $templates ) : string {
 	$template_path = STYLESHEETPATH . '/templates/';
 
 	/**
