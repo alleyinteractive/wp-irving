@@ -17,8 +17,8 @@ add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10,
  *
  * Based on wp-includes/template-loader.php.
  *
- * @param WP_Query $query   The current WP_Query object.
  * @param array    $data    Data object to be hydrated by templates.
+ * @param WP_Query $query   The current WP_Query object.
  * @param string   $context The context for this request.
  * @return array A hydrated data object.
  */
