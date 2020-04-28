@@ -35,10 +35,37 @@ class Themes {
 	 * Setup the singleton. Validate JWT is installed, and setup hooks.
 	 */
 	public function setup() {
-		add_filter( 'wp_irving_components_route', [ $this, 'load_theme'], 999, 5 );
-		add_filter( 'wp_irving_theme_parsing', [ $this, 'conform_to_data_schema' ], 10, 2 );
 
-		add_filter( 'wp_irving_theme_template_part_post-title', [ $this, 'parse_post_title' ] );
+		add_action( 'init', [ $this, 'register_blocks' ] );
+
+		add_filter( 'wp_irving_components_route', [ $this, 'load_theme'], 999, 5 );
+		// add_filter( 'wp_irving_theme_parsing', [ $this, 'conform_to_data_schema' ], 10, 2 );
+
+		// add_filter( 'wp_irving_theme_template_part_post-title', [ $this, 'parse_post_title' ] );
+	}
+
+	public function register_blocks() {
+		register_block_type(
+			'irving/container',
+			[
+				'render_callback' => function( $attributes ) { return '<div>testing</div>'; },
+				'attributes'      => [
+					'some_string' => [
+						'default' => 'default string',
+						'type'    => 'string'
+					],
+					'some_array'  => [
+						'type'  => 'array',
+						'items' => [
+							'type' => 'string',
+						],
+					]
+				]
+			]
+		);
+
+		// print_r(\WP_Block_Type_Registry::get_instance()->get_all_registered());
+		// die();
 	}
 
 	public function conform_to_data_schema( $name, $data ) {
@@ -136,6 +163,31 @@ class Themes {
 		\WP_REST_Request $request
 	): array {
 
+		$markup = file_get_contents( __DIR__ . '/example-theme/templates/single.html' );
+
+		if ( isset( $wp_query->post->post_content ) ) {
+			$markup = $wp_query->post->post_content;
+		}
+
+		$blocks = parse_blocks( $markup );
+
+		$components = self::blocks_to_components( $blocks );
+
+		$data['page'] = $blocks;
+		// $data['page'] = $components;
+
+		// $data['page'] = self::recursively_render_blocks( parse_blocks( $markup ) );
+
+
+		// echo serialize_blocks( $data['page'] ); die();
+
+		// echo render_block( $post_title );
+
+		// print_r($post_title);
+		// die();
+
+		return $data;
+
 		// Build defaults.
 		if ( 'site' === $context ) {
 			$defaults = $this->get_template_by_slug( 'defaults' );
@@ -150,6 +202,36 @@ class Themes {
 
 		return $data;
 	}
+
+
+	public static function blocks_to_components( $blocks ) {
+
+		$components = [];
+
+		foreach ( $blocks as &$block ) {
+
+			if ( ! isset( $block['blockName'] ) ) {
+				continue;
+			}
+
+			$components[] = [
+				'name'        => $block['blockName'],
+				// 'originalAttributes' => $block['attrs'],
+				'attributes' => array_merge(
+					$block['attrs'],
+					[
+						'innerHTML'    => $block['innerHTML'],
+						'innerContent' => $block['innerContent'],
+						'renderedBlock' => render_block( $block ),
+					]
+				),
+				'children'    => self::blocks_to_components( $block['innerBlocks'] ),
+			];
+		}
+
+		return $components;
+	}
+
 
 	/**
 	 * Placeholder for WP Core's template hierarchy parsing logic.
