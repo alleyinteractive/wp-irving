@@ -109,27 +109,26 @@ function load_template_data( string $template, string $context = 'page' ): array
 	include $template;
 	$contents = ob_get_clean();
 
-	switch ( true ) {
-		case false !== strpos( $template, '.php' ):
-		case false !== strpos( $template, '.json' ):
-			// Contents should be a json string.
-			$components = json_decode( $contents, true );
+	// Attempt to json decode it.
+	$components = json_decode( $contents, true );
 
-			// Validate success.
-			if ( json_last_error() ) {
-				$components['page'] = [
-					[
-						'name'   => 'templates/error',
-						'config' => [ 'json_error' => json_last_error() ],
-					],
-				];
-			}
-			break;
-
-		case false !== strpos( $template, '.html' ):
-			$components[ $context ] = convert_blocks_to_components( parse_blocks( $contents ) );
-			break;
+	// Validate success.
+	if ( ! json_last_error() ) {
+		return $component;
 	}
+
+	if ( has_blocks( $contents ) ) {
+		$components[ $context ] = convert_blocks_to_components( parse_blocks( $contents ) );
+
+		return $components;
+	}
+
+	$components['page'] = [
+		[
+			'name'   => 'templates/error',
+			'config' => [ 'json_error' => json_last_error() ],
+		],
+	];
 
 	return $components;
 }
@@ -249,9 +248,9 @@ function convert_blocks_to_components( array $blocks ): array {
 				$block['attrs'],
 				[
 					// 'innerContent'       => $block['innerContent'],
-					// 'innerHTML'          => $block['innerHTML'],
+					'innerHTML'          => trim( $block['innerHTML'] ),
 					// 'originalAttributes' => $block['attrs'],
-					'renderedContent'      => $rendered_content,
+					'renderedContent'    => $rendered_content,
 				]
 			),
 			'children' => convert_blocks_to_components( $block['innerBlocks'] ),
