@@ -235,24 +235,23 @@ function convert_blocks_to_components( array $blocks ): array {
 			continue;
 		}
 
+		$block_config = [];
+
 		// Handle blocks that have a server render callback.
 		$rendered_content = '';
 		$block_type       = \WP_Block_Type_Registry::get_instance()->get_registered( $block['blockName'] );
 		if ( function_exists( $block_type->render_callback ?? '' ) ) {
-			$rendered_content = call_user_func( $block_type->render_callback );
+			$block_config['renderedBlock'] = call_user_func( $block_type->render_callback );
+		}
+
+		// Add `content` from innerHTML.
+		if ( ! empty( trim( $block['innerHTML'] ) ) ) {
+			$block_config['content'] = trim( $block['innerHTML'] );
 		}
 
 		$components[] = [
 			'name'     => $block['blockName'],
-			'config'   => array_merge(
-				$block['attrs'],
-				[
-					// 'innerContent'       => $block['innerContent'],
-					'innerHTML'          => trim( $block['innerHTML'] ),
-					// 'originalAttributes' => $block['attrs'],
-					'renderedContent'    => $rendered_content,
-				]
-			),
+			'config'   => array_merge( $block['attrs'], $block_config ),
 			'children' => convert_blocks_to_components( $block['innerBlocks'] ),
 		];
 	}
