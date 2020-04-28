@@ -237,16 +237,15 @@ function convert_blocks_to_components( array $blocks ): array {
 
 		$block_config = [];
 
-		// Handle blocks that have a server render callback.
-		$rendered_content = '';
-		$block_type       = \WP_Block_Type_Registry::get_instance()->get_registered( $block['blockName'] );
-		if ( function_exists( $block_type->render_callback ?? '' ) ) {
-			$block_config['renderedBlock'] = call_user_func( $block_type->render_callback );
-		}
-
 		// Add `content` from innerHTML.
 		if ( ! empty( trim( $block['innerHTML'] ) ) ) {
 			$block_config['content'] = trim( $block['innerHTML'] );
+		}
+
+		// Handle blocks that have a server render callback.
+		$block_type = \WP_Block_Type_Registry::get_instance()->get_registered( $block['blockName'] );
+		if ( function_exists( $block_type->render_callback ?? '' ) && ! isset( $block_config['content'] ) ) {
+			$block_config['content'] = call_user_func( $block_type->render_callback );
 		}
 
 		$components[] = [
