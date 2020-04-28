@@ -22,7 +22,7 @@ add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10,
  * @param string   $context The context for this request.
  * @return array A hydrated data object.
  */
-function load_template( array $data, WP_Query $query, string $context ) : array {
+function load_template( array $data, WP_Query $query, string $context ): array {
 	// Filter the template hierarchy before processing.
 	filter_template_loader();
 
@@ -78,23 +78,60 @@ function load_template( array $data, WP_Query $query, string $context ) : array 
 	$template = apply_filters( 'wp_irving_template_include', $template, $query );
 
 	if ( $template ) {
-		ob_start();
-		include $template;
-		$data = array_merge( $data, json_decode( ob_get_clean(), true ) );
+		$data = array_merge( $data, load_template_data( $template ) );
 	}
 
 	// Include defaults from a template if this is a server render.
 	if ( 'site' === $context ) {
-		$defaults = locate_template( [ 'defaults.php' ] );
+		$defaults = locate_template( [ 'defaults.php', 'defaults.json', 'defaults.html' ] );
 
 		if ( $defaults ) {
-			ob_start();
-			include $defaults;
-			$data = array_merge( $data, json_decode( ob_get_clean(), true ) );
+			$data = array_merge( $data, load_template_data( $defaults, 'defaults' ) );
 		}
 	}
 
 	return $data;
+}
+
+/**
+ * Load template data.
+ *
+ * @param string $template Full path to template.
+ * @param string $context  If needed, what array key the data should be mapped
+ *                         to.
+ * @return array
+ */
+function load_template_data( string $template, string $context = 'page' ): array {
+
+	$components = [];
+
+	ob_start();
+	include $template;
+	$contents = ob_get_clean();
+
+	switch ( true ) {
+		case false !== strpos( $template, '.php' ):
+		case false !== strpos( $template, '.json' ):
+			// Contents should be a json string.
+			$components = json_decode( $contents, true );
+
+			// Validate success.
+			if ( json_last_error() ) {
+				$components['page'] = [
+					[
+						'name'   => 'templates/error',
+						'config' => [ 'json_error' => json_last_error() ],
+					],
+				];
+			}
+			break;
+
+		case false !== strpos( $template, '.html' ):
+			$components[ $context ] = convert_blocks_to_components( parse_blocks( $contents ) );
+			break;
+	}
+
+	return $components;
 }
 
 /**
@@ -150,7 +187,7 @@ function filter_template_loader() {
  * @param array $templates A list of possible template files to load.
  * @return string The path to the found template.
  */
-function locate_template( array $templates ) : string {
+function locate_template( array $templates ): string {
 	$template_path = STYLESHEETPATH . '/templates/';
 
 	/**
@@ -164,21 +201,62 @@ function locate_template( array $templates ) : string {
 	$located = '';
 
 	foreach ( $templates as $template ) {
-		// If the PHP template file exists, use it.
-		if ( file_exists( $template_path . $template ) ) {
-			$located = $template_path . $template;
-			break;
-		}
 
-		// Convert the PHP filename to the relevant .json filename.
-		$template_json = wp_basename( $template, '.php' ) . '.json';
+		// Look for .php, .json, and then .html templates.
+		$templates = [
+			$template_path . $template,
+			$template_path . wp_basename( $template, '.php' ) . '.json',
+			$template_path . wp_basename( $template, '.php' ) . '.html',
+		];
 
-		// Next, try a JSON version of the template file.
-		if ( file_exists( $template_path . $template_json ) ) {
-			$located = $template_path . $template_json;
-			break;
+		foreach ( $templates as $path ) {
+			if ( file_exists( $path ) ) {
+				$located = $path;
+				break;
+			}
 		}
 	}
 
 	return $located;
+}
+
+/**
+ * Convert an array of blocks into Irving components.
+ *
+ * @param array $blocks Array of blocks. Likely from parse_blocks.
+ * @return array
+ */
+function convert_blocks_to_components( array $blocks ): array {
+
+	$components = [];
+
+	foreach ( $blocks as $block ) {
+
+		if ( ! isset( $block['blockName'] ) ) {
+			continue;
+		}
+
+		// Handle blocks that have a server render callback.
+		$rendered_content = '';
+		$block_type       = \WP_Block_Type_Registry::get_instance()->get_registered( $block['blockName'] );
+		if ( function_exists( $block_type->render_callback ?? '' ) ) {
+			$rendered_content = call_user_func( $block_type->render_callback );
+		}
+
+		$components[] = [
+			'name'     => $block['blockName'],
+			'config'   => array_merge(
+				$block['attrs'],
+				[
+					// 'innerContent'       => $block['innerContent'],
+					// 'innerHTML'          => $block['innerHTML'],
+					// 'originalAttributes' => $block['attrs'],
+					'renderedContent'      => $rendered_content,
+				]
+			),
+			'children' => convert_blocks_to_components( $block['innerBlocks'] ),
+		];
+	}
+
+	return $components;
 }
