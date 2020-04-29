@@ -23,6 +23,31 @@ add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10,
  * @return array A hydrated data object.
  */
 function load_template( array $data, WP_Query $query, string $context ): array {
+	$template = get_template_path( $query );
+
+	if ( $template ) {
+		$data = array_merge( $data, prepare_data_from_template( $template ) );
+	}
+
+	// Include defaults from a template if this is a server render.
+	if ( 'site' === $context ) {
+		$defaults = locate_template( [ 'defaults' ] );
+
+		if ( $defaults ) {
+			$data = array_merge( $data, prepare_data_from_template( $defaults, 'defaults' ) );
+		}
+	}
+
+	return $data;
+}
+
+/**
+ * Get the path to a template for a WP_Query object.
+ *
+ * @param WP_Query $query The current WP_Query object.
+ * @return string A path to the template to load.
+ */
+function get_template_path( WP_Query $query ): string {
 	// Filter the template hierarchy before processing.
 	filter_template_loader();
 
@@ -69,40 +94,23 @@ function load_template( array $data, WP_Query $query, string $context ): array {
 	}
 
 	/**
-	 * Filters the path of the current template before including it.
+	 * Filters the path of the current template.
 	 *
-	 * @since 3.0.0
-	 *
-	 * @param string $template The path of the template to include.
+	 * @param string   $template The path of the template to include.
+	 * @param WP_Query $query    The current WP_Query object.
 	 */
-	$template = apply_filters( 'wp_irving_template_include', $template, $query );
-
-	if ( $template ) {
-		$data = array_merge( $data, load_template_data( $template ) );
-	}
-
-	// Include defaults from a template if this is a server render.
-	if ( 'site' === $context ) {
-		$defaults = locate_template( [ 'defaults.php', 'defaults.json', 'defaults.html' ] );
-
-		if ( $defaults ) {
-			$data = array_merge( $data, load_template_data( $defaults, 'defaults' ) );
-		}
-	}
-
-	return $data;
+	return apply_filters( 'wp_irving_template_include', $template, $query );
 }
 
 /**
- * Load template data.
+ * Prepares data for an Irving REST response from a template.
  *
  * @param string $template Full path to template.
- * @param string $context  If needed, what array key the data should be mapped
- *                         to.
- * @return array
+ * @param string $type     Optional. The type of data being loaded from a template.
+ *                         Defaults to 'page'.
+ * @return array An associative array prepared for an Irving REST Response.
  */
-function load_template_data( string $template, string $context = 'page' ): array {
-
+function prepare_data_from_template( string $template, string $type = 'page' ): array {
 	$components = [];
 
 	ob_start();
@@ -114,11 +122,11 @@ function load_template_data( string $template, string $context = 'page' ): array
 
 	// Validate success.
 	if ( ! json_last_error() ) {
-		return $component;
+		return $components;
 	}
 
 	if ( has_blocks( $contents ) ) {
-		$components[ $context ] = convert_blocks_to_components( parse_blocks( $contents ) );
+		$components[ $type ] = convert_blocks_to_components( parse_blocks( $contents ) );
 
 		return $components;
 	}
@@ -200,19 +208,30 @@ function locate_template( array $templates ): string {
 	$located = '';
 
 	foreach ( $templates as $template ) {
+		// Normalize the template name without extension.
+		$template_base = wp_basename( $template, '.php' );
 
 		// Look for .php, .json, and then .html templates.
-		$templates = [
-			$template_path . $template,
-			$template_path . wp_basename( $template, '.php' ) . '.json',
-			$template_path . wp_basename( $template, '.php' ) . '.html',
+		$filetypes = [
+			'php',
+			'json',
+			'html',
 		];
 
-		foreach ( $templates as $path ) {
+		foreach ( $filetypes as $type ) {
+			// Ensure filtered template paths are slashed.
+			$path = trailingslashit( $template_path ) . $template_base . '.' . $type;
+
+			// If the file is located, break out of filetype loop.
 			if ( file_exists( $path ) ) {
 				$located = $path;
 				break;
 			}
+		}
+
+		// Break out of template type loop.
+		if ( $located ) {
+			break;
 		}
 	}
 
@@ -223,14 +242,12 @@ function locate_template( array $templates ): string {
  * Convert an array of blocks into Irving components.
  *
  * @param array $blocks Array of blocks. Likely from parse_blocks.
- * @return array
+ * @return array Irving component data.
  */
 function convert_blocks_to_components( array $blocks ): array {
-
 	$components = [];
 
 	foreach ( $blocks as $block ) {
-
 		if ( ! isset( $block['blockName'] ) ) {
 			continue;
 		}
