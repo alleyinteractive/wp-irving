@@ -92,8 +92,15 @@ class Components_Endpoint extends Endpoint {
 		add_filter( 'query_vars', [ $this, 'modify_query_vars' ] );
 		add_filter( 'post_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'page_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
-		add_filter( 'tag_row_actions', [ $this, 'add_api_link_to_terms' ], 10, 2 );
 		add_filter( 'admin_bar_menu', [ $this, 'add_api_link_to_admin_bar' ], 999 );
+
+		// Set up taxonomy row actions.
+		// See: https://core.trac.wordpress.org/ticket/49808.
+		add_action( 'init', function () {
+			foreach ( get_taxonomies() as $taxonomy ) {
+				add_filter( "${taxonomy}_row_actions", [ $this, 'add_api_link_to_terms' ], 10, 2 );
+			}
+		} );
 	}
 
 	/**
