@@ -194,8 +194,8 @@ function filter_template_loader() {
  * @param array $templates A list of possible template files to load.
  * @return string The path to the found template.
  */
-function locate_template( array $templates ): string {
-	$template_path = STYLESHEETPATH . '/templates/';
+function locate_template( array $templates, $folder = '/templates/' ): string {
+	$template_path = STYLESHEETPATH . $folder;
 
 	/**
 	 * Filter the path to Irving templates.

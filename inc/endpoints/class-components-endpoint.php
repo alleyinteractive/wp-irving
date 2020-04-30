@@ -188,6 +188,10 @@ class Components_Endpoint extends Endpoint {
 			$request
 		);
 
+		// Traverse through the defaults and page components.
+		$data['defaults'] = $this->traverse_components( $data['defaults'] );
+		$data['page']     = $this->traverse_components( $data['page'] );
+
 		// Create the response object.
 		$response = new \WP_REST_Response( $data );
 
@@ -670,6 +674,71 @@ class Components_Endpoint extends Endpoint {
 		header( 'Access-Control-Allow-Credentials: true' );
 		wp_redirect( $request_url, 301 );
 		exit;
+	}
+
+	/**
+	 * Recursively loop through components.
+	 *
+	 * @param  array $components Array of components to traverse.
+	 * @return array
+	 */
+	public function traverse_components( array $components ): array {
+
+		foreach ( $components as &$component ) {
+
+			if ( 0 === strpos( $component['name'], 'template-parts/' ) ) {
+				$template_part_name = str_replace( 'template-parts/', '', $component['name'] );
+
+				$template = \WP_Irving\Templates\locate_template( [ $template_part_name ], '/template-parts/' );
+
+				$template_data = \WP_Irving\Templates\prepare_data_from_template( $template );
+
+
+				// Template data may be a single component, or an array of components.
+
+				if ( is_array( $template_data ) ) {
+					$component = $template_data;
+				} elseif ( is_array( $template_data[0] ) ) {
+					// $component = $template_data;
+				}
+			}
+
+			/**
+			 * Hook into every component before it's validated.
+			 */
+			$component = apply_filters( 'wp_irving_component', $component );
+
+			/**
+			 * Filter for every component name.
+			 */
+			if ( isset( $component['name'] ) ) {
+				$component = apply_filters( 'wp_irving_component_' . $component['name'], $component );
+			}
+
+			// Ensure the component is validated and has the correct shape.
+			$component = $this->validate_component( $component );
+		}
+
+		return $components;
+	}
+
+	/**
+	 * Ensure every component fits our schema.
+	 *
+	 * @param array $component Our single component.
+	 */
+	public function validate_component( $component ) {
+
+		// This allows us to set text nodes.
+		if ( is_string( $component ) ) {
+			return $component;
+		}
+
+		$component['name']     = (string) $component['name'];
+		$component['config']   = (object) $component['config'];
+		$component['children'] = $this->traverse_components( array_values( array_filter( (array) $component['children'] ) ) );
+
+		return $component;
 	}
 }
 
