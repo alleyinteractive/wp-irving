@@ -88,19 +88,12 @@ class Components_Endpoint extends Endpoint {
 		parent::__construct();
 
 		add_action( 'init', [ $this, 'set_cap' ] );
+		add_action( 'init', [ $this, 'hook_taxonomy_row_actions' ] );
 		add_filter( 'rest_url', [ $this, 'fix_rest_url' ] );
 		add_filter( 'query_vars', [ $this, 'modify_query_vars' ] );
 		add_filter( 'post_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'page_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'admin_bar_menu', [ $this, 'add_api_link_to_admin_bar' ], 999 );
-
-		// Set up taxonomy row actions.
-		// See: https://core.trac.wordpress.org/ticket/49808.
-		add_action( 'init', function () {
-			foreach ( get_taxonomies() as $taxonomy ) {
-				add_filter( "${taxonomy}_row_actions", [ $this, 'add_api_link_to_terms' ], 10, 2 );
-			}
-		} );
 	}
 
 	/**
@@ -521,6 +514,20 @@ class Components_Endpoint extends Endpoint {
 		}
 
 		return $actions;
+	}
+
+	/**
+	 * Adds the `add_api_link_to_terms` filter to all taxonomy row actions.
+	 *
+	 * This is a workaround for the `tag_row_actions` hook being deprecated in WP 5.4.
+	 * See: https://core.trac.wordpress.org/ticket/49808.
+	 *
+	 * @return void
+	 */
+	public function hook_taxonomy_row_actions() {
+		foreach ( get_taxonomies() as $taxonomy ) {
+			add_filter( "${taxonomy}_row_actions", [ $this, 'add_api_link_to_terms' ], 10, 2 );
+		}
 	}
 
 	/**
