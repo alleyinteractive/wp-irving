@@ -7,6 +7,8 @@
 
 namespace WP_Irving\REST_API;
 
+use WP_Irving\REST_API\Endpoint;
+
 /**
  * Components endpoint.
  */
@@ -359,7 +361,9 @@ class Components_Endpoint extends Endpoint {
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
-		if ( empty( $wp_query->posts ) && ! $wp_query->is_search() ) {
+		if ( '/' === $this->path ) {
+			$wp_query->is_home = true;
+		} elseif ( empty( $wp_query->posts ) && ! $wp_query->is_search() ) {
 			$wp_query->set_404();
 		}
 
