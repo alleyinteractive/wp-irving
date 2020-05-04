@@ -21,7 +21,6 @@ register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 
 // Base classes.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
-require_once WP_IRVING_PATH . '/inc/components/class-component.php';
 
 // Components.
 require_once WP_IRVING_PATH . '/inc/components/class-registry.php';
