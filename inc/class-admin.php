@@ -80,7 +80,7 @@ class Admin {
 		$permalink = get_permalink( $post );
 
 		// Get the API URL, allowing it to be filtered.
-		$path_url = \WP_Irving\REST_API::get_wp_irving_api_url( $permalink );
+		$path_url = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $permalink );
 		$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, $post );
 
 		// Add new link.
@@ -121,7 +121,7 @@ class Admin {
 		$permalink = get_term_link( $term );
 
 		// Get the API URL, allowing it to be filtered.
-		$path_url = \WP_Irving\REST_API::get_wp_irving_api_url( $permalink );
+		$path_url = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $permalink );
 		$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
 
 		// Add new link.
@@ -178,7 +178,7 @@ class Admin {
 			$permalink = get_term_link( $term->term_id ?? 0 );
 
 			// Get the API URL, allowing it to be filtered.
-			$path_url = \WP_Irving\REST_API::get_wp_irving_api_url( $permalink );
+			$path_url = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $permalink );
 			$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
 		}
 
@@ -197,7 +197,7 @@ class Admin {
 			$permalink = get_the_permalink( $post_id );
 
 			// Get the API URL, allowing it to be filtered.
-			$path_url = \WP_Irving\REST_API::get_wp_irving_api_url( $permalink );
+			$path_url = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $permalink );
 			$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, get_post( $post_id ) );
 		}
 
