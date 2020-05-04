@@ -38,6 +38,7 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.p
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
 
 // Replicating WP Core functionality.
+require_once WP_IRVING_PATH . '/inc/class-admin.php';
 require_once WP_IRVING_PATH . '/inc/class-previews.php';
 require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
 
