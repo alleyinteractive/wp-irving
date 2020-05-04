@@ -682,24 +682,30 @@ class Components_Endpoint extends Endpoint {
 	 * @param  array $components Array of components to traverse.
 	 * @return array
 	 */
-	public function traverse_components( array $components ): array {
+	public function traverse_components( array $components, array $parent_data_provier = [] ): array {
 
-		foreach ( $components as &$component ) {
+		foreach ( $components as $index => &$component ) {
 
-			if ( 0 === strpos( $component['name'], 'template-parts/' ) ) {
+			if ( is_string( $component ) ) {
+				continue;
+			}
+
+			// $component['config'] = array_merge( (array) ( $component['config'] ?? [] ), (array) $data_provier );
+			$component['dataProvider'] = array_merge( $component['dataProvider'] ?? [], $parent_data_provier ?? [] );
+
+			if ( 0 === strpos( $component['name'] ?? '', 'template-parts/' ) ) {
 				$template_part_name = str_replace( 'template-parts/', '', $component['name'] );
 
 				$template = \WP_Irving\Templates\locate_template( [ $template_part_name ], '/template-parts/' );
 
 				$template_data = \WP_Irving\Templates\prepare_data_from_template( $template );
 
-
 				// Template data may be a single component, or an array of components.
-
 				if ( is_array( $template_data ) ) {
+					$template_data['config'] = array_merge( $template_data['config'] ?? [], $component['config'] ?? [] );
 					$component = $template_data;
 				} elseif ( is_array( $template_data[0] ) ) {
-					// $component = $template_data;
+					array_splice( $components, $index, 1, $template_data );
 				}
 			}
 
@@ -713,6 +719,11 @@ class Components_Endpoint extends Endpoint {
 			 */
 			if ( isset( $component['name'] ) ) {
 				$component = apply_filters( 'wp_irving_component_' . $component['name'], $component );
+			}
+
+			// If the name is passthrough, and there are children, splice/replace it.
+			if ( 'irving/passthrough' === ( $component['name'] ?? '' ) && ! empty( $component['children'] ) ) {
+				array_splice( $components, $index, 1, $this->traverse_components( $component['children'] ) );
 			}
 
 			// Ensure the component is validated and has the correct shape.
@@ -734,9 +745,10 @@ class Components_Endpoint extends Endpoint {
 			return $component;
 		}
 
-		$component['name']     = (string) $component['name'];
-		$component['config']   = (object) $component['config'];
-		$component['children'] = $this->traverse_components( array_values( array_filter( (array) $component['children'] ) ) );
+		$component['name']         = (string) $component['name'];
+		$component['config']       = (object) $component['config'];
+		$component['dataProvider'] = (array) $component['dataProvider'];
+		$component['children']     = $this->traverse_components( array_values( array_filter( (array) $component['children'] ) ), $component['dataProvider'] );
 
 		return $component;
 	}
