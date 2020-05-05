@@ -24,6 +24,7 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/components/class-registry.php';
 
 // Component registration.
+require_once WP_IRVING_PATH . '/inc/components/registration/archive-components.php';
 require_once WP_IRVING_PATH . '/inc/components/registration/block-components.php';
 require_once WP_IRVING_PATH . '/inc/components/registration/material-ui-components.php';
 require_once WP_IRVING_PATH . '/inc/components/registration/post-components.php';

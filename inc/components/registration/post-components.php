@@ -132,7 +132,13 @@ register_component(
 		'callback' => function( $component ) {
 
 			// Use the data provider, or fallback to global.
-			$post_id                          = $component['data_provider']['postId'] ?? get_the_ID();
+			$post_id = $component['data_provider']['postId'] ?? get_the_ID();
+
+			$tags = get_the_tags( $post_id );
+
+			if ( ! is_array( $tags ) || empty( $tags ) ) {
+				return $component;
+			}
 
 			$component['children'] = array_map(
 				function( $term ) {
@@ -147,11 +153,83 @@ register_component(
 						],
 					];
 				},
-				get_the_tags( $post_id )
 			);
 
 			$component['name'] = '';
 
+			return $component;
+		},
+		'data_provider' => [
+			'postId' => [
+				'type' => 'integer',
+			],
+		],
+	]
+);
+
+/**
+ * Get the post byline.
+ *
+ * @param array $component Component
+ * @return string
+ */
+register_component(
+	'post/byline',
+	[
+		'callback' => function( $component ) {
+
+			$post_id = $component['data_provider']['postId'] ?? get_the_ID();
+
+			$component['name'] = 'html';
+			$component['config']['content'] = get_the_author_meta( 'user_nicename', get_post( $post_id )->post_author );
+
+			return $component;
+		},
+		'data_provider' => [
+			'postId' => [
+				'type' => 'integer',
+			],
+		],
+	]
+);
+
+/**
+ * Get the post social sharing.
+ *
+ * @param array $component Component
+ * @return string
+ */
+register_component(
+	'post/social-sharing',
+	[
+		'callback' => function( $component ) {
+			$post_id = $component['data_provider']['postId'] ?? get_the_ID();
+
+			$component['name'] = 'html';
+			$component['config']['content'] = 'Share post';
+
+			return $component;
+		},
+		'data_provider' => [
+			'postId' => [
+				'type' => 'integer',
+			],
+		],
+	]
+);
+
+/**
+ * Get the post social sharing.
+ *
+ * @param array $component Component
+ * @return string
+ */
+register_component(
+	'post/next-post',
+	[
+		'callback' => function( $component ) {
+			the_post();
+			$component['name'] = '';
 			return $component;
 		},
 		'data_provider' => [

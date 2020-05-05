@@ -16,7 +16,12 @@ register_component(
 	'material/card-media',
 	[
 		'callback' => function( $component ) {
-			$component['config']['image'] = get_the_post_thumbnail_url( $component['data_provider']['postId'] ?? 0 );
+
+			if ( ! empty( $component['config']['image'] ?? '' ) ) {
+				return $component;
+			}
+
+			$component['config']['image'] = get_the_post_thumbnail_url( $component['data_provider']['postId'] ?? get_the_ID() );
 			return $component;
 		},
 	]
@@ -58,6 +63,63 @@ register_component(
 			);
 
 			$component['name'] = '';
+
+			return $component;
+		},
+	]
+);
+
+/**
+ * Setup a Material UI card for the featured image and caption.
+ *
+ * @return array
+ */
+register_component(
+	'irving/featured-media',
+	[
+		'callback' => function( $component ) {
+
+			$post_id = $component['data_provider']['postId'] ?? get_the_ID();
+
+			// Get and validate image url.
+			$image_url = get_the_post_thumbnail_url( $post_id );
+			if ( empty( $image_url ) ) {
+				$component['name'] = ''; // Don't render anything.
+				return $component;
+			}
+
+			$component = [
+				'name'     => 'material/card-content',
+				'config'   => [
+					'gutterBottom' => true,
+				],
+				'children' => [
+					[
+						'name'   => 'material/card-media',
+						'config' => [
+							'image' => $image_url,
+							'style' => [
+								'height' => '450px',
+							],
+						],
+					],
+				],
+			];
+
+			$caption = wp_get_attachment_caption( get_post_thumbnail_id( $post_id ) );
+			if ( ! empty( $caption ) ) {
+				$component['children'][] = [
+					'name'     => 'material/typography',
+					'config'   => [
+						'color'     => 'textSecondary',
+						'variant'   => 'body2',
+						'component' => 'p',
+					],
+					'children' => [
+						$caption,
+					],
+				];
+			}
 
 			return $component;
 		},

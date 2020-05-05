@@ -67,3 +67,51 @@ register_component(
 		},
 	]
 );
+
+
+
+/**
+ * Utility component that uses The Loop to iterate on posts. Using the global
+ * query object, we use the children as a template to execute the loop.
+ *
+ * @todo Decide how we can do this better.
+ *
+ * @return array
+ */
+register_component(
+	'irving/loop',
+	[
+		'callback' => function( $component ) {
+
+			$new_components     = [];
+			$component_template = $component['children'];
+			$loop_count         = absint( $component['config']['loop'] ?? 0 );
+
+			$component['children'] = [];
+
+			if ( 0 === $loop_count ) {
+				while ( have_posts() ) {
+					the_post();
+
+					$loop_instance = $component_template;
+
+					foreach ( $loop_instance as &$new_component ) {
+						$new_component['data_provider']['postId'] = get_the_ID();
+					}
+
+					$new_components = array_merge( $new_components, $loop_instance );
+				}
+
+				wp_reset_query();
+
+				$component['children'] = $new_components;
+
+				$component['name'] = '';
+				return $component;
+			}
+
+			$component['name'] = '';
+			return $component;
+		},
+	]
+);
