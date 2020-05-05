@@ -21,10 +21,14 @@ register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 
 // Base classes.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
-
-// Components.
 require_once WP_IRVING_PATH . '/inc/components/class-registry.php';
-require_once WP_IRVING_PATH . '/inc/components/post-components.php';
+
+// Component registration.
+require_once WP_IRVING_PATH . '/inc/components/registration/block-components.php';
+require_once WP_IRVING_PATH . '/inc/components/registration/material-ui-components.php';
+require_once WP_IRVING_PATH . '/inc/components/registration/post-components.php';
+require_once WP_IRVING_PATH . '/inc/components/registration/site-components.php';
+require_once WP_IRVING_PATH . '/inc/components/registration/utility-components.php';
 
 // API.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
