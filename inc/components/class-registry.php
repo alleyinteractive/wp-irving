@@ -17,7 +17,7 @@ class Registry {
 	 *
 	 * @var array
 	 */
-	protected static $components = [];
+	protected $components = [];
 
 	/**
 	 * Class instance.
