@@ -137,6 +137,7 @@ register_component(
 			$tags = get_the_tags( $post_id );
 
 			if ( ! is_array( $tags ) || empty( $tags ) ) {
+				$component['name'] = '';
 				return $component;
 			}
 
@@ -153,6 +154,7 @@ register_component(
 						],
 					];
 				},
+				$tags
 			);
 
 			$component['name'] = '';
