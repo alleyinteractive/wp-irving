@@ -54,7 +54,7 @@ register_component(
 						],
 					];
 				},
-				$menu_items
+				array_filter( $menu_items ?? [] )
 			);
 
 			$component['name'] = '';
