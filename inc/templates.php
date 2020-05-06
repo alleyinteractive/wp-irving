@@ -428,7 +428,7 @@ function handle_component_callbacks( $component ) {
 
 	// Check the component registry.
 	$registered_component = \WP_Irving\Components\get_registered_component( $component['name'] );
-	if ( is_null( $registered_component ) ) {
+	if ( is_null( $registered_component ) || ! is_callable( $registered_component['callback'] ?? '' ) ) {
 		return $component;
 	}
 

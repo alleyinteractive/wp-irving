@@ -98,6 +98,16 @@ class Components_Endpoint extends Endpoint {
 				'permission_callback' => [ $this, 'permissions_check' ],
 			]
 		);
+
+		register_rest_route(
+			self::get_namespace(),
+			'/registered-components/',
+			[
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => '\WP_Irving\Components\get_registered_components',
+				'permission_callback' => [ $this, 'permissions_check' ],
+			]
+		);
 	}
 
 	/**
