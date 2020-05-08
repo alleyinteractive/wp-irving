@@ -8,14 +8,34 @@
 namespace WP_Irving;
 
 /**
- * Class to purge cache.
+ * Class for managing caches in Irving.
  */
-class Purge_Cache {
+class Cache {
+
+	/**
+	 * Class instance.
+	 *
+	 * @var null|self
+	 */
+	protected static $instance;
+
+	/**
+	 * Get class instance
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+			static::$instance->setup();
+		}
+		return static::$instance;
+	}
 
 	/**
 	 * Class constructor.
 	 */
-	public function __construct() {
+	public function setup() {
 		// Register admin page.
 		add_action( 'admin_menu', [ $this, 'register_admin' ] );
 
@@ -195,6 +215,6 @@ class Purge_Cache {
 add_action(
 	'init',
 	function() {
-		new \WP_Irving\Purge_Cache();
+		( new \WP_Irving\Cache )->instance();
 	}
 );
