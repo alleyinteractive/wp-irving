@@ -56,13 +56,15 @@ class Registry {
  */
 function auto_register_components() {
 
-	$auto_load_directories = [
-		get_stylesheet_directory() . '/components/', // Load from the theme.
-		// Load from node modules?
-		// Load from root wp-content folder?
-	];
+	$auto_load_directories = apply_filters(
+		'wp_irving_component_registry_directories',
+		[
+			'wp_irving' => WP_IRVING_PATH . '/inc/components/', // Load from the theme.
+			'theme'     => get_stylesheet_directory() . '/components/', // Load from the theme.
+		]
+	);
 
-	foreach ( $auto_load_directories as $path ) {
+	foreach ( array_values( $auto_load_directories ) as $path ) {
 
 		if ( ! is_dir( $path ) ) {
 			continue;

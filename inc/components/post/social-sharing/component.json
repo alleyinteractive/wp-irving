@@ -1,0 +1,10 @@
+{
+	"name": "wp-irving/social-sharing",
+	"category": "Common",
+	"description": "",
+	"data_consumer": {
+		"postId": {
+			"required": false
+		}
+	}
+}
