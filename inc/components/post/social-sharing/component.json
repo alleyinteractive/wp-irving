@@ -1,0 +1,10 @@
+{
+	"name": "post/social-sharing",
+	"category": "Post",
+	"description": "",
+	"data_consumer": {
+		"postId": {
+			"required": false
+		}
+	}
+}

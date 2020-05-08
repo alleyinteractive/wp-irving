@@ -1,0 +1,7 @@
+{
+	"name": "irving/loop",
+	"category": "Utility",
+	"description": "Utility component that uses The Loop to iterate on posts. Using the global query object, we use the children as a template to execute the loop.",
+	"config": {},
+	"data_consumer": {}
+}

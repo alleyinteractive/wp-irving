@@ -1,0 +1,5 @@
+{
+	"name": "wp-irving/next-post",
+	"category": "Utility",
+	"description": "Utility component that iterates to the next global post object."
+}

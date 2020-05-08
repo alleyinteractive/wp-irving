@@ -1,0 +1,18 @@
+{
+	"name": "wp-irving/example",
+	"category": "Common",
+	"description": "Example commponent to demo and document the component structure.",
+	"config": {
+		"name": {
+			"ref": {
+				"type": "string",
+				"required": true
+			}
+		}
+	},
+	"data_consumer": {
+		"postId": {
+			"required": false
+		}
+	}
+}
