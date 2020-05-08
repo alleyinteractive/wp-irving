@@ -2,20 +2,17 @@
 /**
  * Component registry.
  *
- * This
- *
  * @package WP_Irving
  */
 
 namespace WP_Irving\Components;
 
 /**
- * Get the registry object/instance.
+ * Get an instance of the registry class.
  *
  * @return \WP_Irving\Components\Registry
  */
 function get_registry() {
-
 	static $registry;
 
 	if ( empty( $registry ) ) {
@@ -26,9 +23,16 @@ function get_registry() {
 }
 
 /**
- * [auto_register_components description]
+ * Auto load some components which will then get registered. Defaults to the
+ * theme directory and WP Irving plugin.
  */
 function auto_register_components() {
+
+	/**
+	 * Filter the directories from which components should be autoloaded.
+	 *
+	 * @param array $directories Array of directories.
+	 */
 	$directories = apply_filters(
 		'wp_irving_component_registry_directories',
 		[
@@ -58,7 +62,7 @@ class Registry {
 	 *
 	 * @return array
 	 */
-	public function get_registered_components() {
+	public function get_registered_components(): array {
 		return $this->components;
 	}
 
@@ -68,7 +72,7 @@ class Registry {
 	 * @param string $name Component name.
 	 * @return array
 	 */
-	public function get_registered_component( string $name ) {
+	public function get_registered_component( string $name ): ?array {
 		return $this->components[ $name ] ?? null;
 	}
 
@@ -88,7 +92,7 @@ class Registry {
 	 * @param string $json_file JSON config file.
 	 * @param array  $args      Component args.
 	 */
-	public function register_component_from_config( string $json_file, array $args = [] ) {
+	public function register_component_from_config( string $json_file, array $args = [] ): bool {
 
 		// Add the extension if necessary.
 		if ( false === strpos( $json_file, '.json' ) ) {
@@ -136,6 +140,7 @@ class Registry {
 			$iterator           = new \RecursiveIteratorIterator( $directory_iterator );
 			$regex              = new \RegexIterator( $iterator, '/.+\/index\.php$/', \RecursiveRegexIterator::ALL_MATCHES );
 
+			// Include each index.php entry point.
 			foreach ( $regex as $file_path ) {
 				$file_path = $file_path[0][0] ?? '';
 				if ( file_exists( $file_path ) ) {

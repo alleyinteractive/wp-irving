@@ -420,12 +420,30 @@ function handle_data_provider( $component ) {
 }
 
 /**
- * Loop through all configs, looking for a handlebars syntax.
+ * Loop through component config values. If we match a {{component/name}} then
+ * we execute the callback, and return the value to the config.
+ *
+ * @todo Determine if this functionality can be scrapped in favor of a data
+ *       provider. This is proof of concept purely for discussion and
+ *       consideration.
+ *
+ * @example
+ * {
+ *   "name": "example",
+ *   "config": {
+ *     "href": "{{post/permalink}}"
+ *   }
+ * }
  *
  * @param array $component Component.
  * @return array
  */
-function handle_component_config_callbacks( array $component ): array {
+function handle_component_config_callbacks( $component ): array {
+
+	// Ensure component config exists.
+	if ( ! isset( $component['config'] ) || empty( $component['config'] ) ) {
+		return $component;
+	}
 
 	foreach ( $component['config'] as $key => $value ) {
 
@@ -433,13 +451,18 @@ function handle_component_config_callbacks( array $component ): array {
 			continue;
 		}
 
+		// For each key, check if the value has a handlebars syntax.
 		preg_match_all( '/{{(.+)}}/', $value, $matches );
 		$matches = array_filter( $matches );
 
+		// If we found a result, execute the component callback, and assign to
+		// the key.
 		if ( ! empty( $matches ) ) {
+			$component_name = $matches[1][0];
 			$component['config'][ $key ] = handle_component_callbacks(
 				[
-					'name' => $matches[1][0],
+					'name'          => $component_name,
+					'data_provider' => $component['data_provider'],
 				]
 			);
 		}
@@ -454,7 +477,7 @@ function handle_component_config_callbacks( array $component ): array {
  * @param array $component Component.
  * @return array
  */
-function handle_component_callbacks( $component ) {
+function handle_component_callbacks( array $component ) {
 
 	// Check the component registry.
 	$registered_component = \WP_Irving\Components\get_registry()->get_registered_component( $component['name'] );

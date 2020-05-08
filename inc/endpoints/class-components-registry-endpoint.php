@@ -10,7 +10,7 @@ namespace WP_Irving\REST_API;
 use WP_Irving\REST_API\Endpoint;
 
 /**
- * Components endpoint.
+ * Components Registry endpoint.
  */
 class Components_Registry_Endpoint extends Endpoint {
 
