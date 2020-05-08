@@ -24,6 +24,7 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
 
 // API.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
+require_once WP_IRVING_PATH . '/inc/endpoints/class-components-registry-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-data-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
 

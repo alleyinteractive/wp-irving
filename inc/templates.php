@@ -300,6 +300,7 @@ function traverse_components( array $components ): array {
 
 		$component = handle_template_parts( $component );
 		$component = handle_data_provider( $component );
+		$component = handle_component_config_callbacks( $component );
 		$component = handle_component_callbacks( $component );
 
 		// Recursively loop though.
@@ -419,6 +420,35 @@ function handle_data_provider( $component ) {
 }
 
 /**
+ * Loop through all configs, looking for a handlebars syntax.
+ *
+ * @param array $component Component.
+ * @return array
+ */
+function handle_component_config_callbacks( array $component ): array {
+
+	foreach ( $component['config'] as $key => $value ) {
+
+		if ( ! is_string( $value ) ) {
+			continue;
+		}
+
+		preg_match_all( '/{{(.+)}}/', $value, $matches );
+		$matches = array_filter( $matches );
+
+		if ( ! empty( $matches ) ) {
+			$component['config'][ $key ] = handle_component_callbacks(
+				[
+					'name' => $matches[1][0],
+				]
+			);
+		}
+	}
+
+	return $component;
+}
+
+/**
  * Fire the callback on registered components.
  *
  * @param array $component Component.
@@ -427,7 +457,7 @@ function handle_data_provider( $component ) {
 function handle_component_callbacks( $component ) {
 
 	// Check the component registry.
-	$registered_component = \WP_Irving\Components\get_registered_component( $component['name'] );
+	$registered_component = \WP_Irving\Components\get_registry()->get_registered_component( $component['name'] );
 	if ( is_null( $registered_component ) || ! is_callable( $registered_component['callback'] ?? '' ) ) {
 		return $component;
 	}

@@ -2,11 +2,43 @@
 /**
  * Component registry.
  *
+ * This
+ *
  * @package WP_Irving
  */
 
 namespace WP_Irving\Components;
 
+/**
+ * Get the registry object/instance.
+ *
+ * @return \WP_Irving\Components\Registry
+ */
+function get_registry() {
+
+	static $registry;
+
+	if ( empty( $registry ) ) {
+		$registry = new Registry();
+	}
+
+	return $registry;
+}
+
+/**
+ * [auto_register_components description]
+ */
+function auto_register_components() {
+	$directories = apply_filters(
+		'wp_irving_component_registry_directories',
+		[
+			'wp_irving' => WP_IRVING_PATH . '/inc/components/', // Load components from WP Irving.
+			'theme'     => get_stylesheet_directory() . '/components/', // Load components from the activated theme.
+		]
+	);
+
+	get_registry()->load_components( $directories );
+}
 add_filter( 'init', __NAMESPACE__ . '\auto_register_components' );
 
 /**
@@ -20,16 +52,6 @@ class Registry {
 	 * @var array
 	 */
 	protected $components = [];
-
-	/**
-	 * Register a component.
-	 *
-	 * @param string $name Component name.
-	 * @param array  $args Component args.
-	 */
-	public function register_component( string $name, array $args = [] ) {
-		$this->components[ $name ] = $args;
-	}
 
 	/**
 	 * Get all registered components.
@@ -49,112 +71,77 @@ class Registry {
 	public function get_registered_component( string $name ) {
 		return $this->components[ $name ] ?? null;
 	}
-}
 
-/**
- * Loop through some directories importing components and registering them.
- */
-function auto_register_components() {
+	/**
+	 * Register a component.
+	 *
+	 * @param string $name Component name.
+	 * @param array  $args Component args.
+	 */
+	public function register_component( string $name, array $args = [] ) {
+		$this->components[ $name ] = $args;
+	}
 
-	$auto_load_directories = apply_filters(
-		'wp_irving_component_registry_directories',
-		[
-			'wp_irving' => WP_IRVING_PATH . '/inc/components/', // Load from the theme.
-			'theme'     => get_stylesheet_directory() . '/components/', // Load from the theme.
-		]
-	);
+	/**
+	 * Register a component using a json config.
+	 *
+	 * @param string $json_file JSON config file.
+	 * @param array  $args      Component args.
+	 */
+	public function register_component_from_config( string $json_file, array $args = [] ) {
 
-	foreach ( array_values( $auto_load_directories ) as $path ) {
-
-		if ( ! is_dir( $path ) ) {
-			continue;
+		// Add the extension if necessary.
+		if ( false === strpos( $json_file, '.json' ) ) {
+			$json_file .= '.json';
 		}
 
-		// Recursively loop through $path, including anything that ends in index.php.
-		$directory_iterator = new \RecursiveDirectoryIterator( $path );
-		$iterator           = new \RecursiveIteratorIterator( $directory_iterator );
-		$regex              = new \RegexIterator( $iterator, '/.+\/index\.php$/', \RecursiveRegexIterator::ALL_MATCHES );
+		// Validate the config file exists.
+		if ( ! file_exists( $json_file ) ) {
+			return false;
+		}
 
-		foreach ( $regex as $file_path ) {
-			if ( file_exists( $file_path[0][0] ) ) {
-				include_once $file_path[0][0];
+		// Load and decode JSON component config.
+		$config = file_get_contents( $json_file );
+		$config = json_decode( $config, true );
+
+		// Validate config loaded and `name` is available.
+		if ( is_null( $config ) || ! isset( $config['name'] ) ) {
+			return false;
+		}
+
+		$this->register_component(
+			$config['name'],
+			array_merge_recursive( $config, $args )
+		);
+
+		return true;
+	}
+
+	/**
+	 * Loop through some directories importing components and registering them.
+	 *
+	 * @param array $directories Directoriess to recursively loop through and
+	 *                           load from.
+	 */
+	public function load_components( array $directories = [] ) {
+
+		foreach ( array_values( $directories ) as $path ) {
+
+			if ( ! is_dir( $path ) ) {
+				continue;
+			}
+
+			// Recursively loop through $path, including anything that ends in index.php.
+			$directory_iterator = new \RecursiveDirectoryIterator( $path );
+			$iterator           = new \RecursiveIteratorIterator( $directory_iterator );
+			$regex              = new \RegexIterator( $iterator, '/.+\/index\.php$/', \RecursiveRegexIterator::ALL_MATCHES );
+
+			foreach ( $regex as $file_path ) {
+				$file_path = $file_path[0][0] ?? '';
+				if ( file_exists( $file_path ) ) {
+					include_once $file_path;
+				}
 			}
 		}
 	}
-}
-
-/**
- * Get the registry object/instance.
- *
- * @return \WP_Irving\Components\Registry
- */
-function get_registry() {
-
-	static $registry;
-
-	if ( empty( $registry ) ) {
-		$registry = new Registry();
-	}
-
-	return $registry;
-}
-
-/**
- * Register a component.
- *
- * @param string $name Component name.
- * @param array  $args Component args.
- */
-function register_component( string $name, $args = [] ) {
-	get_registry()->register_component( $name, $args );
-}
-
-/**
- * Register a component using a json config.
- *
- * @param string $file JSON config file.
- * @param array  $args Component args.
- */
-function register_component_from_config( string $file, array $args = [] ) {
-
-	$file .= '.json';
-
-	if ( ! file_exists( $file ) ) {
-		return false;
-	}
-
-	// Load and decode JSON component config.
-	$config = file_get_contents( $file );
-	$config = json_decode( $config, true );
-
-	// Validate config loaded and `name` is available.
-	if ( is_null( $config ) || ! isset( $config['name'] ) ) {
-		return false;
-	}
-
-	get_registry()->register_component(
-		$config['name'],
-		array_merge_recursive( $config, $args )
-	);
-
-	return true;
-}
-
-/**
- * Get a single registered component by name.
- *
- * @param string $name Component name.
- * @return array
- */
-function get_registered_component( string $name ) {
-	return get_registry()->get_registered_component( $name );
-}
-
-/**
- * Get all registered components.
- *
- * @return array
- */
-function get_registered_components() {
-	return get_registry()->get_registered_components();
 }
