@@ -16,7 +16,7 @@ class Pantheon {
 	 * Constructor for class.
 	 */
 	public function __construct() {
-		print_r('hi');
+
 	}
 }
 

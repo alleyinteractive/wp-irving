@@ -34,13 +34,14 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-jwt-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
 
 // Replicating WP Core functionality.
 require_once WP_IRVING_PATH . '/inc/class-admin.php';
 require_once WP_IRVING_PATH . '/inc/class-previews.php';
-require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
+require_once WP_IRVING_PATH . '/inc/class-cache.php';
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';

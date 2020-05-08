@@ -104,7 +104,7 @@ class Cache {
 			return;
 		}
 
-		// Fire the request to WordPress VIP.
+		// Fire the request to bust both VIP and Irving Redis cache.
 		wp_remote_request( $permalink, [ 'method' => 'PURGE' ] );
 	}
 
