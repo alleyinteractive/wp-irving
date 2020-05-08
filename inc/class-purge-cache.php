@@ -23,6 +23,7 @@ class Purge_Cache {
 		add_action( 'wp_insert_post', [ $this, 'on_update_post' ], 10, 2 );
 		add_action( 'transition_post_status', [ $this, 'on_post_status_transition' ], 10, 3 );
 		add_action( 'before_delete_post', [ $this, 'on_before_delete_post' ] );
+		add_action( 'admin_post_pantheon_cache_flush_site', [ $this, 'pantheon_flush_site' ], 9 );
 
 		add_action( 'init', [ $this, 'purge_cache_request' ] );
 	}
@@ -73,7 +74,6 @@ class Purge_Cache {
 	 * @param string $permalink Permalink.
 	 */
 	protected function fire_purge_request( $permalink = '' ) {
-
 		// Do not fire purges while importing.
 		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
 			return;
@@ -84,30 +84,8 @@ class Purge_Cache {
 			return;
 		}
 
-		// Get the path.
-		$path = wp_parse_url( $permalink, PHP_URL_PATH );
-
-		// Build the key.
-		$key = sprintf( 'path=%1$s&context=site', $path );
-
-		// Build URL.
-		$request_url = add_query_arg(
-			[
-				'endpoint' => $key,
-			],
-			home_url( '/bust-endpoint-cache' )
-		);
-
-		// Fire the request to the irving cache.
-		wp_remote_get( $request_url );
-
 		// Fire the request to WordPress VIP.
-		wp_remote_request(
-			$permalink,
-			[
-				'method' => 'PURGE',
-			]
-		);
+		wp_remote_request( $permalink, [ 'method' => 'PURGE' ] );
 	}
 
 	/**
@@ -131,7 +109,23 @@ class Purge_Cache {
 	 * Fire wipe out request.
 	 */
 	protected function fire_wipe_request() {
-		wp_remote_get( home_url( '/bust-entire-cache' ) );
+		wp_remote_get( home_url( '/purge-cache' ) );
+	}
+
+	/**
+	 * Clear the cache for the entire site.
+	 *
+	 * @todo maybe move this to a different class?
+	 * @return void
+	 */
+	public function pantheon_flush_site() {
+		if ( ! function_exists( 'current_user_can' ) || false == current_user_can( 'manage_options' ) ) {
+			return false;
+		}
+
+		if ( ! empty( $_POST['pantheon-cache-nonce'] ) && wp_verify_nonce( $_POST['pantheon-cache-nonce'], 'pantheon-cache-clear-all' ) ) {
+			$this->fire_wipe_request();
+		}
 	}
 
 	/**
