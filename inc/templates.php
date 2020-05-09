@@ -193,14 +193,13 @@ function filter_template_loader() {
 }
 
 /**
- * Return a located template file.
+ * Return the full path to a template file.
  *
- * @param array  $templates A list of possible template files to load.
- * @param string $folder    Subfolder to look in.
+ * @param array $templates A list of possible template files to load.
  * @return string The path to the found template.
  */
-function locate_template( array $templates, $folder = '/templates/' ): string {
-	$template_path = STYLESHEETPATH . $folder;
+function locate_template( array $templates ): string {
+	$template_path = STYLESHEETPATH . '/templates/';
 
 	/**
 	 * Filter the path to Irving templates.
@@ -241,6 +240,47 @@ function locate_template( array $templates, $folder = '/templates/' ): string {
 	}
 
 	return $located;
+}
+
+/**
+ * Return the full path to a template part file.
+ *
+ * @param string $template Relative path and/or name of the template part.
+ * @return string The path to the found template part.
+ */
+function locate_template_part( string $template ): string {
+
+	$template_part_path = STYLESHEETPATH . '/template-parts/';
+
+	/**
+	 * Filter the path to Irving template partss.
+	 *
+	 * @param string $template_part_path The full path to the template folder.
+	 * @param string  $template           A list of template files to locate.
+	 */
+	apply_filters( 'wp_irving_template_part_path', $template_part_path, $template );
+
+	// Normalize the template name with[out extension.
+	$template_base = wp_basename( $template, '.php' );
+
+	// Look for .php, .json, and then .html templates.
+	$filetypes = [
+		'php',
+		'json',
+		'html',
+	];
+
+	foreach ( $filetypes as $type ) {
+		// Ensure filtered template paths are slashed.
+		$path = trailingslashit( $template_part_path ) . $template_base . '.' . $type;
+
+		// If the file is located, break out of filetype loop.
+		if ( file_exists( $path ) ) {
+			return $path;
+		}
+	}
+
+	return '';
 }
 
 /**
@@ -375,7 +415,7 @@ function handle_template_parts( $component ) {
 
 	$template_part_name = str_replace( 'template-parts/', '', $component['name'] );
 
-	$template = \WP_Irving\Templates\locate_template( [ $template_part_name ], '/template-parts/' );
+	$template = \WP_Irving\Templates\locate_template_part( $template_part_name );
 
 	$template_data = \WP_Irving\Templates\prepare_data_from_template( $template );
 
@@ -480,7 +520,7 @@ function handle_component_config_callbacks( $component ): array {
 function handle_component_callbacks( array $component ) {
 
 	// Check the component registry.
-	$registered_component = \WP_Irving\Components\get_registry()->get_registered_component( $component['name'] );
+	$registered_component = \WP_Irving\get_registry()->get_registered_component( $component['name'] );
 	if ( is_null( $registered_component ) || ! is_callable( $registered_component['callback'] ?? '' ) ) {
 		return $component;
 	}

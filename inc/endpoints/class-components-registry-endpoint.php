@@ -24,11 +24,9 @@ class Components_Registry_Endpoint extends Endpoint {
 			[
 				'methods'  => \WP_REST_Server::READABLE,
 				'callback' => function() {
-					return \WP_Irving\Components\get_registry()->get_registered_components();
+					return \WP_Irving\get_registry()->get_registered_components();
 				},
 			]
 		);
 	}
 }
-
-new Components_Registry_Endpoint();

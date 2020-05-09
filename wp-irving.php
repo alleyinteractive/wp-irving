@@ -45,6 +45,7 @@ require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
 
 // Component registry.
 require_once WP_IRVING_PATH . '/inc/class-registry.php';
+require_once WP_IRVING_PATH . '/inc/registry.php';
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
@@ -57,3 +58,9 @@ require_once WP_IRVING_PATH . '/inc/templates.php';
 
 // Debugging helpers.
 require_once WP_IRVING_PATH . '/inc/debug.php';
+
+// Register endpoints.
+new \WP_Irving\REST_API\Components_Endpoint();
+new \WP_Irving\REST_API\Components_Registry_Endpoint();
+new \WP_Irving\REST_API\Data_Endpoint();
+new \WP_Irving\REST_API\Form_Endpoint();
