@@ -30,5 +30,3 @@ class Components_Registry_Endpoint extends Endpoint {
 		);
 	}
 }
-
-new Components_Registry_Endpoint();

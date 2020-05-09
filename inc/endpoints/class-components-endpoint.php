@@ -493,5 +493,3 @@ class Components_Endpoint extends Endpoint {
 		exit;
 	}
 }
-
-new Components_Endpoint();

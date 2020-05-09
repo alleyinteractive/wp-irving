@@ -58,3 +58,9 @@ require_once WP_IRVING_PATH . '/inc/templates.php';
 
 // Debugging helpers.
 require_once WP_IRVING_PATH . '/inc/debug.php';
+
+// Register endpoints.
+new \WP_Irving\REST_API\Components_Endpoint();
+new \WP_Irving\REST_API\Components_Registry_Endpoint();
+new \WP_Irving\REST_API\Data_Endpoint();
+new \WP_Irving\REST_API\Form_Endpoint();

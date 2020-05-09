@@ -53,5 +53,3 @@ class Data_Endpoint extends Endpoint {
 		}
 	}
 }
-
-new Data_Endpoint();
