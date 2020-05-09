@@ -45,6 +45,7 @@ require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
 
 // Component registry.
 require_once WP_IRVING_PATH . '/inc/class-registry.php';
+require_once WP_IRVING_PATH . '/inc/registry.php';
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
