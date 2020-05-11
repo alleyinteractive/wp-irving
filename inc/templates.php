@@ -7,6 +7,7 @@
 
 namespace WP_Irving\Templates;
 
+use WP_Irving;
 use WP_Query;
 
 // Bootstrap filters.
@@ -415,9 +416,9 @@ function handle_template_parts( $component ) {
 
 	$template_part_name = str_replace( 'template-parts/', '', $component['name'] );
 
-	$template = \WP_Irving\Templates\locate_template_part( $template_part_name );
+	$template = WP_Irving\Templates\locate_template_part( $template_part_name );
 
-	$template_data = \WP_Irving\Templates\prepare_data_from_template( $template );
+	$template_data = WP_Irving\Templates\prepare_data_from_template( $template );
 
 	if ( isset( $template_data['name'] ) ) {
 		$template_data = [ $template_data ];
@@ -520,11 +521,31 @@ function handle_component_config_callbacks( $component ): array {
 function handle_component_callbacks( array $component ) {
 
 	// Check the component registry.
-	$registered_component = \WP_Irving\get_registry()->get_registered_component( $component['name'] );
+	$registered_component = WP_Irving\get_registry()->get_registered_component( $component['name'] );
 	if ( is_null( $registered_component ) || ! is_callable( $registered_component['callback'] ?? '' ) ) {
 		return $component;
 	}
 
 	// Execute callback.
 	return call_user_func_array( $registered_component['callback'], [ $component ] );
+}
+
+/**
+ * Returns the template context object.
+ *
+ * Sets the default 'irving/post' context when first called.
+ *
+ * @return WP_Irving\Context_Store The context store object.
+ */
+function get_template_context() {
+	static $context;
+
+	if ( empty( $context ) ) {
+		$context = new WP_Irving\Context_Store();
+
+		// Set default context.
+		$context->set( 'irving/post', get_the_ID() );
+	}
+
+	return $context;
 }
