@@ -50,6 +50,33 @@ class Cache {
 	}
 
 	/**
+	 * Fire purge request.
+	 *
+	 * @param string $permalink Permalink.
+	 */
+	public function fire_purge_request( $permalink = '' ) {
+		// Do not fire purges while importing.
+		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
+			return;
+		}
+
+		// Bail early.
+		if ( empty( $permalink ) ) {
+			return;
+		}
+
+		// Fire the request to bust both VIP and Irving Redis cache.
+		wp_remote_request( $permalink, [ 'method' => 'PURGE' ] );
+	}
+
+	/**
+	 * Fire wipe out request.
+	 */
+	public function fire_wipe_request() {
+		wp_remote_get( home_url( '/purge-cache' ) );
+	}
+
+	/**
 	 * Clear cache on post update.
 	 *
 	 * @param int     $post_id Post ID.
@@ -114,26 +141,6 @@ class Cache {
 	}
 
 	/**
-	 * Fire purge request.
-	 *
-	 * @param string $permalink Permalink.
-	 */
-	protected function fire_purge_request( $permalink = '' ) {
-		// Do not fire purges while importing.
-		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
-			return;
-		}
-
-		// Bail early.
-		if ( empty( $permalink ) ) {
-			return;
-		}
-
-		// Fire the request to bust both VIP and Irving Redis cache.
-		wp_remote_request( $permalink, [ 'method' => 'PURGE' ] );
-	}
-
-	/**
 	 * Purge cache on a PURGE request.
 	 */
 	public function purge_cache_request() {
@@ -148,13 +155,6 @@ class Cache {
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	}
-
-	/**
-	 * Fire wipe out request.
-	 */
-	protected function fire_wipe_request() {
-		wp_remote_get( home_url( '/purge-cache' ) );
 	}
 
 	/**
