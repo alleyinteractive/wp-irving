@@ -207,7 +207,7 @@ function locate_template( array $templates ): string {
 	 * @param string $template_path The full path to the template folder.
 	 * @param array  $templates     A list of template files to locate.
 	 */
-	apply_filters( 'wp_irving_template_path', $template_path, $templates );
+	$template_path = apply_filters( 'wp_irving_template_path', $template_path, $templates );
 
 	$located = '';
 
@@ -258,7 +258,7 @@ function locate_template_part( string $template ): string {
 	 * @param string $template_part_path The full path to the template folder.
 	 * @param string  $template           A list of template files to locate.
 	 */
-	apply_filters( 'wp_irving_template_part_path', $template_part_path, $template );
+	$template_part_path = apply_filters( 'wp_irving_template_part_path', $template_part_path, $template );
 
 	// Normalize the template name with[out extension.
 	$template_base = wp_basename( $template, '.php' );
