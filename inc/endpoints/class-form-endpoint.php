@@ -87,5 +87,3 @@ class Form_Endpoint extends Endpoint {
 		return $response;
 	}
 }
-
-new Form_Endpoint();

@@ -36,7 +36,11 @@ function load_template( array $data, WP_Query $query, string $context ): array {
 		if ( $defaults ) {
 			$data = array_merge( $data, prepare_data_from_template( $defaults, 'defaults' ) );
 		}
+
+		$data['defaults'] = traverse_components( $data['defaults'] );
 	}
+
+	$data['page'] = traverse_components( $data['page'] );
 
 	return $data;
 }
@@ -189,7 +193,7 @@ function filter_template_loader() {
 }
 
 /**
- * Return a located template file.
+ * Return the full path to a template file.
  *
  * @param array $templates A list of possible template files to load.
  * @return string The path to the found template.
@@ -239,6 +243,47 @@ function locate_template( array $templates ): string {
 }
 
 /**
+ * Return the full path to a template part file.
+ *
+ * @param string $template Relative path and/or name of the template part.
+ * @return string The path to the found template part.
+ */
+function locate_template_part( string $template ): string {
+
+	$template_part_path = STYLESHEETPATH . '/template-parts/';
+
+	/**
+	 * Filter the path to Irving template partss.
+	 *
+	 * @param string $template_part_path The full path to the template folder.
+	 * @param string  $template           A list of template files to locate.
+	 */
+	apply_filters( 'wp_irving_template_part_path', $template_part_path, $template );
+
+	// Normalize the template name with[out extension.
+	$template_base = wp_basename( $template, '.php' );
+
+	// Look for .php, .json, and then .html templates.
+	$filetypes = [
+		'php',
+		'json',
+		'html',
+	];
+
+	foreach ( $filetypes as $type ) {
+		// Ensure filtered template paths are slashed.
+		$path = trailingslashit( $template_part_path ) . $template_base . '.' . $type;
+
+		// If the file is located, break out of filetype loop.
+		if ( file_exists( $path ) ) {
+			return $path;
+		}
+	}
+
+	return '';
+}
+
+/**
  * Convert an array of blocks into Irving components.
  *
  * @param array $blocks Array of blocks. Likely from parse_blocks.
@@ -273,4 +318,213 @@ function convert_blocks_to_components( array $blocks ): array {
 	}
 
 	return $components;
+}
+
+/**
+ * Recursively iterate on a component tree.
+ *
+ * @param array $components Array of components.
+ * @return array
+ */
+function traverse_components( array $components ): array {
+
+	foreach ( $components as $index => &$component ) {
+
+		// This allows us to set text nodes.
+		if ( is_string( $component ) ) {
+			continue;
+		}
+
+		// Ensure we have all the right field and types.
+		$component = ensure_component_fields_exist( $component );
+
+		$component = handle_template_parts( $component );
+		$component = handle_data_provider( $component );
+		$component = handle_component_config_callbacks( $component );
+		$component = handle_component_callbacks( $component );
+
+		// Recursively loop though.
+		if ( ! empty( $component['children'] ) ) {
+			$component['children'] = traverse_components( $component['children'] );
+		}
+
+		// Ensure config and data providers are actually objects.
+		$component = validate_final_component( $component );
+	}
+
+	return $components;
+}
+
+
+/**
+ * Validate and typecast a component.
+ *
+ * @param array $component Component.
+ * @return array
+ */
+function ensure_component_fields_exist( $component ) {
+
+	if ( is_string( $component ) ) {
+		return $component;
+	}
+
+	return [
+		'name'          => (string) ( $component['name'] ?? '' ),
+		'config'        => (array) ( $component['config'] ?? [] ),
+		'data_provider' => (array) ( $component['data_provider'] ?? [] ),
+		'children'      => (array) ( $component['children'] ?? [] ),
+	];
+}
+
+/**
+ * Modify the final output of a component.
+ *
+ * @param array $component Component.
+ * @return array
+ */
+function validate_final_component( $component ) {
+
+	if ( is_string( $component ) ) {
+		return $component;
+	}
+
+	$component                  = ensure_component_fields_exist( $component );
+	$component['config']        = (object) $component['config'];
+	$component['data_provider'] = (object) $component['data_provider'];
+	$component['children']      = array_values( array_filter( (array) ( $component['children'] ?? [] ) ) );
+
+	unset( $component['data_provider'] );
+
+	return $component;
+}
+
+
+/**
+ * Pull in template parts.
+ *
+ * @param array $component Component.
+ * @return array
+ */
+function handle_template_parts( $component ) {
+
+	// Check if this is a template part.
+	$name = $component['name'] ?? '';
+	if ( 0 !== strpos( $name, 'template-parts/' ) ) {
+		return $component;
+	}
+
+	$template_part_name = str_replace( 'template-parts/', '', $component['name'] );
+
+	$template = \WP_Irving\Templates\locate_template_part( $template_part_name );
+
+	$template_data = \WP_Irving\Templates\prepare_data_from_template( $template );
+
+	if ( isset( $template_data['name'] ) ) {
+		$template_data = [ $template_data ];
+	}
+
+	$component['name'] = 'irving/passthrough';
+	$component['children'] = $template_data;
+
+	return $component;
+}
+
+/**
+ * Pass data provider values down to children components.
+ *
+ * @param array $component Component.
+ * @return array
+ */
+function handle_data_provider( $component ) {
+
+	// If there's no data provider, or children, don't do anything.
+	if ( empty( $component['data_provider'] ) || empty( $component['children'] ) ) {
+		return $component;
+	}
+
+	foreach ( $component['children'] as &$child_component ) {
+
+		if ( is_string( $child_component ) ) {
+			continue;
+		}
+
+		$child_component = ensure_component_fields_exist( $child_component );
+
+		$child_component['data_provider'] = array_merge_recursive(
+			$child_component['data_provider'],
+			$component['data_provider']
+		);
+	}
+
+	return $component;
+}
+
+/**
+ * Loop through component config values. If we match a {{component/name}} then
+ * we execute the callback, and return the value to the config.
+ *
+ * @todo Determine if this functionality can be scrapped in favor of a data
+ *       provider. This is proof of concept purely for discussion and
+ *       consideration.
+ *
+ * @example
+ * {
+ *   "name": "example",
+ *   "config": {
+ *     "href": "{{post/permalink}}"
+ *   }
+ * }
+ *
+ * @param array $component Component.
+ * @return array
+ */
+function handle_component_config_callbacks( $component ): array {
+
+	// Ensure component config exists.
+	if ( ! isset( $component['config'] ) || empty( $component['config'] ) ) {
+		return $component;
+	}
+
+	foreach ( $component['config'] as $key => $value ) {
+
+		if ( ! is_string( $value ) ) {
+			continue;
+		}
+
+		// For each key, check if the value has a handlebars syntax.
+		preg_match_all( '/{{(.+)}}/', $value, $matches );
+		$matches = array_filter( $matches );
+
+		// If we found a result, execute the component callback, and assign to
+		// the key.
+		if ( ! empty( $matches ) ) {
+			$component_name = $matches[1][0];
+			$component['config'][ $key ] = handle_component_callbacks(
+				[
+					'name'          => $component_name,
+					'data_provider' => $component['data_provider'],
+				]
+			);
+		}
+	}
+
+	return $component;
+}
+
+/**
+ * Fire the callback on registered components.
+ *
+ * @param array $component Component.
+ * @return array
+ */
+function handle_component_callbacks( array $component ) {
+
+	// Check the component registry.
+	$registered_component = \WP_Irving\get_registry()->get_registered_component( $component['name'] );
+	if ( is_null( $registered_component ) || ! is_callable( $registered_component['callback'] ?? '' ) ) {
+		return $component;
+	}
+
+	// Execute callback.
+	return call_user_func_array( $registered_component['callback'], [ $component ] );
 }
