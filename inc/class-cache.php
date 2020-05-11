@@ -41,9 +41,10 @@ class Cache {
 
 		// Purging actions.
 		add_action( 'wp_insert_post', [ $this, 'on_update_post' ], 10, 2 );
+		add_action( 'clean_post_cache', [ $this, 'on_clean_post_cache' ], 10, 2 );
 		add_action( 'transition_post_status', [ $this, 'on_post_status_transition' ], 10, 3 );
 		add_action( 'before_delete_post', [ $this, 'on_before_delete_post' ] );
-		add_action( 'admin_post_pantheon_cache_flush_site', [ $this, 'pantheon_flush_site' ], 9 );
+		add_action( 'delete_attachment', [ $this, 'on_delete_attachment' ] );
 
 		add_action( 'init', [ $this, 'purge_cache_request' ] );
 	}
@@ -55,6 +56,21 @@ class Cache {
 	 * @param WP_Post $post    Post object.
 	 */
 	public function on_update_post( $post_id, $post ) {
+		if ( 'publish' !== $post->post_status ) {
+			return;
+		}
+
+		// Purge cache.
+		$this->fire_purge_request( get_the_permalink( $post_id ) );
+	}
+
+	/**
+	 * Clear cache on post cache clear.
+	 *
+	 * @param int     $post_id Post ID.
+	 * @param WP_Post $post    Post object.
+	 */
+	public function on_clean_post_cache( $post_id, $post ) {
 		if ( 'publish' !== $post->post_status ) {
 			return;
 		}
@@ -85,6 +101,15 @@ class Cache {
 	 * @param int $post_id Post ID.
 	 */
 	public function on_before_delete_post( $post_id ) {
+		$this->fire_purge_request( get_the_permalink( $post_id ) );
+	}
+
+	/**
+	 * Clear attachment on delete.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function on_delete_attachment( $post_id ) {
 		$this->fire_purge_request( get_the_permalink( $post_id ) );
 	}
 
@@ -130,22 +155,6 @@ class Cache {
 	 */
 	protected function fire_wipe_request() {
 		wp_remote_get( home_url( '/purge-cache' ) );
-	}
-
-	/**
-	 * Clear the cache for the entire site.
-	 *
-	 * @todo maybe move this to a different class?
-	 * @return void
-	 */
-	public function pantheon_flush_site() {
-		if ( ! function_exists( 'current_user_can' ) || false == current_user_can( 'manage_options' ) ) {
-			return false;
-		}
-
-		if ( ! empty( $_POST['pantheon-cache-nonce'] ) && wp_verify_nonce( $_POST['pantheon-cache-nonce'], 'pantheon-cache-clear-all' ) ) {
-			$this->fire_wipe_request();
-		}
 	}
 
 	/**
