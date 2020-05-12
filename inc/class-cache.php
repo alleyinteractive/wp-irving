@@ -39,14 +39,359 @@ class Cache {
 		// Register admin page.
 		add_action( 'admin_menu', [ $this, 'register_admin' ] );
 
-		// Purging actions.
+		// Post purging actions.
 		add_action( 'wp_insert_post', [ $this, 'on_update_post' ], 10, 2 );
 		add_action( 'clean_post_cache', [ $this, 'on_clean_post_cache' ], 10, 2 );
 		add_action( 'transition_post_status', [ $this, 'on_post_status_transition' ], 10, 3 );
 		add_action( 'before_delete_post', [ $this, 'on_before_delete_post' ] );
 		add_action( 'delete_attachment', [ $this, 'on_delete_attachment' ] );
 
+		// Term purging actions.
+		add_action( 'created_term', [ $this, 'on_created_term' ], 10, 3 );
+		add_action( 'edited_term', [ $this, 'on_edited_term' ] );
+		add_action( 'delete_term', [ $this, 'on_delete_term' ] );
+		add_action( 'clean_term_cache', [ $this, 'on_clean_term_cache' ] );
+
+		// User purging actions.
+		add_action( 'clean_user_cache', [ $this, 'on_clean_user_cache' ] );
+
 		add_action( 'init', [ $this, 'purge_cache_request' ] );
+	}
+
+	/**
+	 * Purge cache on post update.
+	 *
+	 * @param int     $post_id Post ID.
+	 * @param WP_Post $post    Post object.
+	 */
+	public function on_update_post( $post_id, $post ) {
+		if ( 'publish' !== $post->post_status ) {
+			return;
+		}
+
+		// Purge cache.
+		$this->fire_post_purge_requests( $post_id );
+	}
+
+	/**
+	 * Purge cache on post cache clear.
+	 *
+	 * @param int     $post_id Post ID.
+	 * @param WP_Post $post    Post object.
+	 */
+	public function on_clean_post_cache( $post_id, $post ) {
+		if ( 'publish' !== $post->post_status ) {
+			return;
+		}
+
+		// Purge cache.
+		$this->fire_post_purge_requests( $post_id );
+	}
+
+	/**
+	 * Purge cache on page transition.
+	 *
+	 * @param string  $new_status New Status.
+	 * @param string  $old_status Old Status.
+	 * @param WP_Post $post       Post object.
+	 */
+	public function on_post_status_transition( $new_status, $old_status, $post ) {
+		if ( 'publish' !== $new_status && 'publish' !== $old_status ) {
+			return;
+		}
+
+		// Purge cache.
+		$this->fire_post_purge_requests( $post );
+	}
+
+	/**
+	 * Purge on post delete.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function on_before_delete_post( $post_id ) {
+		$this->fire_post_purge_requests( $post_id );
+	}
+
+	/**
+	 * Purge attachment on delete.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function on_delete_attachment( $post_id ) {
+		$this->fire_post_purge_requests( $post_id );
+	}
+
+	/**
+	 * Purge term cache on create.
+	 *
+	 * @param int\WP_Term $term_id Term ID.
+	 */
+	public function on_created_term( $term_id ) {
+		$this->fire_term_purge_requests( $term_id );
+	}
+
+	/**
+	 * Purge term cache on edit.
+	 *
+	 * @param int\WP_Term $term_id Term ID.
+	 */
+	public function on_edited_term( $term_id ) {
+		$this->fire_term_purge_requests( $term_id );
+	}
+
+	/**
+	 * Purge term cache on delete.
+	 *
+	 * @param int\WP_Term $term_id Term ID.
+	 */
+	public function on_deleted_term( $term_id ) {
+		$this->fire_term_purge_requests( $term_id );
+	}
+
+	/**
+	 * Purge terms on clean cache.
+	 *
+	 * @param array $term_ids Term IDs.
+	 */
+	public function on_clean_term_cache( $term_ids ) {
+		$ids = is_array( $term_ids ) ? $term_ids : array( $term_ids );
+
+		foreach ( $ids as $term_id ) {
+			$this->fire_term_purge_requests( $term_id );
+		}
+	}
+
+	/**
+	 * Purge user on clean cache.
+	 *
+	 * @param array $user_id User ID.
+	 */
+	public function on_clean_user_cache( $user_id ) {
+		$this->fire_user_purge_requests( $user_id );
+	}
+
+	/**
+	 * Get an array of URLS to purge for a post.
+	 *
+	 * @param int|\WP_Post $post_id A WP Post object or a post ID.
+	 * @return array Purge URLs
+	 */
+	public function get_post_purge_urls( $post_id ) : array {
+		$post_purge_urls = [];
+
+		if ( defined( 'WP_IMPORTING' ) && true === WP_IMPORTING ) {
+			return $post_purge_urls;
+		}
+
+		$current_post = get_post( $post_id );
+
+		if (
+			empty( $current_post )
+			|| 'revision' === $current_post->post_type
+			|| ! in_array( get_post_status( $post_id ), array( 'publish', 'inherit', 'trash' ), true )
+			|| ! is_post_type_viewable( $current_post->post_type )
+			// Skip purge if it is a new attachment.
+			|| ( 'attachment' === $current_post->post_type && $current_post->post_date === $current_post->post_modified )
+		) {
+			return $post_purge_urls;
+		}
+
+		$post_purge_urls[] = get_permalink( $post_id );
+		$post_purge_urls[] = home_url( '/' );
+
+		// Don't just purge the attachment page, but also include the file itself.
+		if ( 'attachment' === $current_post->post_type ) {
+			$post_purge_urls[] = wp_get_attachment_url( $post_id );
+		}
+
+		$taxonomies = get_object_taxonomies( $current_post, 'object' );
+
+		foreach ( $taxonomies as $taxonomy ) {
+			if ( true !== $taxonomy->public ) {
+				continue;
+			}
+
+			$taxonomy_name = $taxonomy->name;
+			$terms         = get_the_terms( $post_id, $taxonomy_name );
+
+			if ( false === $terms ) {
+				continue;
+			}
+
+			foreach ( $terms as $term ) {
+				$post_purge_urls = array_merge( $post_purge_urls, $this->get_single_term_purge_urls( $term ) );
+			}
+		}
+
+		// Purge author urls.
+		$post_author_id  = get_post_field( 'post_author', $post_id );
+		$user_purge_urls = $this->get_user_purge_urls( $post_author_id );
+
+		// Purge the standard site feeds.
+		// @TODO Do we need to PURGE the comment feeds if the post_status is publish?
+		$site_feeds = [
+			get_bloginfo( 'rdf_url' ),
+			get_bloginfo( 'rss_url' ),
+			get_bloginfo( 'rss2_url' ),
+			get_bloginfo( 'atom_url' ),
+			get_bloginfo( 'comments_atom_url' ),
+			get_bloginfo( 'comments_rss2_url' ),
+			get_post_comments_feed_link( $post_id ),
+		];
+
+		return array_merge( $post_purge_urls, $user_purge_urls, $site_feeds );
+	}
+
+	/**
+	 * Get an array of URLS to purge for terms. This will handle hierarchical terms as well.
+	 *
+	 * @param int|\WP_Term $term A WP Term object, or a term ID.
+	 * @return array Purge URLs
+	 */
+	public function get_term_purge_urls( $term ) : array {
+		$term_purge_urls = [];
+		$term = get_term( $term );
+
+		if ( is_wp_error( $term ) || empty( $term ) ) {
+			return $term_purge_urls;
+		}
+
+		// Before adding term to purge URLs, make sure we actually need to do it.
+		$term_ids        = [ $term->term_id ];
+		$taxonomy_object = get_taxonomy( $term->taxonomy );
+
+		if (
+			! $taxonomy_object
+			|| (
+				false === $taxonomy_object->public
+				&& false === $taxonomy_object->publicly_queryable
+				&& false === $taxonomy_object->show_in_rest
+			)
+		) {
+			return $term_purge_urls;
+		}
+
+		$get_term_args = array(
+			'taxonomy'    => $term->taxonomy,
+			'include'     => $term_ids,
+			'hide_empty'  => false,
+		);
+		$terms = get_terms( $get_term_args );
+
+		if ( is_wp_error( $terms ) ) {
+			return $term_purge_urls;
+		}
+
+		foreach ( $terms as $term ) {
+			$term_purge_urls = array_merge( $term_purge_urls, $this->get_single_term_purge_urls( $term ) );
+		}
+
+		return array_unique( $term_purge_urls );
+	}
+
+	/**
+	 * Get all URLs to be purged for a given term.
+	 *
+	 * @param  WP_Term $term A WP term object.
+	 * @return array An array of URLs to be purged
+	 * @todo maybe purge pagination URLs.
+	 */
+	public function get_single_term_purge_urls( $term ) : array {
+		$term_purge_urls = [];
+
+		// Purge term archive.
+		$taxonomy_name   = $term->taxonomy;
+		$maybe_purge_url = get_term_link( $term, $taxonomy_name );
+
+		if ( ! empty( $maybe_purge_url ) && ! is_wp_error( $maybe_purge_url ) && is_string( $maybe_purge_url ) ) {
+			$term_purge_urls[] = $maybe_purge_url;
+		}
+
+		// Purge term feed.
+		$maybe_purge_feed_url = get_term_feed_link( intval( $term->term_id ), $taxonomy_name );
+
+		if ( false !== $maybe_purge_feed_url ) {
+			$term_purge_urls[] = $maybe_purge_feed_url;
+		}
+
+		return $term_purge_urls;
+	}
+
+	/**
+	 * Get all URLs to be purged for a given term
+	 *
+	 * @param int|\WP_User $user User object or ID.
+	 * @return array An array of URLs to be purged.
+	 * @todo maybe purge pagination URLs.
+	 */
+	public function get_user_purge_urls( $user ) : array {
+		$user_purge_urls = [];
+
+		if (
+			empty( $user ) ||
+			( ! $user instanceof \WP_User && ! is_numeric( $user ) )
+		) {
+			return $user_purge_urls;
+		}
+
+		// Purge user archive.
+		$user_id         = ( $user instanceof \WP_User ) ? $user->ID : $user;
+		$maybe_purge_url = get_author_posts_url( $user_id );
+
+		if ( ! empty( $maybe_purge_url ) && ! is_wp_error( $maybe_purge_url ) && is_string( $maybe_purge_url ) ) {
+			$user_purge_urls[] = $maybe_purge_url;
+		}
+
+		// Purge user feeds.
+		$maybe_purge_feed_url = get_author_feed_link( $user_id );
+
+		if ( false !== $maybe_purge_feed_url ) {
+			$user_purge_urls[] = $maybe_purge_feed_url;
+		}
+
+		return $user_purge_urls;
+	}
+
+	/**
+	 * Fire purge requests for post purge urls.
+	 *
+	 * @param int\WP_Post $post Post object or ID.
+	 */
+	public function fire_post_purge_requests( $post ) {
+		$purge_urls = $this->get_post_purge_urls( $post );
+		$this->fire_bulk_purge_request( $purge_urls );
+	}
+
+	/**
+	 * Fire purge requests for term purge urls.
+	 *
+	 * @param int\WP_Term $term Term object or ID.
+	 */
+	public function fire_term_purge_requests( $term ) {
+		$purge_urls = $this->get_term_purge_urls( $term );
+		$this->fire_bulk_purge_request( $purge_urls );
+	}
+
+	/**
+	 * Fire purge requests for user purge urls.
+	 *
+	 * @param int\WP_User $user user object or ID.
+	 */
+	public function fire_user_purge_requests( $user ) {
+		$purge_urls = $this->get_user_purge_urls( $user );
+		$this->fire_bulk_purge_request( $purge_urls );
+	}
+
+	/**
+	 * Fire purge requests for an array of permalinks.
+	 *
+	 * @param array $permalinks Permalinks.
+	 */
+	public function fire_bulk_purge_request( $permalinks = [] ) {
+		foreach ( $permalinks as $permalink ) {
+			$this->fire_purge_request( $permalink );
+		}
 	}
 
 	/**
@@ -77,70 +422,6 @@ class Cache {
 	}
 
 	/**
-	 * Clear cache on post update.
-	 *
-	 * @param int     $post_id Post ID.
-	 * @param WP_Post $post    Post object.
-	 */
-	public function on_update_post( $post_id, $post ) {
-		if ( 'publish' !== $post->post_status ) {
-			return;
-		}
-
-		// Purge cache.
-		$this->fire_purge_request( get_the_permalink( $post_id ) );
-	}
-
-	/**
-	 * Clear cache on post cache clear.
-	 *
-	 * @param int     $post_id Post ID.
-	 * @param WP_Post $post    Post object.
-	 */
-	public function on_clean_post_cache( $post_id, $post ) {
-		if ( 'publish' !== $post->post_status ) {
-			return;
-		}
-
-		// Purge cache.
-		$this->fire_purge_request( get_the_permalink( $post_id ) );
-	}
-
-	/**
-	 * Clear cache on page transition.
-	 *
-	 * @param string  $new_status New Status.
-	 * @param string  $old_status Old Status.
-	 * @param WP_Post $post       Post object.
-	 */
-	public function on_post_status_transition( $new_status, $old_status, $post ) {
-		if ( 'publish' !== $new_status && 'publish' !== $old_status ) {
-			return;
-		}
-
-		// Purge cache.
-		$this->fire_purge_request( get_the_permalink( $post->ID ) );
-	}
-
-	/**
-	 * Clear on post delete.
-	 *
-	 * @param int $post_id Post ID.
-	 */
-	public function on_before_delete_post( $post_id ) {
-		$this->fire_purge_request( get_the_permalink( $post_id ) );
-	}
-
-	/**
-	 * Clear attachment on delete.
-	 *
-	 * @param int $post_id Post ID.
-	 */
-	public function on_delete_attachment( $post_id ) {
-		$this->fire_purge_request( get_the_permalink( $post_id ) );
-	}
-
-	/**
 	 * Purge cache on a PURGE request.
 	 */
 	public function purge_cache_request() {
@@ -155,188 +436,6 @@ class Cache {
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Missing
 		// phpcs:enable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-	}
-
-	/**
-	 * Get an array of URLS to purge for a post.
-	 *
-	 * @param object|int $term A WP Post object, or a post ID
-	 * @return array Purge URLs
-	 */
-	public function get_post_purge_urls( $post_id ) {
-		$post_purge_urls = [];
-
-		if ( defined( 'WP_IMPORTING' ) && true === WP_IMPORTING ) {
-			return false;
-		}
-
-		$post = get_post( $post_id );
-
-		if (
-			empty( $post )
-		    || 'revision' === $post->post_type
-			|| ! in_array( get_post_status( $post_id ), array( 'publish', 'inherit', 'trash' ), true )
-			|| ! is_post_type_viewable( $post->post_type )
-			// Skip purge if it is a new attachment
-			|| ( 'attachment' === $post->post_type && $post->post_date === $post->post_modified )
-		) {
-			return false;
-		}
-
-		$post_purge_urls[] = get_permalink( $post_id );
-		$post_purge_urls[] = home_url( '/' );
-
-		// Don't just purge the attachment page, but also include the file itself
-		if ( 'attachment' === $post->post_type ) {
-			$post_purge_urls[] = wp_get_attachment_url( $post_id );
-		}
-
-		$taxonomies = get_object_taxonomies( $post, 'object' );
-
-		foreach ( $taxonomies as $taxonomy ) {
-			if ( true !== $taxonomy->public ) {
-				continue;
-			}
-
-			$taxonomy_name = $taxonomy->name;
-			$terms         = get_the_terms( $post_id, $taxonomy_name );
-
-			if ( false === $terms ) {
-				continue;
-			}
-
-			foreach ( $terms as $term ) {
-				$post_purge_urls = array_merge( $post_purge_urls, $this->get_purge_urls_for_term( $term ) );
-			}
-		}
-
-		// Purge author urls.
-		$post_author_id  = get_post_field( 'post_author', $post_id );
-		$user_purge_urls = $this->get_user_purge_urls( $post_author_id );
-
-		// Purge the standard site feeds
-		// @TODO Do we need to PURGE the comment feeds if the post_status is publish?
-		$site_feeds = [
-			get_bloginfo( 'rdf_url' ),
-			get_bloginfo( 'rss_url')  ,
-			get_bloginfo( 'rss2_url' ),
-			get_bloginfo( 'atom_url' ),
-			get_bloginfo( 'comments_atom_url' ),
-			get_bloginfo( 'comments_rss2_url' ),
-			get_post_comments_feed_link( $post_id ),
-		];
-
-		return array_merge( $post_purge_urls, $user_purge_urls, $site_feeds );
-	}
-
-	/**
-	 * Get an array of URLS to purge for terms.
-	 *
-	 * @param object|int $term A WP Term object, or a term ID
-	 * @return array Purge URLs
-	 */
-	public function get_term_purge_urls( $term ) {
-		$term_purge_urls = [];
-		$term = get_term( $term );
-
-		if ( is_wp_error( $term ) || empty( $term ) ) {
-			return $term_purge_urls;
-		}
-
-		// Before adding term to purge URLs, make sure we actually need to do it.
-		$term_ids        = array( $term->term_id );
-		$taxonomy_object = get_taxonomy( $term->taxonomy );
-
-		if (
-			! $taxonomy_object
-			|| (
-				false === $taxonomy_object->public
-				&& false === $taxonomy_object->publicly_queryable
-				&& false === $taxonomy_object->show_in_rest
-			)
-		) {
-			return $term_purge_urls;
-		}
-
-		$get_term_args = array(
-			'taxonomy'    => $term->taxonomy,
-			'include'     => $term_ids,
-			'hide_empty'  => false,
-		);
-		$terms = get_terms( $get_term_args );
-
-		if ( is_wp_error( $terms ) ) {
-			return $term_purge_urls;
-		}
-
-		foreach ( $terms as $term ) {
-			$term_purge_urls = array_merge( $term_purge_urls, $this->get_purge_urls_for_term( $term ) );
-		}
-
-		return array_unique( $term_purge_urls );
-	}
-
-	/**
-	 * Get all URLs to be purged for a given term
-	 *
-	 * @param object $term A WP term object
-	 * @return array An array of URLs to be purged
-	 * @todo maybe purge pagination URLs.
-	 */
-	public function get_purge_urls_for_term( $term ) {
-		$term_purge_urls = [];
-
-		// Purge term archive.
-		$taxonomy_name   = $term->taxonomy;
-		$maybe_purge_url = get_term_link( $term, $taxonomy_name );
-
-		if ( ! empty( $maybe_purge_url ) && ! is_wp_error( $maybe_purge_url ) && is_string( $maybe_purge_url ) ) {
-			$term_purge_urls[] = $maybe_purge_url;
-		}
-
-		// Purge term feed.
-		$maybe_purge_feed_url = get_term_feed_link( intval( $term->term_id ), $taxonomy_name );
-
-		if ( false !== $maybe_purge_feed_url ) {
-			$term_purge_urls[] = $maybe_purge_feed_url;
-		}
-
-		return $term_purge_urls;
-	}
-
-	/**
-	 * Get all URLs to be purged for a given term
-	 *
-	 * @param object $user_id User object or ID
-	 * @return array An array of URLs to be purged
-	 * @todo maybe purge pagination URLs.
-	 */
-	public function get_user_purge_urls( $user ) {
-		$user_purge_urls = [];
-
-		if (
-			empty ( $user ) ||
-			( ! $user instanceof \WP_User && ! is_numeric( $user ) )
-		) {
-			return $user_purge_urls;
-		}
-
-		// Purge user archive.
-		$user_id         = ( $user instanceof \WP_User ) ? $user->ID : $user;
-		$maybe_purge_url = get_author_posts_url( $user_id );
-
-		if ( ! empty( $maybe_purge_url ) && ! is_wp_error( $maybe_purge_url ) && is_string( $maybe_purge_url ) ) {
-			$user_purge_urls[] = $maybe_purge_url;
-		}
-
-		// Purge user feeds.
-		$maybe_purge_feed_url = get_author_feed_link( $user_id );
-
-		if ( false !== $maybe_purge_feed_url ) {
-			$user_purge_urls[] = $maybe_purge_feed_url;
-		}
-
-		return $user_purge_urls;
 	}
 
 	/**
@@ -387,14 +486,14 @@ class Cache {
 				<?php settings_fields( 'irving-cache' ); ?>
 
 				<h2>
-					<?php esc_html_e( 'Clear Site Cache', 'wp-irving' ); ?>
+					<?php esc_html_e( 'Purge Site Cache', 'wp-irving' ); ?>
 				</h2>
 
 				<p>
-					<?php esc_html_e( 'Use with care. Clearing the entire site cache will negatively impact performance for a short period of time.', 'wp-irving' ); ?>
+					<?php esc_html_e( 'Use with care. Purgeing the entire site cache will negatively impact performance for a short period of time.', 'wp-irving' ); ?>
 				</p>
 
-				<?php submit_button( __( 'Clear Cache', 'wp-irving' ) ); ?>
+				<?php submit_button( __( 'Purge Cache', 'wp-irving' ) ); ?>
 			</form>
 
 			<hr>
@@ -406,6 +505,6 @@ class Cache {
 add_action(
 	'init',
 	function() {
-		( new \WP_Irving\Cache )->instance();
+		\WP_Irving\Cache::instance();
 	}
 );

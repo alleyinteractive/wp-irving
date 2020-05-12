@@ -22,7 +22,7 @@ class Pantheon {
 	/**
 	 * Clear the cache for the entire site.
 	 *
-	 * @return void
+	 * @return bool
 	 */
 	public function pantheon_flush_site() {
 		if ( ! function_exists( 'current_user_can' ) || false == current_user_can( 'manage_options' ) ) {
