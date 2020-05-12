@@ -176,6 +176,7 @@ class Cache {
 	 *
 	 * @param int|\WP_Post $post_id A WP Post object or a post ID.
 	 * @return array Purge URLs
+	 * @todo do we even need feed URLs for Irving?
 	 */
 	public function get_post_purge_urls( $post_id ) : array {
 		$post_purge_urls = [];
@@ -229,7 +230,6 @@ class Cache {
 		$user_purge_urls = $this->get_user_purge_urls( $post_author_id );
 
 		// Purge the standard site feeds.
-		// @TODO Do we need to PURGE the comment feeds if the post_status is publish?
 		$site_feeds = [
 			get_bloginfo( 'rdf_url' ),
 			get_bloginfo( 'rss_url' ),
@@ -248,12 +248,14 @@ class Cache {
 	 *
 	 * @param int|\WP_Term $term A WP Term object, or a term ID.
 	 * @return array Purge URLs
+	 * @todo determine if this separate function is even necessary.
+	 * @todo determine if we should also purge posts with this term assigned.
 	 */
 	public function get_term_purge_urls( $term ) : array {
 		$term_purge_urls = [];
 		$term = get_term( $term );
 
-		if ( is_wp_error( $term ) || empty( $term ) ) {
+		if ( is_wp_error( $term ) || empty( $term ) || ( defined( 'WP_IMPORTING' ) && true === WP_IMPORTING ) ) {
 			return $term_purge_urls;
 		}
 
@@ -291,7 +293,7 @@ class Cache {
 	}
 
 	/**
-	 * Get all URLs to be purged for a given term.
+	 * Get all URLs to be purged for a single term.
 	 *
 	 * @param  WP_Term $term A WP term object.
 	 * @return array An array of URLs to be purged
@@ -324,13 +326,15 @@ class Cache {
 	 * @param int|\WP_User $user User object or ID.
 	 * @return array An array of URLs to be purged.
 	 * @todo maybe purge pagination URLs.
+	 * @todo determine if we should also purge posts authored by this user.
 	 */
 	public function get_user_purge_urls( $user ) : array {
 		$user_purge_urls = [];
 
 		if (
-			empty( $user ) ||
-			( ! $user instanceof \WP_User && ! is_numeric( $user ) )
+			empty( $user )
+			|| ( ! $user instanceof \WP_User && ! is_numeric( $user ) )
+			|| ( defined( 'WP_IMPORTING' ) && true === WP_IMPORTING )
 		) {
 			return $user_purge_urls;
 		}
@@ -490,7 +494,7 @@ class Cache {
 				</h2>
 
 				<p>
-					<?php esc_html_e( 'Use with care. Purgeing the entire site cache will negatively impact performance for a short period of time.', 'wp-irving' ); ?>
+					<?php esc_html_e( 'Use with care. Purging the entire site cache will negatively impact performance for a short period of time.', 'wp-irving' ); ?>
 				</p>
 
 				<?php submit_button( __( 'Purge Cache', 'wp-irving' ) ); ?>
