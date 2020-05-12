@@ -176,7 +176,6 @@ class Cache {
 	 *
 	 * @param int|\WP_Post $post_id A WP Post object or a post ID.
 	 * @return array Purge URLs
-	 * @todo do we even need feed URLs for Irving?
 	 */
 	public function get_post_purge_urls( $post_id ) : array {
 		$post_purge_urls = [];
@@ -227,20 +226,14 @@ class Cache {
 
 		// Purge author urls.
 		$post_author_id  = get_post_field( 'post_author', $current_post );
-		$user_purge_urls = $this->get_user_purge_urls( $post_author_id );
+		$post_purge_urls = array_merge( $post_purge_urls, $this->get_user_purge_urls( $post_author_id ) );
 
-		// Purge the standard site feeds.
-		$site_feeds = [
-			get_bloginfo( 'rdf_url' ),
-			get_bloginfo( 'rss_url' ),
-			get_bloginfo( 'rss2_url' ),
-			get_bloginfo( 'atom_url' ),
-			get_bloginfo( 'comments_atom_url' ),
-			get_bloginfo( 'comments_rss2_url' ),
-			get_post_comments_feed_link( $current_post->ID ),
-		];
-
-		return array_merge( $post_purge_urls, $user_purge_urls, $site_feeds );
+		/**
+		 * Filter array of URLs to purge when a post action is triggered.
+		 *
+		 * @param array $post_purge_urls List of URLs to purge for this post.
+		 */
+		return apply_filters( 'wp_irving_cache_post_purge_urls', $post_purge_urls );
 	}
 
 	/**
@@ -248,8 +241,6 @@ class Cache {
 	 *
 	 * @param int|\WP_Term $term A WP Term object, or a term ID.
 	 * @return array Purge URLs
-	 * @todo determine if this separate function is even necessary.
-	 * @todo determine if we should also purge posts with this term assigned.
 	 */
 	public function get_term_purge_urls( $term ) : array {
 		$term_purge_urls = [];
@@ -289,7 +280,12 @@ class Cache {
 			$term_purge_urls = array_merge( $term_purge_urls, $this->get_single_term_purge_urls( $term ) );
 		}
 
-		return array_unique( $term_purge_urls );
+		/**
+		 * Filter array of URLs to purge when a term action is triggered.
+		 *
+		 * @param array $term_purge_urls List of URLs to purge for this term.
+		 */
+		return apply_filters( 'wp_irving_cache_term_purge_urls', array_unique( $term_purge_urls ) );
 	}
 
 	/**
@@ -297,7 +293,6 @@ class Cache {
 	 *
 	 * @param  WP_Term $term A WP term object.
 	 * @return array An array of URLs to be purged
-	 * @todo maybe purge pagination URLs.
 	 */
 	public function get_single_term_purge_urls( $term ) : array {
 		$term_purge_urls = [];
@@ -325,8 +320,6 @@ class Cache {
 	 *
 	 * @param int|\WP_User $user User object or ID.
 	 * @return array An array of URLs to be purged.
-	 * @todo maybe purge pagination URLs.
-	 * @todo determine if we should also purge posts authored by this user.
 	 */
 	public function get_user_purge_urls( $user ) : array {
 		$user_purge_urls = [];
@@ -354,7 +347,12 @@ class Cache {
 			$user_purge_urls[] = $maybe_purge_feed_url;
 		}
 
-		return $user_purge_urls;
+		/**
+		 * Filter array of URLs to purge when a user action is triggered.
+		 *
+		 * @param array $user_purge_urls List of URLs to purge for this user.
+		 */
+		return apply_filters( 'wp_irving_cache_user_purge_urls', $user_purge_urls );
 	}
 
 	/**
