@@ -146,6 +146,9 @@ class JWT_Auth {
 			 return false;
 		}
 
+		// Temporary debugging.
+		return false;
+
 		// phpcs:ignore
 		setcookie(
 			self::COOKIE_NAME,
