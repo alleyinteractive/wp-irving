@@ -158,7 +158,7 @@ class Pantheon {
 	 * @param int\WP_Post $post Post object or ID.
 	 */
 	public function get_and_purge_post_endpoints( $post ) {
-		$purge_urls = $this->convert_urls_to_endpoints( \WP_Irving\Cache::instance()->get_post_purge_urls( $post ) );
+		$purge_urls = $this->convert_urls_to_endpoint_paths( \WP_Irving\Cache::instance()->get_post_purge_urls( $post ) );
 		pantheon_wp_clear_edge_paths( $purge_urls );
 	}
 
@@ -168,7 +168,7 @@ class Pantheon {
 	 * @param int\WP_Term $term Term object or ID.
 	 */
 	public function get_and_purge_term_endpoints( $term ) {
-		$purge_urls = $this->convert_urls_to_endpoints( \WP_Irving\Cache::instance()->get_term_purge_urls( $term ) );
+		$purge_urls = $this->convert_urls_to_endpoint_paths( \WP_Irving\Cache::instance()->get_term_purge_urls( $term ) );
 		pantheon_wp_clear_edge_paths( $purge_urls );
 	}
 
@@ -178,7 +178,7 @@ class Pantheon {
 	 * @param int\WP_User $user user object or ID.
 	 */
 	public function get_and_purge_user_endpoints( $user ) {
-		$purge_urls = $this->convert_urls_to_endpoints( \WP_Irving\Cache::instance()->get_user_purge_urls( $user ) );
+		$purge_urls = $this->convert_urls_to_endpoint_paths( \WP_Irving\Cache::instance()->get_user_purge_urls( $user ) );
 		pantheon_wp_clear_edge_paths( $purge_urls );
 	}
 
@@ -188,7 +188,7 @@ class Pantheon {
 	 * @param array $urls Permalinks to purge.
 	 * @return array
 	 */
-	public function convert_urls_to_endpoints( $urls ) {
+	public function convert_urls_to_endpoint_paths( $urls ) {
 		$endpoint_urls = [];
 
 		foreach ( $urls as $url ) {
@@ -200,7 +200,13 @@ class Pantheon {
 			$endpoint_urls[] = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $url, 'page' );
 		}
 
-		return $endpoint_urls;
+		// Only return paths.
+		return array_map(
+			function ( $endpoint ) {
+				return str_replace( site_url(), '', $endpoint );
+			},
+			$endpoint_urls
+		);
 	}
 
 	/**
