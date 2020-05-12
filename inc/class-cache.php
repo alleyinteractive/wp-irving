@@ -190,7 +190,7 @@ class Cache {
 		if (
 			empty( $current_post )
 			|| 'revision' === $current_post->post_type
-			|| ! in_array( get_post_status( $post_id ), array( 'publish', 'inherit', 'trash' ), true )
+			|| ! in_array( get_post_status( $current_post ), array( 'publish', 'inherit', 'trash' ), true )
 			|| ! is_post_type_viewable( $current_post->post_type )
 			// Skip purge if it is a new attachment.
 			|| ( 'attachment' === $current_post->post_type && $current_post->post_date === $current_post->post_modified )
@@ -198,12 +198,12 @@ class Cache {
 			return $post_purge_urls;
 		}
 
-		$post_purge_urls[] = get_permalink( $post_id );
+		$post_purge_urls[] = get_permalink( $current_post );
 		$post_purge_urls[] = home_url( '/' );
 
 		// Don't just purge the attachment page, but also include the file itself.
 		if ( 'attachment' === $current_post->post_type ) {
-			$post_purge_urls[] = wp_get_attachment_url( $post_id );
+			$post_purge_urls[] = wp_get_attachment_url( $current_post->ID );
 		}
 
 		$taxonomies = get_object_taxonomies( $current_post, 'object' );
@@ -214,7 +214,7 @@ class Cache {
 			}
 
 			$taxonomy_name = $taxonomy->name;
-			$terms         = get_the_terms( $post_id, $taxonomy_name );
+			$terms         = get_the_terms( $current_post, $taxonomy_name );
 
 			if ( false === $terms ) {
 				continue;
@@ -226,7 +226,7 @@ class Cache {
 		}
 
 		// Purge author urls.
-		$post_author_id  = get_post_field( 'post_author', $post_id );
+		$post_author_id  = get_post_field( 'post_author', $current_post );
 		$user_purge_urls = $this->get_user_purge_urls( $post_author_id );
 
 		// Purge the standard site feeds.
@@ -237,7 +237,7 @@ class Cache {
 			get_bloginfo( 'atom_url' ),
 			get_bloginfo( 'comments_atom_url' ),
 			get_bloginfo( 'comments_rss2_url' ),
-			get_post_comments_feed_link( $post_id ),
+			get_post_comments_feed_link( $current_post->ID ),
 		];
 
 		return array_merge( $post_purge_urls, $user_purge_urls, $site_feeds );

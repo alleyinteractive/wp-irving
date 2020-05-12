@@ -64,7 +64,6 @@ class Cache_Tests extends WP_UnitTestCase {
 				'taxonomy' => 'post_tag',
 			]
 		);
-		// print_r( $current_term );
 		$this->factory->term->add_post_terms( $current_post->ID, [ $current_term->slug ], 'post_tag' );
 
 		$this->assertEquals(
