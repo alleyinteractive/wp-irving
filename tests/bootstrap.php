@@ -30,8 +30,14 @@ require_once $_tests_dir . '/includes/functions.php';
  */
 function _manually_load_plugin() {
 	require dirname( dirname( __FILE__ ) ) . '/wp-irving.php';
-	require dirname( __DIR__, 2 ) . '/safe-redirect-manager/safe-redirect-manager.php';
-	require dirname( __DIR__, 2 ) . '/wpcom-legacy-redirector/wpcom-legacy-redirector.php';
+
+	if ( class_exists( 'SRM_Redirect' ) ) {
+		require dirname( __DIR__, 2 ) . '/safe-redirect-manager/safe-redirect-manager.php';
+	}
+
+	if ( class_exists( 'WPCOM_Legacy_Redirector' ) ) {
+		require dirname( __DIR__, 2 ) . '/wpcom-legacy-redirector/wpcom-legacy-redirector.php';
+	}
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 

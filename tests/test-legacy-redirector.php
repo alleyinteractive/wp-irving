@@ -34,6 +34,15 @@ class Legacy_Redirector_Tests extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Set up tets.
+	 */
+	public function setUp() {
+        if ( ! class_exists( 'WPCOM_Legacy_Redirector' ) ) {
+            $this->markTestSkipped( 'WPCOM_Legacy_Redirector is not available.' );
+        }
+    }
+
+	/**
 	 * Test relative redirect.
 	 */
 	public function test_relative_to_relative() {
