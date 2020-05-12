@@ -77,13 +77,6 @@ class Cache_Tests extends WP_UnitTestCase {
 				'http://example.org/?tag=' . $current_term->slug . '/feed/',
 				'http://example.org/author/' . $current_user->data->user_login . '/',
 				'http://example.org/author/' . $current_user->data->user_login . '/feed/',
-				'http://example.org/feed/rdf/',
-				'http://example.org/feed/rss/',
-				'http://example.org/feed/',
-				'http://example.org/feed/atom/',
-				'http://example.org/comments/feed/atom/',
-				'http://example.org/comments/feed/',
-				'http://example.org/2020/01/01/' . $current_post->post_title . '/feed/',
 			]
 		);
 	}
