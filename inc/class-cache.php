@@ -413,7 +413,13 @@ class Cache {
 		}
 
 		// Fire the request to bust both VIP and Irving Redis cache.
-		wp_remote_request( $permalink, [ 'method' => 'PURGE' ] );
+		$response = wp_remote_request( $permalink, [ 'method' => 'PURGE' ] );
+		// Temp debugging.
+		if ( $response instanceof \WP_Error ) {
+			update_option( 'debug_purge_response', $response->get_error_message() );
+		} else {
+			update_option( 'debug_purge_response', $response['body'] ?? '' );
+		}
 	}
 
 	/**
