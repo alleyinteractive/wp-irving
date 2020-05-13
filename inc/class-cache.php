@@ -47,20 +47,20 @@ class Cache {
 		add_action( 'admin_menu', [ $this, 'register_admin' ] );
 
 		// Post purging actions.
-		add_action( 'wp_insert_post', [ $this, 'on_update_post' ], 10, 2 );
-		add_action( 'clean_post_cache', [ $this, 'on_clean_post_cache' ], 10, 2 );
+		add_action( 'wp_insert_post', [ $this, 'purge_post_if_published' ], 10, 2 );
+		add_action( 'clean_post_cache', [ $this, 'purge_post_if_published' ], 10, 2 );
 		add_action( 'transition_post_status', [ $this, 'on_post_status_transition' ], 10, 3 );
-		add_action( 'before_delete_post', [ $this, 'on_before_delete_post' ] );
-		add_action( 'delete_attachment', [ $this, 'on_delete_attachment' ] );
+		add_action( 'before_delete_post', [ $this, 'purge_post_by_id' ] );
+		add_action( 'delete_attachment', [ $this, 'purge_post_by_id' ] );
 
 		// Term purging actions.
-		add_action( 'created_term', [ $this, 'on_created_term' ], 10, 3 );
-		add_action( 'edited_term', [ $this, 'on_edited_term' ] );
-		add_action( 'delete_term', [ $this, 'on_delete_term' ] );
-		add_action( 'clean_term_cache', [ $this, 'on_clean_term_cache' ] );
+		add_action( 'created_term', [ $this, 'purge_term_by_id' ] );
+		add_action( 'edited_term', [ $this, 'purge_term_by_id' ] );
+		add_action( 'delete_term', [ $this, 'purge_term_by_id' ] );
+		add_action( 'clean_term_cache', [ $this, 'purge_terms' ] );
 
 		// User purging actions.
-		add_action( 'clean_user_cache', [ $this, 'on_clean_user_cache' ] );
+		add_action( 'clean_user_cache', [ $this, 'purge_user_by_id' ] );
 
 		add_action( 'init', [ $this, 'purge_cache_request' ] );
 	}
@@ -71,28 +71,13 @@ class Cache {
 	 * @param int     $post_id Post ID.
 	 * @param WP_Post $post    Post object.
 	 */
-	public function on_update_post( $post_id, $post ) {
+	public function purge_post_if_published( $post_id, $post ) {
 		if ( 'publish' !== $post->post_status ) {
 			return;
 		}
 
 		// Purge cache.
-		$this->fire_post_purge_requests( $post_id );
-	}
-
-	/**
-	 * Purge cache on post cache clear.
-	 *
-	 * @param int     $post_id Post ID.
-	 * @param WP_Post $post    Post object.
-	 */
-	public function on_clean_post_cache( $post_id, $post ) {
-		if ( 'publish' !== $post->post_status ) {
-			return;
-		}
-
-		// Purge cache.
-		$this->fire_post_purge_requests( $post_id );
+		$this->purge_post_by_id( $post_id );
 	}
 
 	/**
@@ -108,24 +93,15 @@ class Cache {
 		}
 
 		// Purge cache.
-		$this->fire_post_purge_requests( $post );
+		$this->purge_post_by_id( $post->ID );
 	}
 
 	/**
-	 * Purge on post delete.
+	 * Purge post cache on create.
 	 *
-	 * @param int $post_id Post ID.
+	 * @param int\WP_Post $post_id Post ID.
 	 */
-	public function on_before_delete_post( $post_id ) {
-		$this->fire_post_purge_requests( $post_id );
-	}
-
-	/**
-	 * Purge attachment on delete.
-	 *
-	 * @param int $post_id Post ID.
-	 */
-	public function on_delete_attachment( $post_id ) {
+	public function purge_post_by_id( $post_id ) {
 		$this->fire_post_purge_requests( $post_id );
 	}
 
@@ -134,25 +110,7 @@ class Cache {
 	 *
 	 * @param int\WP_Term $term_id Term ID.
 	 */
-	public function on_created_term( $term_id ) {
-		$this->fire_term_purge_requests( $term_id );
-	}
-
-	/**
-	 * Purge term cache on edit.
-	 *
-	 * @param int\WP_Term $term_id Term ID.
-	 */
-	public function on_edited_term( $term_id ) {
-		$this->fire_term_purge_requests( $term_id );
-	}
-
-	/**
-	 * Purge term cache on delete.
-	 *
-	 * @param int\WP_Term $term_id Term ID.
-	 */
-	public function on_deleted_term( $term_id ) {
+	public function purge_term_by_id( $term_id ) {
 		$this->fire_term_purge_requests( $term_id );
 	}
 
@@ -161,11 +119,11 @@ class Cache {
 	 *
 	 * @param array $term_ids Term IDs.
 	 */
-	public function on_clean_term_cache( $term_ids ) {
+	public function purge_terms( $term_ids ) {
 		$ids = is_array( $term_ids ) ? $term_ids : array( $term_ids );
 
 		foreach ( $ids as $term_id ) {
-			$this->fire_term_purge_requests( $term_id );
+			$this->purge_term_by_id( $term_id );
 		}
 	}
 
@@ -174,7 +132,7 @@ class Cache {
 	 *
 	 * @param array $user_id User ID.
 	 */
-	public function on_clean_user_cache( $user_id ) {
+	public function purge_user_by_id( $user_id ) {
 		$this->fire_user_purge_requests( $user_id );
 	}
 
@@ -425,13 +383,13 @@ class Cache {
 
 		// Fire the request to bust both VIP and Irving Redis cache.
 		$response = wp_remote_get( add_query_arg( 'url', $permalink, home_url( '/purge-cache' ) ) );
-		wpcom_vip_purge_edge_cache_for_url( $permalink );
 
 		// Temp debugging.
 		if ( $response instanceof \WP_Error ) {
 			update_option( 'debug_purge_response', $response->get_error_message() );
 		} else {
-			update_option( 'debug_purge_response', $response['body'] ?? '' );
+			$purge_response = get_option( 'debug_purge_response', '' );
+			update_option( 'debug_purge_response', $purge_response . ', ' . $response['body'] ?? '' );
 		}
 	}
 
