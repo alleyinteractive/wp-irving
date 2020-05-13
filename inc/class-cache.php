@@ -424,7 +424,9 @@ class Cache {
 		}
 
 		// Fire the request to bust both VIP and Irving Redis cache.
-		$response = wp_remote_request( $permalink, [ 'method' => 'PURGE' ] );
+		$response = wp_remote_get( add_query_arg( 'url', $permalink, home_url( '/purge-cache' ) ) );
+		wpcom_vip_purge_edge_cache_for_url( $permalink );
+
 		// Temp debugging.
 		if ( $response instanceof \WP_Error ) {
 			update_option( 'debug_purge_response', $response->get_error_message() );
