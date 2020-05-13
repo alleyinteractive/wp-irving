@@ -20,11 +20,11 @@ class Cache {
 	protected static $instance;
 
 	/**
-	 * Array of URLs that have already been purged.
+	 * Array of URLs to purge.
 	 *
 	 * @var array
 	 */
-	public $purged_urls = [];
+	public static $purge_queue = [];
 
 	/**
 	 * Get class instance
@@ -63,6 +63,7 @@ class Cache {
 		add_action( 'clean_user_cache', [ $this, 'purge_user_by_id' ] );
 
 		add_action( 'init', [ $this, 'purge_cache_request' ] );
+		add_action( 'shutdown', array( $this, 'fire_purge_request' ) );
 	}
 
 	/**
@@ -102,7 +103,7 @@ class Cache {
 	 * @param int\WP_Post $post_id Post ID.
 	 */
 	public function purge_post_by_id( $post_id ) {
-		$this->fire_post_purge_requests( $post_id );
+		$this->queue_post_purge_requests( $post_id );
 	}
 
 	/**
@@ -111,7 +112,7 @@ class Cache {
 	 * @param int\WP_Term $term_id Term ID.
 	 */
 	public function purge_term_by_id( $term_id ) {
-		$this->fire_term_purge_requests( $term_id );
+		$this->queue_term_purge_requests( $term_id );
 	}
 
 	/**
@@ -133,7 +134,7 @@ class Cache {
 	 * @param array $user_id User ID.
 	 */
 	public function purge_user_by_id( $user_id ) {
-		$this->fire_user_purge_requests( $user_id );
+		$this->queue_user_purge_requests( $user_id );
 	}
 
 	/**
@@ -325,9 +326,9 @@ class Cache {
 	 *
 	 * @param int\WP_Post $post Post object or ID.
 	 */
-	public function fire_post_purge_requests( $post ) {
+	public function queue_post_purge_requests( $post ) {
 		$purge_urls = $this->get_post_purge_urls( $post );
-		$this->fire_bulk_purge_request( $purge_urls );
+		$this->queue_bulk_purge_request( $purge_urls );
 	}
 
 	/**
@@ -335,9 +336,9 @@ class Cache {
 	 *
 	 * @param int\WP_Term $term Term object or ID.
 	 */
-	public function fire_term_purge_requests( $term ) {
+	public function queue_term_purge_requests( $term ) {
 		$purge_urls = $this->get_term_purge_urls( $term );
-		$this->fire_bulk_purge_request( $purge_urls );
+		$this->queue_bulk_purge_request( $purge_urls );
 	}
 
 	/**
@@ -345,9 +346,9 @@ class Cache {
 	 *
 	 * @param int\WP_User $user user object or ID.
 	 */
-	public function fire_user_purge_requests( $user ) {
+	public function queue_user_purge_requests( $user ) {
 		$purge_urls = $this->get_user_purge_urls( $user );
-		$this->fire_bulk_purge_request( $purge_urls );
+		$this->queue_bulk_purge_request( $purge_urls );
 	}
 
 	/**
@@ -355,14 +356,8 @@ class Cache {
 	 *
 	 * @param array $permalinks Permalinks.
 	 */
-	public function fire_bulk_purge_request( $permalinks = [] ) {
-		foreach ( $permalinks as $permalink ) {
-			// Prevent purges from firing twice if multiple actions are triggered.
-			if ( ! in_array( $permalink, $this->purged_urls, true ) ) {
-				array_push( $this->purged_urls, $permalink );
-				$this->fire_purge_request( $permalink );
-			}
-		}
+	public function queue_bulk_purge_request( $permalinks = [] ) {
+		self::$purge_queue = array_unique( array_merge( self::$purge_queue, $permalinks ) );
 	}
 
 	/**
@@ -370,26 +365,32 @@ class Cache {
 	 *
 	 * @param string $permalink Permalink.
 	 */
-	public function fire_purge_request( $permalink = '' ) {
+	public function fire_purge_request() {
 		// Do not fire purges while importing.
-		if ( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) {
-			return;
-		}
-
-		// Bail early.
-		if ( empty( $permalink ) ) {
+		if (
+			( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) ||
+			empty( self::$purge_queue )
+		) {
 			return;
 		}
 
 		// Fire the request to bust both VIP and Irving Redis cache.
-		$response = wp_remote_get( add_query_arg( 'url', $permalink, home_url( '/purge-cache' ) ) );
+		$response = wp_remote_post(
+			home_url( '/purge-cache' ),
+			[
+				'body'    => json_encode( [ 'urls' => self::$purge_queue ] ),
+				'headers' => [
+					'Content-Type' => 'application/json; charset=utf-8',
+				],
+			]
+		);
+		self::$purge_queue = [];
 
 		// Temp debugging.
 		if ( $response instanceof \WP_Error ) {
 			update_option( 'debug_purge_response', $response->get_error_message() );
 		} else {
-			$purge_response = get_option( 'debug_purge_response', '' );
-			update_option( 'debug_purge_response', $purge_response . ', ' . $response['body'] ?? '' );
+			update_option( 'debug_purge_response', $response['body'] ?? '' );
 		}
 	}
 
@@ -397,7 +398,7 @@ class Cache {
 	 * Fire wipe out request.
 	 */
 	public function fire_wipe_request() {
-		$response = wp_remote_get( home_url( '/purge-cache' ) );
+		$response = wp_remote_post( home_url( '/purge-cache' ) );
 
 		// Temp debugging.
 		if ( $response instanceof \WP_Error ) {
