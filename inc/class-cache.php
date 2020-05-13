@@ -20,6 +20,13 @@ class Cache {
 	protected static $instance;
 
 	/**
+	 * Array of URLs that have already been purged.
+	 *
+	 * @var array
+	 */
+	public $purged_urls = [];
+
+	/**
 	 * Get class instance
 	 *
 	 * @return self
@@ -392,7 +399,11 @@ class Cache {
 	 */
 	public function fire_bulk_purge_request( $permalinks = [] ) {
 		foreach ( $permalinks as $permalink ) {
-			$this->fire_purge_request( $permalink );
+			// Prevent purges from firing twice if multiple actions are triggered.
+			if ( ! in_array( $permalink, $this->purged_urls, true ) ) {
+				array_push( $this->purged_urls, $permalink );
+				$this->fire_purge_request( $permalink );
+			}
 		}
 	}
 
