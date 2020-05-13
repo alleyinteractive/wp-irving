@@ -33,6 +33,11 @@ class Component_Tests extends WP_UnitTestCase {
 		// Loop through each file in the /component-data/ directory.
 		foreach ( scandir( __DIR__ . '/component-data/' ) as $file_name ) {
 
+			// Only worry about .json files.
+			if ( false === strpos( $file_name, '.json' ) ) {
+				continue;
+			}
+
 			// Validate the path.
 			$path = sprintf( __DIR__ . '/component-data/%1$s', $file_name );
 			if ( ! file_exists( $path ) ) {
