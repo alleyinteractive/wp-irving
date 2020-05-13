@@ -426,7 +426,14 @@ class Cache {
 	 * Fire wipe out request.
 	 */
 	public function fire_wipe_request() {
-		wp_remote_get( home_url( '/purge-cache' ) );
+		$response = wp_remote_get( home_url( '/purge-cache' ) );
+
+		// Temp debugging.
+		if ( $response instanceof \WP_Error ) {
+			update_option( 'debug_wipe_response', $response->get_error_message() );
+		} else {
+			update_option( 'debug_wipe_response', $response['body'] ?? '' );
+		}
 	}
 
 	/**
