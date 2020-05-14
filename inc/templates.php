@@ -416,9 +416,9 @@ function handle_template_parts( $component ) {
 
 	$template_part_name = str_replace( 'template-parts/', '', $component['name'] );
 
-	$template = WP_Irving\Templates\locate_template_part( $template_part_name );
+	$template = locate_template_part( $template_part_name );
 
-	$template_data = WP_Irving\Templates\prepare_data_from_template( $template );
+	$template_data = prepare_data_from_template( $template );
 
 	if ( isset( $template_data['name'] ) ) {
 		$template_data = [ $template_data ];
