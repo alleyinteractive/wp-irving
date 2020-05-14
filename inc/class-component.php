@@ -539,6 +539,10 @@ class Component implements \JsonSerializable {
 	 */
 	public static function camel_case( string $string ): string {
 
+		if ( empty( $string ) ) {
+			return $string;
+		}
+
 		// Replaace dashes and spaces with underscores.
 		$string = str_replace( '-', '_', $string );
 		$string = str_replace( ' ', '_', $string );
