@@ -392,13 +392,6 @@ class Cache {
 			]
 		);
 		self::$purge_queue = [];
-
-		// Temp debugging.
-		if ( $response instanceof \WP_Error ) {
-			update_option( 'debug_purge_response', $response->get_error_message() );
-		} else {
-			update_option( 'debug_purge_response', $response['body'] ?? '' );
-		}
 	}
 
 	/**
@@ -406,13 +399,6 @@ class Cache {
 	 */
 	public function fire_wipe_request() {
 		$response = wp_remote_post( home_url( '/purge-cache' ) );
-
-		// Temp debugging.
-		if ( $response instanceof \WP_Error ) {
-			update_option( 'debug_wipe_response', $response->get_error_message() );
-		} else {
-			update_option( 'debug_wipe_response', $response['body'] ?? '' );
-		}
 	}
 
 	/**
