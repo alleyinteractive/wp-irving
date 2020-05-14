@@ -369,8 +369,6 @@ class Cache {
 
 	/**
 	 * Fire purge request.
-	 *
-	 * @param string $permalink Permalink.
 	 */
 	public function fire_purge_request() {
 		// Do not fire purges while importing.
@@ -382,7 +380,7 @@ class Cache {
 		}
 
 		// Fire the request to bust both VIP and Irving Redis cache.
-		$response = wp_remote_post(
+		wp_remote_post(
 			home_url( '/purge-cache' ),
 			[
 				'body'    => json_encode( [ 'paths' => self::$purge_queue ] ),
@@ -398,7 +396,7 @@ class Cache {
 	 * Fire wipe out request.
 	 */
 	public function fire_wipe_request() {
-		$response = wp_remote_post( home_url( '/purge-cache' ) );
+		wp_remote_post( home_url( '/purge-cache' ) );
 	}
 
 	/**
