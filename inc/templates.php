@@ -524,11 +524,7 @@ function handle_component_callbacks( Component $component ): Component {
 	$component->execute_registry_callback();
 
 	// Check the component registry.
-<<<<<<< HEAD
-	$registered_component = WP_Irving\get_registry()->get_registered_component( $component['name'] );
-=======
-	$registered_component = \WP_Irving\get_registry()->get_registered_component( $component->get_name() );
->>>>>>> master
+	$registered_component = WP_Irving\get_registry()->get_registered_component( $component->get_name() );
 	if ( is_null( $registered_component ) || ! is_callable( $registered_component['callback'] ?? '' ) ) {
 		return $component;
 	}
