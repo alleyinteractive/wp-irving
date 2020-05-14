@@ -139,13 +139,45 @@ class JWT_Auth {
 	 */
 	public function possibly_remove_cookie(): bool {
 
-		if (
-			! isset( $_COOKIE[ self::COOKIE_NAME ] ) // phpcs:ignore
-			|| is_user_logged_in()
-		) {
+		// Only care if we have a cookie.
+		if ( ! isset( $_COOKIE[ self::COOKIE_NAME ] ) ) { // phpcs:ignore
 			 return false;
 		}
 
+		// Get token from cookie.
+		$token = $_COOKIE[ self::COOKIE_NAME ]; // phpcs:ignore
+
+		// Run through the validation process.
+		$wp_rest_token = new \WP_REST_Token();
+
+		// Decode the token.
+		$jwt = $wp_rest_token->decode_token( $token );
+		if ( is_wp_error( $jwt ) ) {
+			$this->remove_cookie();
+			return true;
+		}
+
+		// Determine if the token issuer is valid.
+		$issuer_valid = $wp_rest_token->validate_issuer( $jwt->iss );
+		if ( is_wp_error( $issuer_valid ) ) {
+			$this->remove_cookie();
+			return true;
+		}
+
+		// Determine if the token user is valid.
+		$user_valid = $wp_rest_token->validate_user( $jwt );
+		if ( is_wp_error( $user_valid ) ) {
+			$this->remove_cookie();
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Set the expiration on the cookie to unset it.
+	 */
+	public function remove_cookie() {
 		// phpcs:ignore
 		setcookie(
 			self::COOKIE_NAME,
@@ -154,8 +186,6 @@ class JWT_Auth {
 			'/',
 			$this->cookie_domain
 		);
-
-		return true;
 	}
 
 	/**
