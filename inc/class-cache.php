@@ -357,7 +357,14 @@ class Cache {
 	 * @param array $permalinks Permalinks.
 	 */
 	public function queue_bulk_purge_request( $permalinks = [] ) {
-		self::$purge_queue = array_unique( array_merge( self::$purge_queue, $permalinks ) );
+		self::$purge_queue = array_unique(
+			array_map(
+				function ( $url ) {
+					return str_replace( home_url(), '', $url );
+				},
+				array_merge( self::$purge_queue, $permalinks )
+			)
+		);
 	}
 
 	/**
@@ -378,7 +385,7 @@ class Cache {
 		$response = wp_remote_post(
 			home_url( '/purge-cache' ),
 			[
-				'body'    => json_encode( [ 'urls' => self::$purge_queue ] ),
+				'body'    => json_encode( [ 'paths' => self::$purge_queue ] ),
 				'headers' => [
 					'Content-Type' => 'application/json; charset=utf-8',
 				],
