@@ -8,6 +8,7 @@
 namespace WP_Irving\Templates;
 
 use WP_Query;
+use WP_Irving\Component;
 
 // Bootstrap filters.
 add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 3 );
@@ -343,13 +344,10 @@ function traverse_components( array $components ): array {
 		$component = handle_component_config_callbacks( $component );
 		$component = handle_component_callbacks( $component );
 
-		// Recursively loop though.
-		if ( ! empty( $component['children'] ) ) {
-			$component['children'] = traverse_components( $component['children'] );
+		// Recursively loop though children.
+		if ( ! empty( $component->get_children() ) ) {
+			$component->set_children( traverse_components( $component->get_children() ) );
 		}
-
-		// Ensure config and data providers are actually objects.
-		$component = validate_final_component( $component );
 	}
 
 	return $components;
@@ -364,16 +362,20 @@ function traverse_components( array $components ): array {
  */
 function ensure_component_fields_exist( $component ) {
 
-	if ( is_string( $component ) ) {
+	if ( $component instanceof Component ) {
 		return $component;
 	}
 
-	return [
-		'name'          => (string) ( $component['name'] ?? '' ),
-		'config'        => (array) ( $component['config'] ?? [] ),
-		'data_provider' => (array) ( $component['data_provider'] ?? [] ),
-		'children'      => (array) ( $component['children'] ?? [] ),
-	];
+	if ( is_string( $component ) ) {
+		$component = [
+			'name' => 'text',
+			'config' => [
+				'content' => $component,
+			],
+		];
+	}
+
+	return new Component( $component['name'], $component );
 }
 
 /**
@@ -408,12 +410,11 @@ function validate_final_component( $component ) {
 function handle_template_parts( $component ) {
 
 	// Check if this is a template part.
-	$name = $component['name'] ?? '';
-	if ( 0 !== strpos( $name, 'template-parts/' ) ) {
+	if ( 'template-parts/' !== $component->get_namespace() ) {
 		return $component;
 	}
 
-	$template_part_name = str_replace( 'template-parts/', '', $component['name'] );
+	$template_part_name = str_replace( $component->get_namespace(), '', $component->get_name() );
 
 	$template = \WP_Irving\Templates\locate_template_part( $template_part_name );
 
@@ -423,8 +424,8 @@ function handle_template_parts( $component ) {
 		$template_data = [ $template_data ];
 	}
 
-	$component['name'] = 'irving/passthrough';
-	$component['children'] = $template_data;
+	$component->set_name( 'irving/passthrough' );
+	$component->set_children( $template_data );
 
 	return $component;
 }
@@ -438,11 +439,11 @@ function handle_template_parts( $component ) {
 function handle_data_provider( $component ) {
 
 	// If there's no data provider, or children, don't do anything.
-	if ( empty( $component['data_provider'] ) || empty( $component['children'] ) ) {
+	if ( empty( $component->data_provider ) || empty( $component->children ) ) {
 		return $component;
 	}
 
-	foreach ( $component['children'] as &$child_component ) {
+	foreach ( $component->children as &$child_component ) {
 
 		if ( is_string( $child_component ) ) {
 			continue;
@@ -450,9 +451,9 @@ function handle_data_provider( $component ) {
 
 		$child_component = ensure_component_fields_exist( $child_component );
 
-		$child_component['data_provider'] = array_merge_recursive(
-			$child_component['data_provider'],
-			$component['data_provider']
+		$child_component->data_provider = array_merge_recursive(
+			$child_component->data_provider,
+			$component->data_provider
 		);
 	}
 
@@ -478,18 +479,14 @@ function handle_data_provider( $component ) {
  * @param array $component Component.
  * @return array
  */
-function handle_component_config_callbacks( $component ): array {
+function handle_component_config_callbacks( $component ): Component {
 
 	// Ensure component config exists.
-	if ( ! isset( $component['config'] ) || empty( $component['config'] ) ) {
+	if ( empty( $component->get_config() ) ) {
 		return $component;
 	}
 
-	foreach ( $component['config'] as $key => $value ) {
-
-		if ( ! is_string( $value ) ) {
-			continue;
-		}
+	foreach ( $component->get_config() as $key => $value ) {
 
 		// For each key, check if the value has a handlebars syntax.
 		preg_match_all( '/{{(.+)}}/', $value, $matches );
@@ -499,12 +496,16 @@ function handle_component_config_callbacks( $component ): array {
 		// the key.
 		if ( ! empty( $matches ) ) {
 			$component_name = $matches[1][0];
-			$component['config'][ $key ] = handle_component_callbacks(
+
+			$new_value = handle_component_callbacks(
 				[
 					'name'          => $component_name,
-					'data_provider' => $component['data_provider'],
+					'data_provider' => $component->data_provider,
 				]
 			);
+
+			// Update the config for this key.
+			$component->set_config( $key, $new_value );
 		}
 	}
 
@@ -514,13 +515,15 @@ function handle_component_config_callbacks( $component ): array {
 /**
  * Fire the callback on registered components.
  *
- * @param array $component Component.
+ * @param Component $component Component.
  * @return array
  */
-function handle_component_callbacks( array $component ) {
+function handle_component_callbacks( Component $component ): Component {
+
+	$component->execute_registry_callback();
 
 	// Check the component registry.
-	$registered_component = \WP_Irving\get_registry()->get_registered_component( $component['name'] );
+	$registered_component = \WP_Irving\get_registry()->get_registered_component( $component->get_name() );
 	if ( is_null( $registered_component ) || ! is_callable( $registered_component['callback'] ?? '' ) ) {
 		return $component;
 	}
