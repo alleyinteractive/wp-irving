@@ -34,6 +34,15 @@ class Legacy_Redirector_Tests extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Skip tests if necessary.
+	 */
+	public function setUp() {
+		if ( ! defined( 'WPCOM_LEGACY_REDIRECTOR_VERSION' ) ) {
+			$this->markTestSkipped( 'WPCOM Legacy Redirector is not installed.' );
+		}
+	}
+
+	/**
 	 * Test relative redirect.
 	 */
 	public function test_relative_to_relative() {

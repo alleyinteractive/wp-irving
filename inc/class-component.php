@@ -258,7 +258,7 @@ class Component implements \JsonSerializable {
 	}
 
 	/**
-	 * Set all children
+	 * Set all children.
 	 *
 	 * @param array $children Children.
 	 * @return self
@@ -278,7 +278,7 @@ class Component implements \JsonSerializable {
 		return $this->set_children(
 			array_merge(
 				$this->sanitize_children( $children ),
-				$this->children
+				$this->get_children()
 			)
 		);
 	}
@@ -292,7 +292,7 @@ class Component implements \JsonSerializable {
 	public function append_children( array $children ): self {
 		return $this->set_children(
 			array_merge(
-				$this->children,
+				$this->get_children(),
 				$this->sanitize_children( $children )
 			)
 		);
@@ -315,12 +315,7 @@ class Component implements \JsonSerializable {
 	 * @return self
 	 */
 	public function prepend_child( $child ): self {
-		return $this->set_children(
-			array_merge(
-				$this->sanitize_children( [ $child ] ),
-				$this->children
-			)
-		);
+		return $this->prepend_children( [ $child ] );
 	}
 
 	/**
@@ -330,12 +325,7 @@ class Component implements \JsonSerializable {
 	 * @return self
 	 */
 	public function append_child( $child ): self {
-		return $this->set_children(
-			array_merge(
-				$this->children,
-				$this->sanitize_children( [ $child ] )
-			)
-		);
+		return $this->append_children( [ $child ] );
 	}
 
 	/**
@@ -361,8 +351,8 @@ class Component implements \JsonSerializable {
 	/**
 	 * Set the component theme.
 	 *
-	 * @param string       $theme Theme name.
-	 * @param bool|boolean $force Ignore the theme options.
+	 * @param string $theme Theme name.
+	 * @param bool   $force Optional. Ignore the theme options. Default false.
 	 * @return self
 	 */
 	public function set_theme( string $theme, bool $force = false ): self {
@@ -451,7 +441,7 @@ class Component implements \JsonSerializable {
 					function( $theme ) {
 						$theme = (string) $theme;
 						$theme = trim( $theme );
-						// @todo Should this be camelcased?
+						$theme = self::camel_case( $theme );
 						return $theme;
 					},
 					$this->theme_options
@@ -515,76 +505,64 @@ class Component implements \JsonSerializable {
 	}
 
 	/**
-	 * Execute the callback method in this component's registration.
-	 */
-	public function execute_registry_callback(): self {
-
-		// Check the component registry.
-		$registered_component = \WP_Irving\get_registry()->get_registered_component( $this->get_name() );
-
-		if ( is_null( $registered_component ) || ! is_callable( $registered_component['callback'] ?? '' ) ) {
-			return $this;
-		}
-
-		call_user_func_array( $registered_component['callback'], [ $this ] );
-
-		return $this;
-	}
-
-	/**
 	 * Convert all array keys to camel case.
 	 *
 	 * @param array $array Array to convert.
 	 * @return array Updated array with camel-cased keys.
 	 */
-	public function camel_case_keys( $array ): array {
+	public function camel_case_keys( $array ) {
 
 		// Setup for recursion.
 		$camel_case_array = [];
 
 		// Loop through each key.
 		foreach ( $array as $key => $value ) {
-			// Only return keys that are white-listed. Leave $whitelist empty
-			// to disable.
-			if (
-				! empty( $this->whitelist )
-				&& ! in_array( $key, $this->whitelist, true )
-			) {
-				unset( $array[ $key ] );
-				continue;
+
+			if ( is_array( $value ) ) {
+				$value = $this->camel_case_keys( $value );
 			}
 
-			// Explode each part by underscore.
-			$words = explode( '_', $key );
+			// Camel case the key.
+			$new_key = self::camel_case( $key );
 
-			// Capitalize each key part.
-			array_walk(
-				$words,
-				function( &$word ) {
-					$word = ucwords( $word );
-				}
-			);
-
-			// Reassemble key.
-			$new_key = implode( '', $words );
-
-			// Lowercase the first character.
-			$new_key[0] = strtolower( $new_key[0] );
-
-			if (
-				! is_array( $value )
-				// Don't recursively camelCase if this key is in the $preserve_inner_keys property.
-				|| ( ! empty( $this->preserve_inner_keys ) && in_array( $key, $this->preserve_inner_keys, true ) )
-			) {
-				// Set new key value.
-				$camel_case_array[ $new_key ] = $value;
-			} else {
-				// Set new key value, but process the nested array.
-				$camel_case_array[ $new_key ] = $this->camel_case_keys( $array[ $key ] );
-			}
+			$camel_case_array[ $new_key ] = $value;
 		}
 
 		return $camel_case_array;
+	}
+
+	/**
+	 * Camel case a string.
+	 *
+	 * @param string $string String to camel case.
+	 * @return string
+	 */
+	public static function camel_case( string $string ): string {
+
+		// Replaace dashes and spaces with underscores.
+		$string = str_replace( '-', '_', $string );
+		$string = str_replace( ' ', '_', $string );
+
+		// Explode each part by underscore.
+		$words = explode( '_', $string );
+
+		$words = array_filter( $words );
+
+		// Capitalize each key part.
+		array_walk(
+			$words,
+			function( &$word ) {
+				$word = ucwords( strtolower( $word ) );
+			}
+		);
+
+		// Reassemble key.
+		$string = implode( '', $words );
+
+		// Lowercase the first character.
+		$string[0] = strtolower( $string[0] );
+
+		return $string;
 	}
 
 	/**

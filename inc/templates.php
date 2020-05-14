@@ -8,7 +8,7 @@
 namespace WP_Irving\Templates;
 
 use WP_Query;
-use \WP_Irving\Component;
+use WP_Irving\Component;
 
 // Bootstrap filters.
 add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 3 );
@@ -342,8 +342,7 @@ function traverse_components( array $components ): array {
 		$component = handle_template_parts( $component );
 		$component = handle_data_provider( $component );
 		$component = handle_component_config_callbacks( $component );
-
-		$component->execute_registry_callback();
+		$component = handle_component_callbacks( $component );
 
 		// Recursively loop though children.
 		if ( ! empty( $component->get_children() ) ) {
