@@ -55,10 +55,6 @@ class Component_Tests extends WP_UnitTestCase {
 		}
 	}
 
-	public static function load_test_component() {
-
-	}
-
 	/**
 	 * Get a test component by the name.
 	 *
