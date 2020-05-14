@@ -375,7 +375,7 @@ function ensure_component_fields_exist( $component ) {
 		];
 	}
 
-	return new Component( $component['name'], $component );
+	return new Component( $component['name'] ?? '', $component );
 }
 
 /**
@@ -519,8 +519,6 @@ function handle_component_config_callbacks( $component ): Component {
  * @return array
  */
 function handle_component_callbacks( Component $component ): Component {
-
-	$component->execute_registry_callback();
 
 	// Check the component registry.
 	$registered_component = \WP_Irving\get_registry()->get_registered_component( $component->get_name() );
