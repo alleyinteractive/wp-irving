@@ -600,7 +600,6 @@ class Component_Tests extends WP_UnitTestCase {
 		$camel_case_keys = ( new Component() )->camel_case_keys( $snake_case_keys );
 
 		$this->assertEquals( $expected_camel_case_keys, $camel_case_keys, 'Top level keys don\'t match.' );
-		// $this->assertEquals( $expected_camel_case_keys['recursiveTest'], $camel_case_keys['recursiveTest'], 'Nested keys don\'t match.' );
 	}
 
 	/**

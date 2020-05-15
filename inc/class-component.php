@@ -635,9 +635,6 @@ class Component implements \JsonSerializable {
 		$this->set_config( 'theme_name', $this->get_theme() );
 		$this->set_config( 'theme_options', $this->get_theme_options() );
 
-		// Sanitize children.
-		$this->set_children( self::reset_array( $this->get_children() ) );
-
 		return [
 			'name'            => $this->get_name(),
 			'config'          => (object) $this->get_config(),
