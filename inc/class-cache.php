@@ -82,7 +82,7 @@ class Cache {
 	}
 
 	/**
-	 * Purge cache on page transition.
+	 * Purge cache on post status transition.
 	 *
 	 * @param string  $new_status New Status.
 	 * @param string  $old_status Old Status.
@@ -98,18 +98,18 @@ class Cache {
 	}
 
 	/**
-	 * Purge post cache on create.
+	 * Purge post cache by ID.
 	 *
-	 * @param int\WP_Post $post_id Post ID.
+	 * @param int $post_id Post ID.
 	 */
 	public function purge_post_by_id( $post_id ) {
 		$this->queue_post_purge_requests( $post_id );
 	}
 
 	/**
-	 * Purge term cache on create.
+	 * Purge term cache by ID.
 	 *
-	 * @param int\WP_Term $term_id Term ID.
+	 * @param int $term_id Term ID.
 	 */
 	public function purge_term_by_id( $term_id ) {
 		$this->queue_term_purge_requests( $term_id );

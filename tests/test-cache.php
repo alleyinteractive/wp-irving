@@ -6,7 +6,7 @@
  */
 
 /**
- * Tests for integration with WPCOM Legacy Redirector.
+ * Tests for cache busting.
  */
 class Cache_Tests extends WP_UnitTestCase {
 
@@ -18,7 +18,7 @@ class Cache_Tests extends WP_UnitTestCase {
 	static $helpers;
 
 	/**
-	 * Helpers class instance.
+	 * Cache class instance.
 	 *
 	 * \WP_Irving\Cache
 	 */
