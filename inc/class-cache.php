@@ -109,7 +109,7 @@ class Cache {
 	/**
 	 * Purge term cache by ID.
 	 *
-	 * @param int\WP_Term $term_id Term ID.
+	 * @param int $term_id Term ID.
 	 */
 	public function purge_term_by_id( $term_id ) {
 		$this->queue_term_purge_requests( $term_id );
