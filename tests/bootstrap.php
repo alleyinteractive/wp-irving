@@ -30,7 +30,6 @@ require_once $_tests_dir . '/includes/functions.php';
  */
 function _manually_load_plugin() {
 	update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
-	require dirname( dirname( __FILE__ ) ) . '/wp-irving.php';
 
 	$paths = [
 		dirname( dirname( __FILE__ ) ) . '/wp-irving.php',
