@@ -32,12 +32,16 @@ function _manually_load_plugin() {
 	update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
 	require dirname( dirname( __FILE__ ) ) . '/wp-irving.php';
 
-	if ( class_exists( 'SRM_Redirect' ) ) {
-		require dirname( __DIR__, 2 ) . '/safe-redirect-manager/safe-redirect-manager.php';
-	}
+	$paths = [
+		dirname( dirname( __FILE__ ) ) . '/wp-irving.php',
+		dirname( __DIR__, 2 ) . '/safe-redirect-manager/safe-redirect-manager.php',
+		dirname( __DIR__, 2 ) . '/wpcom-legacy-redirector/wpcom-legacy-redirector.php',
+	];
 
-	if ( class_exists( 'WPCOM_Legacy_Redirector' ) ) {
-		require dirname( __DIR__, 2 ) . '/wpcom-legacy-redirector/wpcom-legacy-redirector.php';
+	foreach ( $paths as $file ) {
+		if ( file_exists( $file ) ) {
+			require $file;
+		}
 	}
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );

@@ -45,6 +45,7 @@ require_once WP_IRVING_PATH . '/inc/class-previews.php';
 require_once WP_IRVING_PATH . '/inc/class-cache.php';
 
 // Component registry.
+require_once WP_IRVING_PATH . '/inc/class-component.php';
 require_once WP_IRVING_PATH . '/inc/class-registry.php';
 require_once WP_IRVING_PATH . '/inc/registry.php';
 
