@@ -336,12 +336,12 @@ class Components_Endpoint extends Endpoint {
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
-		if ( empty( $wp_query->posts ) && ! $wp_query->is_search() ) {
-			$wp_query->set_404();
-		}
-
 		if ( '/' === $this->path ) {
 			$wp_query->is_home = true;
+		}
+
+		if ( empty( $wp_query->posts ) && ! $wp_query->is_search() && ! $wp_query->is_home() ) {
+			$wp_query->set_404();
 		}
 
 		/**
