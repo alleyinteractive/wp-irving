@@ -64,35 +64,17 @@ class Test_Templates extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test context.
+	 * Test default template context.
+	 *
+	 * @group context
 	 */
-	function test_template_context() {
+	function test_template_default_context() {
+		$post = $this->factory()->post->create();
+		$this->go_to( get_the_permalink( $post ) );
+
 		$context = Templates\get_template_context();
 
 		// Test initial context.
-		$this->assertEquals( get_the_ID(), $context->get( 'irving/post' ), 'Default post context unset.' );
-
-		// Mock context values.
-		$steps = [ 10, 20, 30 ];
-
-		// Set context.
-		foreach ( $steps as $post_id ) {
-			$context->set( 'irving/post', $post_id );
-			$this->assertEquals( $post_id, $context->get( 'irving/post' ), 'Could not confirm context was updated.' );
-		}
-
-		// Remove the last step before resetting.
-		array_pop( $steps );
-
-		// Reverse through the array.
-		while ( ! empty( $steps ) ) {
-			$value = array_pop( $steps );
-			$context->reset();
-			$this->assertEquals( $value, $context->get( 'irving/post' ), 'Could not reset context.' );
-		}
-
-		// Check default context.
-		$context->reset();
-		$this->assertEquals( get_the_ID(), $context->get( 'irving/post' ), 'Could not reset default context.' );
+		$this->assertEquals( $post, $context->get( 'irving/post' ), 'Default post context not set.' );
 	}
 }
