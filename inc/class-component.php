@@ -232,7 +232,7 @@ class Component implements \JsonSerializable {
 	 * @return self
 	 */
 	public function merge_config( array $config ): self {
-		$this->config = array_merge_recursive( $this->config, $config );
+		$this->config = array_merge( $this->config, $config );
 		return $this;
 	}
 
