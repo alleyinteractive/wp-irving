@@ -100,7 +100,7 @@ class Cache {
 	/**
 	 * Purge post cache on create.
 	 *
-	 * @param int\WP_Post $post_id Post ID.
+	 * @param int $post_id Post ID.
 	 */
 	public function purge_post_by_id( $post_id ) {
 		$this->queue_post_purge_requests( $post_id );
