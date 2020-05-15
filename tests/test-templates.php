@@ -5,7 +5,12 @@
  * @package WP_Irving
  */
 
+namespace WP_Irving;
+
 use WP_Irving\Templates;
+use WP_UnitTestCase;
+
+use function WP_Irving\Templates\hydrate_components;
 
 /**
  * Test templates functionality.
@@ -76,5 +81,92 @@ class Test_Templates extends WP_UnitTestCase {
 
 		// Test initial context.
 		$this->assertEquals( $post, $context->get( 'irving/post' ), 'Default post context not set.' );
+	}
+
+	/**
+	 * Test template hydration uses context.
+	 *
+	 * @group context
+	 */
+	function test_components_use_context() {
+		get_registry()->register_component( 'provider', [
+			'config'                      => [
+				'propWithDefault'            => [
+					'type'                      => 'text',
+					'default'                   => 'default value'
+				],
+				'propWithDefaultOverridden'  => [
+					'type'                      => 'number',
+					'default'                   => 10
+				],
+				'propWithoutDefault'         => [
+					'type'                      => 'text',
+				],
+			],
+			'providesContext'             => [
+				'test/withDefault'           => 'propWithDefault',
+				'test/withDefaultOverridden' => 'propWithDefaultOverridden',
+				'test/withoutDefault'        => 'propWithoutDefault',
+			]
+		] );
+
+		get_registry()->register_component( 'consumer', [
+			'config'                      => [
+				'propWithDefault'            => [
+					'type'                      => 'text',
+				],
+				'propWithDefaultOverridden'  => [
+					'type'                      => 'number',
+				],
+				'propWithoutDefault'         => [
+					'type'                      => 'text',
+				],
+			],
+			'usesContext'                 => [
+				'test/withDefault'           => 'propWithDefault',
+				'test/withDefaultOverridden' => 'propWithDefaultOverridden',
+				'test/withoutDefault'        => 'propWithoutDefault',
+			],
+		] );
+
+		$template = [
+			[
+				'name'                       => 'provider',
+				'config'                     => [
+					'propWithDefaultOverridden' => 20,
+					'propWithoutDefault'        => 'test value',
+				],
+				'children'                   => [
+					[
+						'name'                     => 'consumer',
+					],
+				],
+			],
+		];
+
+		$hydrated = hydrate_components( $template );
+
+		$expected = [
+			[
+				'name'                         => 'provider',
+				'config'                       => [
+					'propWithDefault'             => 'default value',
+					'propWithDefaultOverridden'   => 20,
+					'propWithoutDefault'          => 'test value',
+				],
+				'children'                     => [
+					[
+						'name'                       => 'consumer',
+						'config'                     => [
+							'propWithDefault'           => 'default value',
+							'propWithDefaultOverridden' => 20,
+							'propWithoutDefault'        => 'test value',
+						],
+					],
+				],
+			],
+		];
+
+		$this->assertEquals( $expected, $hydrated, 'Template hydration is not using context.' );
 	}
 }

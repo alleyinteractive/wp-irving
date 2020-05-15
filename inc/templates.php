@@ -322,6 +322,10 @@ function convert_blocks_to_components( array $blocks ): array {
 	return $components;
 }
 
+function hydrate_components( array $components ) {
+	return traverse_components( $components );
+}
+
 /**
  * Recursively iterate on a component tree.
  *
@@ -498,12 +502,7 @@ function handle_component_config_callbacks( $component ): Component {
 		if ( ! empty( $matches ) ) {
 			$component_name = $matches[1][0];
 
-			$new_value = handle_component_callbacks(
-				[
-					'name'          => $component_name,
-					'data_provider' => $component->data_provider,
-				]
-			);
+			$new_value = handle_component_callbacks( );
 
 			// Update the config for this key.
 			$component->set_config( $key, $new_value );
