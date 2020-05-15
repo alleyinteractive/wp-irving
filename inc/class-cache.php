@@ -98,7 +98,7 @@ class Cache {
 	}
 
 	/**
-	 * Purge post cache on create.
+	 * Purge post cache by ID.
 	 *
 	 * @param int $post_id Post ID.
 	 */
