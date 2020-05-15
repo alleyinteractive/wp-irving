@@ -8,7 +8,7 @@
 namespace WP_Irving;
 
 /**
- * Class to handle modifications specific to VIP Go.
+ * Class to handle modifications specific to Pantheon.
  */
 class Pantheon {
 
