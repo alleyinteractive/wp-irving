@@ -35,9 +35,6 @@ class Cache_Tests extends WP_UnitTestCase {
 	 * Test suite setup.
 	 */
 	public static function setUpBeforeClass() {
-		global $wp_rewrite;
-		$wp_rewrite->set_permalink_structure( '/%year%/%monthnum%/%day%/%postname%/' );
-
 		self::$helpers = new \WP_Irving\Test_Helpers();
 		self::$cache   = \WP_Irving\Cache::instance();
 	}
@@ -71,10 +68,10 @@ class Cache_Tests extends WP_UnitTestCase {
 			[
 				'http://example.org/2020/01/01/' . $current_post->post_title . '/',
 				'http://example.org/',
-				'http://example.org/?cat=1',
-				'http://example.org/?cat=1/feed/',
-				'http://example.org/?tag=' . $current_term->slug,
-				'http://example.org/?tag=' . $current_term->slug . '/feed/',
+				'http://example.org/category/uncategorized' . '/',
+				'http://example.org/category/uncategorized/feed/',
+				'http://example.org/tag/' . $current_term->slug . '/',
+				'http://example.org/tag/' . $current_term->slug . '/feed/',
 				'http://example.org/author/' . $current_user->data->user_login . '/',
 				'http://example.org/author/' . $current_user->data->user_login . '/feed/',
 			]
@@ -95,8 +92,8 @@ class Cache_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			self::$cache->get_term_purge_urls( $current_term->term_id ),
 			[
-				'http://example.org/?cat=' . $current_term->term_id,
-				'http://example.org/?cat=' . $current_term->term_id . '/feed/',
+				'http://example.org/category/' . $current_term->slug . '/',
+				'http://example.org/category/' . $current_term->slug . '/feed/',
 			]
 		);
 	}
