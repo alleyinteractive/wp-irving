@@ -329,13 +329,44 @@ class Component implements \JsonSerializable {
 	}
 
 	/**
+	 * Loop through this component's children, and convert any array with a `name` property into
+	 *
+	 * @param bool $recursive Also hydrate nested children.
+	 * @return self
+	 */
+	public function hydrate_children( bool $recursive = true ): self {
+
+		$children = $this->get_children();
+
+		foreach ( $children as &$child ) {
+
+			// Only look for arrays with a `name` key.
+			if ( ! is_array( $child ) || ! isset( $child['name'] ) ) {
+				continue;
+			}
+
+			// Replace the array with an initalized component instance.
+			$child = new Component( $child['name'], $child );
+
+			// Use this recursively.
+			if ( $recursive ) {
+				$child->hydrate_children();
+			}
+		}
+
+		$this->set_children( $children );
+
+		return $this;
+	}
+
+	/**
 	 * Sanitize an array of children by ensuring invalid values are removed and
 	 * the index is reset.
 	 *
 	 * @param array $children Array of values to sanitize.
 	 * @return array
 	 */
-	public function reset_array( array $children ): array {
+	public static function reset_array( array $children ): array {
 		return array_values( array_filter( $children ) );
 	}
 
@@ -539,7 +570,7 @@ class Component implements \JsonSerializable {
 	 * @param mixed    ...$args  Optional args to pass to the callback.
 	 * @return function
 	 */
-	public function callback( $callable, ...$args ) {
+	public function callback( callable $callable, ...$args ): Component {
 		return call_user_func_array( $callable, array_merge( [ &$this ], $args ) );
 	}
 
