@@ -116,7 +116,7 @@ class Component implements \JsonSerializable {
 
 		// Set theme options.
 		if ( ! is_null( $args['theme_options'] ) ) {
-			$this->set_theme_options( $args['theme_options'] );
+			$this->add_theme_options( $args['theme_options'] );
 		}
 
 		// Set theme.
@@ -264,7 +264,7 @@ class Component implements \JsonSerializable {
 	 * @return self
 	 */
 	public function set_children( array $children ): self {
-		$this->children = $this->sanitize_children( $children );
+		$this->children = self::reset_array( $children );
 		return $this;
 	}
 
@@ -277,7 +277,7 @@ class Component implements \JsonSerializable {
 	public function prepend_children( array $children ): self {
 		return $this->set_children(
 			array_merge(
-				$this->sanitize_children( $children ),
+				self::reset_array( $children ),
 				$this->get_children()
 			)
 		);
@@ -293,7 +293,7 @@ class Component implements \JsonSerializable {
 		return $this->set_children(
 			array_merge(
 				$this->get_children(),
-				$this->sanitize_children( $children )
+				self::reset_array( $children )
 			)
 		);
 	}
@@ -335,7 +335,7 @@ class Component implements \JsonSerializable {
 	 * @param array $children Array of values to sanitize.
 	 * @return array
 	 */
-	public function sanitize_children( array $children ): array {
+	public function reset_array( array $children ): array {
 		return array_values( array_filter( $children ) );
 	}
 
@@ -378,76 +378,115 @@ class Component implements \JsonSerializable {
 	}
 
 	/**
-	 * Add one or more theme options.
+	 * Test if a string is in the theme options.
 	 *
-	 * @param array|string $themes One or more themes to add.
+	 * @param string $theme Theme name.
+	 * @return bool
+	 */
+	public function is_available_theme( string $theme ): bool {
+		return in_array( $theme, $this->get_theme_options(), true );
+	}
+
+	/**
+	 * Set theme options.
+	 *
+	 * @param array $theme_options New theme options. Ensures uniques.
 	 * @return self
 	 */
-	public function add_theme_options( $themes ): self {
+	public function set_theme_options( array $theme_options ): self {
+		$this->theme_options = array_unique( $theme_options );
+		return $this;
+	}
 
-		// Convert to array if necessary.
-		if ( is_string( $themes ) ) {
-			$themes = [ $themes ];
-		}
+	/**
+	 * Add theme options.
+	 *
+	 * @param array $theme_options One or more theme names to add.
+	 * @return self
+	 */
+	public function add_theme_options( array $theme_options ): self {
 
-		// Merge the new value(s).
-		$this->theme_options = array_merge(
-			$this->theme_options,
-			$themes
+		array_map(
+			function( $theme_option ) {
+
+				// Ignore non-strings for now.
+				if ( ! is_string( $theme_option ) ) {
+					return;
+				}
+
+				$this->add_theme_option( $theme_option );
+			},
+			$theme_options
 		);
-
-		// Sanitize the entire thing.
-		$this->sanitize_theme_options();
 
 		return $this;
 	}
 
 	/**
-	 * Remove one or more theme options.
+	 * Add a theme option.
 	 *
-	 * @param array|string $themes One or more themes to remove.
+	 * @param string $theme_option Theme name.
 	 * @return self
 	 */
-	public function remove_theme_options( $themes ): self {
+	public function add_theme_option( string $theme_option ): self {
 
-		// Convert to array if necessary.
-		if ( is_string( $themes ) ) {
-			$themes = [ $themes ];
+		// Ensure it's not already an option.
+		if ( ! $this->is_available_theme( $theme_option ) ) {
+			$this->theme_options[] = $theme_option;
 		}
 
-		// Remove as needed.
-		foreach ( $themes as $theme ) {
-			if ( $this->theme_options[ $theme ] ) {
-				unset( $this->theme_options[ $theme ] );
+		return $this;
+	}
+
+	/**
+	 * Remove theme options.
+	 *
+	 * @param array $theme_options One or more themes names to remove.
+	 * @return self
+	 */
+	public function remove_theme_options( array $theme_options ): self {
+
+		array_map(
+			function( $theme_option ) {
+
+				// Ignore non-strings for now.
+				if ( ! is_string( $theme_option ) ) {
+					return;
+				}
+
+				$this->remove_theme_option( $theme_option );
+			},
+			$theme_options
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Remove theme option.
+	 *
+	 * @param string $theme_option Theme name.
+	 * @return [type]               [description]
+	 */
+	public function remove_theme_option( string $theme_option ): self {
+
+		// Ensure it's not already an option.
+		if ( $this->is_available_theme( $theme_option ) ) {
+
+			// Loop through options, removing the correct key.
+			$theme_options = $this->get_theme_options();
+			foreach ( $theme_options as $index => $key ) {
+				if ( $key === $theme_option ) {
+					unset( $theme_options[ $index ] );
+					break;
+				}
 			}
+
+			// Reset the array every time.
+			$this->set_theme_options(
+				self::reset_array( $theme_options )
+			);
 		}
-
-		// Sanitize the entire thing.
-		$this->sanitize_theme_options();
-
-		return $this;
-	}
-
-	/**
-	 * Loop through the theme options, ensuring they're sanitizied.
-	 *
-	 * @return self
-	 */
-	public function sanitize_theme_options(): self {
-
-		$this->theme_options = array_unique(
-			array_filter(
-				array_map(
-					function( $theme ) {
-						$theme = (string) $theme;
-						$theme = trim( $theme );
-						$theme = self::camel_case( $theme );
-						return $theme;
-					},
-					$this->theme_options
-				)
-			)
-		);
 
 		return $this;
 	}
@@ -585,14 +624,24 @@ class Component implements \JsonSerializable {
 	 */
 	public function to_array(): array {
 
+		// Camel case config keys.
+		$this->set_config( $this->camel_case_keys( $this->get_config() ) );
+
+		// Camel case theme options.
+		$this->set_theme_options( $this->camel_case_keys( $this->get_theme_options() ) );
+		$this->set_theme( self::camel_case( $this->get_theme() ) );
+
 		// Add the theme name to the config as Irving core expects.
 		$this->set_config( 'theme_name', $this->get_theme() );
 		$this->set_config( 'theme_options', $this->get_theme_options() );
 
+		// Sanitize children.
+		$this->set_children( self::reset_array( $this->get_children() ) );
+
 		return [
 			'name'            => $this->get_name(),
-			'config'          => (object) $this->camel_case_keys( $this->get_config() ),
-			'children'        => $this->sanitize_children( $this->get_children() ),
+			'config'          => (object) $this->get_config(),
+			'children'        => $this->get_children(),
 			'contextConsumer' => $this->get_context_provider(),
 			'contextProvider' => $this->get_context_consumer(),
 		];
