@@ -379,6 +379,13 @@ class Cache {
 			return;
 		}
 
+		/**
+		 * Trigger pre-purge action to hook into URLs about to be purged.
+		 *
+		 * @param array self::$purge_queue List of URLs that will be purged.
+		 */
+		do_action( 'wp_irving_cache_pre_purge', self::$purge_queue );
+
 		// Fire the request to bust both VIP and Irving Redis cache.
 		wp_remote_post(
 			home_url( '/purge-cache' ),
