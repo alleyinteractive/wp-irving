@@ -6,7 +6,7 @@
  */
 
 /**
- * Tests for integration with WPCOM Legacy Redirector.
+ * Tests for cache busting.
  */
 class Cache_Tests extends WP_UnitTestCase {
 
