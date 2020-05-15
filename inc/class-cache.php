@@ -107,7 +107,7 @@ class Cache {
 	}
 
 	/**
-	 * Purge term cache on create.
+	 * Purge term cache by ID.
 	 *
 	 * @param int\WP_Term $term_id Term ID.
 	 */
