@@ -82,7 +82,7 @@ class Cache {
 	}
 
 	/**
-	 * Purge cache on page transition.
+	 * Purge cache on post status transition.
 	 *
 	 * @param string  $new_status New Status.
 	 * @param string  $old_status Old Status.
