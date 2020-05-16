@@ -29,9 +29,19 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/wp-irving.php';
-	require dirname( __DIR__, 2 ) . '/safe-redirect-manager/safe-redirect-manager.php';
-	require dirname( __DIR__, 2 ) . '/wpcom-legacy-redirector/wpcom-legacy-redirector.php';
+	update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
+
+	$paths = [
+		dirname( dirname( __FILE__ ) ) . '/wp-irving.php',
+		dirname( __DIR__, 2 ) . '/safe-redirect-manager/safe-redirect-manager.php',
+		dirname( __DIR__, 2 ) . '/wpcom-legacy-redirector/wpcom-legacy-redirector.php',
+	];
+
+	foreach ( $paths as $file ) {
+		if ( file_exists( $file ) ) {
+			require $file;
+		}
+	}
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
