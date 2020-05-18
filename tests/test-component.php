@@ -334,7 +334,28 @@ class Component_Tests extends WP_UnitTestCase {
 	 */
 	public function test_set_child() {
 
+		// Get components.
+		$parent   = $this->get_component( 'children-test-001' );
+		$child_01 = $this->get_component( 'children-test-002' );
+		$child_02 = $this->get_component( 'children-test-003' );
 
+		// Scaffold three new basic components.
+		$expected_components = [
+			new Component( 'parent-child-001' ),
+			new Component( 'parent-child-002' ),
+			new Component( 'parent-child-003' ),
+		];
+
+		// Ensure the data loaded is correct to begin with.
+		$this->assertEquals( $expected_components, $parent->get_children() );
+
+		// Run method and check.
+		$parent->set_child( $child_01 );
+		$this->assertEquals( [ $child_01 ], $parent->get_children() );
+
+		// Run method and check.
+		$parent->set_child( $child_02 );
+		$this->assertEquals( [ $child_02 ], $parent->get_children() );
 	}
 
 	/**
@@ -783,6 +804,44 @@ class Component_Tests extends WP_UnitTestCase {
 				'contextProvider' => [],
 			],
 			$this->get_component( 'basic-example' )->to_array()
+		);
+
+		$this->assertEquals(
+			[
+				'name'            => 'parent-example',
+				'config'          => (object) [
+					'theme_name'    => 'default',
+					'theme_options' => [
+						'default',
+					],
+				],
+				'children'        => [
+					new Component( 'parent-child-001' ),
+					new Component( 'parent-child-002' ),
+					new Component( 'parent-child-003' ),
+				],
+				'contextConsumer' => [],
+				'contextProvider' => [],
+			],
+			$this->get_component( 'children-test-001' )->to_array()
+		);
+
+		$this->assertEquals(
+			[
+				'name'            => 'example',
+				'config'          => (object) [
+					'theme_name' => 'primary',
+					'theme_options' => [
+						'default',
+						'primary',
+						'secondary',
+					],
+				],
+				'children'        => [],
+				'contextConsumer' => [],
+				'contextProvider' => [],
+			],
+			$this->get_component( 'theme-options' )->to_array()
 		);
 	}
 }
