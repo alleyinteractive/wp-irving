@@ -618,7 +618,7 @@ class Component implements JsonSerializable {
 	 * @param string|array $callback A callable function.
 	 * @return self
 	 */
-	public function set_callback( $callback ): self {
+	private function set_callback( $callback ): self {
 		if ( is_callable( $callback ) ){
 			$this->callback = $callback;
 		}
@@ -626,6 +626,11 @@ class Component implements JsonSerializable {
 		return $this;
 	}
 
+	/**
+	 * Return the value of the callback property.
+	 *
+	 * @return string
+	 */
 	public function get_callback() {
 		return $this->callback;
 	}
