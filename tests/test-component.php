@@ -54,7 +54,7 @@ class Component_Tests extends WP_UnitTestCase {
 				continue;
 			}
 
-			self::$components[ str_replace( '.json', '', $file_name ) ] = new Component( $component['name'], $component );
+			self::$components[ str_replace( '.json', '', $file_name ) ] = ( new Component( $component['name'], $component ) )->hydrate_children();
 		}
 	}
 
@@ -227,58 +227,215 @@ class Component_Tests extends WP_UnitTestCase {
 	 * Tests for the `get_children()` method.
 	 */
 	public function test_get_children() {
+
+		// Scaffold three new basic components.
+		$expected_components = [
+			new Component( 'parent-child-001' ),
+			new Component( 'parent-child-002' ),
+			new Component( 'parent-child-003' ),
+		];
+
+		// Test on a component with three children.
+		$this->assertEquals( $expected_components, $this->get_component( 'children-test-001' )->get_children() );
+
+		// Test on a component with no children.
+		$this->assertEquals( [], $this->get_component( 'name-only' )->get_children() );
 	}
 
 	/**
 	 * Tests for the `set_children()` method.
 	 */
 	public function test_set_children() {
+
+		// Get components.
+		$parent   = $this->get_component( 'children-test-001' );
+		$child_01 = $this->get_component( 'children-test-002' );
+		$child_02 = $this->get_component( 'children-test-003' );
+
+		// Scaffold three new basic components.
+		$expected_components = [
+			new Component( 'parent-child-001' ),
+			new Component( 'parent-child-002' ),
+			new Component( 'parent-child-003' ),
+		];
+
+		// Ensure the data loaded is correct to begin with.
+		$this->assertEquals( $expected_components, $parent->get_children() );
+
+		// Run method and check.
+		$parent->set_children( [ $child_01, $child_02 ] );
+		$this->assertEquals(
+			[
+				$child_01,
+				$child_02,
+			],
+			$parent->get_children()
+		);
 	}
 
 	/**
 	 * Tests for the `prepend_children()` method.
 	 */
 	public function test_prepend_children() {
+
+		// Get components to use.
+		$parent   = $this->get_component( 'children-test-001' );
+		$child_01 = $this->get_component( 'children-test-002' );
+		$child_02 = $this->get_component( 'children-test-003' );
+
+		// Build an array of children.
+		$children = [
+			$child_01,
+			$child_02,
+		];
+
+		// Prepend children to fill the 1st and 2nd slots.
+		$parent->prepend_children( $children );
+		$this->assertEquals( $child_01, $parent->get_children()[0] );
+		$this->assertEquals( $child_02, $parent->get_children()[1] );
+
+		// Reset children.
+		$parent->set_children( [] );
+		$parent->prepend_children( $children );
+		$this->assertEquals( $child_01, $parent->get_children()[0] );
+		$this->assertEquals( $child_02, $parent->get_children()[1] );
 	}
 
 	/**
 	 * Tests for the `append_children()` method.
 	 */
 	public function test_append_children() {
-		$parent = $this->get_component( 'children-test-001' );
-		$child  = $this->get_component( 'children-test-002' );
 
-		$parent->append_children( [ $child ] );
-		$this->assertEquals( $child, $parent->get_children()[0] );
+		// Get components to use.
+		$parent   = $this->get_component( 'children-test-001' );
+		$child_01 = $this->get_component( 'children-test-002' );
+		$child_02 = $this->get_component( 'children-test-003' );
+
+		// Build an array of children.
+		$children = [
+			$child_01,
+			$child_02,
+		];
+
+		// Append children to fill the 4th and 5th slots.
+		$parent->append_children( $children );
+		$this->assertEquals( $child_01, $parent->get_children()[3] );
+		$this->assertEquals( $child_02, $parent->get_children()[4] );
+
+		// Reset children.
+		$parent->set_children( [] );
+		$parent->append_children( $children );
+		$this->assertEquals( $child_01, $parent->get_children()[0] );
+		$this->assertEquals( $child_02, $parent->get_children()[1] );
 	}
 
 	/**
 	 * Tests for the `set_child()` method.
 	 */
 	public function test_set_child() {
+
+		// Get components.
+		$parent   = $this->get_component( 'children-test-001' );
+		$child_01 = $this->get_component( 'children-test-002' );
+		$child_02 = $this->get_component( 'children-test-003' );
+
+		// Scaffold three new basic components.
+		$expected_components = [
+			new Component( 'parent-child-001' ),
+			new Component( 'parent-child-002' ),
+			new Component( 'parent-child-003' ),
+		];
+
+		// Ensure the data loaded is correct to begin with.
+		$this->assertEquals( $expected_components, $parent->get_children() );
+
+		// Run method and check.
+		$parent->set_child( $child_01 );
+		$this->assertEquals( [ $child_01 ], $parent->get_children() );
+
+		// Run method and check.
+		$parent->set_child( $child_02 );
+		$this->assertEquals( [ $child_02 ], $parent->get_children() );
 	}
 
 	/**
 	 * Tests for the `prepend_child()` method.
 	 */
 	public function test_prepend_child() {
+
+		// Get components to use.
+		$parent   = $this->get_component( 'children-test-001' );
+		$child_01 = $this->get_component( 'children-test-002' );
+		$child_02 = $this->get_component( 'children-test-003' );
+
+		// Prepend the first child as the 0th slot.
+		$parent->prepend_child( $child_01 );
+		$this->assertEquals( $child_01, $parent->get_children()[0] );
+
+		// Prepend the second child as the 0th slot, forcing the first into the
+		// 1st slot.
+		$parent->prepend_child( $child_02 );
+		$this->assertEquals( $child_02, $parent->get_children()[0] );
+		$this->assertEquals( $child_01, $parent->get_children()[1] );
+
+		// Clear the children.
+		$parent->set_children( [] );
+
+		// Prepend the first child as the 0th slot.
+		$parent->prepend_child( $child_01 );
+		$this->assertEquals( $child_01, $parent->get_children()[0] );
+
+		// Prepend the second child as the 0th slot, forcing the first into the
+		// 1st slot.
+		$parent->prepend_child( $child_02 );
+		$this->assertEquals( $child_02, $parent->get_children()[0] );
+		$this->assertEquals( $child_01, $parent->get_children()[1] );
 	}
 
 	/**
 	 * Tests for the `append_child()` method.
 	 */
 	public function test_append_child() {
-		$parent = $this->get_component( 'children-test-001' );
-		$child  = $this->get_component( 'children-test-002' );
 
-		$parent->append_child( $child );
-		$this->assertEquals( $child, $parent->get_children()[0] );
+		// Get components to use.
+		$parent   = $this->get_component( 'children-test-001' );
+		$child_01 = $this->get_component( 'children-test-002' );
+		$child_02 = $this->get_component( 'children-test-003' );
+
+		// Append the child as the 4th slot.
+		$parent->append_child( $child_01 );
+		$parent->append_child( $child_02 );
+		$this->assertEquals( $child_01, $parent->get_children()[3] );
+		$this->assertEquals( $child_02, $parent->get_children()[4] );
+
+		// Clear the children.
+		$parent->set_children( [] );
+
+		// Append a child to the empty array.
+		$parent->append_child( $child_01 );
+		$parent->append_child( $child_02 );
+		$this->assertEquals( $child_01, $parent->get_children()[0] );
+		$this->assertEquals( $child_02, $parent->get_children()[1] );
 	}
 
 	/**
 	 * Tests for the `reset_array()` method.
 	 */
 	public function test_reset_array() {
+
+		$example_data = [
+			'test',
+			'',
+			'test two',
+			[],
+		];
+
+		// Test removal of empty elements.
+		$this->assertEquals( [ 'test', 'test two' ], Component::reset_array( $example_data ) );
+
+		// Resets when an array value has been unset.
+		unset( $example_data[0] );
+		$this->assertEquals( [ 'test two' ], Component::reset_array( $example_data ) );
 	}
 
 	/**
@@ -564,6 +721,20 @@ class Component_Tests extends WP_UnitTestCase {
 	 * Tests for the `callback()` method.
 	 */
 	public function test_callback() {
+
+		// Get a copy of this testing component.
+		$component = $this->get_component( 'basic-example' );
+
+		// Execute a callback, using a closure as the callable.
+		$component->callback(
+			function( $component, $extra_param ) {
+				$component->set_config( 'foo', $extra_param );
+				return $component;
+			},
+			'bar' // Extra param that can be passed to the callback.
+		);
+
+		$this->assertEquals( 'bar', $component->get_config( 'foo' ) );
 	}
 
 	/**
@@ -633,6 +804,44 @@ class Component_Tests extends WP_UnitTestCase {
 				'contextProvider' => [],
 			],
 			$this->get_component( 'basic-example' )->to_array()
+		);
+
+		$this->assertEquals(
+			[
+				'name'            => 'parent-example',
+				'config'          => (object) [
+					'theme_name'    => 'default',
+					'theme_options' => [
+						'default',
+					],
+				],
+				'children'        => [
+					new Component( 'parent-child-001' ),
+					new Component( 'parent-child-002' ),
+					new Component( 'parent-child-003' ),
+				],
+				'contextConsumer' => [],
+				'contextProvider' => [],
+			],
+			$this->get_component( 'children-test-001' )->to_array()
+		);
+
+		$this->assertEquals(
+			[
+				'name'            => 'example',
+				'config'          => (object) [
+					'theme_name' => 'primary',
+					'theme_options' => [
+						'default',
+						'primary',
+						'secondary',
+					],
+				],
+				'children'        => [],
+				'contextConsumer' => [],
+				'contextProvider' => [],
+			],
+			$this->get_component( 'theme-options' )->to_array()
 		);
 	}
 }
