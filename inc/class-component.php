@@ -637,7 +637,7 @@ class Component implements JsonSerializable {
 	 */
 	public function do_callback() {
 		if ( is_callable( $this->get_callback() ) ) {
-			$this->run_callback( $this->get_callback() );
+			$this->callback( $this->get_callback() );
 		}
 
 		return $this;
@@ -651,7 +651,7 @@ class Component implements JsonSerializable {
 	 * @param mixed    ...$args  Optional args to pass to the callback.
 	 * @return Component
 	 */
-	public function run_callback( callable $callable, ...$args ) {
+	public function callback( callable $callable, ...$args ) {
 		return call_user_func_array( $callable, array_merge( [ &$this ], $args ) );
 	}
 
@@ -661,7 +661,7 @@ class Component implements JsonSerializable {
 	 * @param array $array Array to convert.
 	 * @return array Updated array with camel-cased keys.
 	 */
-	public function camel_case_keys( $array ) {
+	public static function camel_case_keys( $array ) {
 
 		// Setup for recursion.
 		$camel_case_array = [];
@@ -670,7 +670,7 @@ class Component implements JsonSerializable {
 		foreach ( $array as $key => $value ) {
 
 			if ( is_array( $value ) ) {
-				$value = $this->camel_case_keys( $value );
+				$value = self::camel_case_keys( $value );
 			}
 
 			// Camel case the key.
@@ -707,7 +707,7 @@ class Component implements JsonSerializable {
 		array_walk(
 			$words,
 			function( &$word ) {
-				$word = ucwords( $word );
+				$word = ucwords( strtolower( $word ) );
 			}
 		);
 
@@ -735,14 +735,6 @@ class Component implements JsonSerializable {
 	 * @return array
 	 */
 	public function to_array(): array {
-
-		// Camel case config keys.
-		$this->set_config( $this->camel_case_keys( $this->get_config() ) );
-
-		// Camel case theme options.
-		$this->set_theme_options( $this->camel_case_keys( $this->get_theme_options() ) );
-		$this->set_theme( self::camel_case( $this->get_theme() ) );
-
 		// Add the theme name to the config as Irving core expects.
 		$this->set_config( 'theme_name', $this->get_theme() );
 		$this->set_config( 'theme_options', $this->get_theme_options() );

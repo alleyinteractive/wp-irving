@@ -88,55 +88,55 @@ class Test_Templates extends WP_UnitTestCase {
 	 */
 	function test_components_use_context() {
 		get_registry()->register_component( 'provider', [
-			'config'                      => [
-				'propWithDefault'            => [
-					'type'                      => 'text',
-					'default'                   => 'default value'
+			'config'                        => [
+				'prop_with_default'            => [
+					'type'                        => 'text',
+					'default'                     => 'default value'
 				],
-				'propWithDefaultOverridden'  => [
-					'type'                      => 'number',
-					'default'                   => 10
+				'prop_with_default_overridden' => [
+					'type'                        => 'number',
+					'default'                     => 10
 				],
-				'propWithoutDefault'         => [
-					'type'                      => 'text',
+				'prop_without_default'         => [
+					'type'                        => 'text',
 				],
 			],
-			'provides_context'            => [
-				'test/withDefault'           => 'propWithDefault',
-				'test/withDefaultOverridden' => 'propWithDefaultOverridden',
-				'test/withoutDefault'        => 'propWithoutDefault',
+			'provides_context'              => [
+				'test/with_default'            => 'prop_with_default',
+				'test/with_default_overridden' => 'prop_with_default_overridden',
+				'test/without_default'         => 'prop_without_default',
 			]
 		] );
 
 		get_registry()->register_component( 'consumer', [
-			'config'                      => [
-				'propWithDefault'            => [
-					'type'                      => 'text',
+			'config'                        => [
+				'prop_with_default'            => [
+					'type'                        => 'text',
 				],
-				'propWithDefaultOverridden'  => [
-					'type'                      => 'number',
+				'prop_with_default_overridden' => [
+					'type'                        => 'number',
 				],
-				'propWithoutDefault'         => [
-					'type'                      => 'text',
+				'prop_without_default'         => [
+					'type'                        => 'text',
 				],
 			],
-			'use_context'                 => [
-				'test/withDefault'           => 'propWithDefault',
-				'test/withDefaultOverridden' => 'propWithDefaultOverridden',
-				'test/withoutDefault'        => 'propWithoutDefault',
+			'use_context'                   => [
+				'test/with_default'            => 'prop_with_default',
+				'test/with_default_overridden' => 'prop_with_default_overridden',
+				'test/without_default'         => 'prop_without_default',
 			],
 		] );
 
 		$template = [
 			[
-				'name'                       => 'provider',
-				'config'                     => [
-					'propWithDefaultOverridden' => 20,
-					'propWithoutDefault'        => 'test value',
+				'name'                          => 'provider',
+				'config'                        => [
+					'prop_with_default_overridden' => 20,
+					'prop_without_default'         => 'test value',
 				],
-				'children'                   => [
+				'children'                      => [
 					[
-						'name'                     => 'consumer',
+						'name'                        => 'consumer',
 					],
 				],
 			],

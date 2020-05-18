@@ -7,6 +7,8 @@
 
 /**
  * Tests for cache busting.
+ *
+ * @group cache
  */
 class Cache_Tests extends WP_UnitTestCase {
 
