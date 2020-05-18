@@ -60,7 +60,7 @@ class Test_Context_Store extends WP_UnitTestCase {
 	 * @param string $type  The type of variable to test.
 	 */
 	public function test_context_set_and_get( $value, $type ) {
-		$this->get_context()->set( 'test/context', $value );
+		$this->get_context()->set( [ 'test/context' => $value ] );
 		$this->assertEquals( $value, $this->get_context()->get( 'test/context' ), "Could not confirm context was updated for type ${type}" );
 
 		// Clean up.
@@ -74,7 +74,7 @@ class Test_Context_Store extends WP_UnitTestCase {
 		$values = [ 1, 2, 3 ];
 
 		foreach ( $values as $value ) {
-			$this->get_context()->set( 'test/context', $value );
+			$this->get_context()->set( [ 'test/context' => $value ] );
 		}
 
 		// Remove the last step before resetting.

@@ -39,10 +39,10 @@ function load_template( array $data, WP_Query $query, string $context ): array {
 			$data = array_merge( $data, prepare_data_from_template( $defaults, 'defaults' ) );
 		}
 
-		$data['defaults'] = traverse_components( $data['defaults'] );
+		$data['defaults'] = hydrate_components( $data['defaults'] );
 	}
 
-	$data['page'] = traverse_components( $data['page'] );
+	$data['page'] = hydrate_components( $data['page'] );
 
 	return $data;
 }
@@ -322,55 +322,58 @@ function convert_blocks_to_components( array $blocks ): array {
 	return $components;
 }
 
-function hydrate_components( array $components ) {
-	return traverse_components( $components );
-}
-
 /**
- * Recursively iterate on a component tree.
+ * Hydrate components
  *
- * @param array $components Array of components.
- * @return array
+ * @param array A list of components from a template.
+ * @return array A hydrated array of components prepared for a REST response.
  */
-function traverse_components( array $components ): array {
+function hydrate_components( array $components ) {
 
-	foreach ( $components as $index => &$component ) {
+	return array_map( function ( $component ) {
+		// Create Object Instance to hydrate initial config values.
+		$component = setup_component( $component );
 
-		// This allows us to set text nodes.
-		if ( is_string( $component ) ) {
-			continue;
+		// Bail early if this isn't a WP_Irving\Component.
+		if ( ! $component instanceof Component ) {
+			return false;
 		}
 
-		// Ensure we have all the right field and types.
-		$component = ensure_component_fields_exist( $component );
+		// Set up config from context.
+		$component->use_context( get_template_context() );
 
-		$component = handle_template_parts( $component );
-		$component = handle_data_provider( $component );
-		$component = handle_component_config_callbacks( $component );
-		$component = handle_component_callbacks( $component );
+		// Run hydration callback.
+		$component->do_callback();
 
-		// Recursively loop though children.
+		// Update context values.
+		$component->provide_context( get_template_context() );
+
+		// Recursively hydrate children.
 		if ( ! empty( $component->get_children() ) ) {
-			$component->set_children( traverse_components( $component->get_children() ) );
+			$component->set_children( hydrate_components( $component->get_children() ) );
 		}
-	}
 
-	return $components;
+		// Reset context to where it was before hydration.
+		get_template_context()->reset();
+
+		return $component->jsonSerialize();
+
+	}, $components );
 }
-
 
 /**
  * Validate and typecast a component.
  *
  * @param array $component Component.
- * @return array
+ * @return Component|false A Component class instance or false on failure.
  */
-function ensure_component_fields_exist( $component ) {
+function setup_component( $component ) {
 
 	if ( $component instanceof Component ) {
 		return $component;
 	}
 
+	// Convert strings to text components.
 	if ( is_string( $component ) ) {
 		$component = [
 			'name' => 'text',
@@ -380,31 +383,68 @@ function ensure_component_fields_exist( $component ) {
 		];
 	}
 
-	return new Component( $component['name'] ?? '', $component );
+	// Components must have names.
+	if ( ! isset( $component['name'] ) ) {
+		return false;
+	}
+
+	$component = parse_config_from_registry( $component );
+
+	return new Component( $component['name'], $component );
 }
 
 /**
- * Modify the final output of a component.
+ * Fill out a component args array from registered values.
  *
- * @param array $component Component.
- * @return array
+ * @param array $component An array of component arguments.
+ * @return array A parsed array using registered values.
  */
-function validate_final_component( $component ) {
+function parse_config_from_registry( array $component ) {
+	$registered = WP_Irving\get_registry()->get_registered_component( $component['name' ] );
 
-	if ( is_string( $component ) ) {
+	if ( empty( $registered ) ) {
 		return $component;
 	}
 
-	$component                  = ensure_component_fields_exist( $component );
-	$component['config']        = (object) $component['config'];
-	$component['data_provider'] = (object) $component['data_provider'];
-	$component['children']      = array_values( array_filter( (array) ( $component['children'] ?? [] ) ) );
+	// Loop through all registered config keys and set them from passed
+	// values if the value is valid, otherwise try using the default value.
+	$parsed_config = [];
 
-	unset( $component['data_provider'] );
+	$type_callbacks = [
+		'array'  => 'is_array',
+		'bool'   => 'is_bool',
+		'int'    => 'is_int',
+		'number' => 'is_numeric',
+		'string' => 'is_string',
+		'text'   => 'is_string'
+	];
+
+	foreach ( $registered['config'] as $key => $atts ) {
+		if (
+			isset( $component['config'][ $key ] ) &&
+			( call_user_func( $type_callbacks[ $atts['type'] ], $component['config'][ $key ] ) )
+		) {
+			$parsed_config[ $key ] = $component['config'][ $key ];
+		} elseif ( isset( $atts['default'] ) ) {
+			$parsed_config[ $key ] = $atts['default'];
+		}
+	}
+
+	$component['config'] = $parsed_config;
+
+	$registered_property = [
+		'callback',
+		'provides_context',
+		'use_context',
+	];
+
+	// Hydrate the rest of the component from the registry.
+	foreach ( $registered_property as $prop ) {
+		$component[ $prop ] = $registered[ $prop ] ?? [];
+	}
 
 	return $component;
 }
-
 
 /**
  * Pull in template parts.
@@ -436,101 +476,6 @@ function handle_template_parts( $component ) {
 }
 
 /**
- * Pass data provider values down to children components.
- *
- * @param array $component Component.
- * @return array
- */
-function handle_data_provider( $component ) {
-
-	// If there's no data provider, or children, don't do anything.
-	if ( empty( $component->data_provider ) || empty( $component->children ) ) {
-		return $component;
-	}
-
-	foreach ( $component->children as &$child_component ) {
-
-		if ( is_string( $child_component ) ) {
-			continue;
-		}
-
-		$child_component = ensure_component_fields_exist( $child_component );
-
-		$child_component->data_provider = array_merge_recursive(
-			$child_component->data_provider,
-			$component->data_provider
-		);
-	}
-
-	return $component;
-}
-
-/**
- * Loop through component config values. If we match a {{component/name}} then
- * we execute the callback, and return the value to the config.
- *
- * @todo Determine if this functionality can be scrapped in favor of a data
- *       provider. This is proof of concept purely for discussion and
- *       consideration.
- *
- * @example
- * {
- *   "name": "example",
- *   "config": {
- *     "href": "{{post/permalink}}"
- *   }
- * }
- *
- * @param array $component Component.
- * @return array
- */
-function handle_component_config_callbacks( $component ): Component {
-
-	// Ensure component config exists.
-	if ( empty( $component->get_config() ) ) {
-		return $component;
-	}
-
-	foreach ( $component->get_config() as $key => $value ) {
-
-		// For each key, check if the value has a handlebars syntax.
-		preg_match_all( '/{{(.+)}}/', $value, $matches );
-		$matches = array_filter( $matches );
-
-		// If we found a result, execute the component callback, and assign to
-		// the key.
-		if ( ! empty( $matches ) ) {
-			$component_name = $matches[1][0];
-
-			$new_value = handle_component_callbacks( );
-
-			// Update the config for this key.
-			$component->set_config( $key, $new_value );
-		}
-	}
-
-	return $component;
-}
-
-/**
- * Fire the callback on registered components.
- *
- * @param Component $component Component.
- * @return array
- */
-function handle_component_callbacks( Component $component ): Component {
-
-	// Check the component registry.
-	$registered_component = WP_Irving\get_registry()->get_registered_component( $component->get_name() );
-	if ( is_null( $registered_component ) || ! is_callable( $registered_component['callback'] ?? '' ) ) {
-		return $component;
-	}
-
-	// Execute callback.
-	return call_user_func_array( $registered_component['callback'], [ $component ] );
-}
-
-/**
  * Returns the template context object.
  *
  * Sets the default 'irving/post' context when first called.
@@ -544,7 +489,7 @@ function get_template_context() {
 		$context = new WP_Irving\Context_Store();
 
 		// Set default context.
-		$context->set( 'irving/post', get_the_ID() );
+		$context->set( [ 'irving/post' => get_the_ID() ] );
 	}
 
 	return $context;

@@ -32,7 +32,7 @@ class Registry {
 	 * Get a single registered component by name.
 	 *
 	 * @param string $name Component name.
-	 * @return array|null The registsered component, or null.
+	 * @return array|null The registered component, or null.
 	 */
 	public function get_registered_component( string $name ): ?array {
 		return $this->components[ $name ] ?? null;

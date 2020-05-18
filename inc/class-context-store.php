@@ -12,9 +12,20 @@ class Context_Store {
 	/**
 	 * List of context objects.
 	 *
+	 * Each time context is added to
+	 *
 	 * @var array
 	 */
-	protected $context = [];
+	private $context = [];
+
+	/**
+	 * Returns the current context values.
+	 *
+	 * @return array The current context array.
+	 */
+	public function get_context() {
+		return array_values( $this->context )[0] ?? [];
+	}
 
 	/**
 	 * Get the value of a context key.
@@ -23,7 +34,7 @@ class Context_Store {
 	 * @return mixed The value being returned
 	 */
 	public function get( string $key ) {
-		return reset( $this->context )[$key];
+		return isset( $this->get_context()[$key] ) ? $this->get_context()[$key] : null;
 	}
 
 	/**
@@ -40,14 +51,11 @@ class Context_Store {
 	/**
 	 * Set a context value for a specific key.
 	 *
-	 * @param string $context The key to set.
-	 * @param mixed $value The value to set.
+	 * @param array $context A map of context keys and values to set.
 	 * @return bool
 	 */
-	public function set( string $context, $value ) {
- 		$new_context = [ $context => $value ];
-
-		array_unshift( $this->context, array_merge( $this->context, $new_context ) );
+	public function set( array $context ) {
+		array_unshift( $this->context, array_merge( $this->get_context(), $context ) );
 
 		return true;
 	}

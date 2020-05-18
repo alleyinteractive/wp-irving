@@ -10,8 +10,6 @@ namespace WP_Irving;
 use WP_Irving\Templates;
 use WP_UnitTestCase;
 
-use function WP_Irving\Templates\hydrate_components;
-
 /**
  * Test templates functionality.
  *
@@ -103,7 +101,7 @@ class Test_Templates extends WP_UnitTestCase {
 					'type'                      => 'text',
 				],
 			],
-			'providesContext'             => [
+			'provides_context'            => [
 				'test/withDefault'           => 'propWithDefault',
 				'test/withDefaultOverridden' => 'propWithDefaultOverridden',
 				'test/withoutDefault'        => 'propWithoutDefault',
@@ -122,7 +120,7 @@ class Test_Templates extends WP_UnitTestCase {
 					'type'                      => 'text',
 				],
 			],
-			'usesContext'                 => [
+			'use_context'                 => [
 				'test/withDefault'           => 'propWithDefault',
 				'test/withDefaultOverridden' => 'propWithDefaultOverridden',
 				'test/withoutDefault'        => 'propWithoutDefault',
@@ -144,24 +142,29 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 		];
 
-		$hydrated = hydrate_components( $template );
+		$hydrated = Templates\hydrate_components( $template );
 
 		$expected = [
 			[
 				'name'                         => 'provider',
-				'config'                       => [
+				'config'                       => (object) [
 					'propWithDefault'             => 'default value',
 					'propWithDefaultOverridden'   => 20,
 					'propWithoutDefault'          => 'test value',
+					'themeName'                    => 'default',
+					'themeOptions'               => [ 'default' ],
 				],
 				'children'                     => [
 					[
 						'name'                       => 'consumer',
-						'config'                     => [
+						'config'                     => (object) [
 							'propWithDefault'           => 'default value',
 							'propWithDefaultOverridden' => 20,
 							'propWithoutDefault'        => 'test value',
+							'themeName'                  => 'default',
+							'themeOptions'               => [ 'default' ],
 						],
+						'children'                   => [],
 					],
 				],
 			],
