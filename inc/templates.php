@@ -255,7 +255,7 @@ function locate_template_part( string $template ): string {
 	$template_part_path = STYLESHEETPATH . '/template-parts/';
 
 	/**
-	 * Filter the path to Irving template partss.
+	 * Filter the path to Irving template parts.
 	 *
 	 * @param string $template_part_path The full path to the template folder.
 	 * @param string  $template           A list of template files to locate.
