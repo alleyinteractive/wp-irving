@@ -410,7 +410,7 @@ function validate_final_component( $component ) {
 function handle_template_parts( $component ) {
 
 	// Check if this is a template part.
-	if ( 'template-parts/' !== $component->get_namespace() ) {
+	if ( 'template-parts' !== $component->get_namespace() ) {
 		return $component;
 	}
 
@@ -424,7 +424,7 @@ function handle_template_parts( $component ) {
 		$template_data = [ $template_data ];
 	}
 
-	$component->set_name( 'irving/passthrough' );
+	$component->set_name( '' );
 	$component->set_children( $template_data );
 
 	return $component;
