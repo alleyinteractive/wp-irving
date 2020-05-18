@@ -577,7 +577,7 @@ class Component implements JsonSerializable {
 
 		foreach ( $this->get_use_context() as $key => $config ) {
 			// Store context values internally so they're available in callbacks.
-			$this->context[$key] = $store->get( $key );
+			$this->context[ $key ] = $store->get( $key );
 
 			// Apply context values to config keys if the context
 			// value is set and the mapped config key exists as is not empty.
@@ -595,14 +595,14 @@ class Component implements JsonSerializable {
 	/**
 	 * Passes context values to a context store.
 	 *
-	 * @param Context_Store $store
-	 * @return void
+	 * @param Context_Store $store A context store instance.
+	 * @return self
 	 */
 	public function provide_context( Context_Store $store ) {
 		$context = [];
 
 		foreach ( $this->get_provides_context() as $key => $config ) {
-			$context[$key] = $this->get_config_by_key( $config );
+			$context[ $key ] = $this->get_config_by_key( $config );
 		}
 
 		// Always provide context when called or else
@@ -619,7 +619,7 @@ class Component implements JsonSerializable {
 	 * @return self
 	 */
 	private function set_callback( $callback ): self {
-		if ( is_callable( $callback ) ){
+		if ( is_callable( $callback ) ) {
 			$this->callback = $callback;
 		}
 
@@ -746,7 +746,7 @@ class Component implements JsonSerializable {
 
 		return [
 			'name'            => $this->get_name(),
-			'config'          => ( object ) $this->camel_case_keys( $this->get_config() ),
+			'config'          => (object) $this->camel_case_keys( $this->get_config() ),
 			'children'        => $this->get_children(),
 		];
 	}

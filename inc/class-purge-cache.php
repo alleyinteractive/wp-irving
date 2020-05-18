@@ -77,7 +77,7 @@ class Purge_Cache {
 		// Do not fire purges while importing or running PHPUnit tests.
 		if (
 			( defined( 'WP_IMPORTING' ) && WP_IMPORTING ) ||
-			( defined( 'WP_IRVING_TEST') && WP_IRVING_TEST )
+			( defined( 'WP_IRVING_TEST' ) && WP_IRVING_TEST )
 		) {
 			return;
 		}

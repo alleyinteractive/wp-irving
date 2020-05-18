@@ -7,6 +7,9 @@
 
 namespace WP_Irving;
 
+/**
+ * Context store for use in template hydration.
+ */
 class Context_Store {
 
 	/**
@@ -34,7 +37,7 @@ class Context_Store {
 	 * @return mixed The value being returned
 	 */
 	public function get( string $key ) {
-		return isset( $this->get_context()[$key] ) ? $this->get_context()[$key] : null;
+		return isset( $this->get_context()[ $key ] ) ? $this->get_context()[ $key ] : null;
 	}
 
 	/**

@@ -325,7 +325,7 @@ function convert_blocks_to_components( array $blocks ): array {
 /**
  * Hydrate components
  *
- * @param array A list of components from a template.
+ * @param array $components A list of components from a template.
  * @return array A hydrated array of components prepared for a REST response.
  */
 function hydrate_components( array $components ) {
@@ -415,7 +415,7 @@ function setup_component( $component ) {
  * @return array A parsed array using registered values.
  */
 function parse_config_from_registry( array $component ) {
-	$registered = WP_Irving\get_registry()->get_registered_component( $component['name' ] );
+	$registered = WP_Irving\get_registry()->get_registered_component( $component['name'] );
 
 	if ( empty( $registered ) ) {
 		return $component;
@@ -431,7 +431,7 @@ function parse_config_from_registry( array $component ) {
 		'int'    => 'is_int',
 		'number' => 'is_numeric',
 		'string' => 'is_string',
-		'text'   => 'is_string'
+		'text'   => 'is_string',
 	];
 
 	foreach ( $registered['config'] as $key => $atts ) {
@@ -474,7 +474,7 @@ function hydrate_template_parts( $component ) {
 		return false;
 	}
 
-	$template_part_name = substr( $component->get_name(), strpos( $component->get_name(), "/" ) + 1 );
+	$template_part_name = substr( $component->get_name(), strpos( $component->get_name(), '/' ) + 1 );
 
 	$template = locate_template_part( $template_part_name );
 
