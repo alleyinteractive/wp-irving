@@ -354,9 +354,7 @@ class Component implements \JsonSerializable {
 			}
 		}
 
-		$this->set_children( $children );
-
-		return $this;
+		return $this->set_children( $children );
 	}
 
 	/**
@@ -568,7 +566,7 @@ class Component implements \JsonSerializable {
 	 *
 	 * @param callable $callable Callable.
 	 * @param mixed    ...$args  Optional args to pass to the callback.
-	 * @return function
+	 * @return Component
 	 */
 	public function callback( callable $callable, ...$args ): Component {
 		return call_user_func_array( $callable, array_merge( [ &$this ], $args ) );
