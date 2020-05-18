@@ -230,7 +230,7 @@ class Component implements JsonSerializable {
 	 * @return self
 	 */
 	public function merge_config( array $config ): self {
-		$this->config = array_merge_recursive( $this->config, $config );
+		$this->config = array_merge( $this->config, $config );
 		return $this;
 	}
 
@@ -262,7 +262,7 @@ class Component implements JsonSerializable {
 	 * @return self
 	 */
 	public function set_children( array $children ): self {
-		$this->children = $this->sanitize_children( $children );
+		$this->children = self::reset_array( $children );
 		return $this;
 	}
 
@@ -275,7 +275,7 @@ class Component implements JsonSerializable {
 	public function prepend_children( array $children ): self {
 		return $this->set_children(
 			array_merge(
-				$this->sanitize_children( $children ),
+				self::reset_array( $children ),
 				$this->get_children()
 			)
 		);
@@ -291,7 +291,7 @@ class Component implements JsonSerializable {
 		return $this->set_children(
 			array_merge(
 				$this->get_children(),
-				$this->sanitize_children( $children )
+				self::reset_array( $children )
 			)
 		);
 	}
@@ -327,13 +327,42 @@ class Component implements JsonSerializable {
 	}
 
 	/**
+	 * Loop through this component's children, and convert any array with a `name` property into
+	 *
+	 * @param bool $recursive Also hydrate nested children.
+	 * @return self
+	 */
+	public function hydrate_children( bool $recursive = true ): self {
+
+		$children = $this->get_children();
+
+		foreach ( $children as &$child ) {
+
+			// Only look for arrays with a `name` key.
+			if ( ! is_array( $child ) || ! isset( $child['name'] ) ) {
+				continue;
+			}
+
+			// Replace the array with an initalized component instance.
+			$child = new Component( $child['name'], $child );
+
+			// Use this recursively.
+			if ( $recursive ) {
+				$child->hydrate_children();
+			}
+		}
+
+		return $this->set_children( $children );
+	}
+
+	/**
 	 * Sanitize an array of children by ensuring invalid values are removed and
 	 * the index is reset.
 	 *
 	 * @param array $children Array of values to sanitize.
 	 * @return array
 	 */
-	public function sanitize_children( array $children ): array {
+	public static function reset_array( array $children ): array {
 		return array_values( array_filter( $children ) );
 	}
 
@@ -375,81 +404,116 @@ class Component implements JsonSerializable {
 		return $this->theme_options;
 	}
 
-	public function set_theme_options( array $options ): self {
-		$this->theme_options = $options;
+	/**
+	 * Test if a string is in the theme options.
+	 *
+	 * @param string $theme Theme name.
+	 * @return bool
+	 */
+	public function is_available_theme( string $theme ): bool {
+		return in_array( $theme, $this->get_theme_options(), true );
+	}
 
-		// Sanitize the entire thing.
-		$this->sanitize_theme_options();
-
+	/**
+	 * Set theme options.
+	 *
+	 * @param array $theme_options New theme options. Ensures uniques.
+	 * @return self
+	 */
+	public function set_theme_options( array $theme_options ): self {
+		$this->theme_options = array_unique( $theme_options );
 		return $this;
 	}
 
 	/**
-	 * Add one or more theme options.
+	 * Add theme options.
 	 *
-	 * @param array|string $themes One or more themes to add.
+	 * @param array $theme_options One or more theme names to add.
 	 * @return self
 	 */
-	public function add_theme_options( $options ): self {
+	public function add_theme_options( array $theme_options ): self {
 
-		// Convert to array if necessary.
-		if ( is_string( $options ) ) {
-			$options = [ $options ];
-		}
+		array_map(
+			function( $theme_option ) {
 
-		// Merge the new value(s).
-		return $this->set_theme_options( array_merge(
-			$this->get_theme_options(),
-			$options
-		) );
-	}
+				// Ignore non-strings for now.
+				if ( ! is_string( $theme_option ) ) {
+					return;
+				}
 
-	/**
-	 * Remove one or more theme options.
-	 *
-	 * @param array|string $themes One or more themes to remove.
-	 * @return self
-	 */
-	public function remove_theme_options( $themes ): self {
-
-		// Convert to array if necessary.
-		if ( is_string( $themes ) ) {
-			$themes = [ $themes ];
-		}
-
-		// Remove as needed.
-		foreach ( $themes as $theme ) {
-			if ( $this->theme_options[ $theme ] ) {
-				unset( $this->theme_options[ $theme ] );
-			}
-		}
-
-		// Sanitize the entire thing.
-		$this->sanitize_theme_options();
-
-		return $this;
-	}
-
-	/**
-	 * Loop through the theme options, ensuring they're sanitizied.
-	 *
-	 * @return self
-	 */
-	public function sanitize_theme_options(): self {
-
-		$this->theme_options = array_unique(
-			array_filter(
-				array_map(
-					function( $theme ) {
-						$theme = (string) $theme;
-						$theme = trim( $theme );
-						$theme = self::camel_case( $theme );
-						return $theme;
-					},
-					$this->theme_options
-				)
-			)
+				$this->add_theme_option( $theme_option );
+			},
+			$theme_options
 		);
+
+		return $this;
+	}
+
+	/**
+	 * Add a theme option.
+	 *
+	 * @param string $theme_option Theme name.
+	 * @return self
+	 */
+	public function add_theme_option( string $theme_option ): self {
+
+		// Ensure it's not already an option.
+		if ( ! $this->is_available_theme( $theme_option ) ) {
+			$this->theme_options[] = $theme_option;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Remove theme options.
+	 *
+	 * @param array $theme_options One or more themes names to remove.
+	 * @return self
+	 */
+	public function remove_theme_options( array $theme_options ): self {
+
+		array_map(
+			function( $theme_option ) {
+
+				// Ignore non-strings for now.
+				if ( ! is_string( $theme_option ) ) {
+					return;
+				}
+
+				$this->remove_theme_option( $theme_option );
+			},
+			$theme_options
+		);
+
+		return $this;
+	}
+
+	/**
+	 * Remove theme option.
+	 *
+	 * @param string $theme_option Theme name.
+	 * @return [type]               [description]
+	 */
+	public function remove_theme_option( string $theme_option ): self {
+
+		// Ensure it's not already an option.
+		if ( $this->is_available_theme( $theme_option ) ) {
+
+			// Loop through options, removing the correct key.
+			$theme_options = $this->get_theme_options();
+			foreach ( $theme_options as $index => $key ) {
+				if ( $key === $theme_option ) {
+					unset( $theme_options[ $index ] );
+					break;
+				}
+			}
+
+			// Reset the array every time.
+			$this->set_theme_options(
+				self::reset_array( $theme_options )
+			);
+		}
 
 		return $this;
 	}
@@ -585,7 +649,7 @@ class Component implements JsonSerializable {
 	 *
 	 * @param callable $callable Callable.
 	 * @param mixed    ...$args  Optional args to pass to the callback.
-	 * @return function
+	 * @return Component
 	 */
 	public function run_callback( callable $callable, ...$args ) {
 		return call_user_func_array( $callable, array_merge( [ &$this ], $args ) );
@@ -672,6 +736,13 @@ class Component implements JsonSerializable {
 	 */
 	public function to_array(): array {
 
+		// Camel case config keys.
+		$this->set_config( $this->camel_case_keys( $this->get_config() ) );
+
+		// Camel case theme options.
+		$this->set_theme_options( $this->camel_case_keys( $this->get_theme_options() ) );
+		$this->set_theme( self::camel_case( $this->get_theme() ) );
+
 		// Add the theme name to the config as Irving core expects.
 		$this->set_config( 'theme_name', $this->get_theme() );
 		$this->set_config( 'theme_options', $this->get_theme_options() );
@@ -679,7 +750,7 @@ class Component implements JsonSerializable {
 		return [
 			'name'            => $this->get_name(),
 			'config'          => ( object ) $this->camel_case_keys( $this->get_config() ),
-			'children'        => $this->sanitize_children( $this->get_children() ),
+			'children'        => $this->get_children(),
 		];
 	}
 }
