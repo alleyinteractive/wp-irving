@@ -172,4 +172,54 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$this->assertEquals( $expected, $hydrated, 'Template hydration is not using context.' );
 	}
+
+	/**
+	 * Test template hydration with included template parts.
+	 */
+	function test_templates_hydrate_partials() {
+		$template = [
+			[ 'name' => 'example/component' ],
+			[ 'name' => 'template-parts/example' ]
+		];
+
+		$hydrated = Templates\hydrate_components( $template );
+
+		$expected = [
+			[
+				'name'                       => 'example/component',
+				'config'                     => (object) [
+					'themeName'                  => 'default',
+					'themeOptions'               => [ 'default' ],
+				],
+				'children'                   => [],
+			],
+			[
+				'name'                       => 'example/component1',
+				'config'                     => (object) [
+					'themeName'                  => 'default',
+					'themeOptions'               => [ 'default' ],
+				],
+				'children'                   => [],
+			],
+			[
+				'name'                       => 'example/component2',
+				'config'                     => (object) [
+					'themeName'                  => 'default',
+					'themeOptions'               => [ 'default' ],
+				],
+				'children'                   => [
+					[
+						'name'                       => 'example/component3',
+						'config'                     => (object) [
+							'themeName'                  => 'default',
+							'themeOptions'               => [ 'default' ],
+						],
+						'children'                   => [],
+					]
+				],
+			]
+		];
+
+		$this->assertEquals( $expected, $hydrated, 'Template partial not hydrated correctly.' );
+	}
 }

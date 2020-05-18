@@ -248,7 +248,7 @@ function locate_template( array $templates ): string {
  * Return the full path to a template part file.
  *
  * @param string $template Relative path and/or name of the template part.
- * @return string The path to the found template part.
+ * @return string|false The path to the found template part. False if not.
  */
 function locate_template_part( string $template ): string {
 
@@ -282,7 +282,7 @@ function locate_template_part( string $template ): string {
 		}
 	}
 
-	return '';
+	return false;
 }
 
 /**
@@ -330,13 +330,27 @@ function convert_blocks_to_components( array $blocks ): array {
  */
 function hydrate_components( array $components ) {
 
-	return array_map( function ( $component ) {
+	$hydrated = [];
+
+	foreach ( $components as $component ) {
 		// Create Object Instance to hydrate initial config values.
 		$component = setup_component( $component );
 
 		// Bail early if this isn't a WP_Irving\Component.
 		if ( ! $component instanceof Component ) {
-			return false;
+			break;
+		}
+
+		$template_data = hydrate_template_parts( $component );
+
+		// If the component is converted to template data,
+		// add hydrated components to the array and move on.
+		if ( ! empty( $template_data ) ) {
+			array_push( $hydrated, ...$template_data );
+
+			// A little cleanup.
+			unset( $template_data );
+			break;
 		}
 
 		// Set up config from context.
@@ -356,9 +370,10 @@ function hydrate_components( array $components ) {
 		// Reset context to where it was before hydration.
 		get_template_context()->reset();
 
-		return $component->jsonSerialize();
+		$hydrated[] = $component->jsonSerialize();
+	};
 
-	}, $components );
+	return $hydrated;
 }
 
 /**
@@ -452,27 +467,23 @@ function parse_config_from_registry( array $component ) {
  * @param array $component Component.
  * @return array
  */
-function handle_template_parts( $component ) {
+function hydrate_template_parts( $component ) {
 
 	// Check if this is a template part.
-	if ( 'template-parts/' !== $component->get_namespace() ) {
-		return $component;
+	if ( 'template-parts' !== $component->get_namespace() ) {
+		return false;
 	}
 
-	$template_part_name = str_replace( $component->get_namespace(), '', $component->get_name() );
+	$template_part_name = substr( $component->get_name(), strpos( $component->get_name(), "/" ) + 1 );
 
 	$template = locate_template_part( $template_part_name );
 
-	$template_data = prepare_data_from_template( $template );
-
-	if ( isset( $template_data['name'] ) ) {
-		$template_data = [ $template_data ];
+	// Bail early if no template is found.
+	if ( ! $template ) {
+		return false;
 	}
 
-	$component->set_name( 'irving/passthrough' );
-	$component->set_children( $template_data );
-
-	return $component;
+	return hydrate_components( prepare_data_from_template( $template ) );
 }
 
 /**
