@@ -1,0 +1,15 @@
+{
+	"name": "site/bloginfo",
+	"category": "Site",
+	"description": "Easily call the bloginfo() method.",
+	"config": {
+		"show": {
+			"type": "string",
+			"default": "name"
+		},
+		"content": {
+			"type": "string",
+			"default": ""
+		}
+	}
+}
