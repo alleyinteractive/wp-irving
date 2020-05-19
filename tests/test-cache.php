@@ -68,14 +68,14 @@ class Cache_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			self::$cache->get_post_purge_urls( $current_post->ID ),
 			[
-				'http://example.org/2020/01/01/' . $current_post->post_title . '/',
-				'http://example.org/',
-				'http://example.org/category/uncategorized' . '/',
-				'http://example.org/category/uncategorized/feed/',
-				'http://example.org/tag/' . $current_term->slug . '/',
-				'http://example.org/tag/' . $current_term->slug . '/feed/',
-				'http://example.org/author/' . $current_user->data->user_login . '/',
-				'http://example.org/author/' . $current_user->data->user_login . '/feed/',
+				'http://'. WP_TESTS_DOMAIN . '/2020/01/01/' . $current_post->post_title . '/',
+				'http://'. WP_TESTS_DOMAIN . '/',
+				'http://'. WP_TESTS_DOMAIN . '/category/uncategorized' . '/',
+				'http://'. WP_TESTS_DOMAIN . '/category/uncategorized/feed/',
+				'http://'. WP_TESTS_DOMAIN . '/tag/' . $current_term->slug . '/',
+				'http://'. WP_TESTS_DOMAIN . '/tag/' . $current_term->slug . '/feed/',
+				'http://'. WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/',
+				'http://'. WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/feed/',
 			]
 		);
 	}
@@ -94,8 +94,8 @@ class Cache_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			self::$cache->get_term_purge_urls( $current_term->term_id ),
 			[
-				'http://example.org/category/' . $current_term->slug . '/',
-				'http://example.org/category/' . $current_term->slug . '/feed/',
+				'http://'. WP_TESTS_DOMAIN . '/category/' . $current_term->slug . '/',
+				'http://'. WP_TESTS_DOMAIN . '/category/' . $current_term->slug . '/feed/',
 			]
 		);
 	}
@@ -113,8 +113,8 @@ class Cache_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			self::$cache->get_user_purge_urls( $current_user ),
 			[
-				'http://example.org/author/' . $current_user->data->user_login . '/',
-				'http://example.org/author/' . $current_user->data->user_login . '/feed/',
+				'http://'. WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/',
+				'http://'. WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/feed/',
 			]
 		);
 	}

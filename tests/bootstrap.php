@@ -29,6 +29,8 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
+	update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
+
 	require_once dirname( __DIR__ ) . '/wp-irving.php';
 
 	/**
