@@ -56,6 +56,7 @@ require_once WP_IRVING_PATH . '/inc/redirects.php';
 require_once WP_IRVING_PATH . '/inc/rewrites.php';
 
 // Template loading.
+require_once WP_IRVING_PATH . '/inc/class-context-store.php';
 require_once WP_IRVING_PATH . '/inc/templates.php';
 
 // Debugging helpers.

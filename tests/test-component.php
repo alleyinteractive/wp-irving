@@ -9,6 +9,8 @@ use WP_Irving\Component;
 
 /**
  * Tests for the component class.
+ *
+ * @group component
  */
 class Component_Tests extends WP_UnitTestCase {
 
@@ -472,7 +474,6 @@ class Component_Tests extends WP_UnitTestCase {
 	public function test_get_theme_options() {
 		$this->assertEquals(
 			[
-				'default',
 				'primary',
 				'secondary'
 			],
@@ -488,7 +489,6 @@ class Component_Tests extends WP_UnitTestCase {
 		// Get a copy of this testing component.
 		$component = $this->get_component( 'theme-options' );
 
-		$this->assertEquals( true, $component->is_available_theme( 'default' ) );
 		$this->assertEquals( true, $component->is_available_theme( 'primary' ) );
 		$this->assertEquals( true, $component->is_available_theme( 'secondary' ) );
 		$this->assertEquals( false, $component->is_available_theme( 'large' ) );
@@ -501,15 +501,6 @@ class Component_Tests extends WP_UnitTestCase {
 
 		// Get a copy of this testing component.
 		$component = $this->get_component( 'theme-options' );
-
-		$this->assertEquals(
-			[
-				'default',
-				'primary',
-				'secondary'
-			],
-			$component->get_theme_options()
-		);
 
 		$component->set_theme_options( [ 'one', 'two' ] );
 
@@ -532,28 +523,30 @@ class Component_Tests extends WP_UnitTestCase {
 
 		// Test adding one.
 		$component->add_theme_options( [ 'large' ] );
+
 		$this->assertEquals(
 			[
-				'default',
 				'primary',
 				'secondary',
 				'large',
 			],
-			$component->get_theme_options()
+			$component->get_theme_options(),
+			'Could not confirm adding single theme option.'
 		);
 
 		// Test adding two.
 		$component->add_theme_options( [ 'extra-large', 'double-extra-large' ] );
+
 		$this->assertEquals(
 			[
-				'default',
 				'primary',
 				'secondary',
 				'large',
 				'extra-large',
 				'double-extra-large',
 			],
-			$component->get_theme_options()
+			$component->get_theme_options(),
+			'Could not confirm adding multiple theme options.'
 		);
 	}
 
@@ -566,9 +559,9 @@ class Component_Tests extends WP_UnitTestCase {
 		$component = $this->get_component( 'theme-options' );
 
 		$component->add_theme_option( 'large' );
+
 		$this->assertEquals(
 			[
-				'default',
 				'primary',
 				'secondary',
 				'large',
@@ -576,77 +569,48 @@ class Component_Tests extends WP_UnitTestCase {
 			$component->get_theme_options()
 		);
 
+		// Ensure no duplicates.
 		$component->add_theme_option( 'large' );
-		$component->add_theme_option( 'extra-large' );
+
 		$this->assertEquals(
 			[
-				'default',
 				'primary',
 				'secondary',
 				'large',
-				'extra-large',
 			],
-			$component->get_theme_options()
+			$component->get_theme_options(),
+			'Could not ensure duplicate values are not added.'
 		);
 	}
 
 	/**
 	 * Tests for the `remove_theme_options()` method.
+	 *
+	 * @dataProvider get_theme_options_to_remove
 	 */
-	public function test_remove_theme_options() {
+	public function test_remove_theme_options( array $options, array $expected, string $message = '' ) {
 
 		// Get a copy of this testing component.
 		$component = $this->get_component( 'theme-options' );
 
-		// Test starting data.
-		$this->assertEquals(
-			[
-				'default',
-				'primary',
-				'secondary',
-			],
-			$component->get_theme_options()
-		);
+		$component->remove_theme_options( $options );
 
-		// Add themes for testing.
-		$component->add_theme_options( [ 'large', 'extra-large', 'double-extra-large' ] );
+		$this->assertEquals( $expected, $component->get_theme_options(), $message );
+	}
 
-		// Test added themes.
-		$this->assertEquals(
+	public function get_theme_options_to_remove() {
+		return [
 			[
-				'default',
-				'primary',
-				'secondary',
-				'large',
-				'extra-large',
-				'double-extra-large',
+				[ 'primary' ],
+				[ 'secondary' ],
+				'Could not confirm single options removed.'
 			],
-			$component->get_theme_options()
-		);
-
-		// Test removing one.
-		$component->remove_theme_options( [ 'primary' ] );
-		$this->assertEquals(
 			[
-				'default',
-				'secondary',
-				'large',
-				'extra-large',
-				'double-extra-large',
+				[ 'primary', 'secondary' ],
+				[],
+				'Could not confirm multiple options removed.'
 			],
-			$component->get_theme_options()
-		);
-
-		// Test removing two.
-		$component->remove_theme_options( [ 'extra-large', 'double-extra-large' ] );
-		$this->assertEquals(
-			[
-				'default',
-				'secondary',
-				'large',
-			],
-			$component->get_theme_options()
-		);
+		];
 	}
 
 	/**
@@ -657,64 +621,15 @@ class Component_Tests extends WP_UnitTestCase {
 		// Get a copy of this testing component.
 		$component = $this->get_component( 'theme-options' );
 
-		// Test starting data.
-		$this->assertEquals(
-			[
-				'default',
-				'primary',
-				'secondary',
-			],
-			$component->get_theme_options()
-		);
-
 		// Remove a theme.
-		$component->remove_theme_option( 'default' );
+		$component->remove_theme_option( 'secondary' );
+
 		$this->assertEquals(
 			[
 				'primary',
-				'secondary',
 			],
 			$component->get_theme_options()
 		);
-
-		// Remove an already removed theme.
-		$component->remove_theme_option( 'default' );
-		$this->assertEquals(
-			[
-				'primary',
-				'secondary',
-			],
-			$component->get_theme_options()
-		);
-
-	}
-
-	/**
-	 * Tests for the `get_context_provider()` method.
-	 */
-	public function test_get_context_provider() {
-		// Tbd.
-	}
-
-	/**
-	 * Tests for the `set_context_provider()` method.
-	 */
-	public function test_set_context_provider() {
-		// Tbd.
-	}
-
-	/**
-	 * Tests for the `get_context_consumer()` method.
-	 */
-	public function test_get_context_consumer() {
-		// Tbd.
-	}
-
-	/**
-	 * Tests for the `set_context_consumer()` method.
-	 */
-	public function test_set_context_consumer() {
-		// Tbd.
 	}
 
 	/**
@@ -739,6 +654,8 @@ class Component_Tests extends WP_UnitTestCase {
 
 	/**
 	 * Tests for the `camel_case_keys()` method.
+	 *
+	 * @group camel
 	 */
 	public function test_camel_case_keys() {
 
@@ -748,8 +665,8 @@ class Component_Tests extends WP_UnitTestCase {
 			'Foo Bar'     => '',
 			'--foo-bar--' => '',
 			'__FOO_BAR__' => [
-				'foo_bar' => '',
-				'Foo Bar' => '',
+				'foo_bar'     => '',
+				'Foo Bar'     => '',
 				'--foo-bar--' => '',
 				'__FOO_BAR__' => '',
 			],
@@ -768,13 +685,15 @@ class Component_Tests extends WP_UnitTestCase {
 		];
 
 		// Run the method.
-		$camel_case_keys = ( new Component() )->camel_case_keys( $snake_case_keys );
+		$camel_case_keys = Component::camel_case_keys( $snake_case_keys );
 
 		$this->assertEquals( $expected_camel_case_keys, $camel_case_keys, 'Top level keys don\'t match.' );
 	}
 
 	/**
-	 * Tests for the `camel_case()` memthod.
+	 * Tests for the `camel_case()` method.
+	 *
+	 * @group camel
 	 */
 	public function test_camel_case() {
 		$this->assertEquals( Component::camel_case( 'foo_bar' ), 'fooBar' );
@@ -785,63 +704,71 @@ class Component_Tests extends WP_UnitTestCase {
 
 	/**
 	 * Tests for the `jsonSerialize()` method, which only calls `to_array()`.
+	 *
+	 * @dataProvider get_components_to_serialize
+	 * @covers Components::to_array
+	 *
+	 * @param string $slug     Component slug to load.
+	 * @param array  $expected Expected shape of serialized data.
+	 * @param string $message  Optional. Error message on failure. Default ''.
 	 */
-	public function test_jsonSerialize_and_to_array() {
+	public function test_json_serialize( string $slug, array $expected, string $message = '' ) {
 
 		$this->assertEquals(
-			[
-				'name'            => 'irving/example',
-				'config'          => (object) [
-					'align'         => 'left',
-					'theme_name'    => 'default',
-					'theme_options' => [
-						'default',
-					],
-					'width'         => 'wide',
-				],
-				'children'        => [],
-				'contextConsumer' => [],
-				'contextProvider' => [],
-			],
-			$this->get_component( 'basic-example' )->to_array()
+			$expected,
+			$this->get_component( $slug )->jsonSerialize(),
+			$message
 		);
+	}
 
-		$this->assertEquals(
+	public function get_components_to_serialize() {
+		return [
 			[
-				'name'            => 'parent-example',
-				'config'          => (object) [
-					'theme_name'    => 'default',
-					'theme_options' => [
-						'default',
+				'basic-example',
+				[
+					'name'          => 'irving/example',
+					'config'        => (object) [
+						'align'        => 'left',
+						'themeName'    => 'default',
+						'themeOptions' => [
+							'default',
+						],
+						'width'        => 'wide',
 					],
-				],
-				'children'        => [
-					new Component( 'parent-child-001' ),
-					new Component( 'parent-child-002' ),
-					new Component( 'parent-child-003' ),
-				],
-				'contextConsumer' => [],
-				'contextProvider' => [],
+					'children'      => [],
+				]
 			],
-			$this->get_component( 'children-test-001' )->to_array()
-		);
-
-		$this->assertEquals(
 			[
-				'name'            => 'example',
-				'config'          => (object) [
-					'theme_name' => 'primary',
-					'theme_options' => [
-						'default',
-						'primary',
-						'secondary',
+				'children-test-001',
+				[
+					'name'          => 'parent-example',
+					'config'        => (object) [
+						'themeName'    => 'default',
+						'themeOptions' => [
+							'default',
+						],
 					],
-				],
-				'children'        => [],
-				'contextConsumer' => [],
-				'contextProvider' => [],
+					'children'      => [
+						new Component( 'parent-child-001' ),
+						new Component( 'parent-child-002' ),
+						new Component( 'parent-child-003' ),
+					],
+				]
 			],
-			$this->get_component( 'theme-options' )->to_array()
-		);
+			[
+				'theme-options',
+				[
+					'name'          => 'example',
+					'config'        => (object) [
+						'themeName'    => 'primary',
+						'themeOptions' => [
+							'primary',
+							'secondary',
+						],
+					],
+					'children'      => [],
+				]
+			]
+		];
 	}
 }
