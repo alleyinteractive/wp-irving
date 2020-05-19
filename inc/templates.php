@@ -323,7 +323,7 @@ function convert_blocks_to_components( array $blocks ): array {
 }
 
 /**
- * Hydrate components
+ * Hydrate components.
  *
  * @param array $components A list of components from a template.
  * @return array A hydrated array of components prepared for a REST response.

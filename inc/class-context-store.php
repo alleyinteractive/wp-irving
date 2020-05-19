@@ -26,7 +26,7 @@ class Context_Store {
 	 *
 	 * @return array The current context array.
 	 */
-	public function get_context() {
+	public function get_context(): array {
 		return array_values( $this->context )[0] ?? [];
 	}
 
@@ -34,10 +34,10 @@ class Context_Store {
 	 * Get the value of a context key.
 	 *
 	 * @param string $key The context key to retrieve.
-	 * @return mixed The value being returned
+	 * @return mixed The value being returned. Null if not found.
 	 */
 	public function get( string $key ) {
-		return isset( $this->get_context()[ $key ] ) ? $this->get_context()[ $key ] : null;
+		return $this->get_context()[ $key ] ?? null;
 	}
 
 	/**
@@ -45,7 +45,7 @@ class Context_Store {
 	 *
 	 * @return true
 	 */
-	public function reset() {
+	public function reset(): bool {
 		array_shift( $this->context );
 
 		return true;
@@ -57,7 +57,7 @@ class Context_Store {
 	 * @param array $context A map of context keys and values to set.
 	 * @return bool
 	 */
-	public function set( array $context ) {
+	public function set( array $context ): bool {
 		array_unshift( $this->context, array_merge( $this->get_context(), $context ) );
 
 		return true;

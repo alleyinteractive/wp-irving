@@ -17,6 +17,7 @@ use WP_UnitTestCase;
 class Test_Context_Store extends WP_UnitTestCase {
 
 	/**
+	 * A saved instance of Context_Store object for tests.
 	 *
 	 * @var WP_Irving\Context_Store
 	 */
@@ -64,7 +65,7 @@ class Test_Context_Store extends WP_UnitTestCase {
 		$this->assertEquals( $value, $this->get_context()->get( 'test/context' ), "Could not confirm context was updated for type ${type}" );
 
 		// Clean up.
-		$this->get_context()->reset( 'test/context' );
+		$this->get_context()->reset();
 	}
 
 	/**
