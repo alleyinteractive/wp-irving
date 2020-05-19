@@ -72,13 +72,15 @@ class Test_Templates extends WP_UnitTestCase {
 	 * @group context
 	 */
 	function test_template_default_context() {
-		$post = $this->factory()->post->create();
-		$this->go_to( get_the_permalink( $post ) );
+		// Override the global post object for this test.
+		global $post;
+
+		$post = $this->factory()->post->create_and_get();
 
 		$context = Templates\get_template_context();
 
 		// Test initial context.
-		$this->assertEquals( $post, $context->get( 'irving/post' ), 'Default post context not set.' );
+		$this->assertEquals( $post->ID, $context->get( 'irving/post' ), 'Default post context not set.' );
 	}
 
 	/**
