@@ -461,7 +461,6 @@ function parse_config_from_registry( array $component ) {
 	return $component;
 }
 
-
 /**
  * Pull in template parts.
  *
@@ -506,4 +505,3 @@ function get_template_context() {
 
 	return $context;
 }
-
