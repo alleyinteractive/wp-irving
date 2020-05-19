@@ -587,7 +587,6 @@ class Component_Tests extends WP_UnitTestCase {
 	 * Tests for the `remove_theme_options()` method.
 	 *
 	 * @dataProvider get_theme_options_to_remove
-	 * @group test
 	 */
 	public function test_remove_theme_options( array $options, array $expected, string $message = '' ) {
 

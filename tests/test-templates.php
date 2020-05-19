@@ -180,6 +180,59 @@ class Test_Templates extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests that context values are passed to non-registered components.
+	 */
+	function test_templates_context_without_registration() {
+		$template = [
+			[
+				'name'            => 'provider',
+				'config'          => [
+					'test_provided'  => 20,
+				],
+				'provides_context' => [
+					'test/context'   => 'test_provided'
+				],
+				'children'        => [
+					[
+						'name'          => 'consumer',
+						'use_context'   => [
+							'test/context' => 'test_used'
+						]
+					],
+				],
+			],
+		];
+
+		$expected = [
+			[
+				'name'            => 'provider',
+				'config'          => (object) [
+					'testProvided'   => 20,
+					'themeName'      => 'default',
+					'themeOptions'   => [ 'default' ],
+				],
+				'children'        => [
+					[
+						'name'          => 'consumer',
+						'config'        => (object) [
+							'testUsed'     => 20,
+							'themeName'    => 'default',
+							'themeOptions' => [ 'default' ],
+						],
+						'children'      => [],
+					],
+				],
+			],
+		];
+
+		$this->assertEquals(
+			$expected,
+			Templates\hydrate_components( $template ),
+			'Could not get context in non-registered components.'
+		);
+	}
+
+	/**
 	 * Test template hydration with included template parts.
 	 */
 	function test_templates_hydrate_partials() {
