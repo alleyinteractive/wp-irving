@@ -1,0 +1,10 @@
+{
+	"name": "site/menu",
+	"description": "WordPress menu.",
+	"config": {
+		"location": {
+			"type": "string",
+			"required": true
+		}
+	}
+}

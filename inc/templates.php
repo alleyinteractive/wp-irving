@@ -345,7 +345,7 @@ function traverse_components( array $components ): array {
 		$component = handle_component_callbacks( $component );
 
 		// Recursively loop though children.
-		if ( ! empty( $component->get_children() ) ) {
+		if ( ! is_string( $component ) && ! empty( $component->get_children() ) ) {
 			$component->set_children( traverse_components( $component->get_children() ) );
 		}
 	}
@@ -479,7 +479,7 @@ function handle_data_provider( $component ) {
  * @param array $component Component.
  * @return array
  */
-function handle_component_config_callbacks( $component ): Component {
+function handle_component_config_callbacks( $component ) {
 
 	// Ensure component config exists.
 	if ( empty( $component->get_config() ) ) {
@@ -487,6 +487,10 @@ function handle_component_config_callbacks( $component ): Component {
 	}
 
 	foreach ( $component->get_config() as $key => $value ) {
+
+		if ( ! is_string( $value ) ) {
+			continue;
+		}
 
 		// For each key, check if the value has a handlebars syntax.
 		preg_match_all( '/{{(.+)}}/', $value, $matches );
@@ -518,7 +522,7 @@ function handle_component_config_callbacks( $component ): Component {
  * @param Component $component Component.
  * @return array
  */
-function handle_component_callbacks( Component $component ): Component {
+function handle_component_callbacks( Component $component ) {
 
 	// Check the component registry.
 	$registered_component = \WP_Irving\get_registry()->get_registered_component( $component->get_name() );

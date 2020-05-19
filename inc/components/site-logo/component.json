@@ -1,0 +1,5 @@
+{
+	"name": "site/logo",
+	"category": "Site",
+	"description": "Get the site logo, or fallback to the site name."
+}
