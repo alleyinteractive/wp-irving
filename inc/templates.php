@@ -391,7 +391,7 @@ function setup_component( $component ) {
 	// Convert strings to text components.
 	if ( is_string( $component ) ) {
 		$component = [
-			'name' => 'text',
+			'name' => 'irving/text',
 			'config' => [
 				'content' => $component,
 			],
@@ -434,7 +434,7 @@ function parse_config_from_registry( array $component ) {
 		'text'   => 'is_string',
 	];
 
-	foreach ( $registered['config'] as $key => $atts ) {
+	foreach ( $registered['config'] ?? [] as $key => $atts ) {
 		if (
 			isset( $component['config'][ $key ] ) &&
 			( call_user_func( $type_callbacks[ $atts['type'] ], $component['config'][ $key ] ) )
@@ -483,7 +483,15 @@ function hydrate_template_parts( $component ) {
 		return false;
 	}
 
-	return hydrate_components( prepare_data_from_template( $template ) );
+	$template_data = prepare_data_from_template( $template );
+
+	// Handle template parts with only one component rather than an array of
+	// components.
+	if ( isset( $template_data['name'] ) ) {
+		$template_data = [ $template_data ];
+	}
+
+	return hydrate_components( $template_data );
 }
 
 /**
