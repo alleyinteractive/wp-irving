@@ -32,7 +32,7 @@ class Registry {
 	 * Get a single registered component by name.
 	 *
 	 * @param string $name Component name.
-	 * @return array|null The registsered component, or null.
+	 * @return array|null The registered component, or null.
 	 */
 	public function get_registered_component( string $name ): ?array {
 		return $this->components[ $name ] ?? null;
@@ -46,6 +46,21 @@ class Registry {
 	 */
 	public function register_component( string $name, array $args = [] ) {
 		$this->components[ $name ] = $args;
+	}
+
+	/**
+	 * Remove a component from the registry.
+	 *
+	 * @param string $name The name of the component to remove.
+	 * @return bool Returns true on success, false on failure.
+	 */
+	public function unregister_component( string $name ) {
+		if ( ! isset( $this->components[ $name ] ) ) {
+			return false;
+		}
+
+		unset( $this->components[ $name ] );
+		return true;
 	}
 
 	/**
