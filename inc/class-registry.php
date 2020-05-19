@@ -49,6 +49,21 @@ class Registry {
 	}
 
 	/**
+	 * Remove a component from the registry.
+	 *
+	 * @param string $name The name of the component to remove.
+	 * @return bool Returns true on success, false on failure.
+	 */
+	public function unregister_component( string $name ) {
+		if ( ! isset( $this->components[ $name ] ) ) {
+			return false;
+		}
+
+		unset( $this->components[ $name ] );
+		return true;
+	}
+
+	/**
 	 * Register a component using a json config.
 	 *
 	 * @param string $config_path JSON config file.

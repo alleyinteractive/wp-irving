@@ -172,6 +172,10 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 		];
 
+		// Clean up.
+		get_registry()->unregister_component( 'provider' );
+		get_registry()->unregister_component( 'consumer' );
+
 		$this->assertEquals( $expected, $hydrated, 'Template hydration is not using context.' );
 	}
 
