@@ -75,7 +75,6 @@ class Component implements JsonSerializable {
 	 */
 	private $use_context = [];
 
-
 	/**
 	 * Calculated context values.
 	 *
@@ -563,7 +562,7 @@ class Component implements JsonSerializable {
 	 *
 	 * @return array
 	 */
-	public function get_context() {
+	public function get_context(): array {
 		return $this->context;
 	}
 
@@ -573,7 +572,7 @@ class Component implements JsonSerializable {
 	 * @param Context_Store $store A context store instance.
 	 * @return self
 	 */
-	public function use_context( Context_Store $store ) {
+	public function use_context( Context_Store $store ): self {
 
 		foreach ( $this->get_use_context() as $key => $config ) {
 			// Store context values internally so they're available in callbacks.
@@ -598,7 +597,7 @@ class Component implements JsonSerializable {
 	 * @param Context_Store $store A context store instance.
 	 * @return self
 	 */
-	public function provide_context( Context_Store $store ) {
+	public function provide_context( Context_Store $store ): self {
 		$context = [];
 
 		foreach ( $this->get_provides_context() as $key => $config ) {
@@ -629,7 +628,8 @@ class Component implements JsonSerializable {
 	/**
 	 * Return the value of the callback property.
 	 *
-	 * @return string
+	 * @return callable|null A callable in either a string or array syntax.
+	 *                       Returns null if not set.
 	 */
 	public function get_callback() {
 		return $this->callback;
@@ -640,7 +640,7 @@ class Component implements JsonSerializable {
 	 *
 	 * @return self
 	 */
-	public function do_callback() {
+	public function do_callback(): self {
 		if ( is_callable( $this->get_callback() ) ) {
 			$this->callback( $this->get_callback() );
 		}
@@ -666,7 +666,7 @@ class Component implements JsonSerializable {
 	 * @param array $array Array to convert.
 	 * @return array Updated array with camel-cased keys.
 	 */
-	public static function camel_case_keys( $array ) {
+	public static function camel_case_keys( $array ): array {
 
 		// Setup for recursion.
 		$camel_case_array = [];
