@@ -66,11 +66,6 @@ class Yoast {
 			}
 		}
 
-		// print_r($helmet); die();
-
-
-		// print_r($head_tags); die();
-
 		return $helmet;
 	}
 

@@ -51,11 +51,11 @@ function load_template( array $data, WP_Query $query, string $context ): array {
 /**
  * Manage the template head by automatically inserting Helmet tags.
  *
- * @param array           $data    Data object to be hydrated by templates.
- * @param WP_Query        $query   The current WP_Query object.
- * @param string          $context The context for this request.
- * @param string          $path    The path for this request.
- * @param WP_REST_Request $request WP_REST_Request object.
+ * @param array            $data    Data object to be hydrated by templates.
+ * @param \WP_Query        $query   The current WP_Query object.
+ * @param string           $context The context for this request.
+ * @param string           $path    The path for this request.
+ * @param \WP_REST_Request $request WP_REST_Request object.
  * @return array The updated endpoint data.
  */
 function setup_helmet(
@@ -71,14 +71,16 @@ function setup_helmet(
 		array_unshift(
 			$data['defaults'],
 			/**
-			 * @param Component       $helmet  Helmet tag used in the
-			 *                                 `defaults` array.
-			 * @param array           $data    Data object to be hydrated by
-			 *                                 templates.
-			 * @param WP_Query        $query   The current WP_Query object.
-			 * @param string          $context The context for this request.
-			 * @param string          $path    The path for this request.
-			 * @param WP_REST_Request $request WP_REST_Request object.
+			 * Filter for the helmet component in the `defaults` array.
+			 *
+			 * @param Component        $helmet  Helmet tag used in the
+			 *                                  `defaults` array.
+			 * @param array            $data    Data object to be hydrated by
+			 *                                  templates.
+			 * @param \WP_Query        $query   The current WP_Query object.
+			 * @param string           $context The context for this request.
+			 * @param string           $path    The path for this request.
+			 * @param \WP_REST_Request $request WP_REST_Request object.
 			 */
 			apply_filters(
 				'wp_irving_default_helmet_component',
@@ -100,13 +102,15 @@ function setup_helmet(
 	array_unshift(
 		$data['page'],
 		/**
-		 * @param Component       $helmet  Helmet tag used in the `page` array.
-		 * @param array           $data    Data object to be hydrated by
-		 *                                 templates.
-		 * @param WP_Query        $query   The current WP_Query object.
-		 * @param string          $context The context for this request.
-		 * @param string          $path    The path for this request.
-		 * @param WP_REST_Request $request WP_REST_Request object.
+		 * Filter for the helmet component in the `page` array.
+		 *
+		 * @param Component        $helmet  Helmet tag used in the `page` array.
+		 * @param array            $data    Data object to be hydrated by
+		 *                                  templates.
+		 * @param \WP_Query        $query   The current WP_Query object.
+		 * @param string           $context The context for this request.
+		 * @param string           $path    The path for this request.
+		 * @param \WP_REST_Request $request WP_REST_Request object.
 		 */
 		apply_filters(
 			'wp_irving_page_helmet_component',
