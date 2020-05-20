@@ -13,7 +13,6 @@ use WP_Irving\Component;
 
 // Bootstrap filters.
 add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 3 );
-add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\setup_helmet', 11, 5 );
 
 /**
  * Shallow template loader using core's template hierarchy.
@@ -26,6 +25,10 @@ add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\setup_helmet', 11, 
  * @return array A hydrated data object.
  */
 function load_template( array $data, WP_Query $query, string $context ): array {
+
+	// Manage helmet when using template functionality.
+	add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\setup_helmet', 11, 5 );
+
 	$template = get_template_path( $query );
 
 	if ( $template ) {
