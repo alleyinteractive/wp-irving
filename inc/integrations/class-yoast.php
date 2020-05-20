@@ -77,6 +77,7 @@ class Yoast {
 	public static function parse_head_markup(): array {
 
 		// phpcs:disable WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		// Capture the output of wpseo_head for parsing.
 		ob_start();
@@ -112,6 +113,7 @@ class Yoast {
 		}
 
 		// phpcs:enable WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		return $parsed_markup;
 	}
 
