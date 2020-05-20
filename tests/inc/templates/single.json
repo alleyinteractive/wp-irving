@@ -1,0 +1,53 @@
+{
+	"page": [
+		{
+			"name": "layouts/body",
+			"config": {},
+			"children": [
+				{
+					"name": "layouts/container",
+					"theme": "full-width",
+					"children": [
+						{
+							"name": "layouts/stack",
+							"children": [
+								{
+									"name": "template-parts/post-title",
+									"config": {
+										"tag": "h1"
+									}
+								},
+								{
+									"name": "elements/heading",
+									"callback": "set_post_title",
+									"config": {
+										"tag": "h1"
+									}
+								},
+								{
+									"name": "layouts/sidebar",
+									"theme": "two-thirds",
+									"children": [
+										{
+											"name": "template-parts/post-content"
+										}
+									],
+									"children_groups": {
+										"sidebar": [
+											{
+												"name": "elements/html",
+												"config": {
+													"content": "Sidebar"
+												}
+											}
+										]
+									}
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}

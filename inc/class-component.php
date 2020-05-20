@@ -7,15 +7,17 @@
 
 namespace WP_Irving;
 
+use JsonSerializable;
+
 /**
- * Component.
+ * An object representing a component.
  */
-class Component implements \JsonSerializable {
+class Component implements JsonSerializable {
 
 	/**
 	 * Name.
 	 *
-	 * Only supports a single `/` as a delimter between the namespace and
+	 * Only supports a single `/` as a delimiter between the namespace and
 	 * component name.
 	 *
 	 * @var string
@@ -50,89 +52,84 @@ class Component implements \JsonSerializable {
 	 *
 	 * @var string
 	 */
-	protected $theme = 'default';
+	protected $theme = '';
 
 	/**
 	 * Theme options.
 	 *
 	 * @var array
 	 */
-	protected $theme_options = [ 'default' ];
+	protected $theme_options = [];
 
 	/**
-	 * Context provider.
-	 *
-	 * @todo Implement this.
+	 * Map of provided context.
 	 *
 	 * @var array
 	 */
-	protected $context_provider = [];
+	private $provides_context = [];
 
 	/**
-	 * Context consumer.
-	 *
-	 * @todo Implement this.
+	 * Map of consumed context to config keys.
 	 *
 	 * @var array
 	 */
-	protected $context_consumer = [];
+	private $use_context = [];
+
+	/**
+	 * Calculated context values.
+	 *
+	 * @var array
+	 */
+	private $context = [];
+
+	/**
+	 * Callback function name.
+	 *
+	 * @var callable
+	 */
+	private $callback;
 
 	/**
 	 * Component constructor.
 	 *
-	 * @param null|string $name Component name.
-	 * @param null|array  $args Possible constructor args.
+	 * @param string $name Component name.
+	 * @param array  $args Possible constructor args.
 	 */
-	public function __construct( ?string $name = null, array $args = [] ) {
+	public function __construct( string $name, array $args = [] ) {
 
 		// Set name.
-		if ( ! is_null( $name ) ) {
-			$this->set_name( $name );
-		}
+		$this->set_name( $name );
 
-		// Validate our args.
+		// Set default args.
 		$args = wp_parse_args(
 			$args,
 			[
-				'name'             => null,
-				'config'           => null,
-				'children'         => null,
-				'theme'            => null,
-				'theme_options'    => null,
-				'context_provider' => null,
-				'context_consumer' => null,
+				'config'           => [],
+				'children'         => [],
+				'theme'            => 'default',
+				'theme_options'    => [ 'default' ],
+				'provides_context' => [],
+				'use_context'      => [],
+				'callback'         => null,
 			]
 		);
 
-		// Set config.
-		if ( ! is_null( $args['config'] ) ) {
-			$this->set_config( $args['config'] );
-		}
+		// Set up config.
+		$this->set_config( $args['config'] );
 
-		// Set children.
-		if ( ! is_null( $args['children'] ) ) {
-			$this->set_children( $args['children'] );
-		}
+		// Set up children.
+		$this->set_children( $args['children'] );
 
-		// Set theme options.
-		if ( ! is_null( $args['theme_options'] ) ) {
-			$this->add_theme_options( $args['theme_options'] );
-		}
+		// Set up theme values.
+		$this->set_theme_options( $args['theme_options'] );
+		$this->set_theme( $args['theme'] );
 
-		// Set theme.
-		if ( ! is_null( $args['theme'] ) ) {
-			$this->set_theme( $args['theme'] );
-		}
+		// Set up context values.
+		$this->set_provides_context( $args['provides_context'] );
+		$this->set_use_context( $args['use_context'] );
 
-		// Set context provider.
-		if ( ! is_null( $args['context_provider'] ) ) {
-			$this->set_context_provider( $args['context_provider'] );
-		}
-
-		// Set context consumer.
-		if ( ! is_null( $args['context_consumer'] ) ) {
-			$this->set_context_consumer( $args['context_consumer'] );
-		}
+		// Set up callback.
+		$this->set_callback( $args['callback'] );
 	}
 
 	/**
@@ -525,38 +522,129 @@ class Component implements \JsonSerializable {
 	 *
 	 * @return array
 	 */
-	public function get_context_provider(): array {
-		return $this->context_provider;
+	public function get_provides_context(): array {
+		return $this->provides_context;
 	}
 
 	/**
-	 * Set the context provider.
+	 * Set the context providers.
 	 *
-	 * @param array $context_provider Context provider.
+	 * @param array $provides_context Context provider.
 	 * @return self
 	 */
-	public function set_context_provider( array $context_provider ): self {
-		$this->context_provider = $context_provider;
+	public function set_provides_context( array $provides_context ): self {
+		$this->provides_context = $provides_context;
 		return $this;
 	}
 
 	/**
-	 * Get the context consumer.
+	 * Get the use context map.
 	 *
 	 * @return array
 	 */
-	public function get_context_consumer(): array {
-		return $this->context_consumer;
+	public function get_use_context(): array {
+		return $this->use_context;
 	}
 
 	/**
-	 * Set the context consumer.
+	 * Set the use context map.
 	 *
-	 * @param array $context_consumer Context consumer.
+	 * @param array $use_context Context consumer.
 	 * @return self
 	 */
-	public function set_context_consumer( array $context_consumer ): self {
-		$this->context_consumer = $context_consumer;
+	public function set_use_context( array $use_context ): self {
+		$this->use_context = $use_context;
+		return $this;
+	}
+
+	/**
+	 * Returns an array of calculated context values.
+	 *
+	 * @return array
+	 */
+	public function get_context(): array {
+		return $this->context;
+	}
+
+	/**
+	 * Sets up context values from a context store.
+	 *
+	 * @param Context_Store $store A context store instance.
+	 * @return self
+	 */
+	public function use_context( Context_Store $store ): self {
+
+		foreach ( $this->get_use_context() as $key => $config ) {
+			// Store context values internally so they're available in callbacks.
+			$this->context[ $key ] = $store->get( $key );
+
+			// Apply context values to config keys if the context
+			// value is set and the mapped config key exists as is not empty.
+			if (
+				null !== $store->get( $key ) &&
+				empty( $this->get_config_by_key( $key ) )
+			) {
+				$this->set_config_by_key( $config, $store->get( $key ) );
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Passes context values to a context store.
+	 *
+	 * @param Context_Store $store A context store instance.
+	 * @return self
+	 */
+	public function provide_context( Context_Store $store ): self {
+		$context = [];
+
+		foreach ( $this->get_provides_context() as $key => $config ) {
+			$context[ $key ] = $this->get_config_by_key( $config );
+		}
+
+		// Always provide context when called or else
+		// Resetting won't stay in sync.
+		$store->set( $context );
+
+		return $this;
+	}
+
+	/**
+	 * Sets the callback property if passed a callable.
+	 *
+	 * @param string|array $callback A callable function.
+	 * @return self
+	 */
+	private function set_callback( $callback ): self {
+		if ( is_callable( $callback ) ) {
+			$this->callback = $callback;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Return the value of the callback property.
+	 *
+	 * @return callable|null A callable in either a string or array syntax.
+	 *                       Returns null if not set.
+	 */
+	public function get_callback() {
+		return $this->callback;
+	}
+
+	/**
+	 * Execute a hydration callback.
+	 *
+	 * @return self
+	 */
+	public function do_callback(): self {
+		if ( is_callable( $this->get_callback() ) ) {
+			$this->callback( $this->get_callback() );
+		}
+
 		return $this;
 	}
 
@@ -568,7 +656,7 @@ class Component implements \JsonSerializable {
 	 * @param mixed    ...$args  Optional args to pass to the callback.
 	 * @return Component
 	 */
-	public function callback( callable $callable, ...$args ): Component {
+	public function callback( callable $callable, ...$args ) {
 		return call_user_func_array( $callable, array_merge( [ &$this ], $args ) );
 	}
 
@@ -578,7 +666,7 @@ class Component implements \JsonSerializable {
 	 * @param array $array Array to convert.
 	 * @return array Updated array with camel-cased keys.
 	 */
-	public function camel_case_keys( $array ) {
+	public static function camel_case_keys( $array ): array {
 
 		// Setup for recursion.
 		$camel_case_array = [];
@@ -587,7 +675,7 @@ class Component implements \JsonSerializable {
 		foreach ( $array as $key => $value ) {
 
 			if ( is_array( $value ) ) {
-				$value = $this->camel_case_keys( $value );
+				$value = self::camel_case_keys( $value );
 			}
 
 			// Camel case the key.
@@ -611,7 +699,7 @@ class Component implements \JsonSerializable {
 			return $string;
 		}
 
-		// Replaace dashes and spaces with underscores.
+		// Replace dashes and spaces with underscores.
 		$string = str_replace( '-', '_', $string );
 		$string = str_replace( ' ', '_', $string );
 
@@ -652,24 +740,14 @@ class Component implements \JsonSerializable {
 	 * @return array
 	 */
 	public function to_array(): array {
-
-		// Camel case config keys.
-		$this->set_config( $this->camel_case_keys( $this->get_config() ) );
-
-		// Camel case theme options.
-		$this->set_theme_options( $this->camel_case_keys( $this->get_theme_options() ) );
-		$this->set_theme( self::camel_case( $this->get_theme() ) );
-
 		// Add the theme name to the config as Irving core expects.
 		$this->set_config( 'theme_name', $this->get_theme() );
 		$this->set_config( 'theme_options', $this->get_theme_options() );
 
 		return [
 			'name'            => $this->get_name(),
-			'config'          => (object) $this->get_config(),
+			'config'          => (object) $this->camel_case_keys( $this->get_config() ),
 			'children'        => $this->get_children(),
-			'contextConsumer' => $this->get_context_provider(),
-			'contextProvider' => $this->get_context_consumer(),
 		];
 	}
 }

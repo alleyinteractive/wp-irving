@@ -1,0 +1,19 @@
+{
+  "name": "layouts/sidebar",
+  "theme": "two-thirds",
+  "children": [
+    {
+      "name": "template-parts/post-content"
+    }
+  ],
+  "children_groups": {
+    "sidebar": [
+      {
+        "name": "elements/html",
+        "config": {
+          "content": "Sidebar"
+        }
+      }
+    ]
+  }
+}

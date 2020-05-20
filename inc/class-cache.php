@@ -393,6 +393,7 @@ class Cache {
 				'body'    => json_encode( [ 'paths' => self::$purge_queue ] ),
 				'headers' => [
 					'Content-Type' => 'application/json; charset=utf-8',
+					'Origin'       => site_url(),
 				],
 			]
 		);
