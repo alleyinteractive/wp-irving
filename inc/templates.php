@@ -12,22 +12,27 @@ use WP_Query;
 use WP_Irving\Component;
 
 // Bootstrap filters.
-add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 3 );
+add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 5 );
 
 /**
  * Shallow template loader using core's template hierarchy.
  *
  * Based on wp-includes/template-loader.php.
  *
- * @param array    $data    Data object to be hydrated by templates.
- * @param WP_Query $query   The current WP_Query object.
- * @param string   $context The context for this request.
+ * @param array            $data    Data object to be hydrated by templates.
+ * @param \WP_Query        $query   The current WP_Query object.
+ * @param string           $context The context for this request.
+ * @param string           $path    The path for this request.
+ * @param \WP_REST_Request $request WP_REST_Request object.
  * @return array A hydrated data object.
  */
-function load_template( array $data, WP_Query $query, string $context ): array {
-
-	// Manage helmet when using template functionality.
-	add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\setup_helmet', 11, 5 );
+function load_template(
+	array $data,
+	\WP_Query $query,
+	string $context,
+	string $path,
+	\WP_REST_Request $request
+): array {
 
 	$template = get_template_path( $query );
 
@@ -47,6 +52,9 @@ function load_template( array $data, WP_Query $query, string $context ): array {
 	}
 
 	$data['page'] = hydrate_components( $data['page'] );
+
+	// Automatically setup the <Helmet> tag.
+	$data = setup_helmet( $data, $query, $context, $path, $request );
 
 	return $data;
 }
@@ -68,6 +76,11 @@ function setup_helmet(
 	string $path,
 	\WP_REST_Request $request
 ): array {
+
+	// Disable Helmet management via filter.
+	if ( ! apply_filters( 'wp_irving_setup_helmet', true ) ) {
+		return $data;
+	}
 
 	// Unshift a helmet component to the top of the `defaults` array.
 	if ( 'site' === $context ) {
