@@ -12,19 +12,28 @@ use WP_Query;
 use WP_Irving\Component;
 
 // Bootstrap filters.
-add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 3 );
+add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 5 );
 
 /**
  * Shallow template loader using core's template hierarchy.
  *
  * Based on wp-includes/template-loader.php.
  *
- * @param array    $data    Data object to be hydrated by templates.
- * @param WP_Query $query   The current WP_Query object.
- * @param string   $context The context for this request.
+ * @param array            $data    Data object to be hydrated by templates.
+ * @param \WP_Query        $query   The current WP_Query object.
+ * @param string           $context The context for this request.
+ * @param string           $path    The path for this request.
+ * @param \WP_REST_Request $request WP_REST_Request object.
  * @return array A hydrated data object.
  */
-function load_template( array $data, WP_Query $query, string $context ): array {
+function load_template(
+	array $data,
+	\WP_Query $query,
+	string $context,
+	string $path,
+	\WP_REST_Request $request
+): array {
+
 	$template = get_template_path( $query );
 
 	if ( $template ) {
@@ -43,6 +52,95 @@ function load_template( array $data, WP_Query $query, string $context ): array {
 	}
 
 	$data['page'] = hydrate_components( $data['page'] );
+
+	// Automatically setup the <Helmet> tag.
+	$data = setup_helmet( $data, $query, $context, $path, $request );
+
+	return $data;
+}
+
+/**
+ * Manage the template head by automatically inserting Helmet tags.
+ *
+ * @param array            $data    Data object to be hydrated by templates.
+ * @param \WP_Query        $query   The current WP_Query object.
+ * @param string           $context The context for this request.
+ * @param string           $path    The path for this request.
+ * @param \WP_REST_Request $request WP_REST_Request object.
+ * @return array The updated endpoint data.
+ */
+function setup_helmet(
+	array $data,
+	\WP_Query $query,
+	string $context,
+	string $path,
+	\WP_REST_Request $request
+): array {
+
+	// Disable Helmet management via filter.
+	if ( ! apply_filters( 'wp_irving_setup_helmet', true ) ) {
+		return $data;
+	}
+
+	// Unshift a helmet component to the top of the `defaults` array.
+	if ( 'site' === $context ) {
+		array_unshift(
+			$data['defaults'],
+			/**
+			 * Filter for the helmet component in the `defaults` array.
+			 *
+			 * @param Component        $helmet  Helmet tag used in the
+			 *                                  `defaults` array.
+			 * @param array            $data    Data object to be hydrated by
+			 *                                  templates.
+			 * @param \WP_Query        $query   The current WP_Query object.
+			 * @param string           $context The context for this request.
+			 * @param string           $path    The path for this request.
+			 * @param \WP_REST_Request $request WP_REST_Request object.
+			 */
+			apply_filters(
+				'wp_irving_default_helmet_component',
+				( new Component( 'irving/helmet' ) )
+					->set_child(
+						( new Component( 'title' ) )
+							->set_child( get_bloginfo( 'name' ) )
+					),
+				$data,
+				$query,
+				$context,
+				$path,
+				$request
+			)
+		);
+	}
+
+	// Unshift a helmet component to the top of the `page` array.
+	array_unshift(
+		$data['page'],
+		/**
+		 * Filter for the helmet component in the `page` array.
+		 *
+		 * @param Component        $helmet  Helmet tag used in the `page` array.
+		 * @param array            $data    Data object to be hydrated by
+		 *                                  templates.
+		 * @param \WP_Query        $query   The current WP_Query object.
+		 * @param string           $context The context for this request.
+		 * @param string           $path    The path for this request.
+		 * @param \WP_REST_Request $request WP_REST_Request object.
+		 */
+		apply_filters(
+			'wp_irving_page_helmet_component',
+			( new Component( 'irving/helmet' ) )
+				->set_child(
+					( new Component( 'title' ) )->set_child( wp_title( '&raquo;', false ) )
+				),
+			$data,
+			$query,
+			$context,
+			$path,
+			$request
+		)
+	);
 
 	return $data;
 }
@@ -370,7 +468,14 @@ function hydrate_components( array $components ) {
 		// Reset context to where it was before hydration.
 		get_template_context()->reset();
 
-		$hydrated[] = $component->jsonSerialize();
+		// Convert text nodes to actual text notes.
+		// @todo there's _definitely_ a better way to do this, but certain
+		// Irving core functionality won't work without this hack.
+		if ( 'irving/text' === $component->get_name() ) {
+			$hydrated[] = $component->get_config( 'content' );
+		} else {
+			$hydrated[] = $component->jsonSerialize();
+		}
 	};
 
 	return $hydrated;
@@ -391,7 +496,7 @@ function setup_component( $component ) {
 	// Convert strings to text components.
 	if ( is_string( $component ) ) {
 		$component = [
-			'name' => 'text',
+			'name' => 'irving/text',
 			'config' => [
 				'content' => $component,
 			],
@@ -434,7 +539,7 @@ function parse_config_from_registry( array $component ) {
 		'text'   => 'is_string',
 	];
 
-	foreach ( $registered['config'] as $key => $atts ) {
+	foreach ( $registered['config'] ?? [] as $key => $atts ) {
 		if (
 			isset( $component['config'][ $key ] ) &&
 			( call_user_func( $type_callbacks[ $atts['type'] ], $component['config'][ $key ] ) )
@@ -483,7 +588,15 @@ function hydrate_template_parts( $component ) {
 		return false;
 	}
 
-	return hydrate_components( prepare_data_from_template( $template ) );
+	$template_data = prepare_data_from_template( $template );
+
+	// Handle template parts with only one component rather than an array of
+	// components.
+	if ( isset( $template_data['name'] ) ) {
+		$template_data = [ $template_data ];
+	}
+
+	return hydrate_components( $template_data );
 }
 
 /**

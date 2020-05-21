@@ -24,59 +24,156 @@ class Yoast {
 
 		if ( ! is_admin() ) {
 
-			// Remove default trailing title in favor of Yoast.
-			add_filter( 'wp_components_head_append_trailing_title', '__return_false' );
+			// Inject the page component with Yoast's head tags.
+			add_filter( 'wp_irving_page_helmet_component', [ $this, 'inject_head_tags' ] );
 
-			add_filter(
-				'wp_components_head_title',
-				[ $this, 'get_yoast_title' ]
-			);
-
-			add_filter(
-				'wp_components_head_meta_title',
-				[ $this, 'get_yoast_title' ]
-			);
-
-			add_filter(
-				'wp_components_head_og_title',
-				[ $this, 'get_yoast_og_title' ]
-			);
-
-			add_filter(
-				'wp_components_head_twitter_title',
-				[ $this, 'get_yoast_twitter_title' ]
-			);
-
-			add_filter(
-				'wp_components_head_meta_description',
-				[ $this, 'get_yoast_meta_description' ]
-			);
-
-			add_filter(
-				'wp_components_head_og_description',
-				[ $this, 'get_yoast_og_description' ]
-			);
-
-			add_filter(
-				'wp_components_head_twitter_description',
-				[ $this, 'get_yoast_twitter_description' ]
-			);
-
-			add_filter(
-				'wp_components_head_image_id',
-				[ $this, 'get_yoast_social_image_id' ]
-			);
-
-			add_filter(
-				'wp_components_head_deindex_url',
-				[ $this, 'get_yoast_is_deindexed' ]
-			);
-
-			add_filter(
-				'wp_components_head_additional_meta_tags',
-				[ $this, 'get_yoast_webmaster_tools_tags' ]
-			);
+			$this->add_wp_component_filters();
 		}
+	}
+
+	/**
+	 * Manage the template head by automatically inserting Helmet tags.
+	 *
+	 * @param Component $helmet Helmet component in the head tag.
+	 * @return array A hydrated data object.
+	 */
+	public function inject_head_tags( Component $helmet ): Component {
+
+		// Get all tags in a format we can use.
+		$head_tags = self::parse_head_markup();
+
+		// Replace the title value with Yoast's version.
+		if ( isset( $head_tags['title'][0]['content'] ) ) {
+			foreach ( $helmet->get_children() as &$child ) {
+				if ( 'title' === $child->get_name() ) {
+					$child->set_child( $head_tags['title'][0]['content'] );
+					break;
+				}
+			}
+		}
+
+		// Add all <meta> and <link> tags to Helmet.
+		foreach ( [ 'meta', 'link' ] as $tag ) {
+			foreach ( $head_tags[ $tag ] ?? [] as $head_tag ) {
+				$helmet->append_child(
+					new Component(
+						$tag,
+						[
+							'config' => $head_tag['attributes'] ?? [],
+						]
+					)
+				);
+			}
+		}
+
+		return $helmet;
+	}
+
+	/**
+	 * Capture wpseo_head output and convert the tags into an array.
+	 *
+	 * @return array Array of parsed html tags.
+	 */
+	public static function parse_head_markup(): array {
+
+		// phpcs:disable WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+
+		// Capture the output of wpseo_head for parsing.
+		ob_start();
+		\do_action( 'wpseo_head' );
+		$head_markup = ob_get_clean();
+
+		// Create a DOMDocument and parse it.
+		$dom = new \DOMDocument();
+		@$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $head_markup ); // phpcs:ignore
+
+		$parsed_markup = [];
+
+		// Loop though various tags and breakdown the markup into an array for
+		// easy use elsewhere.
+		foreach ( [ 'title', 'meta', 'link', 'script' ] as $tag ) {
+
+			// Get all nodes for a given tag.
+			$nodes = $dom->getElementsByTagName( $tag );
+			foreach ( $nodes as $node ) {
+
+				// Build attributes array.
+				$attributes = [];
+				foreach ( $node->attributes as $attribute ) {
+					$attributes[ $attribute->localName ] = $attribute->nodeValue;
+				}
+
+				// Add this tag's parsed values to our array.
+				$parsed_markup[ $tag ][] = [
+					'attributes' => $attributes,
+					'content'    => $node->nodeValue,
+				];
+			}
+		}
+
+		// phpcs:enable WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
+		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		return $parsed_markup;
+	}
+
+	/**
+	 * Setup Yoast related filters for integration with WP Components.
+	 */
+	public function add_wp_component_filters() {
+
+		// Remove default trailing title in favor of Yoast.
+		add_filter( 'wp_components_head_append_trailing_title', '__return_false' );
+
+		add_filter(
+			'wp_components_head_title',
+			[ $this, 'get_yoast_title' ]
+		);
+
+		add_filter(
+			'wp_components_head_meta_title',
+			[ $this, 'get_yoast_title' ]
+		);
+
+		add_filter(
+			'wp_components_head_og_title',
+			[ $this, 'get_yoast_og_title' ]
+		);
+
+		add_filter(
+			'wp_components_head_twitter_title',
+			[ $this, 'get_yoast_twitter_title' ]
+		);
+
+		add_filter(
+			'wp_components_head_meta_description',
+			[ $this, 'get_yoast_meta_description' ]
+		);
+
+		add_filter(
+			'wp_components_head_og_description',
+			[ $this, 'get_yoast_og_description' ]
+		);
+
+		add_filter(
+			'wp_components_head_twitter_description',
+			[ $this, 'get_yoast_twitter_description' ]
+		);
+
+		add_filter(
+			'wp_components_head_image_id',
+			[ $this, 'get_yoast_social_image_id' ]
+		);
+
+		add_filter(
+			'wp_components_head_deindex_url',
+			[ $this, 'get_yoast_is_deindexed' ]
+		);
+
+		add_filter(
+			'wp_components_head_additional_meta_tags',
+			[ $this, 'get_yoast_webmaster_tools_tags' ]
+		);
 	}
 
 	/**
