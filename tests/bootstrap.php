@@ -41,7 +41,6 @@ function _manually_load_plugin() {
 	$plugins = [
 		'safe-redirect-manager',
 		'wpcom-legacy-redirector',
-		'wordpress-seo',
 	];
 
 	// Autoload plugins if they are present.
