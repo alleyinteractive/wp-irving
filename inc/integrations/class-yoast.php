@@ -24,97 +24,36 @@ class Yoast {
 
 		if ( ! is_admin() ) {
 
-			// Inject the page component with Yoast's head tags.
-			add_filter( 'wp_irving_page_helmet_component', [ $this, 'inject_head_tags' ] );
+			// Parse Yoast's head markup, inject into the Helmet component.
+			add_filter( 'wp_irving_page_helmet_component', [ $this, 'inject_yoast_tags' ] );
 
+			// Integrate Yoast with the WP Components plugin.
 			$this->add_wp_component_filters();
 		}
 	}
 
 	/**
-	 * Manage the template head by automatically inserting Helmet tags.
+	 * Parse Yoast's head markup, inject into the Helmet component.
 	 *
-	 * @param Component $helmet Helmet component in the head tag.
-	 * @return array A hydrated data object.
+	 * @param Component $helmet Helmet component to modify.
+	 * @return Component
 	 */
-	public function inject_head_tags( Component $helmet ): Component {
-
-		// Get all tags in a format we can use.
-		$head_tags = self::parse_head_markup();
-
-		// Replace the title value with Yoast's version.
-		if ( isset( $head_tags['title'][0]['content'] ) ) {
-			foreach ( $helmet->get_children() as &$child ) {
-				if ( 'title' === $child->get_name() ) {
-					$child->set_child( $head_tags['title'][0]['content'] );
-					break;
-				}
-			}
-		}
-
-		// Add all <meta> and <link> tags to Helmet.
-		foreach ( [ 'meta', 'link' ] as $tag ) {
-			foreach ( $head_tags[ $tag ] ?? [] as $head_tag ) {
-				$helmet->append_child(
-					new Component(
-						$tag,
-						[
-							'config' => $head_tag['attributes'] ?? [],
-						]
-					)
-				);
-			}
-		}
-
-		return $helmet;
+	public function inject_yoast_tags( Component $helmet ): Component {
+		return Templates\inject_head_tags(
+			$helmet,
+			Templates\parse_html( $this->get_yoasts_head_markup(), [ 'title', 'meta', 'link' ] )
+		);
 	}
 
 	/**
-	 * Capture wpseo_head output and convert the tags into an array.
+	 * Capture the markup output by Yoast in the site <head>.
 	 *
-	 * @return array Array of parsed html tags.
+	 * @return string
 	 */
-	public static function parse_head_markup(): array {
-
-		// phpcs:disable WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
-		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-
-		// Capture the output of wpseo_head for parsing.
+	public function get_yoasts_head_markup(): string {
 		ob_start();
 		\do_action( 'wpseo_head' );
-		$head_markup = ob_get_clean();
-
-		// Create a DOMDocument and parse it.
-		$dom = new \DOMDocument();
-		@$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $head_markup ); // phpcs:ignore
-
-		$parsed_markup = [];
-
-		// Loop though various tags and breakdown the markup into an array for
-		// easy use elsewhere.
-		foreach ( [ 'title', 'meta', 'link', 'script' ] as $tag ) {
-
-			// Get all nodes for a given tag.
-			$nodes = $dom->getElementsByTagName( $tag );
-			foreach ( $nodes as $node ) {
-
-				// Build attributes array.
-				$attributes = [];
-				foreach ( $node->attributes as $attribute ) {
-					$attributes[ $attribute->localName ] = $attribute->nodeValue;
-				}
-
-				// Add this tag's parsed values to our array.
-				$parsed_markup[ $tag ][] = [
-					'attributes' => $attributes,
-					'content'    => $node->nodeValue,
-				];
-			}
-		}
-
-		// phpcs:enable WordPress.NamingConventions.ValidVariableName.NotSnakeCaseMemberVar
-		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		return $parsed_markup;
+		return ob_get_clean();
 	}
 
 	/**
