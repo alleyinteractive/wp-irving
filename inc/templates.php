@@ -448,7 +448,7 @@ function hydrate_components( array $components ) {
 		$component->provide_context( get_template_context() );
 
 		// Recursively hydrate children.
-		if ( ! is_string( $component ) && ! empty( $component->get_children() ) ) {
+		if ( ! empty( $component->get_children() ) ) {
 			$component->set_children( hydrate_components( $component->get_children() ) );
 		}
 
