@@ -41,6 +41,11 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	public function setUp() {
 		parent::setUp();
 
+		if ( ! class_exists( 'SRM_Redirect' ) ) {
+			$this->markTestSkipped( 'SRM_Redirect is not available.' );
+			return;
+		}
+
 		$this->object = \SRM_Redirect::factory();
 	}
 
@@ -130,9 +135,9 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	}
 
 	public function markasIncomplete() {
-		if ( ! method_exists( $this->object, 'get_redirect_match' ) ) {
+		if ( ! method_exists( $this->object, 'match_redirect' ) ) {
 			$this->markTestIncomplete(
-				'get_redirect_match not part of Safe Redirect Manager.'
+				'match_redirect not part of Safe Redirect Manager.'
 			);
 		}
 	}

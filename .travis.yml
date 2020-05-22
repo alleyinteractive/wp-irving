@@ -50,7 +50,7 @@ before_script:
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
       cd ../
-      git clone https://github.com/alleyinteractive/safe-redirect-manager.git
+      git clone https://github.com/10up/safe-redirect-manager.git
       git clone https://github.com/Automattic/WPCOM-Legacy-Redirector.git wpcom-legacy-redirector
       cd wp-irving
     fi

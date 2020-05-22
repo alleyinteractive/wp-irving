@@ -29,9 +29,30 @@ require_once $_tests_dir . '/includes/functions.php';
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/wp-irving.php';
-	require dirname( __DIR__, 2 ) . '/safe-redirect-manager/safe-redirect-manager.php';
-	require dirname( __DIR__, 2 ) . '/wpcom-legacy-redirector/wpcom-legacy-redirector.php';
+	update_option( 'permalink_structure', '/%year%/%monthnum%/%day%/%postname%/' );
+
+	require_once dirname( __DIR__ ) . '/wp-irving.php';
+
+	/**
+	 * Plugins to load for integration tests.
+	 *
+	 * @todo move these loaders to test classes where they're tested.
+	 */
+	$plugins = [
+		'safe-redirect-manager',
+		'wpcom-legacy-redirector',
+	];
+
+	// Autoload plugins if they are present.
+	foreach ( $plugins as $plugin ) {
+		$path = dirname( __DIR__, 2 ) . "/${plugin}/${plugin}.php";
+
+		if ( file_exists( $path ) ) {
+			require_once $path;
+		}
+
+	}
+
 }
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
@@ -39,4 +60,4 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 require $_tests_dir . '/includes/bootstrap.php';
 
 // Include test helpers
-require 'tests/test-helpers.php';
+require 'tests/inc/class-test-helpers.php';

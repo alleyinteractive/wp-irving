@@ -1,6 +1,6 @@
 <?php
 /**
- * Class SRM_Redirects_Test
+ * Class Test_Helpers
  *
  * @package WP_Irving
  */

@@ -24,26 +24,46 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
 
 // API.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
+require_once WP_IRVING_PATH . '/inc/endpoints/class-components-registry-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-data-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
 
 // Integrations.
-require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-jwt-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
+
+// Replicating WP Core functionality.
+require_once WP_IRVING_PATH . '/inc/class-admin.php';
+require_once WP_IRVING_PATH . '/inc/class-previews.php';
+require_once WP_IRVING_PATH . '/inc/class-cache.php';
+
+// Component registry.
+require_once WP_IRVING_PATH . '/inc/class-component.php';
+require_once WP_IRVING_PATH . '/inc/class-registry.php';
+require_once WP_IRVING_PATH . '/inc/registry.php';
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
 
-// Purge Cache.
-require_once WP_IRVING_PATH . '/inc/class-purge-cache.php';
-
 // Rewrite rules.
 require_once WP_IRVING_PATH . '/inc/rewrites.php';
 
+// Template loading.
+require_once WP_IRVING_PATH . '/inc/class-context-store.php';
+require_once WP_IRVING_PATH . '/inc/templates.php';
+
 // Debugging helpers.
 require_once WP_IRVING_PATH . '/inc/debug.php';
+
+// Register endpoints.
+new \WP_Irving\REST_API\Components_Endpoint();
+new \WP_Irving\REST_API\Components_Registry_Endpoint();
+new \WP_Irving\REST_API\Data_Endpoint();
+new \WP_Irving\REST_API\Form_Endpoint();

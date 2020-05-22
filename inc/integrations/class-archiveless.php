@@ -38,6 +38,10 @@ class Archiveless {
 	public function posts_where( $where, $query ) {
 		global $wpdb;
 
+		if ( ! isset( \Archiveless::$status ) ) {
+			return $where;
+		}
+
 		$archiveless_status = \Archiveless::$status;
 
 		if (

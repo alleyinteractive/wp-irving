@@ -1,0 +1,8 @@
+{
+	"name": "example",
+	"theme": "primary",
+	"theme_options": [
+		"primary",
+		"secondary"
+	]
+}
