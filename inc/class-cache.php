@@ -210,7 +210,7 @@ class Cache {
 	 */
 	public function get_term_purge_urls( $term ) : array {
 		$term_purge_urls = [];
-		$term = get_term( $term );
+		$term            = get_term( $term );
 
 		if ( is_wp_error( $term ) || empty( $term ) || ( defined( 'WP_IMPORTING' ) && true === WP_IMPORTING ) ) {
 			return $term_purge_urls;
@@ -232,11 +232,11 @@ class Cache {
 		}
 
 		$get_term_args = array(
-			'taxonomy'    => $term->taxonomy,
-			'include'     => $term_ids,
-			'hide_empty'  => false,
+			'taxonomy'   => $term->taxonomy,
+			'include'    => $term_ids,
+			'hide_empty' => false,
 		);
-		$terms = get_terms( $get_term_args );
+		$terms         = get_terms( $get_term_args );
 
 		if ( is_wp_error( $terms ) ) {
 			return $term_purge_urls;

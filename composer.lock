@@ -13,20 +13,20 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/alleyinteractive/Alley-Coding-Standards",
-                "reference": "3d5153f7f16b3ee7539905a5c6577c3d7d72257b"
+                "reference": "dd9aceb6af774841903fa240070da3172879f65a"
             },
             "require": {
                 "automattic/vipwpcs": "^2.0.0",
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.6.0",
-                "squizlabs/php_codesniffer": "^3.3.0",
-                "wp-coding-standards/wpcs": "^2.2.0"
+                "squizlabs/php_codesniffer": "^3.5.0",
+                "wp-coding-standards/wpcs": "^2.3.0"
             },
             "type": "project",
             "license": [
                 "GPL-2.0-or-later"
             ],
             "description": "PHPCS sniffs for Alley Interactive",
-            "time": "2020-03-19T16:03:53+00:00"
+            "time": "2020-05-22T13:48:51+00:00"
         },
         {
             "name": "automattic/vipwpcs",
@@ -193,16 +193,16 @@
         },
         {
             "name": "wp-coding-standards/wpcs",
-            "version": "2.2.1",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WordPress/WordPress-Coding-Standards.git",
-                "reference": "b5a453203114cc2284b1a614c4953456fbe4f546"
+                "reference": "7da1894633f168fe244afc6de00d141f27517b62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WordPress/WordPress-Coding-Standards/zipball/b5a453203114cc2284b1a614c4953456fbe4f546",
-                "reference": "b5a453203114cc2284b1a614c4953456fbe4f546",
+                "url": "https://api.github.com/repos/WordPress/WordPress-Coding-Standards/zipball/7da1894633f168fe244afc6de00d141f27517b62",
+                "reference": "7da1894633f168fe244afc6de00d141f27517b62",
                 "shasum": ""
             },
             "require": {
@@ -212,6 +212,7 @@
             "require-dev": {
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.5 || ^0.6",
                 "phpcompatibility/php-compatibility": "^9.0",
+                "phpcsstandards/phpcsdevtools": "^1.0",
                 "phpunit/phpunit": "^4.0 || ^5.0 || ^6.0 || ^7.0"
             },
             "suggest": {
@@ -234,7 +235,7 @@
                 "standards",
                 "wordpress"
             ],
-            "time": "2020-02-04T02:52:06+00:00"
+            "time": "2020-05-13T23:57:56+00:00"
         }
     ],
     "aliases": [],

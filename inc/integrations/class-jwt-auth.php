@@ -213,7 +213,7 @@ class JWT_Auth {
 			}
 		}
 
-		$keypairs[]      = [
+		$keypairs[] = [
 			'name'       => self::KEYPAIR_NAME,
 			'api_key'    => $api_key,
 			'api_secret' => wp_hash( $api_secret ),

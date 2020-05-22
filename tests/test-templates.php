@@ -21,25 +21,31 @@ class Test_Templates extends WP_UnitTestCase {
 		parent::setUp();
 
 		// Hook up template path filters.
-		add_filter( 'wp_irving_template_path', function () {
-			return dirname( __FILE__ ) . '/inc/templates';
-		} );
+		add_filter(
+			'wp_irving_template_path',
+			function () {
+				return dirname( __FILE__ ) . '/inc/templates';
+			} 
+		);
 
-		add_filter( 'wp_irving_template_part_path', function () {
-			return dirname( __FILE__ ) . '/inc/template-parts';
-		} );
+		add_filter(
+			'wp_irving_template_part_path',
+			function () {
+				return dirname( __FILE__ ) . '/inc/template-parts';
+			} 
+		);
 	}
 
 	function get_template_paths() {
 		return [
 			[
-				[ 'defaults' ]
+				[ 'defaults' ],
 			],
 			[
-				[ 'index' ]
+				[ 'index' ],
 			],
 			[
-				[ 'single' ]
+				[ 'single' ],
 			],
 		];
 	}
@@ -89,56 +95,62 @@ class Test_Templates extends WP_UnitTestCase {
 	 * @group context
 	 */
 	function test_components_use_context() {
-		get_registry()->register_component( 'provider', [
-			'config'                        => [
-				'prop_with_default'            => [
-					'type'                        => 'text',
-					'default'                     => 'default value'
+		get_registry()->register_component(
+			'provider',
+			[
+				'config'           => [
+					'prop_with_default'            => [
+						'type'    => 'text',
+						'default' => 'default value',
+					],
+					'prop_with_default_overridden' => [
+						'type'    => 'number',
+						'default' => 10,
+					],
+					'prop_without_default'         => [
+						'type' => 'text',
+					],
 				],
-				'prop_with_default_overridden' => [
-					'type'                        => 'number',
-					'default'                     => 10
+				'provides_context' => [
+					'test/with_default'            => 'prop_with_default',
+					'test/with_default_overridden' => 'prop_with_default_overridden',
+					'test/without_default'         => 'prop_without_default',
 				],
-				'prop_without_default'         => [
-					'type'                        => 'text',
-				],
-			],
-			'provides_context'              => [
-				'test/with_default'            => 'prop_with_default',
-				'test/with_default_overridden' => 'prop_with_default_overridden',
-				'test/without_default'         => 'prop_without_default',
-			]
-		] );
+			] 
+		);
 
-		get_registry()->register_component( 'consumer', [
-			'config'                        => [
-				'prop_with_default'            => [
-					'type'                        => 'text',
+		get_registry()->register_component(
+			'consumer',
+			[
+				'config'      => [
+					'prop_with_default'            => [
+						'type' => 'text',
+					],
+					'prop_with_default_overridden' => [
+						'type' => 'number',
+					],
+					'prop_without_default'         => [
+						'type' => 'text',
+					],
 				],
-				'prop_with_default_overridden' => [
-					'type'                        => 'number',
+				'use_context' => [
+					'test/with_default'            => 'prop_with_default',
+					'test/with_default_overridden' => 'prop_with_default_overridden',
+					'test/without_default'         => 'prop_without_default',
 				],
-				'prop_without_default'         => [
-					'type'                        => 'text',
-				],
-			],
-			'use_context'                   => [
-				'test/with_default'            => 'prop_with_default',
-				'test/with_default_overridden' => 'prop_with_default_overridden',
-				'test/without_default'         => 'prop_without_default',
-			],
-		] );
+			] 
+		);
 
 		$template = [
 			[
-				'name'                          => 'provider',
-				'config'                        => [
+				'name'     => 'provider',
+				'config'   => [
 					'prop_with_default_overridden' => 20,
 					'prop_without_default'         => 'test value',
 				],
-				'children'                      => [
+				'children' => [
 					[
-						'name'                        => 'consumer',
+						'name' => 'consumer',
 					],
 				],
 			],
@@ -148,25 +160,25 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$expected = [
 			[
-				'name'                         => 'provider',
-				'config'                       => (object) [
-					'propWithDefault'             => 'default value',
-					'propWithDefaultOverridden'   => 20,
-					'propWithoutDefault'          => 'test value',
-					'themeName'                    => 'default',
-					'themeOptions'               => [ 'default' ],
+				'name'     => 'provider',
+				'config'   => (object) [
+					'propWithDefault'           => 'default value',
+					'propWithDefaultOverridden' => 20,
+					'propWithoutDefault'        => 'test value',
+					'themeName'                 => 'default',
+					'themeOptions'              => [ 'default' ],
 				],
-				'children'                     => [
+				'children' => [
 					[
-						'name'                       => 'consumer',
-						'config'                     => (object) [
+						'name'     => 'consumer',
+						'config'   => (object) [
 							'propWithDefault'           => 'default value',
 							'propWithDefaultOverridden' => 20,
 							'propWithoutDefault'        => 'test value',
-							'themeName'                  => 'default',
-							'themeOptions'               => [ 'default' ],
+							'themeName'                 => 'default',
+							'themeOptions'              => [ 'default' ],
 						],
-						'children'                   => [],
+						'children' => [],
 					],
 				],
 			],
@@ -185,19 +197,19 @@ class Test_Templates extends WP_UnitTestCase {
 	function test_templates_context_without_registration() {
 		$template = [
 			[
-				'name'            => 'provider',
-				'config'          => [
-					'test_provided'  => 20,
+				'name'             => 'provider',
+				'config'           => [
+					'test_provided' => 20,
 				],
 				'provides_context' => [
-					'test/context'   => 'test_provided'
+					'test/context' => 'test_provided',
 				],
-				'children'        => [
+				'children'         => [
 					[
-						'name'          => 'consumer',
-						'use_context'   => [
-							'test/context' => 'test_used'
-						]
+						'name'        => 'consumer',
+						'use_context' => [
+							'test/context' => 'test_used',
+						],
 					],
 				],
 			],
@@ -205,21 +217,21 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$expected = [
 			[
-				'name'            => 'provider',
-				'config'          => (object) [
-					'testProvided'   => 20,
-					'themeName'      => 'default',
-					'themeOptions'   => [ 'default' ],
+				'name'     => 'provider',
+				'config'   => (object) [
+					'testProvided' => 20,
+					'themeName'    => 'default',
+					'themeOptions' => [ 'default' ],
 				],
-				'children'        => [
+				'children' => [
 					[
-						'name'          => 'consumer',
-						'config'        => (object) [
+						'name'     => 'consumer',
+						'config'   => (object) [
 							'testUsed'     => 20,
 							'themeName'    => 'default',
 							'themeOptions' => [ 'default' ],
 						],
-						'children'      => [],
+						'children' => [],
 					],
 				],
 			],
@@ -238,45 +250,45 @@ class Test_Templates extends WP_UnitTestCase {
 	function test_templates_hydrate_partials() {
 		$template = [
 			[ 'name' => 'example/component' ],
-			[ 'name' => 'template-parts/example' ]
+			[ 'name' => 'template-parts/example' ],
 		];
 
 		$hydrated = Templates\hydrate_components( $template );
 
 		$expected = [
 			[
-				'name'                       => 'example/component',
-				'config'                     => (object) [
-					'themeName'                  => 'default',
-					'themeOptions'               => [ 'default' ],
+				'name'     => 'example/component',
+				'config'   => (object) [
+					'themeName'    => 'default',
+					'themeOptions' => [ 'default' ],
 				],
-				'children'                   => [],
+				'children' => [],
 			],
 			[
-				'name'                       => 'example/component1',
-				'config'                     => (object) [
-					'themeName'                  => 'default',
-					'themeOptions'               => [ 'default' ],
+				'name'     => 'example/component1',
+				'config'   => (object) [
+					'themeName'    => 'default',
+					'themeOptions' => [ 'default' ],
 				],
-				'children'                   => [],
+				'children' => [],
 			],
 			[
-				'name'                       => 'example/component2',
-				'config'                     => (object) [
-					'themeName'                  => 'default',
-					'themeOptions'               => [ 'default' ],
+				'name'     => 'example/component2',
+				'config'   => (object) [
+					'themeName'    => 'default',
+					'themeOptions' => [ 'default' ],
 				],
-				'children'                   => [
+				'children' => [
 					[
-						'name'                       => 'example/component3',
-						'config'                     => (object) [
-							'themeName'                  => 'default',
-							'themeOptions'               => [ 'default' ],
+						'name'     => 'example/component3',
+						'config'   => (object) [
+							'themeName'    => 'default',
+							'themeOptions' => [ 'default' ],
 						],
-						'children'                   => [],
-					]
+						'children' => [],
+					],
 				],
-			]
+			],
 		];
 
 		$this->assertEquals( $expected, $hydrated, 'Template partial not hydrated correctly.' );

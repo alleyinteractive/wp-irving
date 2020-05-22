@@ -49,7 +49,7 @@ class Component_Tests extends WP_UnitTestCase {
 			}
 
 			$component = file_get_contents( $path ); // phpcs:ignore
-			$component = json_decode( $component, TRUE );
+			$component = json_decode( $component, true );
 
 			if ( is_null( $component ) ) {
 				assert( false, 'Could not load ' . $file_name );
@@ -475,7 +475,7 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'primary',
-				'secondary'
+				'secondary',
 			],
 			$this->get_component( 'theme-options' )->get_theme_options()
 		);
@@ -603,12 +603,12 @@ class Component_Tests extends WP_UnitTestCase {
 			[
 				[ 'primary' ],
 				[ 'secondary' ],
-				'Could not confirm single options removed.'
+				'Could not confirm single options removed.',
 			],
 			[
 				[ 'primary', 'secondary' ],
 				[],
-				'Could not confirm multiple options removed.'
+				'Could not confirm multiple options removed.',
 			],
 		];
 	}
@@ -726,8 +726,8 @@ class Component_Tests extends WP_UnitTestCase {
 			[
 				'basic-example',
 				[
-					'name'          => 'irving/example',
-					'config'        => (object) [
+					'name'     => 'irving/example',
+					'config'   => (object) [
 						'align'        => 'left',
 						'themeName'    => 'default',
 						'themeOptions' => [
@@ -735,40 +735,40 @@ class Component_Tests extends WP_UnitTestCase {
 						],
 						'width'        => 'wide',
 					],
-					'children'      => [],
-				]
+					'children' => [],
+				],
 			],
 			[
 				'children-test-001',
 				[
-					'name'          => 'parent-example',
-					'config'        => (object) [
+					'name'     => 'parent-example',
+					'config'   => (object) [
 						'themeName'    => 'default',
 						'themeOptions' => [
 							'default',
 						],
 					],
-					'children'      => [
+					'children' => [
 						new Component( 'parent-child-001' ),
 						new Component( 'parent-child-002' ),
 						new Component( 'parent-child-003' ),
 					],
-				]
+				],
 			],
 			[
 				'theme-options',
 				[
-					'name'          => 'example',
-					'config'        => (object) [
+					'name'     => 'example',
+					'config'   => (object) [
 						'themeName'    => 'primary',
 						'themeOptions' => [
 							'primary',
 							'secondary',
 						],
 					],
-					'children'      => [],
-				]
-			]
+					'children' => [],
+				],
+			],
 		];
 	}
 }

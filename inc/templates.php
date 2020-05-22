@@ -184,13 +184,19 @@ function filter_template_loader() {
 	// Return an empty array in {$type}_template_hierarchy to avoid file lookups but use
 	// the located templates to filter {$type}_template with our custom location.
 	foreach ( $template_types as $type ) {
-		add_filter( "{$type}_template_hierarchy", function ( $templates ) use ( $type ) {
-			add_filter( "{$type}_template", function () use ( $templates ) {
-				return locate_template( $templates );
-			} );
+		add_filter(
+			"{$type}_template_hierarchy",
+			function ( $templates ) use ( $type ) {
+				add_filter(
+					"{$type}_template",
+					function () use ( $templates ) {
+						return locate_template( $templates );
+					} 
+				);
 
-			return [];
-		} );
+				return [];
+			} 
+		);
 	}
 }
 
@@ -391,7 +397,7 @@ function setup_component( $component ) {
 	// Convert strings to text components.
 	if ( is_string( $component ) ) {
 		$component = [
-			'name' => 'text',
+			'name'   => 'text',
 			'config' => [
 				'content' => $component,
 			],
