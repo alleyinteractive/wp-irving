@@ -17,7 +17,10 @@ use WP_UnitTestCase;
  */
 class Test_Templates extends WP_UnitTestCase {
 
-	function setup() {
+	/**
+	 * Set up test data.
+	 */
+	public function setup() {
 		parent::setUp();
 
 		// Hook up template path filters.
@@ -25,18 +28,23 @@ class Test_Templates extends WP_UnitTestCase {
 			'wp_irving_template_path',
 			function () {
 				return dirname( __FILE__ ) . '/inc/templates';
-			} 
+			}
 		);
 
 		add_filter(
 			'wp_irving_template_part_path',
 			function () {
 				return dirname( __FILE__ ) . '/inc/template-parts';
-			} 
+			}
 		);
 	}
 
-	function get_template_paths() {
+	/**
+	 * Data provider for test_template_paths.
+	 *
+	 * @return array
+	 */
+	public function get_template_paths() {
 		return [
 			[
 				[ 'defaults' ],
@@ -55,9 +63,9 @@ class Test_Templates extends WP_UnitTestCase {
 	 *
 	 * @dataProvider get_template_paths
 	 *
-	 * @param array $paths
+	 * @param array $paths Template path slugs.
 	 */
-	function test_template_paths( $paths ) {
+	public function test_template_paths( $paths ) {
 		$path = Templates\locate_template( $paths );
 
 		$this->assertTrue( file_exists( $path ) );
@@ -66,7 +74,7 @@ class Test_Templates extends WP_UnitTestCase {
 	/**
 	 * Test that local template partial paths is working.
 	 */
-	function test_template_partial_paths() {
+	public function test_template_partial_paths() {
 		$path = Templates\locate_template_part( 'sidebar' );
 
 		$this->assertTrue( file_exists( $path ) );
@@ -77,10 +85,11 @@ class Test_Templates extends WP_UnitTestCase {
 	 *
 	 * @group context
 	 */
-	function test_template_default_context() {
+	public function test_template_default_context() {
 		// Override the global post object for this test.
 		global $post;
 
+		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
 		$post = $this->factory()->post->create_and_get();
 
 		$context = Templates\get_template_context();
@@ -94,7 +103,7 @@ class Test_Templates extends WP_UnitTestCase {
 	 *
 	 * @group context
 	 */
-	function test_components_use_context() {
+	public function test_components_use_context() {
 		get_registry()->register_component(
 			'provider',
 			[
@@ -116,7 +125,7 @@ class Test_Templates extends WP_UnitTestCase {
 					'test/with_default_overridden' => 'prop_with_default_overridden',
 					'test/without_default'         => 'prop_without_default',
 				],
-			] 
+			]
 		);
 
 		get_registry()->register_component(
@@ -138,7 +147,7 @@ class Test_Templates extends WP_UnitTestCase {
 					'test/with_default_overridden' => 'prop_with_default_overridden',
 					'test/without_default'         => 'prop_without_default',
 				],
-			] 
+			]
 		);
 
 		$template = [
@@ -194,7 +203,7 @@ class Test_Templates extends WP_UnitTestCase {
 	/**
 	 * Tests that context values are passed to non-registered components.
 	 */
-	function test_templates_context_without_registration() {
+	public function test_templates_context_without_registration() {
 		$template = [
 			[
 				'name'             => 'provider',
@@ -247,7 +256,7 @@ class Test_Templates extends WP_UnitTestCase {
 	/**
 	 * Test template hydration with included template parts.
 	 */
-	function test_templates_hydrate_partials() {
+	public function test_templates_hydrate_partials() {
 		$template = [
 			[ 'name' => 'example/component' ],
 			[ 'name' => 'template-parts/example' ],

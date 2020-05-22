@@ -56,6 +56,7 @@ function render_query(
 	}
 
 	ob_start();
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 	print_r( $wp_query );
 	$debug = ob_get_clean();
 

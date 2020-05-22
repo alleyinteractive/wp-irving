@@ -391,6 +391,7 @@ class Components_Endpoint extends Endpoint {
 		$wp_query = $wp_the_query;
 
 		// Extract updated query vars back into global namespace.
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		foreach ( (array) $wp_the_query->query_vars as $key => $value ) {
 			$GLOBALS[ $key ] = $value;
 		}
@@ -409,6 +410,7 @@ class Components_Endpoint extends Endpoint {
 			$GLOBALS['authordata'] = get_userdata( $wp_the_query->post->post_author );
 		}
 		// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
+		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	}
 
 	/**
@@ -491,7 +493,7 @@ class Components_Endpoint extends Endpoint {
 		// Set headers and redirect permanently.
 		header( 'Access-Control-Allow-Origin: ' . home_url() );
 		header( 'Access-Control-Allow-Credentials: true' );
-		wp_redirect( $request_url, 301 );
+		wp_safe_redirect( $request_url, 301 );
 		exit;
 	}
 }

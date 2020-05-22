@@ -63,7 +63,7 @@ class Component_Tests extends WP_UnitTestCase {
 	/**
 	 * Get a test component by the name.
 	 *
-	 * @param string $name Name
+	 * @param string $name Component name.
 	 * @return ?Component
 	 */
 	public function get_component( $name ) {
@@ -587,6 +587,10 @@ class Component_Tests extends WP_UnitTestCase {
 	 * Tests for the `remove_theme_options()` method.
 	 *
 	 * @dataProvider get_theme_options_to_remove
+	 *
+	 * @param array  $options  List of theme options.
+	 * @param array  $expected Expected remaining options after removal.
+	 * @param string $message  Optional. Message to display when assertion fails. Default none.
 	 */
 	public function test_remove_theme_options( array $options, array $expected, string $message = '' ) {
 
@@ -598,6 +602,11 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals( $expected, $component->get_theme_options(), $message );
 	}
 
+	/**
+	 * Data provider for 'test_remove_theme_options'
+	 *
+	 * @return array
+	 */
 	public function get_theme_options_to_remove() {
 		return [
 			[
@@ -659,7 +668,7 @@ class Component_Tests extends WP_UnitTestCase {
 	 */
 	public function test_camel_case_keys() {
 
-		// Set of test keys
+		// Set of test keys.
 		$snake_case_keys = [
 			'foo_bar'     => '',
 			'Foo Bar'     => '',
@@ -721,6 +730,11 @@ class Component_Tests extends WP_UnitTestCase {
 		);
 	}
 
+	/**
+	 * Data provider for 'test_json_serialize'
+	 *
+	 * @return array
+	 */
 	public function get_components_to_serialize() {
 		return [
 			[

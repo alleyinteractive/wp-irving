@@ -16,12 +16,17 @@
 		</properties>
 	</rule>
 
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>/tests/*</exclude-pattern>
+	</rule>
+
 	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
         <properties>
             <property name="prefixes" type="array">
                 <element value="WP_Irving"/>
             </property>
         </properties>
+		<exclude-pattern>/tests/bootstrap\.php</exclude-pattern>
     </rule>
 
 	<rule ref="Generic.PHP.ForbiddenFunctions">

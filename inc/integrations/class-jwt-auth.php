@@ -141,7 +141,7 @@ class JWT_Auth {
 
 		// Only care if we have a cookie.
 		if ( ! isset( $_COOKIE[ self::COOKIE_NAME ] ) ) { // phpcs:ignore
-			 return false;
+			return false;
 		}
 
 		// Get token from cookie.

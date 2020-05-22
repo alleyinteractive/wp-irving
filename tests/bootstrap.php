@@ -49,7 +49,7 @@ function _manually_load_plugin() {
 
 		if ( file_exists( $path ) ) {
 			require_once $path;
-		}   
+		}
 	}
 
 }
@@ -58,5 +58,5 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 // Start up the WP testing environment.
 require $_tests_dir . '/includes/bootstrap.php';
 
-// Include test helpers
+// Include test helpers.
 require 'tests/inc/class-test-helpers.php';

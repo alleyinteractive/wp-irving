@@ -390,7 +390,7 @@ class Cache {
 		wp_remote_post(
 			home_url( '/purge-cache' ),
 			[
-				'body'    => json_encode( [ 'paths' => self::$purge_queue ] ),
+				'body'    => wp_json_encode( [ 'paths' => self::$purge_queue ] ),
 				'headers' => [
 					'Content-Type' => 'application/json; charset=utf-8',
 					'Origin'       => site_url(),
