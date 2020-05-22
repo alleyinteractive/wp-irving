@@ -135,12 +135,25 @@ function prepare_data_from_template( string $template, string $type = 'page' ): 
 	include $template;
 	$contents = ob_get_clean();
 
-	// Attempt to json decode it.
-	$components = json_decode( $contents, true );
+	// This is a .json template.
+	if ( false !== strpos( $template, '.json' ) ) {
 
-	// Validate success.
-	if ( ! json_last_error() ) {
-		return $components;
+		// Attempt to json decode it.
+		$components = json_decode( $contents, true );
+
+		// Validate success.
+		if ( ! json_last_error() ) {
+			return $components;
+		}
+
+		wp_die(
+			sprintf(
+				// Translators: %1$s: Error message, %2$s Template path.
+				esc_html__( 'Error: %1$s found in %2$s.', 'wp-irving' ),
+				esc_html( json_last_error_msg() ),
+				esc_html( $template )
+			)
+		);
 	}
 
 	if ( has_blocks( $contents ) ) {
@@ -469,6 +482,7 @@ function parse_config_from_registry( array $component ) {
 	$registered_property = [
 		'callback',
 		'provides_context',
+		'theme_options',
 		'use_context',
 	];
 

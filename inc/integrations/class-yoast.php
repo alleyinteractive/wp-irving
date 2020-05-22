@@ -24,7 +24,7 @@ class Yoast {
 
 		if ( ! is_admin() ) {
 
-			// Parse Yoast's head markup, inject into the Helmet component.
+			// Parse Yoast's head markup and inject it into the Helmet component.
 			add_filter( 'wp_irving_page_helmet_component', [ $this, 'inject_yoast_tags' ] );
 
 			// Integrate Yoast with the WP Components plugin.
