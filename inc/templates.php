@@ -57,7 +57,7 @@ function get_template_path( WP_Query $query ): string {
 	// Filter the template hierarchy before processing.
 	filter_template_loader();
 
-	$tag_templates = array(
+	$tag_templates = [
 		'is_embed'             => 'get_embed_template',
 		'is_404'               => 'get_404_template',
 		'is_search'            => 'get_search_template',
@@ -75,7 +75,7 @@ function get_template_path( WP_Query $query ): string {
 		'is_author'            => 'get_author_template',
 		'is_date'              => 'get_date_template',
 		'is_archive'           => 'get_archive_template',
-	);
+	];
 
 	$template = false;
 
