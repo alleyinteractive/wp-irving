@@ -40,6 +40,7 @@ function _manually_load_plugin() {
 	 */
 	$plugins = [
 		'safe-redirect-manager',
+		'wordpress-seo',
 		'wpcom-legacy-redirector',
 	];
 
