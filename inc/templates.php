@@ -401,7 +401,7 @@ function hydrate_components( array $components ) {
 		if ( 'irving/text' === $component->get_name() ) {
 			$hydrated[] = $component->get_config( 'content' );
 		} else {
-			$hydrated[] = $component->jsonSerialize();
+			$hydrated[] = $component;
 		}
 	};
 
@@ -466,10 +466,14 @@ function parse_config_from_registry( array $component ) {
 		'text'   => 'is_string',
 	];
 
-	foreach ( $registered['config'] ?? [] as $key => $atts ) {
+	// Loop through registered config.
+	foreach ( ( $registered['config'] ?? [] ) as $key => $atts ) {
+
+		// This value has been set and a sanitize callback exists.
 		if (
-			isset( $component['config'][ $key ] ) &&
-			( call_user_func( $type_callbacks[ $atts['type'] ], $component['config'][ $key ] ) )
+			isset( $component['config'][ $key ] )
+			&& isset( $type_callbacks[ $atts['type'] ] )
+			&& ( call_user_func( $type_callbacks[ $atts['type'] ], $component['config'][ $key ] ) )
 		) {
 			$parsed_config[ $key ] = $component['config'][ $key ];
 		} elseif ( isset( $atts['default'] ) ) {

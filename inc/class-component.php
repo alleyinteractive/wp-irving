@@ -212,8 +212,8 @@ class Component implements JsonSerializable {
 	public function set_config( $config_array_or_key, $value = null ): self {
 
 		// Set the entire config.
-		if ( is_array( $config_array_or_key ) ) {
-			$this->config = $config_array_or_key;
+		if ( is_array( $config_array_or_key ) || is_object( $config_array_or_key ) ) {
+			$this->config = (array) $config_array_or_key;
 			return $this;
 		}
 

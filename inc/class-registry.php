@@ -78,6 +78,13 @@ class Registry {
 
 		// Validate the config file exists.
 		if ( ! file_exists( $config_path ) ) {
+			wp_die(
+				sprintf(
+					// Translators: %1$s: Error message, %2$s Template path.
+					esc_html__( 'Error: Could not find component.json at %1$s. Double check the filename.', 'wp-irving' ),
+					esc_html( $config_path )
+				)
+			);
 			return false;
 		}
 
@@ -87,6 +94,14 @@ class Registry {
 
 		// Validate config loaded and `name` is available.
 		if ( is_null( $config ) || ! isset( $config['name'] ) ) {
+			wp_die(
+				sprintf(
+					// Translators: %1$s: Error message, %2$s Template path.
+					esc_html__( 'Error: %1$s found in %2$s.', 'wp-irving' ),
+					esc_html( json_last_error_msg() ),
+					esc_html( $config_path )
+				)
+			);
 			return false;
 		}
 
