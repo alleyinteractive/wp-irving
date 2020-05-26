@@ -42,7 +42,7 @@ class Test_Context_Store extends WP_UnitTestCase {
 	/**
 	 * Data provider for testing different data types.
 	 *
-	 * @return void
+	 * @return array
 	 */
 	public function get_context_values() {
 		return [

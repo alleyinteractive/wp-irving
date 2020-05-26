@@ -82,6 +82,7 @@ class Registry {
 		}
 
 		// Load and decode JSON component config.
+		// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 		$config = file_get_contents( $config_path );
 		$config = json_decode( $config, true );
 

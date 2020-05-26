@@ -63,7 +63,7 @@ class Cache {
 		add_action( 'clean_user_cache', [ $this, 'purge_user_by_id' ] );
 
 		add_action( 'init', [ $this, 'purge_cache_request' ] );
-		add_action( 'shutdown', array( $this, 'fire_purge_request' ) );
+		add_action( 'shutdown', [ $this, 'fire_purge_request' ] );
 	}
 
 	/**
@@ -121,7 +121,7 @@ class Cache {
 	 * @param array $term_ids Term IDs.
 	 */
 	public function purge_terms( $term_ids ) {
-		$ids = is_array( $term_ids ) ? $term_ids : array( $term_ids );
+		$ids = is_array( $term_ids ) ? $term_ids : [ $term_ids ];
 
 		foreach ( $ids as $term_id ) {
 			$this->purge_term_by_id( $term_id );
@@ -155,7 +155,7 @@ class Cache {
 		if (
 			empty( $current_post )
 			|| 'revision' === $current_post->post_type
-			|| ! in_array( get_post_status( $current_post ), array( 'publish', 'inherit', 'trash' ), true )
+			|| ! in_array( get_post_status( $current_post ), [ 'publish', 'inherit', 'trash' ], true )
 			|| ! is_post_type_viewable( $current_post->post_type )
 			// Skip purge if it is a new attachment.
 			|| ( 'attachment' === $current_post->post_type && $current_post->post_date === $current_post->post_modified )
@@ -210,7 +210,7 @@ class Cache {
 	 */
 	public function get_term_purge_urls( $term ) : array {
 		$term_purge_urls = [];
-		$term = get_term( $term );
+		$term            = get_term( $term );
 
 		if ( is_wp_error( $term ) || empty( $term ) || ( defined( 'WP_IMPORTING' ) && true === WP_IMPORTING ) ) {
 			return $term_purge_urls;
@@ -231,12 +231,12 @@ class Cache {
 			return $term_purge_urls;
 		}
 
-		$get_term_args = array(
-			'taxonomy'    => $term->taxonomy,
-			'include'     => $term_ids,
-			'hide_empty'  => false,
-		);
-		$terms = get_terms( $get_term_args );
+		$get_term_args = [
+			'taxonomy'   => $term->taxonomy,
+			'include'    => $term_ids,
+			'hide_empty' => false,
+		];
+		$terms         = get_terms( $get_term_args );
 
 		if ( is_wp_error( $terms ) ) {
 			return $term_purge_urls;
@@ -390,7 +390,7 @@ class Cache {
 		wp_remote_post(
 			home_url( '/purge-cache' ),
 			[
-				'body'    => json_encode( [ 'paths' => self::$purge_queue ] ),
+				'body'    => wp_json_encode( [ 'paths' => self::$purge_queue ] ),
 				'headers' => [
 					'Content-Type' => 'application/json; charset=utf-8',
 					'Origin'       => site_url(),

@@ -39,8 +39,8 @@ function render_query(
 				'config'   => [],
 				'children' => [
 					[
-						'name' => 'title',
-						'config' => [],
+						'name'     => 'title',
+						'config'   => [],
 						'children' => [
 							get_bloginfo( 'name' ),
 						],
@@ -56,6 +56,7 @@ function render_query(
 	}
 
 	ob_start();
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 	print_r( $wp_query );
 	$debug = ob_get_clean();
 
@@ -66,8 +67,8 @@ function render_query(
 			'config'   => [],
 			'children' => [
 				[
-					'name' => 'html',
-					'config' => [
+					'name'     => 'html',
+					'config'   => [
 						'content' => sprintf(
 							'<pre>%s</pre>',
 							$debug
@@ -130,8 +131,8 @@ function add_welcome_message(
 			'config'   => [],
 			'children' => [
 				[
-					'name' => 'html',
-					'config' => [
+					'name'     => 'html',
+					'config'   => [
 						'content' => sprintf(
 							'<h2>%s</h2><p>%s</p>',
 							__( 'Welcome to WP-Irving!', 'wp-irving' ),

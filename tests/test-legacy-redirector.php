@@ -14,16 +14,16 @@ class Legacy_Redirector_Tests extends WP_UnitTestCase {
 	/**
 	 * Helpers class instance.
 	 *
-	 * \WP_Irving_Test_Helpers
+	 * @var \WP_Irving_Test_Helpers
 	 */
-	static $helpers;
+	public static $helpers;
 
 	/**
 	 * Components endpoint instance.
 	 *
-	 * \WP_Irving\REST_API\Components_Endpoint
+	 * @var \WP_Irving\REST_API\Components_Endpoint
 	 */
-	static $components_endpoint;
+	public static $components_endpoint;
 
 	/**
 	 * Test suite setup.
@@ -118,7 +118,7 @@ class Legacy_Redirector_Tests extends WP_UnitTestCase {
 		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash/' );
 		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
 
-		// Without trailing slash
+		// Without trailing slash.
 		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash' );
 		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
 	}

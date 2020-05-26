@@ -141,7 +141,7 @@ class JWT_Auth {
 
 		// Only care if we have a cookie.
 		if ( ! isset( $_COOKIE[ self::COOKIE_NAME ] ) ) { // phpcs:ignore
-			 return false;
+			return false;
 		}
 
 		// Get token from cookie.
@@ -213,7 +213,7 @@ class JWT_Auth {
 			}
 		}
 
-		$keypairs[]      = [
+		$keypairs[] = [
 			'name'       => self::KEYPAIR_NAME,
 			'api_key'    => $api_key,
 			'api_secret' => wp_hash( $api_secret ),

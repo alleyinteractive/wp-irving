@@ -140,6 +140,7 @@ class Admin {
 	 * @param  \WP_Admin_Bar $admin_bar WP Admin Bar object.
 	 */
 	public function add_api_link_to_admin_bar( \WP_Admin_Bar $admin_bar ) {
+		//phpcs:disable WordPress.Security.NonceVerification.Recommended
 		if ( ! current_user_can( $this->api_link_cap ) ) {
 			return;
 		}
@@ -214,6 +215,7 @@ class Admin {
 				'href'  => $path_url,
 			]
 		);
+		//phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 }
 
