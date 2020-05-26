@@ -48,6 +48,7 @@ class WPCOM_Legacy_Redirector {
 		}
 
 		// Get the path parameter.
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 		$request_path = apply_filters( 'wpcom_legacy_redirector_request_path', $params['path'] );
 
 		if ( $request_path ) {
@@ -63,6 +64,7 @@ class WPCOM_Legacy_Redirector {
 				if ( ! defined( 'WP_IRVING_TEST' ) || ! WP_IRVING_TEST ) {
 					header( 'X-legacy-redirect: HIT' );
 				}
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$redirect_status = apply_filters( 'wpcom_legacy_redirector_redirect_status', 301, $redirect_uri );
 
 				// The path may be either a full URL, or a relative path.
@@ -74,7 +76,7 @@ class WPCOM_Legacy_Redirector {
 				}
 
 				// Include redirect URL and status in response.
-				$data['redirectTo'] = empty( $data['redirectTo'] ) ?
+				$data['redirectTo']     = empty( $data['redirectTo'] ) ?
 					$redirect_to ?? '' :
 					$data['redirectTo'];
 				$data['redirectStatus'] = empty( $data['redirectStatus'] ) ?
@@ -89,6 +91,9 @@ class WPCOM_Legacy_Redirector {
 	}
 }
 
-add_action( 'init', function() {
-	new \WP_Irving\WPCOM_Legacy_Redirector();
-} );
+add_action(
+	'init',
+	function() {
+		new \WP_Irving\WPCOM_Legacy_Redirector();
+	}
+);

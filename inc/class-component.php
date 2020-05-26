@@ -745,9 +745,9 @@ class Component implements JsonSerializable {
 		$this->set_config( 'theme_options', $this->get_theme_options() );
 
 		return [
-			'name'            => $this->get_name(),
-			'config'          => (object) $this->camel_case_keys( $this->get_config() ),
-			'children'        => $this->get_children(),
+			'name'     => $this->get_name(),
+			'config'   => (object) $this->camel_case_keys( $this->get_config() ),
+			'children' => $this->get_children(),
 		];
 	}
 }

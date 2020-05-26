@@ -57,7 +57,7 @@ function get_template_path( WP_Query $query ): string {
 	// Filter the template hierarchy before processing.
 	filter_template_loader();
 
-	$tag_templates = array(
+	$tag_templates = [
 		'is_embed'             => 'get_embed_template',
 		'is_404'               => 'get_404_template',
 		'is_search'            => 'get_search_template',
@@ -75,7 +75,7 @@ function get_template_path( WP_Query $query ): string {
 		'is_author'            => 'get_author_template',
 		'is_date'              => 'get_date_template',
 		'is_archive'           => 'get_archive_template',
-	);
+	];
 
 	$template = false;
 
@@ -184,13 +184,19 @@ function filter_template_loader() {
 	// Return an empty array in {$type}_template_hierarchy to avoid file lookups but use
 	// the located templates to filter {$type}_template with our custom location.
 	foreach ( $template_types as $type ) {
-		add_filter( "{$type}_template_hierarchy", function ( $templates ) use ( $type ) {
-			add_filter( "{$type}_template", function () use ( $templates ) {
-				return locate_template( $templates );
-			} );
+		add_filter(
+			"{$type}_template_hierarchy",
+			function ( $templates ) use ( $type ) {
+				add_filter(
+					"{$type}_template",
+					function () use ( $templates ) {
+						return locate_template( $templates );
+					}
+				);
 
-			return [];
-		} );
+				return [];
+			}
+		);
 	}
 }
 
@@ -201,7 +207,7 @@ function filter_template_loader() {
  * @return string The path to the found template.
  */
 function locate_template( array $templates ): string {
-	$template_path = STYLESHEETPATH . '/templates/';
+	$template_path = get_stylesheet_directory() . '/templates/';
 
 	/**
 	 * Filter the path to Irving templates.
@@ -252,7 +258,7 @@ function locate_template( array $templates ): string {
  */
 function locate_template_part( string $template ): string {
 
-	$template_part_path = STYLESHEETPATH . '/template-parts/';
+	$template_part_path = get_stylesheet_directory() . '/template-parts/';
 
 	/**
 	 * Filter the path to Irving template parts.
@@ -391,7 +397,7 @@ function setup_component( $component ) {
 	// Convert strings to text components.
 	if ( is_string( $component ) ) {
 		$component = [
-			'name' => 'text',
+			'name'   => 'text',
 			'config' => [
 				'content' => $component,
 			],

@@ -15,23 +15,23 @@ class Cache_Tests extends WP_UnitTestCase {
 	/**
 	 * Helpers class instance.
 	 *
-	 * \WP_Irving_Test_Helpers
+	 * @var \WP_Irving_Test_Helpers
 	 */
-	static $helpers;
+	public static $helpers;
 
 	/**
 	 * Cache class instance.
 	 *
-	 * \WP_Irving\Cache
+	 * @var \WP_Irving\Cache
 	 */
-	static $cache;
+	public static $cache;
 
 	/**
 	 * Components endpoint instance.
 	 *
-	 * \WP_Irving\REST_API\Components_Endpoint
+	 * @var \WP_Irving\REST_API\Components_Endpoint
 	 */
-	static $components_endpoint;
+	public static $components_endpoint;
 
 	/**
 	 * Test suite setup.
@@ -47,7 +47,7 @@ class Cache_Tests extends WP_UnitTestCase {
 	public function test_get_post_purge_urls() {
 		$current_user = $this->factory->user->create_and_get(
 			[
-				'user_login'  => 'alley',
+				'user_login' => 'alley',
 			]
 		);
 		$current_post = $this->factory->post->create_and_get(
@@ -68,14 +68,14 @@ class Cache_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			self::$cache->get_post_purge_urls( $current_post->ID ),
 			[
-				'http://'. WP_TESTS_DOMAIN . '/2020/01/01/' . $current_post->post_title . '/',
-				'http://'. WP_TESTS_DOMAIN . '/',
-				'http://'. WP_TESTS_DOMAIN . '/category/uncategorized' . '/',
-				'http://'. WP_TESTS_DOMAIN . '/category/uncategorized/feed/',
-				'http://'. WP_TESTS_DOMAIN . '/tag/' . $current_term->slug . '/',
-				'http://'. WP_TESTS_DOMAIN . '/tag/' . $current_term->slug . '/feed/',
-				'http://'. WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/',
-				'http://'. WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/feed/',
+				'http://' . WP_TESTS_DOMAIN . '/2020/01/01/' . $current_post->post_title . '/',
+				'http://' . WP_TESTS_DOMAIN . '/',
+				'http://' . WP_TESTS_DOMAIN . '/category/uncategorized/',
+				'http://' . WP_TESTS_DOMAIN . '/category/uncategorized/feed/',
+				'http://' . WP_TESTS_DOMAIN . '/tag/' . $current_term->slug . '/',
+				'http://' . WP_TESTS_DOMAIN . '/tag/' . $current_term->slug . '/feed/',
+				'http://' . WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/',
+				'http://' . WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/feed/',
 			]
 		);
 	}
@@ -94,8 +94,8 @@ class Cache_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			self::$cache->get_term_purge_urls( $current_term->term_id ),
 			[
-				'http://'. WP_TESTS_DOMAIN . '/category/' . $current_term->slug . '/',
-				'http://'. WP_TESTS_DOMAIN . '/category/' . $current_term->slug . '/feed/',
+				'http://' . WP_TESTS_DOMAIN . '/category/' . $current_term->slug . '/',
+				'http://' . WP_TESTS_DOMAIN . '/category/' . $current_term->slug . '/feed/',
 			]
 		);
 	}
@@ -106,15 +106,15 @@ class Cache_Tests extends WP_UnitTestCase {
 	public function test_get_user_purge_urls() {
 		$current_user = $this->factory->user->create_and_get(
 			[
-				'user_login'  => 'alley',
+				'user_login' => 'alley',
 			]
 		);
 
 		$this->assertEquals(
 			self::$cache->get_user_purge_urls( $current_user ),
 			[
-				'http://'. WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/',
-				'http://'. WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/feed/',
+				'http://' . WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/',
+				'http://' . WP_TESTS_DOMAIN . '/author/' . $current_user->data->user_login . '/feed/',
 			]
 		);
 	}

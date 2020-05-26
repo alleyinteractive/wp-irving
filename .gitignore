@@ -8,3 +8,4 @@ vendor/
 *.sql
 *.tar.gz
 *.zip
+vendor

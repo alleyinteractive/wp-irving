@@ -65,7 +65,7 @@ class Safe_Redirect_Manager {
 		$redirect_match = $this->srm->match_redirect( untrailingslashit( $this->params['path'] ) );
 
 		// Add redirect_to and status_code from SRM match.
-		$data['redirectTo'] = empty( $data['redirectTo'] ) ?
+		$data['redirectTo']     = empty( $data['redirectTo'] ) ?
 			$redirect_match['redirect_to'] ?? '' :
 			$data['redirectTo'];
 		$data['redirectStatus'] = empty( $data['redirectStatus'] ) ?
