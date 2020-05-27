@@ -284,7 +284,7 @@ class Test_Helmet extends WP_UnitTestCase {
 		$this->assertNull( get_title_from_helmet( $helmet ), 'Title is not null when first Helmet child is a component.' );
 
 		// Title is `Foo Bar`.
-		$this->assertEquals( 'Foo Bar', get_title_from_helmet( $this->new_helmet_component( 'Foo Bar' ) ), 'Title is not `Foo Bar`.' );
+		$this->assertEquals( 'Foo Bar', get_title_from_helmet( $this->get_helmet_component( 'Foo Bar' ) ), 'Title is not `Foo Bar`.' );
 	}
 
 	/**
