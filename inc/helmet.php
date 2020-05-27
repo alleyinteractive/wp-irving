@@ -226,3 +226,28 @@ function parse_html( string $markup, array $tags ): array {
 	// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	return $parsed_markup;
 }
+
+/**
+ * Capture the markup output by WordPress for the favicon.
+ *
+ * @return string
+ */
+function get_favicon_markup(): string {
+	ob_start();
+	wp_site_icon();
+	return ob_get_clean();
+}
+
+/**
+ * Parse WP's favicon markup and inject it into the Helmet component.
+ *
+ * @param Component $helmet Helmet component to modify.
+ * @return Component
+ */
+function inject_favicon( Component $helmet ): Component {
+	return inject_head_tags(
+		$helmet,
+		parse_html( get_favicon_markup(), [ 'link', 'meta' ] )
+	);
+}
+add_action( 'wp_irving_default_helmet_component', __NAMESPACE__ . '\inject_favicon' );
