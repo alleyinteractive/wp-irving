@@ -306,7 +306,7 @@ class Test_Templates extends WP_UnitTestCase {
 	/**
 	 * Tests that context values are passed to non-registered components.
 	 */
-	function test_templates_with_text_nodes() {
+	public function test_templates_with_text_nodes() {
 
 		$template = [
 			[
@@ -315,7 +315,7 @@ class Test_Templates extends WP_UnitTestCase {
 					'content' => 'Foo Bar',
 				],
 			],
-			[ 'name' => 'example/component' ]
+			[ 'name' => 'example/component' ],
 		];
 
 		$expected = [

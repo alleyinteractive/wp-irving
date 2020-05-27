@@ -148,7 +148,7 @@ class Test_Helmet extends WP_UnitTestCase {
 	/**
 	 * Tests the automatic insertion and filters for <Helmet>.
 	 */
-	function test_setup_helmet() {
+	public function test_setup_helmet() {
 
 		/**
 		 * Setup some data to use while testing.
@@ -194,7 +194,7 @@ class Test_Helmet extends WP_UnitTestCase {
 
 		// Nothing should have happened.
 		$this->assertEquals( [], $data_with_helmet['defaults'], 'Defaults array was not empty.' );
-		$this->assertEquals( [], $data_with_helmet['page'],  'Page array was not empty.' );
+		$this->assertEquals( [], $data_with_helmet['page'], 'Page array was not empty.' );
 
 		// Re-enable functionality.
 		add_filter( 'wp_irving_setup_helmet', '__return_true' );
@@ -344,7 +344,7 @@ class Test_Helmet extends WP_UnitTestCase {
 					[
 						'attributes' => [],
 						'content'    => 'Irving Development - Just another WordPress site',
-					]
+					],
 				],
 			],
 			parse_html( $this->example_markup, [ 'title' ] )
@@ -370,14 +370,14 @@ class Test_Helmet extends WP_UnitTestCase {
 					],
 					[
 						'attributes' => [
-							'name' => 'googlebot',
+							'name'    => 'googlebot',
 							'content' => 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
 						],
 						'content'    => '',
 					],
 					[
 						'attributes' => [
-							'name' => 'bingbot',
+							'name'    => 'bingbot',
 							'content' => 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
 						],
 						'content'    => '',
@@ -389,7 +389,7 @@ class Test_Helmet extends WP_UnitTestCase {
 							'rel'  => 'canonical',
 							'href' => 'https://irving.alley.test/',
 						],
-						'content' => '',
+						'content'    => '',
 					],
 				],
 			],
@@ -406,7 +406,7 @@ class Test_Helmet extends WP_UnitTestCase {
 							'class' => 'yoast-schema-graph',
 						],
 						'content'    => '{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://irving.alley.test/#website","url":"https://irving.alley.test/","name":"Irving Development","description":"Just another WordPress site","potentialAction":[{"@type":"SearchAction","target":"https://irving.alley.test/?s={search_term_string}","query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"CollectionPage","@id":"https://irving.alley.test/#webpage","url":"https://irving.alley.test/","name":"Irving Development - Just another WordPress site","isPartOf":{"@id":"https://irving.alley.test/#website"},"description":"Just another WordPress site","inLanguage":"en-US"}]}',
-					]
+					],
 				],
 			],
 			parse_html( $this->example_markup, [ 'script' ] )

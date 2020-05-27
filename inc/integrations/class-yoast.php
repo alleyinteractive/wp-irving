@@ -52,7 +52,7 @@ class Yoast {
 	 */
 	public function get_yoasts_head_markup(): string {
 		ob_start();
-		\do_action( 'wpseo_head' );
+		\do_action( 'wpseo_head' ); // phpcs:ignore
 		return ob_get_clean();
 	}
 

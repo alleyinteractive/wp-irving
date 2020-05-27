@@ -416,7 +416,7 @@ function setup_component( $component ) {
 	// Convert strings to text components.
 	if ( is_string( $component ) ) {
 		$component = [
-			'name' => 'irving/text',
+			'name'   => 'irving/text',
 			'config' => [
 				'content' => $component,
 			],
