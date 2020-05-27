@@ -67,6 +67,15 @@ class Test_Helmet extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Helper to get a Helmet component without a title.
+	 *
+	 * @return Component
+	 */
+	public function get_no_title() {
+		return new Component( 'irving/helmet' );
+	}
+
+	/**
 	 * Return an array that matches the schema for the Components API.
 	 *
 	 * @return array
@@ -291,75 +300,36 @@ class Test_Helmet extends WP_UnitTestCase {
 		$this->assertEquals( 'Foo Bar', get_title_from_helmet( $helmet ) );
 	}
 
-
 	/**
-	 * Helper to get a Helmet component without a title.
-	 *
-	 * @return Component
+	 * Test the `test_create_or_update_title()` method with no parameter.
 	 */
-	public function get_no_title() {
-		return new Component( 'irving/helmet' );
-	}
-
-	/**
-	 * Helper to get a Helmet component with a title of `Foo Bar`.
-	 *
-	 * @return Component
-	 */
-	public function get_foo_bar_title() {
-		return ( new Component( 'irving/helmet' ) )
-			->prepend_child(
-				new Component(
-					'title',
-					[
-						'children' => [ 'Foo Bar' ]
-					]
-				)
-			);
-	}
-
-	/**
-	 * Helper to get a Helmet component with a title of `Hello World`.
-	 *
-	 * @return Component
-	 */
-	public function get_hello_world_title() {
-		return ( new Component( 'irving/helmet' ) )
-			->prepend_child(
-				new Component(
-					'title',
-					[
-						'children' => [ 'Hello World' ]
-					]
-				)
-			);
-	}
-
-	/**
-	 * Test the `create_or_update_title` function.
-	 */
-	public function test_create_or_update_title() {
-
-		// Confirm expected original data.
-		$this->assertNull( get_title_from_helmet( $this->get_no_title() ) );
-		$this->assertEquals( 'Foo Bar', get_title_from_helmet( $this->get_foo_bar_title() ) );
-		$this->assertEquals( 'Hello World', get_title_from_helmet( $this->get_hello_world_title() ) );
-
-		// Test no parameter.
+	public function test_create_or_update_title_with_no_parameter() {
 		$this->assertEquals( '', get_title_from_helmet( create_or_update_title( $this->get_no_title() ) ) );  // Create a title.
-		$this->assertEquals( '', get_title_from_helmet( create_or_update_title( $this->get_foo_bar_title() ) ) ); // Update a title.
+		$this->assertEquals( '', get_title_from_helmet( create_or_update_title( $this->get_helmet_component( 'Foo Bar' ) ) ) ); // Update a title.
+	}
 
-		// Test blank string.
+	/**
+	 * Test the `test_create_or_update_title()` method with a blank string.
+	 */
+	public function test_create_or_update_title_with_a_string() {
 		$this->assertEquals( '', get_title_from_helmet( create_or_update_title( $this->get_no_title(), '' ) ) ); // Create a title.
-		$this->assertEquals( '', get_title_from_helmet( create_or_update_title( $this->get_hello_world_title(), '' ) ) ); // Update a title.
+		$this->assertEquals( '', get_title_from_helmet( create_or_update_title( $this->get_helmet_component( 'Hello World' ), '' ) ) ); // Update a title.
+	}
 
-		// Test title creation.
+	/**
+	 * Test the `test_create_or_update_title()` method to create a title.
+	 */
+	public function test_create_or_update_title_to_create() {
 		$this->assertEquals( 'Foo Bar', get_title_from_helmet( create_or_update_title( $this->get_no_title(), 'Foo Bar' ) ) );
 		$this->assertEquals( 'Hello World', get_title_from_helmet( create_or_update_title( $this->get_no_title(), 'Hello World' ) ) );
+	}
 
-		// Test title updating.
-		$this->assertEquals( 'Hello World', get_title_from_helmet( create_or_update_title( $this->get_foo_bar_title(), 'Hello World' ) ) );
-		$this->assertEquals( 'Foo Bar', get_title_from_helmet( create_or_update_title( $this->get_hello_world_title(), 'Foo Bar' ) ) );
+	/**
+	 * Test the `test_create_or_update_title()` method to update a title.
+	 */
+	public function test_create_or_update_title_to_update() {
+		$this->assertEquals( 'Hello World', get_title_from_helmet( create_or_update_title( $this->get_helmet_component( 'Foo Bar' ), 'Hello World' ) ) );
+		$this->assertEquals( 'Foo Bar', get_title_from_helmet( create_or_update_title( $this->get_helmet_component( 'Hello World' ), 'Foo Bar' ) ) );
 	}
 
 	/**

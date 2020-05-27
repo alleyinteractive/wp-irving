@@ -333,7 +333,7 @@ class Test_Templates extends WP_UnitTestCase {
 		$this->assertEquals(
 			$expected,
 			Templates\hydrate_components( $template ),
-			'Could not get context in non-registered components.'
+			'`irving/text` component not turned into a string.'
 		);
 	}
 }
