@@ -37,6 +37,106 @@ class Test_Helmet extends WP_UnitTestCase {
 <!-- / Yoast SEO plugin. -->';
 
 	/**
+	 * Get a helmet component instance for testing.
+	 *
+	 * @param string|null $title Optional. Creates a child title component if
+	 *                           the value is a string.
+	 * @return Component
+	 */
+	public function get_helmet_component( ?string $title = null ): Component {
+
+		// New helmet component.
+		$helmet = new Component( 'irving/helmet' );
+
+		// No title component.
+		if ( is_null( $title ) ) {
+			return $helmet;
+		}
+
+		return $helmet->set_child( $this->get_title_component( $title ) );
+	}
+
+	/**
+	 * Get a title component instance for testing.
+	 *
+	 * @param string $title Title value.
+	 * @return Component
+	 */
+	public function get_title_component( string $title = '' ): Component {
+		return ( new Component( 'title' ) )->set_child( $title );
+	}
+
+	/**
+	 * Return an array that matches the schema for the Components API.
+	 *
+	 * @return array
+	 */
+	public function get_blank_data_array(): array {
+		return [
+			'defaults'       => [],
+			'page'           => [],
+			'providers'      => [],
+			'redirectTo'     => '',
+			'redirectStatus' => 0,
+		];
+	}
+
+	/**
+	 * Return the result from a clean run of `setup_helmet()`.
+	 *
+	 * @return array
+	 */
+	public function get_helmet_setup_result(): array {
+		return Templates\setup_helmet(
+			$this->get_blank_data_array(),
+			new \WP_Query(),
+			'site',
+			'/',
+			new \WP_Rest_Request()
+		);
+	}
+
+	/**
+	 * Get an example meta component.
+	 *
+	 * @return Component
+	 */
+	public function get_example_meta_component(): Component {
+		return ( new Component( 'meta' ) )
+			->set_config( 'name', 'robots' )
+			->set_config( 'content', 'noindex, follow' );
+	}
+
+	/**
+	 * Test the `get_helmet_component()` helper.
+	 */
+	public function test_get_helmet_component() {
+
+		// No parameter will get a simple component.
+		$this->assertEquals( ( new Component( 'irving/helmet' ) ), $this->get_helmet_component() );
+
+		// Empty title.
+		$this->assertEquals(
+			( new Component( 'irving/helmet' ) )
+				->set_child(
+					( new Component( 'title' ) )
+						->set_child( '' )
+				),
+			$this->get_helmet_component( '' )
+		);
+
+		// Example title.
+		$this->assertEquals(
+			( new Component( 'irving/helmet' ) )
+				->set_child(
+					( new Component( 'title' ) )
+						->set_child( 'Foo Bar' )
+				),
+			$this->get_helmet_component( 'Foo Bar' )
+		);
+	}
+
+	/**
 	 * Tests the automatic insertion and filters for <Helmet>.
 	 */
 	function test_setup_helmet() {
@@ -49,77 +149,105 @@ class Test_Helmet extends WP_UnitTestCase {
 
 		$page_title  = ( new Component( 'title' ) )->set_child( wp_title( '&raquo;', false ) );
 		$page_helmet = ( new Component( 'irving/helmet' ) )->set_child( $page_title );
+	}
 
-		// Example `meta` component.
-		$meta_example = ( new Component( 'meta' ) )
-			->set_config( 'name', 'robots' )
-			->set_config( 'content', 'noindex, follow' );
+	/**
+	 * Test the basic functionality of the `setup_helmet()` method.
+	 */
+	public function test_basic_setup_helmet() {
 
-		// Example endpoint data.
-		$data = [
-			'defaults'       => [],
-			'page'           => [],
-			'providers'      => [],
-			'redirectTo'     => '',
-			'redirectStatus' => 0,
-		];
+		// Run `setup_helmet()` on empty/blank data.
+		$data_with_helmet = $this->get_helmet_setup_result();
 
-		/**
-		 * Test the basic functionality.
-		 */
-		$data_with_helmet = Templates\setup_helmet( $data, new \WP_Query(), 'site', '/', new \WP_Rest_Request() );
-		$this->assertEquals( $default_helmet, $data_with_helmet['defaults'][0] );
-		$this->assertEquals( $page_helmet, $data_with_helmet['page'][0] );
+		$this->assertEquals(
+			$this->get_helmet_component( get_bloginfo( 'name' ) ),
+			$data_with_helmet['defaults'][0],
+			'Default Helmet title is not correct'
+		);
 
-		/**
-		 * Test disabling functionality via filter.
-		 */
+		$this->assertEquals(
+			$this->get_helmet_component( wp_title( '&raquo;', false ) ),
+			$data_with_helmet['page'][0],
+			'Page Helmet title is not correct'
+		);
+	}
+
+	/**
+	 * Test disabling the `setup_helmet()` functionality via filter.
+	 */
+	public function test_disabling_helmet_setup() {
+
+		// Disable functionality.
 		add_filter( 'wp_irving_setup_helmet', '__return_false' );
-		$data_with_helmet = Templates\setup_helmet( $data, new \WP_Query(), 'site', '/', new \WP_Rest_Request() );
-		$this->assertEquals( [], $data_with_helmet['defaults'] );
-		$this->assertEquals( [], $data_with_helmet['page'] );
-		add_filter( 'wp_irving_setup_helmet', '__return_true' );
 
-		/**
-		 * Test the default helmet filter.
-		 */
+		// Run `setup_helmet()` on empty/blank data.
+		$data_with_helmet = $this->get_helmet_setup_result();
+
+		// Nothing should have happened.
+		$this->assertEquals( [], $data_with_helmet['defaults'], 'Defaults array was not empty.' );
+		$this->assertEquals( [], $data_with_helmet['page'],  'Page array was not empty.' );
+
+		// Re-enable functionality.
+		add_filter( 'wp_irving_setup_helmet', '__return_true' );
+	}
+
+	/**
+	 * Test the default helmet filter.
+	 */
+	public function test_default_helmet_filter() {
+
+		// Get an example meta component.
+		$meta_example = $this->get_example_meta_component();
+
+		// Filter the default helmet component to include the meta component.
 		add_filter(
 			'wp_irving_default_helmet_component',
 			function( $helmet ) use ( $meta_example ) {
-				$helmet->prepend_child( $meta_example ); // Pre-pend so we can test more complex output.
+				$helmet->prepend_child( $meta_example );
 				return $helmet;
 			}
 		);
 
 		// Run setup with the new helmet filter in place.
-		$data_with_helmet = Templates\setup_helmet( $data, new \WP_Query(), 'site', '/', new \WP_Rest_Request() );
+		$data_with_helmet = $this->get_helmet_setup_result();
+
 		$this->assertEquals(
 			[
 				$meta_example,
-				$default_title,
+				$this->get_title_component( get_bloginfo( 'name' ) ),
 			],
-			$data_with_helmet['defaults'][0]->get_children()
+			$data_with_helmet['defaults'][0]->get_children(),
+			'Default helmet component has incorrect children.'
 		);
+	}
 
-		/**
-		 * Test the page helmet filter.
-		 */
+	/**
+	 * Test the page helmet filter.
+	 */
+	public function test_page_helmet_filter() {
+
+		// Get an example meta component.
+		$meta_example = $this->get_example_meta_component();
+
+		// Filter the page helmet component to include the meta component.
 		add_filter(
 			'wp_irving_page_helmet_component',
 			function( $helmet ) use ( $meta_example ) {
-				$helmet->prepend_child( $meta_example ); // Pre-pend so we can test more complex output.
+				$helmet->prepend_child( $meta_example );
 				return $helmet;
 			}
 		);
 
 		// Run setup with the new helmet filter in place.
-		$data_with_helmet = Templates\setup_helmet( $data, new \WP_Query(), 'site', '/', new \WP_Rest_Request() );
+		$data_with_helmet = $this->get_helmet_setup_result();
+
 		$this->assertEquals(
 			[
 				$meta_example,
-				$page_title,
+				$this->get_title_component( wp_title( '&raquo;', false ) ),
 			],
-			$data_with_helmet['page'][0]->get_children()
+			$data_with_helmet['page'][0]->get_children(),
+			'Page helmet component has incorrect children.'
 		);
 	}
 
@@ -142,7 +270,7 @@ class Test_Helmet extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test the `get_title_from_helmet()` functin.
+	 * Test the `get_title_from_helmet()` function.
 	 */
 	public function test_get_title_from_helmet() {
 
