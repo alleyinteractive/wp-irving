@@ -302,4 +302,38 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$this->assertEquals( $expected, $hydrated, 'Template partial not hydrated correctly.' );
 	}
+
+	/**
+	 * Tests that context values are passed to non-registered components.
+	 */
+	public function test_templates_with_text_nodes() {
+
+		$template = [
+			[
+				'name'   => 'irving/text',
+				'config' => [
+					'content' => 'Foo Bar',
+				],
+			],
+			[ 'name' => 'example/component' ],
+		];
+
+		$expected = [
+			'Foo Bar',
+			[
+				'name'     => 'example/component',
+				'config'   => (object) [
+					'themeName'    => 'default',
+					'themeOptions' => [ 'default' ],
+				],
+				'children' => [],
+			],
+		];
+
+		$this->assertEquals(
+			$expected,
+			Templates\hydrate_components( $template ),
+			'`irving/text` component not turned into a string.'
+		);
+	}
 }
