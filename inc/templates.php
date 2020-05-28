@@ -135,12 +135,25 @@ function prepare_data_from_template( string $template, string $type = 'page' ): 
 	include $template;
 	$contents = ob_get_clean();
 
-	// Attempt to json decode it.
-	$components = json_decode( $contents, true );
+	// This is a .json template.
+	if ( false !== strpos( $template, '.json' ) ) {
 
-	// Validate success.
-	if ( ! json_last_error() ) {
-		return $components;
+		// Attempt to json decode it.
+		$components = json_decode( $contents, true );
+
+		// Validate success.
+		if ( ! json_last_error() ) {
+			return $components;
+		}
+
+		wp_die(
+			sprintf(
+				// Translators: %1$s: Error message, %2$s Template path.
+				esc_html__( 'Error: %1$s found in %2$s.', 'wp-irving' ),
+				esc_html( json_last_error_msg() ),
+				esc_html( $template )
+			)
+		);
 	}
 
 	if ( has_blocks( $contents ) ) {
@@ -451,15 +464,46 @@ function parse_config_from_registry( array $component ) {
 	$parsed_config = [];
 
 	$type_callbacks = [
-		'array'  => 'is_array',
-		'bool'   => 'is_bool',
-		'int'    => 'is_int',
-		'number' => 'is_numeric',
-		'string' => 'is_string',
-		'text'   => 'is_string',
+		'array'   => 'is_array',
+		'bool'    => 'is_bool',
+		'int'     => 'is_int',
+		'integer' => 'is_int',
+		'number'  => 'is_numeric',
+		'string'  => 'is_string',
+		'text'    => 'is_string',
 	];
 
-	foreach ( $registered['config'] ?? [] as $key => $atts ) {
+	// Loop through registered config.
+	foreach ( ( $registered['config'] ?? [] ) as $key => $atts ) {
+
+		// If the config's type is not registered, throw a fatal.
+		if ( ! isset( $type_callbacks[ $atts['type'] ] ) ) {
+			wp_die(
+				sprintf(
+					// Translators: %1$s - Config key name, %2$s - Incorrect type, %3$s - Component namme, %4$s allowed types as string.
+					esc_html__( 'The `%1$s` key is registered as `%2$s` for component `%3$s`\'. It must be one of [ %4$s ].', 'wp-irving' ),
+					esc_html( $key ),
+					esc_html( $atts['type'] ),
+					esc_html( $component['name'] ),
+					esc_html(
+						implode(
+							', ',
+							array_map(
+								function( $callback_key ) {
+									return sprintf(
+										'\'%1$s\'', // Wrap the key in single quotes.
+										$callback_key
+									);
+								},
+								array_keys( $type_callbacks )
+							)
+						)
+					)
+				)
+			);
+		}
+
+		// This value has been set and a sanitize callback exists.
 		if (
 			isset( $component['config'][ $key ] ) &&
 			( call_user_func( $type_callbacks[ $atts['type'] ], $component['config'][ $key ] ) )
@@ -475,6 +519,7 @@ function parse_config_from_registry( array $component ) {
 	$registered_property = [
 		'callback',
 		'provides_context',
+		'theme_options',
 		'use_context',
 	];
 

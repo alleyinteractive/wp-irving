@@ -122,7 +122,7 @@ class Component implements JsonSerializable {
 
 		// Set up theme values.
 		$this->set_theme_options( $args['theme_options'] );
-		$this->set_theme( $args['theme'] );
+		$this->set_theme( $args['theme'], true );
 
 		// Set up context values.
 		$this->set_provides_context( $args['provides_context'] );
@@ -212,8 +212,8 @@ class Component implements JsonSerializable {
 	public function set_config( $config_array_or_key, $value = null ): self {
 
 		// Set the entire config.
-		if ( is_array( $config_array_or_key ) ) {
-			$this->config = $config_array_or_key;
+		if ( is_array( $config_array_or_key ) || is_object( $config_array_or_key ) ) {
+			$this->config = (array) $config_array_or_key;
 			return $this;
 		}
 
@@ -741,8 +741,8 @@ class Component implements JsonSerializable {
 	 */
 	public function to_array(): array {
 		// Add the theme name to the config as Irving core expects.
-		$this->set_config( 'theme_name', $this->get_theme() );
-		$this->set_config( 'theme_options', $this->get_theme_options() );
+		$this->set_config( 'theme_name', self::camel_case( $this->get_theme() ) );
+		$this->set_config( 'theme_options', array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) );
 
 		return [
 			'name'     => $this->get_name(),
