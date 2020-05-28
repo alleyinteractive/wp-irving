@@ -401,7 +401,7 @@ function hydrate_components( array $components ) {
 		if ( 'irving/text' === $component->get_name() ) {
 			$hydrated[] = $component->get_config( 'content' );
 		} else {
-			$hydrated[] = $component;
+			$hydrated[] = $component->jsonSerialize();
 		}
 	};
 
