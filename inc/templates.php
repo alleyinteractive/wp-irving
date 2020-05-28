@@ -499,8 +499,8 @@ function parse_config_from_registry( array $component ) {
 
 		// This value has been set and a sanitize callback exists.
 		if (
-			isset( $component['config'][ $key ] )
-			&& ( call_user_func( $type_callbacks[ $atts['type'] ], $component['config'][ $key ] ) )
+			isset( $component['config'][ $key ] ) &&
+			( call_user_func( $type_callbacks[ $atts['type'] ], $component['config'][ $key ] ) )
 		) {
 			$parsed_config[ $key ] = $component['config'][ $key ];
 		} elseif ( isset( $atts['default'] ) ) {
