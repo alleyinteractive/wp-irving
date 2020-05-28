@@ -527,8 +527,8 @@ function parse_config_from_registry( array $component ) {
 		$component[ $prop ] = $registered[ $prop ] ?? [];
 	}
 
-	if ( ! empty( $registered[ 'theme_options' ] ) ) {
-		$component[ 'theme_options' ] = $registered[ 'theme_options' ];
+	if ( ! empty( $registered['theme_options'] ) ) {
+		$component['theme_options'] = $registered['theme_options'];
 	}
 
 	return $component;
