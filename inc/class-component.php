@@ -122,7 +122,7 @@ class Component implements JsonSerializable {
 
 		// Set up theme values.
 		$this->set_theme_options( $args['theme_options'] );
-		$this->set_theme( $args['theme'], true );
+		$this->set_theme( $args['theme'] );
 
 		// Set up context values.
 		$this->set_provides_context( $args['provides_context'] );

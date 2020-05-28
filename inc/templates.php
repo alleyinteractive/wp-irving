@@ -519,13 +519,16 @@ function parse_config_from_registry( array $component ) {
 	$registered_property = [
 		'callback',
 		'provides_context',
-		'theme_options',
 		'use_context',
 	];
 
 	// Hydrate the rest of the component from the registry.
 	foreach ( $registered_property as $prop ) {
 		$component[ $prop ] = $registered[ $prop ] ?? [];
+	}
+
+	if ( ! empty( $registered[ 'theme_options' ] ) ) {
+		$component[ 'theme_options' ] = $registered[ 'theme_options' ];
 	}
 
 	return $component;
