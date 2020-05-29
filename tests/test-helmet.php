@@ -377,6 +377,7 @@ class Test_Helmet extends WP_UnitTestCase {
 					[
 						'attributes' => [],
 						'content'    => 'Irving Development - Just another WordPress site',
+						'tag'        => 'title',
 					],
 				],
 			],
@@ -394,6 +395,7 @@ class Test_Helmet extends WP_UnitTestCase {
 							'content' => 'Just another WordPress site',
 						],
 						'content'    => '',
+						'tag'        => 'meta',
 					],
 					[
 						'attributes' => [
@@ -401,6 +403,7 @@ class Test_Helmet extends WP_UnitTestCase {
 							'content' => 'index, follow',
 						],
 						'content'    => '',
+						'tag'        => 'meta',
 					],
 					[
 						'attributes' => [
@@ -408,6 +411,7 @@ class Test_Helmet extends WP_UnitTestCase {
 							'content' => 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
 						],
 						'content'    => '',
+						'tag'        => 'meta',
 					],
 					[
 						'attributes' => [
@@ -415,6 +419,7 @@ class Test_Helmet extends WP_UnitTestCase {
 							'content' => 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1',
 						],
 						'content'    => '',
+						'tag'        => 'meta',
 					],
 				],
 				'link' => [
@@ -424,6 +429,7 @@ class Test_Helmet extends WP_UnitTestCase {
 							'href' => 'https://irving.alley.test/',
 						],
 						'content'    => '',
+						'tag'        => 'link',
 					],
 				],
 			],
@@ -441,6 +447,7 @@ class Test_Helmet extends WP_UnitTestCase {
 							'class' => 'yoast-schema-graph',
 						],
 						'content'    => '{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://irving.alley.test/#website","url":"https://irving.alley.test/","name":"Irving Development","description":"Just another WordPress site","potentialAction":[{"@type":"SearchAction","target":"https://irving.alley.test/?s={search_term_string}","query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"CollectionPage","@id":"https://irving.alley.test/#webpage","url":"https://irving.alley.test/","name":"Irving Development - Just another WordPress site","isPartOf":{"@id":"https://irving.alley.test/#website"},"description":"Just another WordPress site","inLanguage":"en-US"}]}',
+						'tag'        => 'script',
 					],
 				],
 			],
