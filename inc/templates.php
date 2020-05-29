@@ -401,14 +401,7 @@ function hydrate_components( array $components ) {
 		// Reset context to where it was before hydration.
 		get_template_context()->reset();
 
-		// Convert text nodes to actual text notes.
-		// @todo there's _definitely_ a better way to do this, but certain
-		// Irving core functionality won't work without this hack.
-		if ( 'irving/text' === $component->get_name() ) {
-			$hydrated[] = $component->get_config( 'content' );
-		} else {
-			$hydrated[] = $component->jsonSerialize();
-		}
+		$hydrated[] = $component->jsonSerialize();
 	};
 
 	return $hydrated;
@@ -528,6 +521,12 @@ function parse_config_from_registry( array $component ) {
 		$component[ $prop ] = $registered[ $prop ] ?? [];
 	}
 
+	// Set the schema.
+	if ( ! empty( $registered['config'] ?? [] ) ) {
+		$component['schema'] = $registered['config'];
+	}
+
+	// Set the theme options.
 	if ( ! empty( $registered['theme_options'] ?? [] ) ) {
 		$component['theme_options'] = $registered['theme_options'];
 	}

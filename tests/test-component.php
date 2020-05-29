@@ -226,6 +226,48 @@ class Component_Tests extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests for the `get_schemaa()` method.
+	 */
+	public function test_get_schema() {
+
+		$schema_example = $this->get_component( 'schema' );
+
+		$expects = [
+			'wp_query' => [
+				'default' => null,
+				'hidden'  => true,
+				'type'    => 'null',
+			],
+		];
+
+		$this->assertEquals( $expects, $schema_example->get_schema(), 'Schema did not match what was expected.' );
+	}
+
+	/**
+	 * Tests for the `set_schemaa()` method.
+	 */
+	public function test_set_schema() {
+
+		$new_schmea = [
+			'post' => [],
+		];
+
+		$expects = [
+			'post' => [
+				'default' => null,
+				'hidden'  => false,
+				'type'    => 'null',
+			],
+		];
+
+		$schema_example = $this->get_component( 'schema' );
+
+		$schema_example->set_schema( $new_schmea );
+
+		$this->assertEquals( $expects, $schema_example->get_schema(), 'Schema did not match what was expected.' );
+	}
+
+	/**
 	 * Tests for the `get_children()` method.
 	 */
 	public function test_get_children() {
@@ -778,6 +820,20 @@ class Component_Tests extends WP_UnitTestCase {
 						'themeOptions' => [
 							'primary',
 							'secondary',
+						],
+					],
+					'children' => [],
+				],
+			],
+			[
+				'schema',
+				[
+					'name'     => 'irving/schema',
+					'config'   => (object) [
+						'wpQuery'      => null,
+						'themeName'    => 'default',
+						'themeOptions' => [
+							'default',
 						],
 					],
 					'children' => [],
