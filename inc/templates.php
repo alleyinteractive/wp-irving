@@ -471,6 +471,7 @@ function parse_config_from_registry( array $component ) {
 		'number'  => 'is_numeric',
 		'string'  => 'is_string',
 		'text'    => 'is_string',
+		'object'  => 'is_object'
 	];
 
 	// Loop through registered config.

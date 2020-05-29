@@ -218,6 +218,7 @@ function parse_html( string $markup, array $tags ): array {
 			$parsed_markup[ $tag ][] = [
 				'attributes' => $attributes,
 				'content'    => $node->nodeValue,
+				'tag'        => $node->tagName,
 			];
 		}
 	}
