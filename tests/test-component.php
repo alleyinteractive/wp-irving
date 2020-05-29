@@ -841,4 +841,116 @@ class Component_Tests extends WP_UnitTestCase {
 			],
 		];
 	}
+
+	/**
+	 * Tests for the component filter in the `jsonSerialize()` method.
+	 */
+	public function test_json_serialize_component_filter() {
+
+		$component = new Component( 'irving/text' );
+
+		add_filter( 'wp_irving_serialize_component', [ $this, 'wp_irving_serialize_component_action' ] );
+
+		$this->assertEquals(
+			[
+				'name'     => 'irving/text',
+				'config'   => (object) [
+					'test'         => true,
+					'themeName'    => 'default',
+					'themeOptions' => [
+						'default',
+					],
+				],
+				'children' => [],
+			],
+			$component->jsonSerialize(),
+			'Component serialization filter did not modify data correctly.'
+		);
+
+		remove_filter( 'wp_irving_serialize_component', [ $this, 'wp_irving_serialize_component_action' ] );
+
+		// Reset to test again.
+		$component = new Component( 'irving/text' );
+
+		$this->assertEquals(
+			[
+				'name'     => 'irving/text',
+				'config'   => (object) [
+					'themeName'    => 'default',
+					'themeOptions' => [
+						'default',
+					],
+				],
+				'children' => [],
+			],
+			$component->jsonSerialize(),
+			'Component serialization filter was not removed correctly.'
+		);
+	}
+
+	/**
+	 * Modify the config value of a component using a filter.
+	 *
+	 * @param Component $component Component instance.
+	 * @return Component
+	 */
+	public function wp_irving_serialize_component_action( Component $component ): Component {
+		return $component->set_config( 'test', true );
+	}
+	/**
+	 * Tests for the component (array) filter in the `jsonSerialize()` method.
+	 */
+	public function test_json_serialize_component_array_filter() {
+
+		$component = new Component( 'irving/text' );
+
+		add_filter( 'wp_irving_serialize_component_array', [ $this, 'wp_irving_serialize_component_array_action' ] );
+
+		$this->assertEquals(
+			[
+				'name'     => 'irving/text',
+				'config'   => (object) [
+					'test'         => true,
+					'themeName'    => 'default',
+					'themeOptions' => [
+						'default',
+					],
+				],
+				'children' => [],
+			],
+			$component->jsonSerialize(),
+			'Component serialization filter did not modify data correctly.'
+		);
+
+		remove_filter( 'wp_irving_serialize_component_array', [ $this, 'wp_irving_serialize_component_array_action' ] );
+
+		// Reset to test again.
+		$component = new Component( 'irving/text' );
+
+		$this->assertEquals(
+			[
+				'name'     => 'irving/text',
+				'config'   => (object) [
+					'themeName'    => 'default',
+					'themeOptions' => [
+						'default',
+					],
+				],
+				'children' => [],
+			],
+			$component->jsonSerialize(),
+			'Component serialization filter was not removed correctly.'
+		);
+	}
+
+	/**
+	 * Modify the config value of a component (as an array) using a filter.
+	 *
+	 * @param array $component Component (as an array).
+	 * @return array
+	 */
+	public function wp_irving_serialize_component_array_action( array $component ): array {
+		$component['config']->test = true;
+		return $component;
+	}
 }

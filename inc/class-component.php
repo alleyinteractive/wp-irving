@@ -34,11 +34,20 @@ class Component implements JsonSerializable {
 	/**
 	 * Config schema.
 	 *
-	 * @todo Implement this.
-	 *
 	 * @var array
 	 */
 	protected $schema = [];
+
+	/**
+	 * Default schema for any given config.
+	 *
+	 * @var array
+	 */
+	protected $schema_shape = [
+		'default' => null,
+		'hidden'  => false,
+		'type'    => 'null',
+	];
 
 	/**
 	 * Children.
@@ -268,14 +277,7 @@ class Component implements JsonSerializable {
 
 		// Ensure that every schema has all the expected properties.
 		foreach ( $schema as $key => &$properties ) {
-			$properties = wp_parse_args(
-				$properties,
-				[
-					'default' => null,
-					'hidden'  => false,
-					'type'    => 'null',
-				]
-			);
+			$properties = wp_parse_args( $properties, $this->schema_shape );
 		}
 
 		$this->schema = $schema;
