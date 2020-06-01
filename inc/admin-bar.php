@@ -32,17 +32,19 @@ function setup_admin_bar(
 		return $data;
 	}
 
-	// Only show the admin bar if logged in.
-	if ( ! is_user_logged_in() ) {
-		return $data;
-	}
-
 	// Unshift an admin bar component to the top of the `defaults` array.
+	// This needs to be included in the `defaults` array regardless of whether
+	// the user is logged in.
 	if ( 'site' === $context ) {
 		array_unshift(
 			$data['defaults'],
 			new Component( 'irving/admin-bar' )
 		);
+	}
+
+	// Only show the admin bar if logged in.
+	if ( ! is_user_logged_in() ) {
+		return $data;
 	}
 
 	// Unshift an admin bar component to the top of the `page` array.
