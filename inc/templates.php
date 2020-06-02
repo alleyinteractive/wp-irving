@@ -53,6 +53,9 @@ function load_template(
 
 	$data['page'] = hydrate_components( $data['page'] );
 
+	// Automatically setup an admin bar component.
+	$data = setup_admin_bar( $data, $query, $context, $path, $request );
+
 	// Automatically setup the <Helmet> tag.
 	$data = setup_helmet( $data, $query, $context, $path, $request );
 
@@ -471,6 +474,7 @@ function parse_config_from_registry( array $component ) {
 		'number'  => 'is_numeric',
 		'string'  => 'is_string',
 		'text'    => 'is_string',
+		'object'  => 'is_object',
 	];
 
 	// Loop through registered config.
