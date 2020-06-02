@@ -131,7 +131,7 @@ class Registry {
 			// Recursively loop through $path, including anything that ends in index.php.
 			$directory_iterator = new \RecursiveDirectoryIterator( $path );
 			$iterator           = new \RecursiveIteratorIterator( $directory_iterator );
-			$regex              = new \RegexIterator( $iterator, '/.+\/index\.php$/', \RecursiveRegexIterator::ALL_MATCHES );
+			$regex              = new \RegexIterator( $iterator, '/.+\/register\.php$/', \RecursiveRegexIterator::ALL_MATCHES );
 
 			// Include each index.php entry point.
 			foreach ( $regex as $file_path ) {
