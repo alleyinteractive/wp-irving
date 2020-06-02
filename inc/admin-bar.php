@@ -50,7 +50,14 @@ function setup_admin_bar(
 	// Unshift an admin bar component to the top of the `page` array.
 	array_unshift(
 		$data['page'],
-		new Component( 'irving/admin-bar' )
+		new Component(
+			'irving/admin-bar',
+			[
+				'config' => [
+					'iframe_src' => site_url( $path ),
+				],
+			]
+		)
 	);
 
 	return $data;
