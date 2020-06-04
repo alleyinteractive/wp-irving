@@ -575,13 +575,28 @@ function hydrate_template_parts( $component ) {
  * @return WP_Irving\Context_Store The context store object.
  */
 function get_template_context() {
+	global $wp_query;
 	static $context;
 
 	if ( empty( $context ) ) {
 		$context = new WP_Irving\Context_Store();
 
 		// Set default context.
-		$context->set( [ 'irving/post' => get_the_ID() ] );
+		switch ( true ) {
+			case $wp_query->is_single():
+				$context->set( [ 'irving/post_id' => get_the_ID() ] );
+				break;
+
+			case $wp_query->is_archive():
+				$context->set(
+					[
+						'irving/archive_title'  => get_the_archive_title(),
+						'irving/queried_object' => get_queried_object(),
+						'irving/term_id'        => get_queried_object_id(),
+					]
+				);
+				break;
+		}
 	}
 
 	return $context;
