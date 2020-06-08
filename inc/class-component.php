@@ -798,8 +798,8 @@ class Component implements JsonSerializable {
 		$this->set_config( 'theme_options', array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) );
 
 		// Null any config keys where the schema has hidden = true.
-		foreach ( $this->get_schema() as $key => $schmea ) {
-			if ( $schmea['hidden'] ) {
+		foreach ( $this->get_schema() as $key => $schema ) {
+			if ( $schema['hidden'] ) {
 				$this->set_config( $key, null );
 			}
 		}
