@@ -53,6 +53,9 @@ function load_template(
 
 	$data['page'] = hydrate_components( $data['page'] );
 
+	// Automatically setup an admin bar component.
+	$data = setup_admin_bar( $data, $query, $context, $path, $request );
+
 	// Automatically setup the <Helmet> tag.
 	$data = setup_helmet( $data, $query, $context, $path, $request );
 
@@ -523,7 +526,7 @@ function parse_config_from_registry( array $component ) {
 
 	// Set the schema.
 	if ( ! empty( $registered['config'] ?? [] ) ) {
-		$component['schema'] = $registered['config'];
+		$component['config_schema'] = $registered['config'];
 	}
 
 	// Set the theme options.

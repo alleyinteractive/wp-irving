@@ -36,14 +36,14 @@ class Component implements JsonSerializable {
 	 *
 	 * @var array
 	 */
-	protected $schema = [];
+	protected $config_schema = [];
 
 	/**
 	 * Default schema for any given config.
 	 *
 	 * @var array
 	 */
-	protected $schema_shape = [
+	protected $config_schema_shape = [
 		'default' => null,
 		'hidden'  => false,
 		'type'    => 'null',
@@ -114,7 +114,7 @@ class Component implements JsonSerializable {
 			$args,
 			[
 				'config'           => [],
-				'schema'           => [],
+				'config_schema'    => [],
 				'children'         => [],
 				'theme'            => 'default',
 				'theme_options'    => [ 'default' ],
@@ -127,8 +127,8 @@ class Component implements JsonSerializable {
 		// Set up config.
 		$this->set_config( $args['config'] );
 
-		// Set up schema.
-		$this->set_schema( $args['schema'] );
+		// Set up config_schema.
+		$this->set_config_schema( $args['config_schema'] );
 
 		// Set up children.
 		$this->set_children( $args['children'] );
@@ -259,28 +259,28 @@ class Component implements JsonSerializable {
 	}
 
 	/**
-	 * Get the schema.
+	 * Get the config schema.
 	 *
 	 * @return array
 	 */
-	public function get_schema() {
-		return $this->schema;
+	public function get_config_schema() {
+		return $this->config_schema;
 	}
 
 	/**
 	 * Set schema describing config.
 	 *
-	 * @param array $schema Schema array.
+	 * @param array $config_schema Schema array.
 	 * @return self
 	 */
-	public function set_schema( array $schema ): self {
+	public function set_config_schema( array $config_schema ): self {
 
 		// Ensure that every schema has all the expected properties.
-		foreach ( $schema as $key => &$properties ) {
-			$properties = wp_parse_args( $properties, $this->schema_shape );
+		foreach ( $config_schema as $key => &$properties ) {
+			$properties = wp_parse_args( $properties, $this->config_schema_shape );
 		}
 
-		$this->schema = $schema;
+		$this->config_schema = $config_schema;
 		return $this;
 	}
 
@@ -797,9 +797,9 @@ class Component implements JsonSerializable {
 		$this->set_config( 'theme_name', self::camel_case( $this->get_theme() ) );
 		$this->set_config( 'theme_options', array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) );
 
-		// Null any config keys where the schema has hidden = true.
-		foreach ( $this->get_schema() as $key => $schmea ) {
-			if ( $schmea['hidden'] ) {
+		// Null any config keys where the config schema has hidden = true.
+		foreach ( $this->get_config_schema() as $key => $config_schema ) {
+			if ( $config_schema['hidden'] ) {
 				$this->set_config( $key, null );
 			}
 		}
