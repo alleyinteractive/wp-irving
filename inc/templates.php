@@ -449,10 +449,22 @@ function setup_component( $component ) {
  * @return array A parsed array using registered values.
  */
 function parse_config_from_registry( array $component ) {
+
 	$registered = WP_Irving\get_registry()->get_registered_component( $component['name'] );
 
 	if ( empty( $registered ) ) {
 		return $component;
+	}
+
+	// Ensure $alias is a string.
+	$alias = (string) ( $registered['alias'] ?? '' );
+	if ( ! empty( $alias ) ) {
+
+		// Get the registered alias component, and merge with the original registry data.
+		$registered_alias = WP_Irving\get_registry()->get_registered_component( $registered['alias'] );
+		if ( ! is_null( $registered_alias ) ) {
+			$registered = array_merge( $registered_alias, $registered );
+		}
 	}
 
 	// Loop through all registered config keys and set them from passed
