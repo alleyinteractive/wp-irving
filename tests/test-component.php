@@ -262,7 +262,7 @@ class Component_Tests extends WP_UnitTestCase {
 
 		$schema_example = $this->get_component( 'schema' );
 
-		$schema_example->set_schema( $new_schmea );
+		$schema_example->set_schema( $new_schema );
 
 		$this->assertEquals( $expects, $schema_example->get_schema(), 'Schema did not match what was expected.' );
 	}
