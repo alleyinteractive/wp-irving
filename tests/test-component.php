@@ -248,7 +248,7 @@ class Component_Tests extends WP_UnitTestCase {
 	 */
 	public function test_set_schema() {
 
-		$new_schmea = [
+		$new_schema = [
 			'post' => [],
 		];
 
