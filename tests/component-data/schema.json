@@ -5,7 +5,7 @@
 			"example"
 		]
 	},
-	"schema": {
+	"config_schema": {
 		"wp_query": {
 			"hidden": true
 		}

@@ -526,7 +526,7 @@ function parse_config_from_registry( array $component ) {
 
 	// Set the schema.
 	if ( ! empty( $registered['config'] ?? [] ) ) {
-		$component['schema'] = $registered['config'];
+		$component['config_schema'] = $registered['config'];
 	}
 
 	// Set the theme options.

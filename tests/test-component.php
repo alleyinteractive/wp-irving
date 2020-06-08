@@ -226,9 +226,9 @@ class Component_Tests extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests for the `get_schemaa()` method.
+	 * Tests for the `get_config_schema()` method.
 	 */
-	public function test_get_schema() {
+	public function test_get_config_schema() {
 
 		$schema_example = $this->get_component( 'schema' );
 
@@ -240,13 +240,13 @@ class Component_Tests extends WP_UnitTestCase {
 			],
 		];
 
-		$this->assertEquals( $expects, $schema_example->get_schema(), 'Schema did not match what was expected.' );
+		$this->assertEquals( $expects, $schema_example->get_config_schema(), 'Config schema did not match what was expected.' );
 	}
 
 	/**
-	 * Tests for the `set_schemaa()` method.
+	 * Tests for the `set_config_schema()` method.
 	 */
-	public function test_set_schema() {
+	public function test_set_config_schema() {
 
 		$new_schema = [
 			'post' => [],
@@ -262,9 +262,9 @@ class Component_Tests extends WP_UnitTestCase {
 
 		$schema_example = $this->get_component( 'schema' );
 
-		$schema_example->set_schema( $new_schema );
+		$schema_example->set_config_schema( $new_schema );
 
-		$this->assertEquals( $expects, $schema_example->get_schema(), 'Schema did not match what was expected.' );
+		$this->assertEquals( $expects, $schema_example->get_config_schema(), 'Schema did not match what was expected.' );
 	}
 
 	/**
