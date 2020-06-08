@@ -524,6 +524,11 @@ function parse_config_from_registry( array $component ) {
 		$component[ $prop ] = $registered[ $prop ] ?? [];
 	}
 
+	// Set the alias.
+	if ( ! empty( $registered['alias'] ?? [] ) ) {
+		$component['alias'] = $registered['alias'];
+	}
+
 	// Set the schema.
 	if ( ! empty( $registered['config'] ?? [] ) ) {
 		$component['config_schema'] = $registered['config'];

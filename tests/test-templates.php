@@ -171,6 +171,7 @@ class Test_Templates extends WP_UnitTestCase {
 		$expected = [
 			[
 				'name'     => 'provider',
+				'alias'    => '',
 				'config'   => (object) [
 					'propWithDefault'           => 'default value',
 					'propWithDefaultOverridden' => 20,
@@ -181,6 +182,7 @@ class Test_Templates extends WP_UnitTestCase {
 				'children' => [
 					[
 						'name'     => 'consumer',
+						'alias'    => '',
 						'config'   => (object) [
 							'propWithDefault'           => 'default value',
 							'propWithDefaultOverridden' => 20,
@@ -228,6 +230,7 @@ class Test_Templates extends WP_UnitTestCase {
 		$expected = [
 			[
 				'name'     => 'provider',
+				'alias'    => '',
 				'config'   => (object) [
 					'testProvided' => 20,
 					'themeName'    => 'default',
@@ -236,6 +239,7 @@ class Test_Templates extends WP_UnitTestCase {
 				'children' => [
 					[
 						'name'     => 'consumer',
+						'alias'    => '',
 						'config'   => (object) [
 							'testUsed'     => 20,
 							'themeName'    => 'default',
@@ -268,6 +272,7 @@ class Test_Templates extends WP_UnitTestCase {
 		$expected = [
 			[
 				'name'     => 'example/component',
+				'alias'    => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [ 'default' ],
@@ -276,6 +281,7 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 			[
 				'name'     => 'example/component1',
+				'alias'    => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [ 'default' ],
@@ -284,6 +290,7 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 			[
 				'name'     => 'example/component2',
+				'alias'    => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [ 'default' ],
@@ -291,6 +298,7 @@ class Test_Templates extends WP_UnitTestCase {
 				'children' => [
 					[
 						'name'     => 'example/component3',
+						'alias'    => '',
 						'config'   => (object) [
 							'themeName'    => 'default',
 							'themeOptions' => [ 'default' ],
