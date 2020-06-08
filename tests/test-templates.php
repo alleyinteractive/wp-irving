@@ -95,7 +95,8 @@ class Test_Templates extends WP_UnitTestCase {
 		$context = Templates\get_template_context();
 
 		// Test initial context.
-		$this->assertEquals( $post->ID, $context->get( 'irving/post' ), 'Default post context not set.' );
+		$this->assertEquals( $post->ID, $context->get( 'irving/post_id' ), 'Default post ID context not set.' );
+		$this->assertEquals( new \WP_Query( [] ), $context->get( 'irving/wp_query' ), 'Default wp query context not set.' );
 	}
 
 	/**
