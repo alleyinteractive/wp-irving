@@ -584,22 +584,12 @@ function get_template_context() {
 	if ( empty( $context ) ) {
 		$context = new WP_Irving\Context_Store();
 
-		// Set default context.
-		switch ( true ) {
-			case $wp_query->is_single():
-				$context->set( [ 'irving/post_id' => get_the_ID() ] );
-				break;
-
-			case $wp_query->is_archive():
-				$context->set(
-					[
-						'irving/archive_title'  => get_the_archive_title(),
-						'irving/queried_object' => get_queried_object(),
-						'irving/term_id'        => get_queried_object_id(),
-					]
-				);
-				break;
-		}
+		$context->set(
+			[
+				'irving/post_id'  => get_the_ID(),
+				'irving/wp_query' => $wp_query,
+			]
+		);
 	}
 
 	return $context;
