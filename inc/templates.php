@@ -578,13 +578,18 @@ function hydrate_template_parts( $component ) {
  * @return WP_Irving\Context_Store The context store object.
  */
 function get_template_context() {
+	global $wp_query;
 	static $context;
 
 	if ( empty( $context ) ) {
 		$context = new WP_Irving\Context_Store();
 
-		// Set default context.
-		$context->set( [ 'irving/post' => get_the_ID() ] );
+		$context->set(
+			[
+				'irving/post_id'  => get_the_ID(),
+				'irving/wp_query' => $wp_query,
+			]
+		);
 	}
 
 	return $context;
