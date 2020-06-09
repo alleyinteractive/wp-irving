@@ -1,0 +1,31 @@
+{
+	"defaults": [
+		{
+			"name": "layouts/head"
+		},
+		{
+			"name": "layouts/header",
+			"children": [
+				{
+					"name": "template-parts/header"
+				}
+			]
+		},
+		{
+			"name": "layouts/body",
+			"children": [
+				{
+					"name": "layouts/loader"
+				}
+			]
+		},
+		{
+			"name": "layouts/footer",
+			"children": [
+				{
+					"name": "template-parts/footer"
+				}
+			]
+		}
+	]
+}

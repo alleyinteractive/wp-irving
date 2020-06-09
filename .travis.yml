@@ -45,13 +45,12 @@ before_script:
     fi
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-      composer global require wp-coding-standards/wpcs
-      phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+      composer install
     fi
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
       cd ../
-      git clone https://github.com/alleyinteractive/safe-redirect-manager.git
+      git clone https://github.com/10up/safe-redirect-manager.git
       git clone https://github.com/Automattic/WPCOM-Legacy-Redirector.git wpcom-legacy-redirector
       cd wp-irving
     fi
@@ -64,5 +63,5 @@ script:
     fi
   - |
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-      phpcs
+      composer run phpcs
     fi

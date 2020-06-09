@@ -1,0 +1,14 @@
+{
+	"name": "parent-example",
+	"children": [
+		{
+			"name": "parent-child-001"
+		},
+		{
+			"name": "parent-child-002"
+		},
+		{
+			"name": "parent-child-003"
+		}
+	]
+}

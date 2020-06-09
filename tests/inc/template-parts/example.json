@@ -1,0 +1,9 @@
+[
+    { "name": "example/component1" },
+    {
+      "name": "example/component2",
+      "children": [
+        { "name": "example/component3" }
+      ]
+    }
+]

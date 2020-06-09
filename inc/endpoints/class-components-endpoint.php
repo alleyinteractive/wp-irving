@@ -281,7 +281,7 @@ class Components_Endpoint extends Endpoint {
 					if ( is_post_type_viewable( $post_type_object ) && $post_type_object->query_var ) {
 						if ( isset( $args[ $post_type_object->query_var ] ) ) {
 							$args['post_type'] = $post_type_object->query_var;
-							$args['name'] = $args[ $post_type_object->query_var ];
+							$args['name']      = $args[ $post_type_object->query_var ];
 						}
 					}
 				}
@@ -307,7 +307,7 @@ class Components_Endpoint extends Endpoint {
 			// Add irving-path to the query.
 			$query = add_query_arg(
 				[
-					'irving-path'   => $this->path,
+					'irving-path'        => $this->path,
 					'irving-path-params' => $this->custom_params,
 				],
 				$query
@@ -330,18 +330,18 @@ class Components_Endpoint extends Endpoint {
 		 * @param string $this->custom_params  Custom params.
 		 * @param string $this->params         Request params.
 		 */
-		$query = apply_filters( 'wp_irving_components_query_string', $query, $this->path, $this->custom_params, $this->params );
+		$query              = apply_filters( 'wp_irving_components_query_string', $query, $this->path, $this->custom_params, $this->params );
 		$this->query_string = $query;
 
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
-		if ( empty( $wp_query->posts ) && ! $wp_query->is_search() ) {
-			$wp_query->set_404();
-		}
-
 		if ( '/' === $this->path ) {
 			$wp_query->is_home = true;
+		}
+
+		if ( empty( $wp_query->posts ) && ! $wp_query->is_search() && ! $wp_query->is_home() ) {
+			$wp_query->set_404();
 		}
 
 		/**
@@ -391,6 +391,7 @@ class Components_Endpoint extends Endpoint {
 		$wp_query = $wp_the_query;
 
 		// Extract updated query vars back into global namespace.
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 		foreach ( (array) $wp_the_query->query_vars as $key => $value ) {
 			$GLOBALS[ $key ] = $value;
 		}
@@ -409,6 +410,7 @@ class Components_Endpoint extends Endpoint {
 			$GLOBALS['authordata'] = get_userdata( $wp_the_query->post->post_author );
 		}
 		// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
+		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	}
 
 	/**
@@ -491,7 +493,7 @@ class Components_Endpoint extends Endpoint {
 		// Set headers and redirect permanently.
 		header( 'Access-Control-Allow-Origin: ' . home_url() );
 		header( 'Access-Control-Allow-Credentials: true' );
-		wp_redirect( $request_url, 301 );
+		wp_safe_redirect( $request_url, 301 );
 		exit;
 	}
 }

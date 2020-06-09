@@ -24,59 +24,95 @@ class Yoast {
 
 		if ( ! is_admin() ) {
 
-			// Remove default trailing title in favor of Yoast.
-			add_filter( 'wp_components_head_append_trailing_title', '__return_false' );
+			// Parse Yoast's head markup and inject it into the Helmet component.
+			add_filter( 'wp_irving_page_helmet_component', [ $this, 'inject_yoast_tags' ] );
 
-			add_filter(
-				'wp_components_head_title',
-				[ $this, 'get_yoast_title' ]
-			);
-
-			add_filter(
-				'wp_components_head_meta_title',
-				[ $this, 'get_yoast_title' ]
-			);
-
-			add_filter(
-				'wp_components_head_og_title',
-				[ $this, 'get_yoast_og_title' ]
-			);
-
-			add_filter(
-				'wp_components_head_twitter_title',
-				[ $this, 'get_yoast_twitter_title' ]
-			);
-
-			add_filter(
-				'wp_components_head_meta_description',
-				[ $this, 'get_yoast_meta_description' ]
-			);
-
-			add_filter(
-				'wp_components_head_og_description',
-				[ $this, 'get_yoast_og_description' ]
-			);
-
-			add_filter(
-				'wp_components_head_twitter_description',
-				[ $this, 'get_yoast_twitter_description' ]
-			);
-
-			add_filter(
-				'wp_components_head_image_id',
-				[ $this, 'get_yoast_social_image_id' ]
-			);
-
-			add_filter(
-				'wp_components_head_deindex_url',
-				[ $this, 'get_yoast_is_deindexed' ]
-			);
-
-			add_filter(
-				'wp_components_head_additional_meta_tags',
-				[ $this, 'get_yoast_webmaster_tools_tags' ]
-			);
+			// Integrate Yoast with the WP Components plugin.
+			$this->add_wp_component_filters();
 		}
+	}
+
+	/**
+	 * Parse Yoast's head markup, inject into the Helmet component.
+	 *
+	 * @param Component $helmet Helmet component to modify.
+	 * @return Component
+	 */
+	public function inject_yoast_tags( Component $helmet ): Component {
+		return Templates\inject_head_tags(
+			$helmet,
+			Templates\parse_html( $this->get_yoasts_head_markup(), [ 'title', 'meta', 'link' ] )
+		);
+	}
+
+	/**
+	 * Capture the markup output by Yoast in the site <head>.
+	 *
+	 * @return string
+	 */
+	public function get_yoasts_head_markup(): string {
+		ob_start();
+		\do_action( 'wpseo_head' ); // phpcs:ignore
+		return ob_get_clean();
+	}
+
+	/**
+	 * Setup Yoast related filters for integration with WP Components.
+	 */
+	public function add_wp_component_filters() {
+
+		// Remove default trailing title in favor of Yoast.
+		add_filter( 'wp_components_head_append_trailing_title', '__return_false' );
+
+		add_filter(
+			'wp_components_head_title',
+			[ $this, 'get_yoast_title' ]
+		);
+
+		add_filter(
+			'wp_components_head_meta_title',
+			[ $this, 'get_yoast_title' ]
+		);
+
+		add_filter(
+			'wp_components_head_og_title',
+			[ $this, 'get_yoast_og_title' ]
+		);
+
+		add_filter(
+			'wp_components_head_twitter_title',
+			[ $this, 'get_yoast_twitter_title' ]
+		);
+
+		add_filter(
+			'wp_components_head_meta_description',
+			[ $this, 'get_yoast_meta_description' ]
+		);
+
+		add_filter(
+			'wp_components_head_og_description',
+			[ $this, 'get_yoast_og_description' ]
+		);
+
+		add_filter(
+			'wp_components_head_twitter_description',
+			[ $this, 'get_yoast_twitter_description' ]
+		);
+
+		add_filter(
+			'wp_components_head_image_id',
+			[ $this, 'get_yoast_social_image_id' ]
+		);
+
+		add_filter(
+			'wp_components_head_deindex_url',
+			[ $this, 'get_yoast_is_deindexed' ]
+		);
+
+		add_filter(
+			'wp_components_head_additional_meta_tags',
+			[ $this, 'get_yoast_webmaster_tools_tags' ]
+		);
 	}
 
 	/**

@@ -1,0 +1,16 @@
+{
+	"page": [
+		{
+			"name": "layouts/body",
+			"config": {},
+			"children": [
+				{
+					"name": "elements/html",
+					"config": {
+						"content": "Index"
+					}
+				}
+			]
+		}
+	]
+}

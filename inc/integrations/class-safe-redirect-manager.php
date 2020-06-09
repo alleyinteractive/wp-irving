@@ -31,7 +31,7 @@ class Safe_Redirect_Manager {
 	 */
 	public function __construct() {
 		// Ensure Safe Redirect Manager exists and is enabled.
-		if ( ! class_exists( '\SRM_Redirect' ) || ! method_exists( '\SRM_Redirect', 'get_redirect_match' ) ) {
+		if ( ! class_exists( '\SRM_Redirect' ) || ! method_exists( '\SRM_Redirect', 'match_redirect' ) ) {
 			return;
 		}
 
@@ -54,19 +54,18 @@ class Safe_Redirect_Manager {
 	 * @param string            $path     Request path parameter.
 	 * @param \WP_REST_Response $request  REST request.
 	 */
-	public function get_srm_redirect( $data, $query, $context, $path, $request ) : array {
+	public function get_srm_redirect( $data, $query, $context, $path, $request ): array {
 		// Store request path.
 		$this->params = $request->get_params();
 
-		// Filter the path and redirect values.
-		add_filter( 'srm_requested_path', [ $this, 'set_srm_requested_path' ] );
+		// Filter the redirect value.
 		add_filter( 'srm_redirect_to', [ $this, 'set_srm_redirect_to' ] );
 
 		// Find matching redirect for current path.
-		$redirect_match = $this->srm->get_redirect_match();
+		$redirect_match = $this->srm->match_redirect( untrailingslashit( $this->params['path'] ) );
 
 		// Add redirect_to and status_code from SRM match.
-		$data['redirectTo'] = empty( $data['redirectTo'] ) ?
+		$data['redirectTo']     = empty( $data['redirectTo'] ) ?
 			$redirect_match['redirect_to'] ?? '' :
 			$data['redirectTo'];
 		$data['redirectStatus'] = empty( $data['redirectStatus'] ) ?
@@ -74,16 +73,6 @@ class Safe_Redirect_Manager {
 			$data['redirectStatus'];
 
 		return $data;
-	}
-
-	/**
-	 * Modify the requested path value to our path argument.
-	 *
-	 * @param  string $path Current path.
-	 * @return string Path parameter.
-	 */
-	public function set_srm_requested_path( string $path ) : string {
-		return $this->params['path'] ?? $path;
 	}
 
 	/**
@@ -102,6 +91,9 @@ class Safe_Redirect_Manager {
 	}
 }
 
-add_action( 'init', function() {
-	new \WP_Irving\Safe_Redirect_Manager();
-} );
+add_action(
+	'init',
+	function() {
+		new \WP_Irving\Safe_Redirect_Manager();
+	}
+);

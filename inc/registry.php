@@ -10,7 +10,7 @@ namespace WP_Irving;
 /**
  * Get an instance of the registry class.
  *
- * @return \WP_Irving\Registry
+ * @return WP_Irving\Registry
  */
 function get_registry(): Registry {
 	static $registry;

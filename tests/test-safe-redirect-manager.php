@@ -13,16 +13,16 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	/**
 	 * Helpers class instance.
 	 *
-	 * \WP_Irving_Test_Helpers
+	 * @var \WP_Irving_Test_Helpers
 	 */
-	static $helpers;
+	public static $helpers;
 
 	/**
 	 * Components endpoint instance.
 	 *
-	 * \WP_Irving\REST_API\Components_Endpoint
+	 * @var \WP_Irving\REST_API\Components_Endpoint
 	 */
-	static $components_endpoint;
+	public static $components_endpoint;
 
 	/**
 	 * Holding the SRM object.
@@ -38,8 +38,16 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 		self::$helpers = new \WP_Irving\Test_Helpers();
 	}
 
+	/**
+	 * Set up test data.
+	 */
 	public function setUp() {
 		parent::setUp();
+
+		if ( ! class_exists( 'SRM_Redirect' ) ) {
+			$this->markTestSkipped( 'SRM_Redirect is not available.' );
+			return;
+		}
 
 		$this->object = \SRM_Redirect::factory();
 	}
@@ -129,10 +137,13 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
 	}
 
+	/**
+	 * Helper to conditionally mark a test as incomplete.
+	 */
 	public function markasIncomplete() {
-		if ( ! method_exists( $this->object, 'get_redirect_match' ) ) {
+		if ( ! method_exists( $this->object, 'match_redirect' ) ) {
 			$this->markTestIncomplete(
-				'get_redirect_match not part of Safe Redirect Manager.'
+				'match_redirect not part of Safe Redirect Manager.'
 			);
 		}
 	}

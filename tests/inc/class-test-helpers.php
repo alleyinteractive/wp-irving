@@ -1,6 +1,6 @@
 <?php
 /**
- * Class SRM_Redirects_Test
+ * Class Test_Helpers
  *
  * @package WP_Irving
  */
@@ -20,11 +20,11 @@ class Test_Helpers {
 	 */
 	public function create_rest_request( $path ) {
 		$base_url = 'http://example.org/wp-json/irving/v1/components/';
-		$params = [
+		$params   = [
 			'path' => $path,
 		];
 		$full_url = add_query_arg( $base_url, $params );
-		$request = new \WP_REST_Request( 'GET', $base_url );
+		$request  = new \WP_REST_Request( 'GET', $base_url );
 		$request->set_query_params( $params );
 		$_SERVER['REQUEST_URI'] = $full_url;
 
@@ -38,7 +38,7 @@ class Test_Helpers {
 	 * @return \WP_REST_Response
 	 */
 	public function get_components_endpoint_response( $path ) {
-		$request = $this->create_rest_request( $path );
+		$request  = $this->create_rest_request( $path );
 		$response = ( new \WP_Irving\REST_API\Components_Endpoint() )
 			->get_route_response( $request );
 
