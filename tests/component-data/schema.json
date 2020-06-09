@@ -1,13 +1,14 @@
 {
 	"name": "irving/schema",
 	"config": {
-		"wp_query": [
-			"example"
-		]
+		"wp_query": {
+			"foo": "bar"
+		}
 	},
 	"config_schema": {
 		"wp_query": {
-			"hidden": true
+			"hidden": true,
+			"type": "object"
 		}
 	}
 }

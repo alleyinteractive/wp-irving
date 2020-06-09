@@ -257,7 +257,7 @@ class Component_Tests extends WP_UnitTestCase {
 			'wp_query' => [
 				'default' => null,
 				'hidden'  => true,
-				'type'    => 'null',
+				'type'    => 'object',
 			],
 		];
 
