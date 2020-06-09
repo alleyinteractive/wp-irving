@@ -34,11 +34,20 @@ class Component implements JsonSerializable {
 	/**
 	 * Config schema.
 	 *
-	 * @todo Implement this.
+	 * @var array
+	 */
+	protected $config_schema = [];
+
+	/**
+	 * Default schema for any given config.
 	 *
 	 * @var array
 	 */
-	protected $schema = [];
+	protected $config_schema_shape = [
+		'default' => null,
+		'hidden'  => false,
+		'type'    => 'null',
+	];
 
 	/**
 	 * Children.
@@ -105,6 +114,7 @@ class Component implements JsonSerializable {
 			$args,
 			[
 				'config'           => [],
+				'config_schema'    => [],
 				'children'         => [],
 				'theme'            => 'default',
 				'theme_options'    => [ 'default' ],
@@ -116,6 +126,9 @@ class Component implements JsonSerializable {
 
 		// Set up config.
 		$this->set_config( $args['config'] );
+
+		// Set up config_schema.
+		$this->set_config_schema( $args['config_schema'] );
 
 		// Set up children.
 		$this->set_children( $args['children'] );
@@ -242,6 +255,32 @@ class Component implements JsonSerializable {
 	 */
 	public function set_config_by_key( string $key, $value ): self {
 		$this->config[ $key ] = $value;
+		return $this;
+	}
+
+	/**
+	 * Get the config schema.
+	 *
+	 * @return array
+	 */
+	public function get_config_schema() {
+		return $this->config_schema;
+	}
+
+	/**
+	 * Set schema describing config.
+	 *
+	 * @param array $config_schema Schema array.
+	 * @return self
+	 */
+	public function set_config_schema( array $config_schema ): self {
+
+		// Ensure that every schema has all the expected properties.
+		foreach ( $config_schema as $key => &$properties ) {
+			$properties = wp_parse_args( $properties, $this->config_schema_shape );
+		}
+
+		$this->config_schema = $config_schema;
 		return $this;
 	}
 
@@ -730,8 +769,21 @@ class Component implements JsonSerializable {
 	 *
 	 * @return array
 	 */
-	public function jsonSerialize(): array {
-		return $this->to_array();
+	public function jsonSerialize() {
+
+		/**
+		 * Filter component object before serialization.
+		 *
+		 * @param Component $this Current component instance.
+		 */
+		apply_filters( 'wp_irving_serialize_component', $this );
+
+		/**
+		 * Filter component array after serialization.
+		 *
+		 * @param array $component_as_array Current component instance.
+		 */
+		return apply_filters( 'wp_irving_serialize_component_array', $this->to_array() );
 	}
 
 	/**
@@ -740,9 +792,17 @@ class Component implements JsonSerializable {
 	 * @return array
 	 */
 	public function to_array(): array {
+
 		// Add the theme name to the config as Irving core expects.
 		$this->set_config( 'theme_name', self::camel_case( $this->get_theme() ) );
 		$this->set_config( 'theme_options', array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) );
+
+		// Null any config keys where the config schema has hidden = true.
+		foreach ( $this->get_config_schema() as $key => $config_schema ) {
+			if ( $config_schema['hidden'] ) {
+				$this->set_config( $key, null );
+			}
+		}
 
 		return [
 			'name'     => $this->get_name(),
