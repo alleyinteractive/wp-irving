@@ -1,0 +1,28 @@
+{
+  "name": "wp-irving",
+  "version": "0.1.0",
+  "description": "WordPress plugin to integrate with an Irving headless site.",
+  "dependencies": {},
+  "devDependencies": {
+    "wp-readme-to-markdown": "^1.0.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "readme": "wp-readme-to-md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alleyinteractive/wp-irving.git"
+  },
+  "keywords": [
+    "WordPress",
+    "Irving",
+    "headless"
+  ],
+  "author": "Alley Interactive",
+  "license": "GPL-2.0+",
+  "bugs": {
+    "url": "https://github.com/alleyinteractive/wp-irving/issues"
+  },
+  "homepage": "https://github.com/alleyinteractive/wp-irving#readme"
+}
