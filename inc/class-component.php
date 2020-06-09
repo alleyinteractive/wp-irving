@@ -840,7 +840,7 @@ class Component implements JsonSerializable {
 
 		return [
 			'name'     => $this->get_name(),
-			'alias'    => $this->get_alias(),
+			'_alias'   => $this->get_alias(),
 			'config'   => (object) $this->camel_case_keys( $this->get_config() ),
 			'children' => $this->get_children(),
 		];
