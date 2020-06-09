@@ -804,7 +804,7 @@ class Component_Tests extends WP_UnitTestCase {
 				'basic-example',
 				[
 					'name'     => 'irving/example',
-					'alias'    => '',
+					'_alias'   => '',
 					'config'   => (object) [
 						'align'        => 'left',
 						'themeName'    => 'default',
@@ -820,7 +820,7 @@ class Component_Tests extends WP_UnitTestCase {
 				'children-test-001',
 				[
 					'name'     => 'parent-example',
-					'alias'    => '',
+					'_alias'   => '',
 					'config'   => (object) [
 						'themeName'    => 'default',
 						'themeOptions' => [
@@ -838,7 +838,7 @@ class Component_Tests extends WP_UnitTestCase {
 				'theme-options',
 				[
 					'name'     => 'example',
-					'alias'    => '',
+					'_alias'   => '',
 					'config'   => (object) [
 						'themeName'    => 'primary',
 						'themeOptions' => [
@@ -853,7 +853,7 @@ class Component_Tests extends WP_UnitTestCase {
 				'schema',
 				[
 					'name'     => 'irving/schema',
-					'alias'    => '',
+					'_alias'   => '',
 					'config'   => (object) [
 						'wpQuery'      => null,
 						'themeName'    => 'default',
@@ -879,7 +879,7 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
-				'alias'    => '',
+				'_alias'   => '',
 				'config'   => (object) [
 					'test'         => true,
 					'themeName'    => 'default',
@@ -901,7 +901,7 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
-				'alias'    => '',
+				'_alias'   => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [
@@ -936,7 +936,7 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
-				'alias'    => '',
+				'_alias'   => '',
 				'config'   => (object) [
 					'test'         => true,
 					'themeName'    => 'default',
@@ -958,7 +958,7 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
-				'alias'    => '',
+				'_alias'   => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [

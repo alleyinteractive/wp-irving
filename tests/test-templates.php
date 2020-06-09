@@ -171,7 +171,7 @@ class Test_Templates extends WP_UnitTestCase {
 		$expected = [
 			[
 				'name'     => 'provider',
-				'alias'    => '',
+				'_alias'    => '',
 				'config'   => (object) [
 					'propWithDefault'           => 'default value',
 					'propWithDefaultOverridden' => 20,
@@ -182,7 +182,7 @@ class Test_Templates extends WP_UnitTestCase {
 				'children' => [
 					[
 						'name'     => 'consumer',
-						'alias'    => '',
+						'_alias'    => '',
 						'config'   => (object) [
 							'propWithDefault'           => 'default value',
 							'propWithDefaultOverridden' => 20,
@@ -230,7 +230,7 @@ class Test_Templates extends WP_UnitTestCase {
 		$expected = [
 			[
 				'name'     => 'provider',
-				'alias'    => '',
+				'_alias'    => '',
 				'config'   => (object) [
 					'testProvided' => 20,
 					'themeName'    => 'default',
@@ -239,7 +239,7 @@ class Test_Templates extends WP_UnitTestCase {
 				'children' => [
 					[
 						'name'     => 'consumer',
-						'alias'    => '',
+						'_alias'    => '',
 						'config'   => (object) [
 							'testUsed'     => 20,
 							'themeName'    => 'default',
@@ -272,7 +272,7 @@ class Test_Templates extends WP_UnitTestCase {
 		$expected = [
 			[
 				'name'     => 'example/component',
-				'alias'    => '',
+				'_alias'    => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [ 'default' ],
@@ -281,7 +281,7 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 			[
 				'name'     => 'example/component1',
-				'alias'    => '',
+				'_alias'    => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [ 'default' ],
@@ -290,7 +290,7 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 			[
 				'name'     => 'example/component2',
-				'alias'    => '',
+				'_alias'    => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [ 'default' ],
@@ -298,7 +298,7 @@ class Test_Templates extends WP_UnitTestCase {
 				'children' => [
 					[
 						'name'     => 'example/component3',
-						'alias'    => '',
+						'_alias'    => '',
 						'config'   => (object) [
 							'themeName'    => 'default',
 							'themeOptions' => [ 'default' ],
