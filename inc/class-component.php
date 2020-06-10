@@ -25,6 +25,16 @@ class Component implements JsonSerializable {
 	protected $name = 'wp-irving/component';
 
 	/**
+	 * Alias.
+	 *
+	 * Setup an alias for this component to inhert the config from another
+	 * component.
+	 *
+	 * @var string
+	 */
+	protected $alias = '';
+
+	/**
 	 * Config.
 	 *
 	 * @var array
@@ -113,6 +123,7 @@ class Component implements JsonSerializable {
 		$args = wp_parse_args(
 			$args,
 			[
+				'alias'            => '',
 				'config'           => [],
 				'config_schema'    => [],
 				'children'         => [],
@@ -123,6 +134,9 @@ class Component implements JsonSerializable {
 				'callback'         => null,
 			]
 		);
+
+		// Set up alias.
+		$this->set_alias( $args['alias'] );
 
 		// Set up config.
 		$this->set_config( $args['config'] );
@@ -186,6 +200,26 @@ class Component implements JsonSerializable {
 	 */
 	public function set_name( string $name ): self {
 		$this->name = $name;
+		return $this;
+	}
+
+	/**
+	 * Get the alias.
+	 *
+	 * @return string Component alias.
+	 */
+	public function get_alias(): string {
+		return $this->alias;
+	}
+
+	/**
+	 * Set the component alias.
+	 *
+	 * @param string $alias Component alias.
+	 * @return self
+	 */
+	public function set_alias( string $alias ): self {
+		$this->alias = $alias;
 		return $this;
 	}
 
@@ -806,6 +840,7 @@ class Component implements JsonSerializable {
 
 		return [
 			'name'     => $this->get_name(),
+			'_alias'   => $this->get_alias(),
 			'config'   => (object) $this->camel_case_keys( $this->get_config() ),
 			'children' => $this->get_children(),
 		];

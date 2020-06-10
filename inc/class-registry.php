@@ -45,6 +45,9 @@ class Registry {
 	 * @param array  $args Component args.
 	 */
 	public function register_component( string $name, array $args = [] ) {
+		if ( empty( $args['name'] ) ) {
+			$args['name'] = $name;
+		}
 		$this->components[ $name ] = $args;
 	}
 
