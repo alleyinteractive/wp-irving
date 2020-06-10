@@ -106,6 +106,27 @@ class Component_Tests extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tests for the `get_alias()` method.
+	 */
+	public function test_get_alias() {
+		$this->assertEquals( '', $this->get_component( 'name-only' )->get_alias(), 'Alias is not empty.' );
+		$this->assertEquals( 'irving/fragment', $this->get_component( 'alias' )->get_alias(), 'Alias is not fragment.' );
+	}
+
+	/**
+	 * Tests for the `set_alias()` method.
+	 */
+	public function test_set_alias() {
+
+		// Get a copy of this testing component.
+		$component = $this->get_component( 'name-only' );
+
+		$this->assertEquals( '', $component->get_alias(), 'Default alias value is not empty.' );
+		$component->set_alias( 'irving/fragment' );
+		$this->assertEquals( 'irving/fragment', $component->get_alias(), 'Updated alias value is not a fragment.' );
+	}
+
+	/**
 	 * Tests for the `get_config()` method.
 	 */
 	public function test_get_config() {
@@ -783,6 +804,7 @@ class Component_Tests extends WP_UnitTestCase {
 				'basic-example',
 				[
 					'name'     => 'irving/example',
+					'_alias'   => '',
 					'config'   => (object) [
 						'align'        => 'left',
 						'themeName'    => 'default',
@@ -798,6 +820,7 @@ class Component_Tests extends WP_UnitTestCase {
 				'children-test-001',
 				[
 					'name'     => 'parent-example',
+					'_alias'   => '',
 					'config'   => (object) [
 						'themeName'    => 'default',
 						'themeOptions' => [
@@ -815,6 +838,7 @@ class Component_Tests extends WP_UnitTestCase {
 				'theme-options',
 				[
 					'name'     => 'example',
+					'_alias'   => '',
 					'config'   => (object) [
 						'themeName'    => 'primary',
 						'themeOptions' => [
@@ -829,6 +853,7 @@ class Component_Tests extends WP_UnitTestCase {
 				'schema',
 				[
 					'name'     => 'irving/schema',
+					'_alias'   => '',
 					'config'   => (object) [
 						'wpQuery'      => null,
 						'themeName'    => 'default',
@@ -854,6 +879,7 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
+				'_alias'   => '',
 				'config'   => (object) [
 					'test'         => true,
 					'themeName'    => 'default',
@@ -875,6 +901,7 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
+				'_alias'   => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [
@@ -909,6 +936,7 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
+				'_alias'   => '',
 				'config'   => (object) [
 					'test'         => true,
 					'themeName'    => 'default',
@@ -930,6 +958,7 @@ class Component_Tests extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
+				'_alias'   => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [
