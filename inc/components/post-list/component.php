@@ -43,6 +43,9 @@ get_registry()->register_component_from_config(
 				$post_query = new \WP_Query( $query_args );
 			}
 
+			// Set the `wp_query` for the data provider/consumers.
+			$component->set_config( 'wp_query', $post_query );
+
 			// No results.
 			if ( ! $post_query->have_posts() ) {
 				return $component->set_children( $no_results );
@@ -56,7 +59,7 @@ get_registry()->register_component_from_config(
 			foreach ( $post_ids as $post_id ) {
 
 				$items[] = [
-					'name'     => 'irving/post',
+					'name'     => 'irving/post-provider',
 					'config'   => [
 						'post_id' => $post_id,
 					],

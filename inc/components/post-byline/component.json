@@ -1,5 +1,6 @@
 {
 	"name": "irving/post-byline",
+	"alias": "irving/byline",
 	"description": "Get the post byline.",
 	"config": {
 		"single_delimiter": {

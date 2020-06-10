@@ -48,6 +48,7 @@ class Admin {
 		add_filter( 'post_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'page_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'admin_bar_menu', [ $this, 'add_api_link_to_admin_bar' ], 999 );
+		add_filter( 'admin_bar_menu', [ $this, 'add_registered_components_link_to_admin_bar' ], 999 );
 	}
 
 	/**
@@ -137,7 +138,7 @@ class Admin {
 	/**
 	 * Add api link node to the admin bar from post edit screens.
 	 *
-	 * @param  \WP_Admin_Bar $admin_bar WP Admin Bar object.
+	 * @param \WP_Admin_Bar $admin_bar WP Admin Bar object.
 	 */
 	public function add_api_link_to_admin_bar( \WP_Admin_Bar $admin_bar ) {
 		//phpcs:disable WordPress.Security.NonceVerification.Recommended
@@ -213,6 +214,32 @@ class Admin {
 				'id'    => 'wp_irving_api',
 				'title' => __( 'WP-Irving API', 'wp-irving' ),
 				'href'  => $path_url,
+			]
+		);
+		//phpcs:enable WordPress.Security.NonceVerification.Recommended
+	}
+
+	/**
+	 * Add a `Registered Components` link to the admin bar.
+	 *
+	 * @param \WP_Admin_Bar $admin_bar WP Admin Bar object.
+	 */
+	public function add_registered_components_link_to_admin_bar( \WP_Admin_Bar $admin_bar ) {
+		//phpcs:disable WordPress.Security.NonceVerification.Recommended
+		if ( ! current_user_can( $this->api_link_cap ) ) {
+			return;
+		}
+
+		if ( ! function_exists( 'get_current_screen' ) ) {
+			return;
+		}
+
+		// Add node to admin bar.
+		$admin_bar->add_node(
+			[
+				'href'  => rest_url( 'irving/v1/registered-components/' ),
+				'id'    => 'wp_irving_registered_components_link',
+				'title' => __( 'Registered Components', 'wp-irving' ),
 			]
 		);
 		//phpcs:enable WordPress.Security.NonceVerification.Recommended

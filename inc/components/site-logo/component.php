@@ -28,7 +28,7 @@ get_registry()->register_component_from_config(
 			$custom_logo_id = get_theme_mod( 'custom_logo' );
 			$logo_url       = wp_get_attachment_url( $custom_logo_id );
 			if ( ! empty( $logo_url ) ) {
-				$component->set_config( 'logo_url', $logo_url );
+				$component->set_config( 'logo_image_url', $logo_url );
 			}
 
 			return $component;

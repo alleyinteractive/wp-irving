@@ -1,7 +1,6 @@
 {
 	"name": "irving/archive-title",
-	"alias": "irving/text",
+	"alias": "irving/fragment",
 	"category": "Archive",
-	"description": "Get the archive title",
-	"config": {}
+	"description": "Get the archive title."
 }

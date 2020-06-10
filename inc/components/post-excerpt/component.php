@@ -4,8 +4,6 @@
  *
  * Get the post excerpt.
  *
- * @todo Add support for template context.
- *
  * @package Irving_Components
  */
 
@@ -31,11 +29,7 @@ get_registry()->register_component_from_config(
 				$post_id = get_the_ID();
 			}
 
-			return $component
-				->set_config( 'content', html_entity_decode( get_the_excerpt( $post_id ) ) )
-				// Temporarily map this to irving/text so it gets converted to
-				// a text dom node upon render.
-				->set_name( 'irving/html' );
+			return $component->set_config( 'content', html_entity_decode( get_the_excerpt( $post_id ) ) );
 		},
 	]
 );

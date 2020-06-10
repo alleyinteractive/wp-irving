@@ -2,18 +2,6 @@
 	"name": "irving/post-permalink",
 	"alias": "irving/link",
 	"description": "Get the post permalink.",
-	"config": {
-		"url": {
-			"default": "",
-			"type": "string",
-			"required": true
-		},
-		"post_id": {
-			"default": 0,
-			"required": true,
-			"type": "integer"
-		}
-	},
 	"use_context": {
 		"irving/post_id": "post_id"
 	}
