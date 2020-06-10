@@ -1,10 +1,8 @@
 <?php
 /**
- * Post title.
+ * Post pemralink.
  *
- * Get the post title.
- *
- * @todo Add support for template context.
+ * Get the post permalink.
  *
  * @package Irving_Components
  */
@@ -21,7 +19,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
  * Register the component and callback.
  */
 get_registry()->register_component_from_config(
-	__DIR__ . '/config',
+	__DIR__ . '/component',
 	[
 		'callback' => function( Component $component ): Component {
 
@@ -31,11 +29,17 @@ get_registry()->register_component_from_config(
 				$post_id = get_the_ID();
 			}
 
-			return $component
-				->set_config( 'content', html_entity_decode( get_the_title( $post_id ) ) )
-				// Temporarily map this to irving/text so it gets converted to
-				// a text dom node upon render.
-				->set_name( 'irving/text' );
+			$post = get_post( $post_id );
+			if ( ! $post instanceof \WP_Post ) {
+				return $component;
+			}
+
+			$component->set_config(
+				'url',
+				get_permalink( $post_id )
+			);
+
+			return $component;
 		},
 	]
 );

@@ -16,7 +16,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
  * Register the component and callback.
  */
 get_registry()->register_component_from_config(
-	__DIR__ . '/config',
+	__DIR__ . '/component',
 	[
 		'callback' => function( $component ) {
 
