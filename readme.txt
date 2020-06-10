@@ -1,31 +1,23 @@
 === WP Irving ===
-Contributors: jameswalterburke
+Contributors: alleyinteractive
 Tags: irving, headless
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-WP Irving contains everything needed to power an Irving site with WordPress.
+WP Irving contains everything needed to power an Irving headless app with WordPress.
 
 == Description ==
 
-More soon.
+WP Irving is the companion WordPress plugin to [Irving](https://github.com/alleyinteractive/irving). Included are various APIs, plugin integrations, and other customizations/helpers to streamline Irving development when using WordPress as the CMS. It registers the API endpoints that Irving Core expects, which you can build upon to pass your data from WordPress to the frontend.
+
+While WP Irving contains a few basic plugin integrations (and we hope to support more in the plugin in the future), overall the plugin is rather lightweight. It provides the tools you need to structure your API data appropriately for Irving, but it is up to you to build out the responses.
 
 == Installation ==
 
 1. Upload `/wp-irving/` folder to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
-== Frequently Asked Questions ==
-
-= A question that someone might have =
-
-An answer to that question.
-
-= What about foo bar? =
-
-Answer to foo bar dilemma.
-
 == Changelog ==
 
-= 1.0 =
-Initial open source release.
+= 0.1.0 =
+First stable release of the WP-Irving plugin.
