@@ -1,5 +1,6 @@
 {
 	"name": "irving/bloginfo",
+	"alias": "irving/text",
 	"category": "Site",
 	"description": "Easily call bloginfo()",
 	"config": {

@@ -1,5 +1,6 @@
 {
 	"name": "irving/post-excerpt",
+	"alias": "irving/html",
 	"category": "Post",
 	"description": "Get the post excerpt",
 	"config": {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Post pemralink.
+ * Post permalink.
  *
  * Get the post permalink.
  *
@@ -34,12 +34,7 @@ get_registry()->register_component_from_config(
 				return $component;
 			}
 
-			$component->set_config(
-				'url',
-				get_permalink( $post_id )
-			);
-
-			return $component;
+			return $component->set_config( 'href', get_permalink( $post_id ) );
 		},
 	]
 );
