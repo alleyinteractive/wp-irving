@@ -23,6 +23,9 @@ get_registry()->register_component_from_config( __DIR__ . '/component' );
 /**
  * Output the content config value as a text node instead of a component.
  *
+ * @todo Deterine how text and strings should actually work, and target
+ * aliases better.
+ *
  * @param array $component Component as an array.
  * @return array|string
  */
@@ -37,7 +40,6 @@ function serialize_text_component( array $component ) {
 	) {
 		$component['children'][] = $component['config']->content ?? '';
 	}
-
 
 	return $component;
 }
