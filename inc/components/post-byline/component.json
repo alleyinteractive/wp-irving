@@ -20,7 +20,6 @@
 		},
 		"post_id": {
 			"default": 0,
-			"required": true,
 			"type": "integer"
 		},
 		"pre_text": {

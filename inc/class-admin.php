@@ -47,8 +47,8 @@ class Admin {
 		add_action( 'init', [ $this, 'hook_taxonomy_row_actions' ] );
 		add_filter( 'post_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'page_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
-		add_filter( 'admin_bar_menu', [ $this, 'add_api_link_to_admin_bar' ], 999 );
-		add_filter( 'admin_bar_menu', [ $this, 'add_registered_components_link_to_admin_bar' ], 999 );
+		add_action( 'admin_bar_menu', [ $this, 'add_api_link_to_admin_bar' ], 99 );
+		add_action( 'admin_bar_menu', [ $this, 'add_registered_components_link_to_admin_bar' ], 99 );
 	}
 
 	/**

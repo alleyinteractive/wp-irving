@@ -3,18 +3,6 @@
 	"alias": "irving/html",
 	"category": "Post",
 	"description": "Get the post excerpt",
-	"config": {
-		"content": {
-			"default": "",
-			"required": true,
-			"type": "string"
-		},
-		"post_id": {
-			"default": 0,
-			"required": true,
-			"type": "integer"
-		}
-	},
 	"use_context": {
 		"irving/post_id": "post_id"
 	}

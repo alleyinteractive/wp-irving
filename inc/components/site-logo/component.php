@@ -4,10 +4,10 @@
  *
  * Display the site name or logo.
  *
- * @package Irving_Components
+ * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Components;
 
 if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 	return;
@@ -15,7 +15,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 /**
  * Register the component and callback.
  */
-get_registry()->register_component_from_config(
+\WP_Irving\get_registry()->register_component_from_config(
 	__DIR__ . '/component',
 	[
 		'callback' => function( $component ) {

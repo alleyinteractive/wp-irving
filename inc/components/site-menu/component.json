@@ -10,7 +10,6 @@
 	"config": {
 		"display_name": {
 			"type": "bool",
-			"required": true,
 			"default": false
 		},
 		"location": {

@@ -4,10 +4,10 @@
  *
  * Base wrapper component for creating layouts.
  *
- * @package Irving_Components
+ * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Components;
 
 if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 	return;
@@ -16,4 +16,4 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 /**
  * Register the component.
  */
-get_registry()->register_component_from_config( __DIR__ . '/component' );
+\WP_Irving\get_registry()->register_component_from_config( __DIR__ . '/component' );

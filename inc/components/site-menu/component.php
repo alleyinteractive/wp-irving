@@ -4,10 +4,10 @@
  *
  * Output links as menu items.
  *
- * @package Irving_Components
+ * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Components;
 
 use WP_Irving\Component;
 
@@ -18,7 +18,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 /**
  * Register the component and callback.
  */
-get_registry()->register_component_from_config(
+\WP_Irving\get_registry()->register_component_from_config(
 	__DIR__ . '/component',
 	[
 		'callback' => function( Component $component ): Component {

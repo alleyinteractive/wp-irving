@@ -9,22 +9,18 @@
 	"config": {
 		"content": {
 			"default": "",
-			"required": true,
 			"type": "string"
 		},
 		"oembed": {
 			"default": false,
-			"required": true,
 			"type": "bool"
 		},
 		"style": {
 			"default": [],
-			"required": true,
 			"type": "array"
 		},
 		"tag": {
 			"default": "div",
-			"required": true,
 			"type": "string"
 		}
 	}

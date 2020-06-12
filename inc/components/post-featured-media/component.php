@@ -5,11 +5,12 @@
  * Display the post featured media.
  *
  * @todo Update to remove all material UI.
+ * @todo Consider creating a React component for this functionality.
  *
- * @package Irving_Components
+ * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Components;
 
 use WP_Irving\Component;
 
@@ -20,16 +21,13 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 /**
  * Register the component and callback.
  */
-get_registry()->register_component_from_config(
+\WP_Irving\get_registry()->register_component_from_config(
 	__DIR__ . '/component',
 	[
 		'callback' => function( Component $component ): Component {
 
-			// Get the post ID from a context provider, or fallback to the global.
+			// Get the post ID from a context provider.
 			$post_id = $component->get_config( 'post_id' );
-			if ( 0 === $post_id ) {
-				$post_id = get_the_ID();
-			}
 
 			// Get and validate image url.
 			$image_url = get_the_post_thumbnail_url( $post_id );
@@ -60,11 +58,7 @@ get_registry()->register_component_from_config(
 			$caption = wp_get_attachment_caption( get_post_thumbnail_id( $post_id ) );
 			if ( ! empty( $caption ) ) {
 				$wrapper->append_child(
-					( new Component( 'material/typography' ) )
-						->set_config( 'color', 'text_secondary' )
-						->set_config( 'variant', 'body2' )
-						->set_config( 'component', 'p' )
-						->set_config( 'style', [ 'bottom_margin' => '1rem' ] )
+					( new Component( 'irving/html' ) )
 						->append_child( $caption )
 				);
 			}

@@ -6,12 +6,10 @@
 	"config": {
 		"content": {
 			"default": "",
-			"required": true,
 			"type": "string"
 		},
 		"show": {
 			"default": "name",
-			"required": true,
 			"type": "string"
 		}
 	}

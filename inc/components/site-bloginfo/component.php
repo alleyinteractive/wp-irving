@@ -4,12 +4,12 @@
  *
  * Easily call bloginfo().
  *
- * @package Irving_Components
+ * @package WP_Irving
  *
  * @see https://developer.wordpress.org/reference/functions/get_bloginfo/
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Components;
 
 use WP_Irving\Component;
 
