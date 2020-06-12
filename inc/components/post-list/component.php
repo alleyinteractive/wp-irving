@@ -71,7 +71,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 
 			// Wrap the children.
 			if ( ! empty( $wrapper ) ) {
-				$component->set_child( ( Templates\setup_component( $wrapper[0] ) )->set_children( $component->get_children() ) );
+				$component->set_child( ( \WP_Irving\Templates\setup_component( $wrapper[0] ) )->set_children( $component->get_children() ) );
 			}
 
 			$component->prepend_children( $before );
