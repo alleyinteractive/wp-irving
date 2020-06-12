@@ -426,6 +426,7 @@ function setup_component( $component ) {
 	if ( is_string( $component ) ) {
 		$component = [
 			'name'   => 'irving/text',
+			'alias'  => 'irving/fragment',
 			'config' => [
 				'content' => $component,
 			],

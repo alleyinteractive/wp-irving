@@ -1,0 +1,10 @@
+{
+	"name": "irving/text",
+	"description": "Concatenate and render a string.",
+	"config": {
+		"content": {
+			"default": "",
+			"type": "string"
+		}
+	}
+}

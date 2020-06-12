@@ -1,0 +1,19 @@
+{
+	"name": "irving/post-title",
+	"alias": "irving/text",
+	"category": "Post",
+	"description": "Get the post title",
+	"config": {
+		"content": {
+			"default": "",
+			"type": "string"
+		},
+		"post_id": {
+			"hidden": true,
+			"type": "integer"
+		}
+	},
+	"use_context": {
+		"irving/post_id": "post_id"
+	}
+}

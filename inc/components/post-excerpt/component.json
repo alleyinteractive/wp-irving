@@ -1,0 +1,9 @@
+{
+	"name": "irving/post-excerpt",
+	"alias": "irving/html",
+	"category": "Post",
+	"description": "Get the post excerpt",
+	"use_context": {
+		"irving/post_id": "post_id"
+	}
+}

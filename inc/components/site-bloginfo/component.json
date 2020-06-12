@@ -1,0 +1,16 @@
+{
+	"name": "irving/bloginfo",
+	"alias": "irving/fragment",
+	"category": "Site",
+	"description": "Easily call bloginfo()",
+	"config": {
+		"content": {
+			"default": "",
+			"type": "string"
+		},
+		"show": {
+			"default": "name",
+			"type": "string"
+		}
+	}
+}

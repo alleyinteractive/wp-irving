@@ -1,0 +1,9 @@
+{
+	"name": "irving/post-content",
+	"alias": "irving/html",
+	"category": "Post",
+	"description": "Get the post content.",
+	"use_context": {
+		"irving/post_id": "post_id"
+	}
+}
