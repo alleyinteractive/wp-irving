@@ -22,11 +22,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 	__DIR__ . '/component',
 	[
 		'callback' => function( Component $component ): Component {
-
-			// Set the published timestamp.
-			$component->set_config( 'content', get_the_archive_title() );
-
-			return $component;
+			return $component->set_config( 'content', get_the_archive_title() );
 		},
 	]
 );

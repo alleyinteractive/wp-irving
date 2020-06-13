@@ -4,8 +4,6 @@
  *
  * Get the post title.
  *
- * @todo Add support for template context.
- *
  * @package WP_Irving
  */
 
