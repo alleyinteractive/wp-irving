@@ -164,6 +164,9 @@ function get_title_from_helmet( Component $helmet ): ?string {
  */
 function create_or_update_title( Component $helmet, string $title = '' ): Component {
 
+	// Ensure characters are decoded before the response.
+	$title = html_entity_decode( $title );
+
 	// Loop through the children, modifying the child <title> by reference if
 	// available.
 	foreach ( $helmet->get_children() as &$child ) {

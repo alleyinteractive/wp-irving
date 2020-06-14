@@ -1,7 +1,7 @@
 {
-	"name": "irving/site-search-results-found",
+	"name": "irving/query-search-results-found",
 	"alias": "irving/text",
-	"category": "Site",
+	"category": "Query",
 	"description": "Display meta information about the search results.",
 	"config": {
 		"wp_query": {

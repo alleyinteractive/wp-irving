@@ -296,7 +296,7 @@ class Components_Endpoint extends Endpoint {
 			}
 		}
 
-		if ( ! empty( $query ) ) {
+		if ( ! empty( $query ) || ! empty( $this->params['s'] ?? '' ) ) {
 
 			// Fix an issue where `add_query_arg` doesn't work with already
 			// encoded strings missing the equal.
@@ -336,7 +336,7 @@ class Components_Endpoint extends Endpoint {
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
-		if ( '/' === $this->path ) {
+		if ( '/' === $this->path && ! $wp_query->is_search() ) {
 			$wp_query->is_home = true;
 		}
 
