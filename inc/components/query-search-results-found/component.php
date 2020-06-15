@@ -46,7 +46,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 					esc_html( $wp_query->get( 's' ) ),
 					number_format( absint( $wp_query->found_posts ) ),
 					number_format( absint( $current_page ) ),
-					number_format( absint( $wp_query->max_num_pages ) ),
+					number_format( absint( $wp_query->max_num_pages ) )
 				)
 			);
 		},

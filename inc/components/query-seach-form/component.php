@@ -23,7 +23,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 	[
 		'callback' => function( Component $component ): Component {
 			$search_term = $component->get_config( 'wp_query' )->get( 's' ) ?? '';
-			return $component ->set_config( 'search_term', $search_term );
+			return $component->set_config( 'search_term', $search_term );
 		},
 	]
 );
