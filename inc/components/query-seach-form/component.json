@@ -1,0 +1,33 @@
+{
+	"name": "irving/query-search-form",
+	"alias": "irving/search-form",
+	"description": "Form that a.",
+	"config": {
+		"base_url": {
+			"default": "/",
+			"type": "string"
+		},
+		"search_term": {
+			"default": "",
+			"description": "The string being searched for.",
+			"type": "string"
+		},
+		"search_term_query_arg": {
+			"default": "s",
+			"description": "The query var used for the search term.",
+			"type": "string"
+		},
+		"style": {
+			"default": [],
+			"required": false,
+			"type": "array"
+		},
+		"wp_query": {
+			"hidden": true,
+			"type": "object"
+		}
+	},
+	"use_context": {
+		"irving/wp_query": "wp_query"
+	}
+}

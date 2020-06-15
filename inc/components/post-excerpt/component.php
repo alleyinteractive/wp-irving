@@ -5,7 +5,7 @@
  * Get the post excerpt.
  *
  * @todo Support for modifying the excerpt length easily. Perhaps options for
- *       character count, sentance count, etc.
+ *       character count, sentence count, etc.
  *
  * @package WP_Irving
  */
