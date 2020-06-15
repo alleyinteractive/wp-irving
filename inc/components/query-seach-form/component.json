@@ -1,7 +1,7 @@
 {
 	"name": "irving/query-search-form",
 	"alias": "irving/search-form",
-	"description": "Form that a.",
+	"description": "Form with an input field for search.",
 	"config": {
 		"base_url": {
 			"default": "/",

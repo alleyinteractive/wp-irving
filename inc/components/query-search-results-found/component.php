@@ -23,6 +23,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 	[
 		'callback' => function( Component $component ): Component {
 
+			// Get the WP_Query object from a context provider.
 			$wp_query = $component->get_config( 'wp_query' );
 
 			// Convert to integer and set to page 1 if needed.
@@ -34,7 +35,6 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 			return $component->set_config(
 				'content',
 				sprintf(
-					// translators: %1$s - Number of search results, %2$s - search term, %3$d - pages found, %4$d - current page.
 					/**
 					 * Translators:
 					 * %1$s - Search string.

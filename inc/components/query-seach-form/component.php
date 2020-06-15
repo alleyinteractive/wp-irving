@@ -2,7 +2,7 @@
 /**
  * Search form.
  *
- * Input field for the search query.
+ * Form with an input field for search.
  *
  * @package WP_Irving
  */
@@ -22,8 +22,11 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 	__DIR__ . '/component',
 	[
 		'callback' => function( Component $component ): Component {
-			$search_term = $component->get_config( 'wp_query' )->get( 's' ) ?? '';
-			return $component->set_config( 'search_term', $search_term );
+
+			// Get the WP_Query object from a context provider.
+			$wp_query = $component->get_config( 'wp_query' );
+
+			return $component->set_config( 'search_term', $wp_query->get( 's' ) ?? '' );
 		},
 	]
 );

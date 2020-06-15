@@ -4,6 +4,9 @@
  *
  * Pagination UI for a query.
  *
+ * @todo Better automate the `base_url` and `pagination_format` config values
+ *       to work automatically.
+ *
  * @package WP_Irving
  */
 
@@ -23,6 +26,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 	[
 		'callback' => function( Component $component ): Component {
 
+			// Get the WP_Query object from a context provider.
 			$wp_query = $component->get_config( 'wp_query' );
 
 			// Convert to integer and set to page 1 if needed.
