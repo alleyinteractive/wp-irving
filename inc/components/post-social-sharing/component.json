@@ -1,0 +1,44 @@
+{
+	"name": "irving/social-sharing",
+	"description": "Share the post",
+	"config": {
+		"post_id": {
+			"default": 0,
+			"required": true,
+			"type": "integer"
+		},
+		"cta": {
+			"default": "",
+			"required": false,
+			"type": "string"
+		},
+		"platforms": {
+			"default": ["email", "facebook", "linkedin", "pinterest", "reddit", "twitter", "whatsapp"],
+			"required": true,
+			"type": "array"
+		},
+		"post_title": {
+			"default": "",
+			"required": false,
+			"type": "string"
+		},
+		"post_excerpt": {
+			"default": "",
+			"required": false,
+			"type": "string"
+		},
+		"post_thumbnail": {
+			"default": "",
+			"required": false,
+			"type": "string"
+		},
+		"post_permalink": {
+			"default": "",
+			"required": false,
+			"type": "string"
+		}
+	},
+	"use_context": {
+		"irving/post_id": "post_id"
+	}
+}
