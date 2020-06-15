@@ -4,7 +4,6 @@
  *
  * Displays list of social sharing icons.
  *
- *
  * @package Irving_Components
  */
 
