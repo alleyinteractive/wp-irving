@@ -4,6 +4,9 @@
  *
  * Get the post excerpt.
  *
+ * @todo Support for modifying the excerpt length easily. Perhaps options for
+ *       character count, sentence count, etc.
+ *
  * @package WP_Irving
  */
 
@@ -28,7 +31,9 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 
 			$post_excerpt = apply_filters( 'the_excerpt', get_the_excerpt( $post_id ) ); // phpcs:ignore
 
-			return $component->set_config( 'content', $post_excerpt );
+			return $component
+				->set_config( 'content', $post_excerpt )
+				->set_config( 'html', true );
 		},
 	]
 );

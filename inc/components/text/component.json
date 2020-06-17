@@ -1,9 +1,37 @@
 {
 	"name": "irving/text",
-	"description": "Concatenate and render a string.",
+	"description": "Output text.",
+	"theme_options": [
+		"default",
+		"unstyled",
+		"html",
+		"caption",
+		"h1",
+		"h2",
+		"h3",
+		"h4",
+		"h5",
+		"h6"
+	],
 	"config": {
 		"content": {
 			"default": "",
+			"type": "string"
+		},
+		"html": {
+			"default": false,
+			"type": "bool"
+		},
+		"oembed": {
+			"default": false,
+			"type": "bool"
+		},
+		"style": {
+			"default": [],
+			"type": "array"
+		},
+		"tag": {
+			"default": "span",
 			"type": "string"
 		}
 	}

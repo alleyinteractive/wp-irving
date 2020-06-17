@@ -464,6 +464,11 @@ function parse_config_from_registry( array $component ) {
 		// Get the registered alias component, and merge with the original registry data.
 		$registered_alias = WP_Irving\get_registry()->get_registered_component( $registered['alias'] );
 		if ( ! is_null( $registered_alias ) ) {
+
+			// Merge the config first to account for variations.
+			$registered['config'] = array_merge( $registered_alias['config'] ?? [], $registered['config'] ?? [] );
+
+			// Merge the registries.
 			$registered = array_merge( $registered_alias, $registered );
 		}
 	}

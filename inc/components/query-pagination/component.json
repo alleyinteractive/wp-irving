@@ -1,0 +1,51 @@
+{
+	"name": "irving/query-pagination",
+	"alias": "irving/pagination",
+	"description": "Pagination UI for a query.",
+	"config": {
+		"base_url": {
+			"default": "/",
+			"type": "string"
+		},
+		"current_page": {
+			"description": "Required. The current page.",
+			"default": 1,
+			"type": "number"
+		},
+		"display_first_and_last": {
+			"description": "Required. Display UI for the first and last pages.",
+			"default": true,
+			"type": "bool"
+		},
+		"display_prev_and_next": {
+			"description": "Required. Display UI for the previous and next pages.",
+			"default": true,
+			"type": "bool"
+		},
+		"pagination_format": {
+			"default": "page/%1$d/",
+			"type": "string"
+		},
+		"range": {
+			"description": "Required. How many pages to display around the current page.",
+			"default": 5,
+			"type": "number"
+		},
+		"style": {
+			"default": [],
+			"type": "object"
+		},
+		"total_pages": {
+			"description": "Required. The total number of pages.",
+			"default": 1,
+			"type": "number"
+		},
+		"wp_query": {
+			"hidden": true,
+			"type": "object"
+		}
+	},
+	"use_context": {
+		"irving/wp_query": "wp_query"
+	}
+}

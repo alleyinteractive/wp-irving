@@ -24,7 +24,8 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 	__DIR__ . '/component',
 	[
 		'callback' => function( Component $component ): Component {
-			return $component->set_config( 'content', (string) get_bloginfo( $component->get_config( 'show' ) ) );
+			$content = (string) get_bloginfo( $component->get_config( 'show' ) );
+			return $component->set_config( 'content', $content );
 		},
 	]
 );

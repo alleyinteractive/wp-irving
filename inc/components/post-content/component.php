@@ -4,7 +4,6 @@
  *
  * Get the post concept.
  *
- * @todo Add support for template context.
  * @todo Update the output to handle classic HTML and Gutenberg blocks.
  *
  * @package WP_Irving
@@ -38,6 +37,8 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 
 			return $component
 				->set_config( 'content', $post_content )
+				->set_theme( 'html' )
+				->set_config( 'html', true )
 				->set_config( 'oembed', true );
 		},
 	]

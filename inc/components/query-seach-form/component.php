@@ -1,8 +1,8 @@
 <?php
 /**
- * Archive title.
+ * Search form.
  *
- * Get the archive title.
+ * Form with an input field for search.
  *
  * @package WP_Irving
  */
@@ -22,7 +22,11 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 	__DIR__ . '/component',
 	[
 		'callback' => function( Component $component ): Component {
-			return $component->set_config( 'content', get_the_archive_title() );
+
+			// Get the WP_Query object from a context provider.
+			$wp_query = $component->get_config( 'wp_query' );
+
+			return $component->set_config( 'search_term', $wp_query->get( 's' ) ?? '' );
 		},
 	]
 );

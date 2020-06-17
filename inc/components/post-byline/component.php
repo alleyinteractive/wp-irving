@@ -45,7 +45,16 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 				->append_child(
 					( new Component( 'irving/link' ) )
 						->set_config( 'href', get_author_posts_url( $author_id ) )
-						->set_child( get_the_author_meta( 'display_name', $author_id ) )
+						->set_child(
+							new Component(
+								'irving/text',
+								[
+									'config' => [
+										'content' => get_the_author_meta( 'display_name', $author_id ),
+									],
+								]
+							)
+						)
 				);
 
 			return $component;

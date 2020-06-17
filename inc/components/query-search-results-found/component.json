@@ -1,0 +1,20 @@
+{
+	"name": "irving/query-search-results-found",
+	"alias": "irving/text",
+	"category": "Query",
+	"description": "Display meta information about the search results.",
+	"config": {
+		"content_format": {
+			"default": "%1$s results found for \"%2$s\"",
+			"description": "The format stringfor `sprintf()`. Used to determine the output. See callback for all available replacements.",
+			"type": "string"
+		},
+		"wp_query": {
+			"hidden": true,
+			"type": "object"
+		}
+	},
+	"use_context": {
+		"irving/wp_query": "wp_query"
+	}
+}
