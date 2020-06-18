@@ -33,12 +33,6 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 				return $component;
 			}
 
-			// Set the published timestamp.
-			$component->set_config(
-				'timestamp',
-				get_the_date( $component->get_config( 'timestamp_format' ), $post_id )
-			);
-
 			// Get the post author, and add a link to their author archive.
 			$author_id = get_post_field( 'post_author', $post_id );
 			$component

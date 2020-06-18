@@ -26,11 +26,6 @@
 			"default": "By&nbsp;",
 			"type": "string",
 			"required": true
-		},
-		"timestamp_format": {
-			"type": "string",
-			"default": "F j, Y \\a\\t g:ia",
-			"required": true
 		}
 	},
 	"use_context": {
