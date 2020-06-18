@@ -2,7 +2,7 @@
 /**
  * Post byline.
  *
- * Get the post byline.
+ * Display a list of content authors.
  *
  * @todo Add support for CAP and Byline Manager plugins.
  *
