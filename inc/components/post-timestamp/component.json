@@ -1,7 +1,7 @@
 {
-	"name": "irving/post-published-timestamp",
+	"name": "irving/post-timestamp",
 	"alias": "irving/text",
-	"description": "Get the post published timestamp.",
+	"description": "Get the post's timestamp(s).",
 	"config": {
 		"content_format": {
 			"default": "%1$s",

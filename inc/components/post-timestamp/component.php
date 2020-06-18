@@ -1,8 +1,8 @@
 <?php
 /**
- * Post published timestamp.
+ * Post timestamp.
  *
- * Get the post published timestamp.
+ * Get the post's timestamp(s).
  *
  * @package WP_Irving
  */
