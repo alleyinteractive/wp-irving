@@ -54,7 +54,7 @@ function load_template(
 	$data['page'] = hydrate_components( $data['page'] );
 
 	// Automatically setup an admin bar component.
-	$data = setup_admin_bar( $data, $query, $context, $path, $request );
+	$data = \WP_Irving\setup_admin_bar( $data, $query, $context, $path, $request );
 
 	// Automatically setup the <Helmet> tag.
 	$data = setup_helmet( $data, $query, $context, $path, $request );
