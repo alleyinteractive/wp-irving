@@ -241,8 +241,8 @@ function get_admin_api_items(): array {
 	 */
 	$term = get_term_by(
 		'term_taxonomy_id',
-		absint( $_GET['tag_ID'] ?? 0 ), // phpcs:disable WordPress.Security.NonceVerification.Recommended
-		sanitize_text_field( wp_unslash( $_GET['taxonomy'] ?? '' ) ) // phpcs:disable WordPress.Security.NonceVerification.Recommended
+		absint( $_GET['tag_ID'] ?? 0 ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		sanitize_text_field( wp_unslash( $_GET['taxonomy'] ?? '' ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	);
 	if (
 		'term' === ( get_current_screen()->base ?? '' )
