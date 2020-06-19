@@ -13,11 +13,13 @@ use WP_Irving\REST_API\Components_Endpoint;
 /**
  * Automatically insert the admin bar component.
  *
- * @param array            $data    Data object to be hydrated by templates.
- * @param \WP_Query        $query   The current WP_Query object.
- * @param string           $context The context for this request.
- * @param string           $path    The path for this request.
- * @param \WP_REST_Request $request WP_REST_Request object.
+ * @param array               $data     Data object to be hydrated by
+ *                                      templates.
+ * @param \WP_Query           $query    The current WP_Query object.
+ * @param string              $context  The context for this request.
+ * @param string              $path     The path for this request.
+ * @param \WP_REST_Request    $request  WP_REST_Request object.
+ * @param Components_Endpoint $endpoint Current class instance.
  * @return array The updated endpoint data.
  */
 function setup_admin_bar(
@@ -25,7 +27,8 @@ function setup_admin_bar(
 	\WP_Query $query,
 	string $context,
 	string $path,
-	\WP_REST_Request $request
+	\WP_REST_Request $request,
+	Components_Endpoint $endpoint
 ): array {
 
 	// Disable admin bar setup via filter.
@@ -55,7 +58,10 @@ function setup_admin_bar(
 			'irving/admin-bar',
 			[
 				'config' => [
-					'iframe_src' => site_url( $path ),
+					'iframe_src' => add_query_arg(
+						$endpoint->custom_params,
+						site_url( $path )
+					),
 				],
 			]
 		)
@@ -130,7 +136,8 @@ function wp_head() {
 add_action( 'wp_head', __NAMESPACE__ . '\wp_head' );
 
 /**
- * Add api link node to the admin bar from post edit screens.
+ * Add `Irving` admin bar nodes. Provides shortcut links for the API, settings,
+ * and documentation.
  *
  * @param \WP_Admin_Bar $admin_bar WP Admin Bar object.
  */
@@ -149,39 +156,35 @@ function add_admin_bar_nodes( \WP_Admin_Bar $admin_bar ) {
 		return;
 	}
 
-	// Loops through an array of groups and/or nodes and registers them to the
-	// admin bar.
 	array_map(
-		function( $item ) use ( $admin_bar ) {
-
-			// Use `add_node()` by default.
-			$admin_bar_method = $item['method'] ?? 'add_node';
-
-			if ( method_exists( $admin_bar, $admin_bar_method ) ) {
-				call_user_func( [ $admin_bar, $admin_bar_method ], $item );
-			}
-		},
-		get_irving_admin_bar_items()
+		[ $admin_bar, 'add_node' ],
+		array_merge(
+			[
+				// Base `Irving` node.
+				[
+					'id'    => 'irving',
+					'title' => __( 'Irving Development', 'wp-irving' ),
+					'href'  => home_url(),
+				],
+			],
+			get_api_items(), // Global API links.
+			get_admin_api_items(), // Admin-only API links.
+			get_frontend_api_items(), // Frontend-only API links.
+			get_setting_items(), // Irving settings.
+			get_documentation_items() // Documentation.
+		)
 	);
 }
 add_action( 'admin_bar_menu', __NAMESPACE__ . '\add_admin_bar_nodes', 90 );
 
 /**
- * Helper method to get all the nodes.
+ * Get an array of Irving api node args to be passed into
+ * admin_bar->add_node().
  *
  * @return array
  */
-function get_irving_admin_bar_items(): array {
-
-	$base_node = [
-		[
-			'id'    => 'irving',
-			'title' => __( 'Irving Development', 'wp-irving' ),
-			'href'  => home_url(),
-		],
-	];
-
-	$api_links = [
+function get_api_items(): array {
+	return [
 		[
 			'href'   => Components_Endpoint::get_wp_irving_api_url( '/' ),
 			'id'     => 'irving-api-links',
@@ -195,77 +198,108 @@ function get_irving_admin_bar_items(): array {
 			'title'  => __( 'Homepage API', 'wp-irving' ),
 		],
 		[
-			'href'   => add_query_arg(
-				'path',
-				'/',
-				rest_url( 'irving/v1/registered-components/' )
-			),
+			'href'   => rest_url( 'irving/v1/registered-components/' ),
 			'id'     => 'irving-api-links-registered-components',
 			'parent' => 'irving-api-links',
 			'title'  => __( 'Registered Components API', 'wp-irving' ),
 		],
 	];
+}
 
-	/**
-	 * Add nodes to the frontend specifically.
-	 */
+/**
+ * Get an array of Irving api node args to be passed into
+ * admin_bar->add_node().
+ *
+ * @return array
+ */
+function get_admin_api_items(): array {
+
 	if ( ! is_admin() ) {
-
-		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-			$request_uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
-
-			// Current path where `context=page`.
-			$api_links[] = [
-				'href'   => Components_Endpoint::get_wp_irving_api_url( $request_uri, 'page' ),
-				'id'     => 'irving-api-links-current-page',
-				'parent' => 'irving-api-links',
-				'title'  => __( 'Components API (context=page)', 'wp-irving' ),
-			];
-
-			// Current path where `context=site`.
-			$api_links[] = [
-				'href'   => Components_Endpoint::get_wp_irving_api_url( $request_uri, 'site' ),
-				'id'     => 'irving-api-links-current-site',
-				'parent' => 'irving-api-links',
-				'title'  => __( 'Components API (context=site)', 'wp-irving' ),
-			];
-		}
-	} else {
-
-		// Add a node for the post we're currently editing.
-		$post_id = absint( $_GET['post'] ?? 0 ); // phpcs:ignore
-		if (
-			'post' === ( get_current_screen()->base ?? '' )
-			&& get_post( $post_id ) instanceof \WP_Post
-		) {
-			$api_links[] = [
-				'href'   => Components_Endpoint::get_wp_irving_api_url( get_the_permalink( $post_id ) ),
-				'id'     => 'irving-api-links-current-post',
-				'parent' => 'irving-api-links',
-				'title'  => __( 'Post API', 'wp-irving' ),
-			];
-		}
-
-		// Add a node for the term we're currently editing.
-		$term = get_term_by(
-			'term_taxonomy_id',
-			absint( $_GET['tag_ID'] ?? 0 ), // phpcs:disable WordPress.Security.NonceVerification.Recommended
-			sanitize_text_field( wp_unslash( $_GET['taxonomy'] ?? '' ) ) // phpcs:disable WordPress.Security.NonceVerification.Recommended
-		);
-		if (
-			'term' === ( get_current_screen()->base ?? '' )
-			&& $term instanceof \WP_Term
-		) {
-			$api_links[] = [
-				'href'   => Components_Endpoint::get_wp_irving_api_url( get_term_link( $term->term_id ) ),
-				'id'     => 'irving-api-links-current-term',
-				'parent' => 'irving-api-links',
-				'title'  => __( 'Term API', 'wp-irving' ),
-			];
-		}
+		return [];
 	}
 
-	$settings = [
+	$admin_api_items = [];
+
+	/**
+	 * Add a node for the post we're currently editing.
+	 */
+	$post_id = absint( $_GET['post'] ?? 0 ); // phpcs:ignore
+	if (
+		'post' === ( get_current_screen()->base ?? '' )
+		&& get_post( $post_id ) instanceof \WP_Post
+	) {
+		$admin_api_items[] = [
+			'href'   => Components_Endpoint::get_wp_irving_api_url( get_the_permalink( $post_id ) ),
+			'id'     => 'irving-api-links-current-post',
+			'parent' => 'irving-api-links',
+			'title'  => __( 'Post API', 'wp-irving' ),
+		];
+	}
+
+	/**
+	 * Add a node for the term we're currently editing.
+	 */
+	$term = get_term_by(
+		'term_taxonomy_id',
+		absint( $_GET['tag_ID'] ?? 0 ), // phpcs:disable WordPress.Security.NonceVerification.Recommended
+		sanitize_text_field( wp_unslash( $_GET['taxonomy'] ?? '' ) ) // phpcs:disable WordPress.Security.NonceVerification.Recommended
+	);
+	if (
+		'term' === ( get_current_screen()->base ?? '' )
+		&& $term instanceof \WP_Term
+	) {
+		$admin_api_items[] = [
+			'href'   => Components_Endpoint::get_wp_irving_api_url( get_term_link( $term->term_id ) ),
+			'id'     => 'irving-api-links-current-term',
+			'parent' => 'irving-api-links',
+			'title'  => __( 'Term API', 'wp-irving' ),
+		];
+	}
+
+	return $admin_api_items;
+}
+
+/**
+ * Get an array of Irving frontend api node args to be passed into
+ * admin_bar->add_node().
+ *
+ * @return array
+ */
+function get_frontend_api_items(): array {
+
+	if ( is_admin() || ! isset( $_SERVER['REQUEST_URI'] ) ) {
+		return [];
+	}
+
+	$request_uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
+
+	// Current path where `context=page`.
+	$frontent_api_items[] = [
+		'href'   => Components_Endpoint::get_wp_irving_api_url( $request_uri, 'page' ),
+		'id'     => 'irving-api-links-current-page',
+		'parent' => 'irving-api-links',
+		'title'  => __( 'Components API (context=page)', 'wp-irving' ),
+	];
+
+	// Current path where `context=site`.
+	$frontent_api_items[] = [
+		'href'   => Components_Endpoint::get_wp_irving_api_url( $request_uri, 'site' ),
+		'id'     => 'irving-api-links-current-site',
+		'parent' => 'irving-api-links',
+		'title'  => __( 'Components API (context=site)', 'wp-irving' ),
+	];
+
+	return $frontent_api_items;
+}
+
+/**
+ * Get an array of Irving setting node args to be passed into
+ * admin_bar->add_node().
+ *
+ * @return array
+ */
+function get_setting_items(): array {
+	return [
 		[
 			'id'     => 'irving-settings',
 			'parent' => 'irving',
@@ -278,8 +312,16 @@ function get_irving_admin_bar_items(): array {
 			'title'  => __( 'Caching', 'wp-irving' ),
 		],
 	];
+}
 
-	$docs = [
+/**
+ * Get an array of Irving documentation node args to be passed into
+ * admin_bar->add_node().
+ *
+ * @return array
+ */
+function get_documentation_items(): array {
+	return [
 		[
 			'href'   => 'http://github.com/alleyinteractive/irving/wiki/',
 			'id'     => 'irving-docs',
@@ -305,7 +347,4 @@ function get_irving_admin_bar_items(): array {
 			'title'  => __( 'Styled Components Storybook', 'wp-irving' ),
 		],
 	];
-
-	// Put all the pieces together so it's easier to read and modify above.
-	return array_merge( $base_node, $api_links, $settings, $docs );
 }

@@ -10,20 +10,23 @@ namespace WP_Irving\Templates;
 use WP_Irving;
 use WP_Query;
 use WP_Irving\Component;
+use WP_Irving\REST_API\Components_Endpoint;
 
 // Bootstrap filters.
-add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 5 );
+add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 6 );
 
 /**
  * Shallow template loader using core's template hierarchy.
  *
  * Based on wp-includes/template-loader.php.
  *
- * @param array            $data    Data object to be hydrated by templates.
- * @param \WP_Query        $query   The current WP_Query object.
- * @param string           $context The context for this request.
- * @param string           $path    The path for this request.
- * @param \WP_REST_Request $request WP_REST_Request object.
+ * @param array               $data     Data object to be hydrated by
+ *                                      templates.
+ * @param \WP_Query           $query    The current WP_Query object.
+ * @param string              $context  The context for this request.
+ * @param string              $path     The path for this request.
+ * @param \WP_REST_Request    $request  WP_REST_Request object.
+ * @param Components_Endpoint $endpoint Current class instance.
  * @return array A hydrated data object.
  */
 function load_template(
@@ -31,7 +34,8 @@ function load_template(
 	\WP_Query $query,
 	string $context,
 	string $path,
-	\WP_REST_Request $request
+	\WP_REST_Request $request,
+	Components_Endpoint $endpoint
 ): array {
 
 	$template = get_template_path( $query );
@@ -54,7 +58,7 @@ function load_template(
 	$data['page'] = hydrate_components( $data['page'] );
 
 	// Automatically setup an admin bar component.
-	$data = \WP_Irving\setup_admin_bar( $data, $query, $context, $path, $request );
+	$data = \WP_Irving\setup_admin_bar( $data, $query, $context, $path, $request, $endpoint );
 
 	// Automatically setup the <Helmet> tag.
 	$data = setup_helmet( $data, $query, $context, $path, $request );
