@@ -430,8 +430,8 @@ class Cache {
 	public function register_admin() {
 		add_submenu_page(
 			'options-general.php',
-			__( 'WP-Irving Cache', 'wp-irving' ),
-			__( 'WP-Irving Cache', 'wp-irving' ),
+			__( 'Irving Cache', 'wp-irving' ),
+			__( 'Irving Cache', 'wp-irving' ),
 			'manage_options',
 			'wp-irving-cache',
 			[ $this, 'render' ]

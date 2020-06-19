@@ -47,8 +47,6 @@ class Admin {
 		add_action( 'init', [ $this, 'hook_taxonomy_row_actions' ] );
 		add_filter( 'post_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
 		add_filter( 'page_row_actions', [ $this, 'add_api_link_to_posts' ], 10, 2 );
-		add_action( 'admin_bar_menu', [ $this, 'add_api_link_to_admin_bar' ], 99 );
-		add_action( 'admin_bar_menu', [ $this, 'add_registered_components_link_to_admin_bar' ], 99 );
 	}
 
 	/**
@@ -133,116 +131,6 @@ class Admin {
 			);
 		}
 		return $actions;
-	}
-
-	/**
-	 * Add api link node to the admin bar from post edit screens.
-	 *
-	 * @param \WP_Admin_Bar $admin_bar WP Admin Bar object.
-	 */
-	public function add_api_link_to_admin_bar( \WP_Admin_Bar $admin_bar ) {
-		//phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( ! current_user_can( $this->api_link_cap ) ) {
-			return;
-		}
-
-		if ( ! function_exists( 'get_current_screen' ) ) {
-			return;
-		}
-
-		// Get screen and check for a object base.
-		$screen = get_current_screen();
-
-		if ( 'dashboard' === ( $screen->base ?? '' ) ) {
-			$path_url = add_query_arg(
-				'path',
-				'/',
-				rest_url( 'irving/v1/components/' )
-			);
-		}
-
-		if (
-			'term' === ( $screen->base ?? '' )
-			&& isset( $_GET['tag_ID'] )
-			&& isset( $_GET['taxonomy'] )
-		) {
-
-			// Get and validate term ID.
-			$term_id = absint( $_GET['tag_ID'] );
-			if ( 0 === $term_id ) {
-				return;
-			}
-
-			// Get term.
-			$term = get_term_by( 'term_taxonomy_id', $term_id, wp_unslash( $_GET['taxonomy'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-
-			// Get term permalink.
-			$permalink = get_term_link( $term->term_id ?? 0 );
-
-			// Get the API URL, allowing it to be filtered.
-			$path_url = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $permalink );
-			$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
-		}
-
-		if (
-			'post' === ( $screen->base ?? '' )
-			&& isset( $_GET['post'] )
-		) {
-
-			// Get and validate post ID.
-			$post_id = absint( $_GET['post'] );
-			if ( 0 === $post_id ) {
-				return;
-			}
-
-			// Get post permalink.
-			$permalink = get_the_permalink( $post_id );
-
-			// Get the API URL, allowing it to be filtered.
-			$path_url = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $permalink );
-			$path_url = apply_filters( 'wp_irving_post_row_action_path_url', $path_url, get_post( $post_id ) );
-		}
-
-		// Bail early.
-		if ( empty( $path_url ) ) {
-			return;
-		}
-
-		// Add node to admin bar.
-		$admin_bar->add_node(
-			[
-				'id'    => 'wp_irving_api',
-				'title' => __( 'WP-Irving API', 'wp-irving' ),
-				'href'  => $path_url,
-			]
-		);
-		//phpcs:enable WordPress.Security.NonceVerification.Recommended
-	}
-
-	/**
-	 * Add a `Registered Components` link to the admin bar.
-	 *
-	 * @param \WP_Admin_Bar $admin_bar WP Admin Bar object.
-	 */
-	public function add_registered_components_link_to_admin_bar( \WP_Admin_Bar $admin_bar ) {
-		//phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( ! current_user_can( $this->api_link_cap ) ) {
-			return;
-		}
-
-		if ( ! function_exists( 'get_current_screen' ) ) {
-			return;
-		}
-
-		// Add node to admin bar.
-		$admin_bar->add_node(
-			[
-				'href'  => rest_url( 'irving/v1/registered-components/' ),
-				'id'    => 'wp_irving_registered_components_link',
-				'title' => __( 'Registered Components', 'wp-irving' ),
-			]
-		);
-		//phpcs:enable WordPress.Security.NonceVerification.Recommended
 	}
 }
 

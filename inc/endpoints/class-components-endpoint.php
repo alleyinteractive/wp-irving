@@ -147,12 +147,13 @@ class Components_Endpoint extends Endpoint {
 		/**
 		 * Modify the output of the components route.
 		 *
-		 * @param array           $data     Data for response.
-		 * @param WP_Query        $query    WP_Query object corresponding to this
-		 *                                  request.
-		 * @param string          $context  The context for this request.
-		 * @param string          $path     The path for this request.
-		 * @param WP_REST_Request $request  WP_REST_Request object.
+		 * @param array                $data     Data for response.
+		 * @param WP_Query             $query    WP_Query object corresponding
+		 *                                       to this request.
+		 * @param string               $context  The context for this request.
+		 * @param string               $path     The path for this request.
+		 * @param WP_REST_Request      $request  WP_REST_Request object.
+		 * @param \Components_Endpoint $this     Current class instance.
 		 */
 		$data = (array) apply_filters(
 			'wp_irving_components_route',
@@ -160,7 +161,8 @@ class Components_Endpoint extends Endpoint {
 			$this->query,
 			$this->context,
 			$this->path,
-			$request
+			$request,
+			$this
 		);
 
 		// Create the response object.
@@ -450,8 +452,11 @@ class Components_Endpoint extends Endpoint {
 	 */
 	public static function get_wp_irving_api_url( $url, $context = 'page' ) {
 
-		// Get the path.
-		$path = str_replace( get_home_url(), '', $url );
+		// Replace the `?` with `&` since the url will be passed as a query arg.
+		$url = str_replace( '?', '&', $url );
+
+		// Strip the domain.
+		$url = str_replace( get_home_url(), '', $url );
 
 		// Ensure context is a valid value.
 		$context = ( 'site' === $context )
@@ -461,7 +466,7 @@ class Components_Endpoint extends Endpoint {
 		return add_query_arg(
 			[
 				'context' => $context,
-				'path'    => $path,
+				'path'    => $url,
 			],
 			rest_url( 'irving/v1/components' )
 		);
