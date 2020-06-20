@@ -1,0 +1,48 @@
+{
+	"name": "irving/image",
+	"config": {
+		"alt": {
+			"description": "Optional. Value of the alt attribute.",
+			"type": "string"
+		},
+		"aspect_ratio": {
+			"description": "Optional. Aspect ratio for the image to conform to. Can be a float (\"0.6667\"), a ratio (\"16 / 9\"), or a predfined ratio (\"square\").",
+			"type": "string"
+		},
+		"caption": {
+			"description": "Optional. Caption for the image.",
+			"default": "",
+			"type": "string"
+		},
+		"className": {
+			"description": "Optional. Classname.",
+			"type": "string"
+		},
+		"fallback_src": {
+			"description": "Optional. URL for the image source if \"src\" is not set.",
+			"type": "string"
+		},
+		"loading": {
+			"defaul": "lazy",
+			"description": "Required. \"eager\" or \"lazy\".",
+			"type": "string"
+		},
+		"picture_sources": {
+			"description": "Optional. Array of sources for the <picture> tag.",
+			"type": "array"
+		},
+		"src": {
+			"description": "Optional. URL for the image source.",
+			"type": "string"
+		},
+		"style": {
+			"default": [],
+			"type": "array"
+		},
+		"photon_transformations": {
+			"description": "A set of Photon API transformations in the order they should be performed",
+			"default": [],
+			"type": "array"
+		}
+	}
+}
