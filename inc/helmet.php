@@ -7,8 +7,7 @@
 
 namespace WP_Irving\Templates;
 
-use WP_Irving;
-use WP_Irving\Component;
+use WP_Irving\Components\Component;
 
 /**
  * Manage the template head by automatically inserting Helmet tags.

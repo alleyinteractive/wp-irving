@@ -1,0 +1,32 @@
+{
+  "name": "test/schema",
+  "config": {
+    "test-default": {
+      "default": "default"
+    },
+    "test-hidden": {
+      "hidden": true
+    },
+    "test-array": {
+      "type": "array"
+    },
+    "test-bool": {
+      "type": "bool"
+    },
+    "test-int": {
+      "type": "int"
+    },
+    "test-number": {
+      "type": "number"
+    },
+    "test-object": {
+      "type": "object"
+    },
+    "test-string": {
+      "type": "string"
+    },
+    "test-foo": {
+      "type": "foo"
+    }
+  }
+}

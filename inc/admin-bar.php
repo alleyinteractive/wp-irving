@@ -7,7 +7,7 @@
 
 namespace WP_Irving\Templates;
 
-use WP_Irving\Component;
+use WP_Irving\Components;
 
 /**
  * Automatically insert the admin bar component.

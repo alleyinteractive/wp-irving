@@ -6,6 +6,9 @@
  * @todo should the `$validate` param of `insert_legacy_redirect` be set to `true`?
  */
 
+namespace WP_Irving;
+
+use WP_UnitTestCase;
 /**
  * Tests for integration with WPCOM Legacy Redirector.
  */
@@ -21,7 +24,7 @@ class Legacy_Redirector_Tests extends WP_UnitTestCase {
 	/**
 	 * Components endpoint instance.
 	 *
-	 * @var \WP_Irving\REST_API\Components_Endpoint
+	 * @var \REST_API\Components_Endpoint
 	 */
 	public static $components_endpoint;
 
@@ -29,7 +32,7 @@ class Legacy_Redirector_Tests extends WP_UnitTestCase {
 	 * Test suite setup.
 	 */
 	public static function setUpBeforeClass() {
-		self::$helpers = new \WP_Irving\Test_Helpers();
+		self::$helpers = new Test_Helpers();
 	}
 
 	/**

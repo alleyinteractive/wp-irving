@@ -81,31 +81,12 @@ class Test_Templates extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test default template context.
-	 *
-	 * @group context
-	 */
-	public function test_template_default_context() {
-		// Override the global post object for this test.
-		global $post;
-
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$post = $this->factory()->post->create_and_get();
-
-		$context = Templates\get_template_context();
-
-		// Test initial context.
-		$this->assertEquals( $post->ID, $context->get( 'irving/post_id' ), 'Default post ID context not set.' );
-		$this->assertEquals( new \WP_Query( [] ), $context->get( 'irving/wp_query' ), 'Default wp query context not set.' );
-	}
-
-	/**
 	 * Test template hydration uses context.
 	 *
 	 * @group context
 	 */
 	public function test_components_use_context() {
-		get_registry()->register_component(
+		Component\get_registry()->register_component(
 			'provider',
 			[
 				'config'           => [
@@ -129,7 +110,7 @@ class Test_Templates extends WP_UnitTestCase {
 			]
 		);
 
-		get_registry()->register_component(
+		Component\get_registry()->register_component(
 			'consumer',
 			[
 				'config'      => [
@@ -166,13 +147,13 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 		];
 
-		$hydrated = Templates\hydrate_components( $template );
+		$hydrated = json_decode( json_encode( Templates\hydrate_template( $template ) ), true );
 
 		$expected = [
 			[
 				'name'     => 'provider',
 				'_alias'   => '',
-				'config'   => (object) [
+				'config'   => [
 					'propWithDefault'           => 'default value',
 					'propWithDefaultOverridden' => 20,
 					'propWithoutDefault'        => 'test value',
@@ -183,7 +164,7 @@ class Test_Templates extends WP_UnitTestCase {
 					[
 						'name'     => 'consumer',
 						'_alias'   => '',
-						'config'   => (object) [
+						'config'   => [
 							'propWithDefault'           => 'default value',
 							'propWithDefaultOverridden' => 20,
 							'propWithoutDefault'        => 'test value',
@@ -197,8 +178,8 @@ class Test_Templates extends WP_UnitTestCase {
 		];
 
 		// Clean up.
-		get_registry()->unregister_component( 'provider' );
-		get_registry()->unregister_component( 'consumer' );
+		Component\get_registry()->unregister_component( 'provider' );
+		Component\get_registry()->unregister_component( 'consumer' );
 
 		$this->assertEquals( $expected, $hydrated, 'Template hydration is not using context.' );
 	}
@@ -253,7 +234,7 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$this->assertEquals(
 			$expected,
-			Templates\hydrate_components( $template ),
+			Templates\hydrate_template( $template ),
 			'Could not get context in non-registered components.'
 		);
 	}
@@ -267,7 +248,7 @@ class Test_Templates extends WP_UnitTestCase {
 			[ 'name' => 'template-parts/example' ],
 		];
 
-		$hydrated = Templates\hydrate_components( $template );
+		$hydrated = Templates\hydrate_template( $template );
 
 		$expected = [
 			[

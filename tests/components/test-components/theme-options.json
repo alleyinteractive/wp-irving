@@ -1,0 +1,7 @@
+{
+	"name": "test/theme-options",
+	"theme_options": [
+		"primary",
+		"secondary"
+	]
+}

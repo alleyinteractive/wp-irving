@@ -7,9 +7,8 @@
 
 namespace WP_Irving\Templates;
 
-use WP_Irving;
+use WP_Irving\Components\Component;
 use WP_Query;
-use WP_Irving\Component;
 
 // Bootstrap filters.
 add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 5 );
@@ -47,11 +46,7 @@ function load_template(
 		if ( $defaults ) {
 			$data = array_merge( $data, prepare_data_from_template( $defaults, 'defaults' ) );
 		}
-
-		$data['defaults'] = hydrate_components( $data['defaults'] );
 	}
-
-	$data['page'] = hydrate_components( $data['page'] );
 
 	// Automatically setup an admin bar component.
 	$data = setup_admin_bar( $data, $query, $context, $path, $request );
@@ -132,7 +127,7 @@ function get_template_path( WP_Query $query ): string {
  * @return array An associative array prepared for an Irving REST Response.
  */
 function prepare_data_from_template( string $template, string $type = 'page' ): array {
-	$components = [];
+	$data = [];
 
 	ob_start();
 	include $template;
@@ -142,37 +137,38 @@ function prepare_data_from_template( string $template, string $type = 'page' ): 
 	if ( false !== strpos( $template, '.json' ) ) {
 
 		// Attempt to json decode it.
-		$components = json_decode( $contents, true );
+		$data = json_decode( $contents, true );
 
-		// Validate success.
-		if ( ! json_last_error() ) {
-			return $components;
+		// Check for .
+		if ( json_last_error() ) {
+			wp_send_json_error(
+				sprintf(
+					// Translators: %1$s: Error message, %2$s Template path.
+					esc_html__( 'Error: %1$s found in %2$s.', 'wp-irving' ),
+					esc_html( json_last_error_msg() ),
+					esc_html( $template )
+				),
+				500
+			);
 		}
 
-		wp_die(
-			sprintf(
-				// Translators: %1$s: Error message, %2$s Template path.
-				esc_html__( 'Error: %1$s found in %2$s.', 'wp-irving' ),
-				esc_html( json_last_error_msg() ),
-				esc_html( $template )
-			)
-		);
+		$data = hydrate_template( $data );
 	}
 
 	if ( has_blocks( $contents ) ) {
-		$components[ $type ] = convert_blocks_to_components( parse_blocks( $contents ) );
+		$data[ $type ] = convert_blocks_to_components( parse_blocks( $contents ) );
 
-		return $components;
+		return $data;
 	}
 
-	$components['page'] = [
+	$data['page'] = [
 		[
 			'name'   => 'templates/error',
 			'config' => [ 'json_error' => json_last_error() ],
 		],
 	];
 
-	return $components;
+	return $data;
 }
 
 /**
@@ -357,263 +353,58 @@ function convert_blocks_to_components( array $blocks ): array {
 }
 
 /**
- * Hydrate components.
+ * Hydrate a JSON template into a REST response.
  *
- * @param array $components A list of components from a template.
- * @return array A hydrated array of components prepared for a REST response.
+ * @param array $data A JSON array of template data.
+ * @return array a data array ready for a REST response.
  */
-function hydrate_components( array $components ) {
+function hydrate_template( array $data ): array {
 
 	$hydrated = [];
 
-	foreach ( $components as $component ) {
-		// Create Object Instance to hydrate initial config values.
-		$component = setup_component( $component );
+	foreach ( $data as $component ) {
+		// First, handle template part matching.
+		if ( 'template-part' === $component['name'] ) {
+			$template_data = hydrate_template_parts( $component );
 
-		// Bail early if this isn't a WP_Irving\Component.
-		if ( ! $component instanceof Component ) {
+			// If the component is converted to template data,
+			// add hydrated components to the array and move on.
+			if ( ! empty( $template_data ) ) {
+				array_push( $hydrated, ...$template_data );
+
+				// A little cleanup.
+				unset( $template_data );
+			}
+
 			break;
 		}
 
-		$template_data = hydrate_template_parts( $component );
+		$component = new Component( $component['name'], $component );
 
-		// If the component is converted to template data,
-		// add hydrated components to the array and move on.
-		if ( ! empty( $template_data ) ) {
-			array_push( $hydrated, ...$template_data );
-
-			// A little cleanup.
-			unset( $template_data );
-			break;
+		if ( ! is_wp_error( $component ) ) {
+			$hydrated[] = $component;
 		}
-
-		// Set up config from context.
-		$component->use_context( get_template_context() );
-
-		// Run hydration callback.
-		$component->do_callback();
-
-		// Update context values.
-		$component->provide_context( get_template_context() );
-
-		// Recursively hydrate children.
-		if ( ! empty( $component->get_children() ) ) {
-			$component->set_children( hydrate_components( $component->get_children() ) );
-		}
-
-		// Reset context to where it was before hydration.
-		get_template_context()->reset();
-
-		$hydrated[] = $component->jsonSerialize();
 	};
 
 	return $hydrated;
 }
 
-/**
- * Validate and typecast a component.
- *
- * @param array $component Component.
- * @return Component|false A Component class instance or false on failure.
- */
-function setup_component( $component ) {
-
-	if ( $component instanceof Component ) {
-		return $component;
-	}
-
-	// Convert strings to text components.
-	if ( is_string( $component ) ) {
-		$component = [
-			'name'   => 'irving/text',
-			'alias'  => 'irving/fragment',
-			'config' => [
-				'content' => $component,
-			],
-		];
-	}
-
-	// Components must have names.
-	if ( ! isset( $component['name'] ) ) {
-		return false;
-	}
-
-	$component = parse_config_from_registry( $component );
-
-	return new Component( $component['name'], $component );
-}
-
-/**
- * Fill out a component args array from registered values.
- *
- * @param array $component An array of component arguments.
- * @return array A parsed array using registered values.
- */
-function parse_config_from_registry( array $component ) {
-
-	$registered = WP_Irving\get_registry()->get_registered_component( $component['name'] );
-
-	if ( empty( $registered ) ) {
-		return $component;
-	}
-
-	// Ensure $alias is a string.
-	$alias = (string) ( $registered['alias'] ?? '' );
-	if ( ! empty( $alias ) ) {
-
-		// Get the registered alias component, and merge with the original registry data.
-		$registered_alias = WP_Irving\get_registry()->get_registered_component( $registered['alias'] );
-		if ( ! is_null( $registered_alias ) ) {
-
-			// Merge the config first to account for variations.
-			$registered['config'] = array_merge( $registered_alias['config'] ?? [], $registered['config'] ?? [] );
-
-			// Merge the registries.
-			$registered = array_merge( $registered_alias, $registered );
-		}
-	}
-
-	// Loop through all registered config keys and set them from passed
-	// values if the value is valid, otherwise try using the default value.
-	$parsed_config = [];
-
-	$type_callbacks = [
-		'array'   => 'is_array',
-		'bool'    => 'is_bool',
-		'int'     => 'is_int',
-		'integer' => 'is_int',
-		'number'  => 'is_numeric',
-		'string'  => 'is_string',
-		'text'    => 'is_string',
-		'object'  => 'is_object',
-	];
-
-	// Loop through registered config.
-	foreach ( ( $registered['config'] ?? [] ) as $key => $atts ) {
-
-		// If the config's type is not registered, throw a fatal.
-		if ( ! isset( $type_callbacks[ $atts['type'] ] ) ) {
-			wp_die(
-				sprintf(
-					// Translators: %1$s - Config key name, %2$s - Incorrect type, %3$s - Component namme, %4$s allowed types as string.
-					esc_html__( 'The `%1$s` key is registered as `%2$s` for component `%3$s`\'. It must be one of [ %4$s ].', 'wp-irving' ),
-					esc_html( $key ),
-					esc_html( $atts['type'] ),
-					esc_html( $component['name'] ),
-					esc_html(
-						implode(
-							', ',
-							array_map(
-								function( $callback_key ) {
-									return sprintf(
-										'\'%1$s\'', // Wrap the key in single quotes.
-										$callback_key
-									);
-								},
-								array_keys( $type_callbacks )
-							)
-						)
-					)
-				)
-			);
-		}
-
-		// This value has been set and a sanitize callback exists.
-		if (
-			isset( $component['config'][ $key ] ) &&
-			( call_user_func( $type_callbacks[ $atts['type'] ], $component['config'][ $key ] ) )
-		) {
-			$parsed_config[ $key ] = $component['config'][ $key ];
-		} elseif ( isset( $atts['default'] ) ) {
-			$parsed_config[ $key ] = $atts['default'];
-		}
-	}
-
-	$component['config'] = $parsed_config;
-
-	$registered_property = [
-		'callback',
-		'provides_context',
-		'use_context',
-	];
-
-	// Hydrate the rest of the component from the registry.
-	foreach ( $registered_property as $prop ) {
-		$component[ $prop ] = $registered[ $prop ] ?? [];
-	}
-
-	// Set the alias.
-	if ( ! empty( $registered['alias'] ?? [] ) ) {
-		$component['alias'] = $registered['alias'];
-	}
-
-	// Set the schema.
-	if ( ! empty( $registered['config'] ?? [] ) ) {
-		$component['config_schema'] = $registered['config'];
-	}
-
-	// Set the theme options.
-	if ( ! empty( $registered['theme_options'] ?? [] ) ) {
-		$component['theme_options'] = $registered['theme_options'];
-	}
-
-	return $component;
-}
 
 /**
  * Pull in template parts.
  *
- * @param array $component Component.
+ * @param array $data Template data.
  * @return array
  */
-function hydrate_template_parts( $component ) {
-
-	// Check if this is a template part.
-	if ( 'template-parts' !== $component->get_namespace() ) {
-		return false;
-	}
-
-	$template_part_name = substr( $component->get_name(), strpos( $component->get_name(), '/' ) + 1 );
+function hydrate_template_parts( array $data ): array {
+	$template_part_name = substr( $data['name'], strpos( $data['name'], '/' ) + 1 );
 
 	$template = locate_template_part( $template_part_name );
 
 	// Bail early if no template is found.
 	if ( ! $template ) {
-		return false;
+		return [];
 	}
 
-	$template_data = prepare_data_from_template( $template );
-
-	// Handle template parts with only one component rather than an array of
-	// components.
-	if ( isset( $template_data['name'] ) ) {
-		$template_data = [ $template_data ];
-	}
-
-	return hydrate_components( $template_data );
-}
-
-/**
- * Returns the template context object.
- *
- * Sets the default 'irving/post' context when first called.
- *
- * @return WP_Irving\Context_Store The context store object.
- */
-function get_template_context() {
-	global $wp_query;
-	static $context;
-
-	if ( empty( $context ) ) {
-		$context = new WP_Irving\Context_Store();
-
-		$context->set(
-			[
-				'irving/post_id'  => get_the_ID(),
-				'irving/wp_query' => $wp_query,
-			]
-		);
-	}
-
-	return $context;
+	return prepare_data_from_template( $template );
 }
