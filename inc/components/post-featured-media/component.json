@@ -4,6 +4,10 @@
 	"category": "Post",
 	"description": "Display the post featured media.",
 	"config": {
+		"aspect_ratio": {
+			"default": "",
+			"type": "string"
+		},
 		"post_id": {
 			"default": 0,
 			"type": "integer"

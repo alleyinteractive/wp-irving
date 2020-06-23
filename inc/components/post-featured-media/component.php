@@ -32,6 +32,9 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 			$component->append_child(
 				[
 					'name' => 'irving/post-featured-image',
+					'config' => [
+						'aspect_ratio' => $component->get_config( 'aspect_ratio' ),
+					],
 				]
 			);
 

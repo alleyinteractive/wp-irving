@@ -1,6 +1,12 @@
 {
 	"name": "irving/image",
+	"description": "Output an image.",
 	"config": {
+		"allow_upscaling": {
+			"default": false,
+			"description": "Allow an image to be scaled to larger than its actual width.",
+			"type": "bool"
+		},
 		"alt": {
 			"description": "Optional. Value of the alt attribute.",
 			"type": "string"
@@ -14,7 +20,7 @@
 			"default": "",
 			"type": "string"
 		},
-		"className": {
+		"class_name": {
 			"description": "Optional. Classname.",
 			"type": "string"
 		},
@@ -27,9 +33,19 @@
 			"description": "Required. \"eager\" or \"lazy\".",
 			"type": "string"
 		},
+		"object_fit": {
+			"default": "cover",
+			"description": "Object fit property.",
+			"type": "string"
+		},
 		"picture_sources": {
 			"description": "Optional. Array of sources for the <picture> tag.",
 			"type": "array"
+		},
+		"show_meta": {
+			"default": true,
+			"description": "Display meta.",
+			"type": "bool"
 		},
 		"src": {
 			"description": "Optional. URL for the image source.",

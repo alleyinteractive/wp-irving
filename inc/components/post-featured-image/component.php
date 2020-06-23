@@ -4,6 +4,8 @@
  *
  * Get the post featured image.
  *
+ * @todo Add filters to make customizing this easier.
+ *
  * @package WP_Irving
  */
 
@@ -31,9 +33,12 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 				return $component;
 			}
 
+			$thumbnail_id = get_post_thumbnail_id( $post_id );
+
 			return $component
 				->set_config( 'alt', get_post_alt( $post_id ) )
-				->set_config( 'caption', wp_get_attachment_caption( get_post_thumbnail_id( $post_id ) ) )
+				->set_config( 'caption', wp_get_attachment_caption( $thumbnail_id ) )
+				->set_config( 'credit', get_post_meta( $thumbnail_id, 'caption', true ) )
 				->set_config( 'src', get_the_post_thumbnail_url( $post_id ) );
 		},
 	]
