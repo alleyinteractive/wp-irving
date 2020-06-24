@@ -388,7 +388,7 @@ function hydrate_components( array $components ) {
 
 			// A little cleanup.
 			unset( $template_data );
-			break;
+			continue;
 		}
 
 		// Set up config from context.
