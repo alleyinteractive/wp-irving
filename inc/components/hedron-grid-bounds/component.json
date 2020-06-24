@@ -1,0 +1,36 @@
+{
+	"name": "hedron/grid-bounds",
+	"config": {
+		"debug": {
+			"default": false,
+			"description": "Outlines the grid system so you can visualize the layout.",
+			"type": "bool"
+		},
+		"direction": {
+			"default": "horizontal",
+			"description": "Sets the primary axis the children should be in line with. Options are \"horizontal\" or \"vertical\".",
+			"type": "string"
+		},
+		"flex": {
+			"description": "Optional. Controls the CSS flex property. Options are \"grow\" \"shrink\" \"basis\".",
+			"type": "string"
+		},
+		"halign": {
+			"description": "Alignment of children along the horizontal axis. Options are \"left\", \"center\", \"right\".",
+			"type": "string"
+		},
+		"style": {
+			"default": [],
+			"type": "array"
+		},
+		"valign": {
+			"description": "Alignment of children along the vertical axis. Options are \"top\", \"center\", or \"bottom\".",
+			"type": "string"
+		},
+		"wrap": {
+			"default": false,
+			"description": "Required. Sets whether the children should wrap when there's no more room on the primary axis.",
+			"type": "bool"
+		}
+	}
+}

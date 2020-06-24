@@ -1,6 +1,5 @@
 {
-	"name": "irving/grid",
-	"alias": "styled-css-grid/grid",
+	"name": "styled-css-grid/grid",
 	"config": {
 		"align_content": {
 			"description": "The align-content CSS property. Not provided by default.",
@@ -45,6 +44,10 @@
 		"rows": {
 			"description": "The grid-template-rows CSS property. When a number is passed it is a shorthand to specify the number of rows. Not provided by default.",
 			"type": "string"
+		},
+		"style": {
+			"default": [],
+			"type": "array"
 		}
 	}
 }

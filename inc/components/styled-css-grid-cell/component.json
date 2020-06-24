@@ -1,6 +1,5 @@
 {
-	"name": "irving/grid-cell",
-	"alias": "styled-css-grid/cell",
+	"name": "styled-css-grid/cell",
 	"config": {
 		"area": {
 			"description": "The grid-area CSS property. Not provided by default.",
@@ -21,6 +20,10 @@
 		"middle": {
 			"description": "Vertically align the contents of the cell. Default is false.",
 			"type": "string"
+		},
+		"style": {
+			"default": [],
+			"type": "array"
 		},
 		"top": {
 			"description": "The grid-row-start CSS property. Not provided by default.",
