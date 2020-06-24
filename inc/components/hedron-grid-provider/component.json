@@ -1,0 +1,19 @@
+{
+	"name": "hedron/grid-provider",
+	"config": {
+		"breakpoints": {
+			"default": {
+				"mobile": "-500",
+				"tablet": "501-750",
+				"wide": "+750"
+			},
+			"description": "Breakpoints for setting resolution-specific properties on child Grid.Box components. Here's a basic outline for writing breakpoint queries.",
+			"type": "array"
+		},
+		"padding": {
+			"default": "",
+			"description": "Default padding to use for child Grid.Box components",
+			"type": "string"
+		}
+	}
+}

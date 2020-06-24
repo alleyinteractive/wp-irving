@@ -1,0 +1,37 @@
+{
+	"name": "hedron/grid-box",
+	"config": {
+		"debug": {
+			"description": "Outlines the grid system so you can visualize the layout.",
+			"type": "bool"
+		},
+		"fill": {
+			"description": "Sets whether the Box should fill up all available space.",
+			"type": "bool"
+		},
+		"flex": {
+			"description": "Controls the CSS flex property. Options \"grow\" \"shrink\" \"basis\".",
+			"type": "string"
+		},
+		"fluid": {
+			"description": "Convenience property for disabling padding.",
+			"type": "bool"
+		},
+		"shift_down": {
+			"description": "Shifts the box to the bottom of the parent Bounds.",
+			"type": "bool"
+		},
+		"shift_left": {
+			"description": "Shifts the box to the left of the parent Bounds.",
+			"type": "bool"
+		},
+		"shift_right": {
+			"description": "Shifts the box to the right of the parent Bounds.",
+			"type": "bool"
+		},
+		"shift_up": {
+			"description": "Shifts the box to the top of the parent Bounds.",
+			"type": "bool"
+		}
+	}
+}
