@@ -570,10 +570,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 * Tests for the component (array) filter in the `jsonSerialize()` method.
 	 */
 	public function test_json_serialize_component_array_filter() {
-		$this->markTestSkipped(
-			'Filtering serialization must be fixed.'
-		);
-
 		$component = new Component( 'irving/text' );
 
 		add_filter( 'wp_irving_serialize_component_array', [ $this, 'wp_irving_serialize_component_array_action' ] );
