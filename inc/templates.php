@@ -63,6 +63,9 @@ function load_template(
 	// Automatically setup the <Helmet> tag.
 	$data = setup_helmet( $data, $query, $context, $path, $request );
 
+	// Setup a global style provider.
+	$data = setup_site_theme_provider( $data );
+
 	return $data;
 }
 
