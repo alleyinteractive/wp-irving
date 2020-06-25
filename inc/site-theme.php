@@ -52,96 +52,7 @@ function get_site_theme( $selector = '', $default = null ) {
 	 *
 	 * @var array
 	 */
-	$theme = apply_filters(
-		'wp_irving_setup_site_theme',
-		[
-			/**
-			 * Default breakpoint maps.
-			 */
-			'breakpoints' => [
-				'xs' => '0px',
-				'sm' => '600px',
-				'md' => '960px',
-				'lg' => '1280px',
-				'xl' => '1920px',
-			],
-			/**
-			 * Default color options.
-			 *
-			 * @see https://material-ui.com/customization/palette/
-			 */
-			'colors'      => [
-				'primary'   => [
-					'light' => '#4791db',
-					'main'  => '#1976d2',
-					'dark'  => '#115293',
-				],
-				'secondary' => [
-					'light' => '#e33371',
-					'main'  => '#dc004e',
-					'dark'  => '#9a0036',
-				],
-				'error'     => [
-					'light' => '#e57373',
-					'main'  => '#f44336',
-					'dark'  => '#d32f2f',
-				],
-				'warning'   => [
-					'light' => '#ffb74d',
-					'main'  => '#ff9800',
-					'dark'  => '#f57c00',
-				],
-				'info'      => [
-					'light' => '#64b5f6',
-					'main'  => '#2196f3',
-					'dark'  => '#1976d2',
-				],
-				'success'   => [
-					'light' => '#81c784',
-					'main'  => '#4caf50',
-					'dark'  => '#388e3c',
-				],
-				'text'      => [
-					'primary'   => 'rgba(0, 0, 0, 0.87)',
-					'secondary' => 'rgba(0, 0, 0, 0.54)',
-					'disabled'  => 'rgba(0, 0, 0, 0.38)',
-				],
-			],
-			/**
-			 * Default font families.
-			 *
-			 * @see https://css-tricks.com/snippets/css/font-stacks/
-			 */
-			'fonts'       => [
-				'body'                       => [
-					'variant1' => 'Baskerville, "Times New Roman", Times, serif',
-					'variant2' => 'Garamond, "Hoefler Text", "Times New Roman", Times, serif',
-					'variant3' => 'Geneva, "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif',
-					'variant4' => 'GillSans, Calibri, Trebuchet, sans-serif',
-				],
-				'headlines'                  => [
-					'variant1' => 'Georgia, Times, ‘Times New Roman’, serif',
-					'variant2' => 'Palatino, ‘Palatino Linotype’, ‘Hoefler Text’, Times, ‘Times New Roman’, serif',
-					'variant3' => 'Tahoma, Verdana, Geneva',
-					'variant4' => 'Trebuchet, Tahoma, Arial, sans-serif',
-				],
-				'helvetica_arial_sans_serif' => 'Frutiger, "Frutiger Linotype", Univers, Calibri, "Gill Sans", "Gill Sans MT", "Myriad Pro", Myriad, "DejaVu Sans Condensed", "Liberation Sans", "Nimbus Sans L", Tahoma, Geneva, "Helvetica Neue", Helvetica, Arial, sans-serif',
-				'impact_san_sserif'          => 'Impact, Haettenschweiler, "Franklin Gothic Bold", Charcoal, "Helvetica Inserat", "Bitstream Vera Sans Bold", "Arial Black", sans-serif',
-				'modern_georgia_serif'       => 'Constantia, "Lucida Bright", Lucidabright, "Lucida Serif", Lucida, "DejaVu Serif", "Bitstream Vera Serif", "Liberation Serif", Georgia, serif',
-				'monospace'                  => 'Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace',
-				'times_new_roman'            => 'Cambria, "Hoefler Text", Utopia, "Liberation Serif", "Nimbus Roman No9 L Regular", Times, "Times New Roman", serif',
-				'traditional_serif'          => '"Palatino Linotype", Palatino, Palladio, "URW Palladio L", "Book Antiqua", Baskerville, "Bookman Old Style", "Bitstream Charter", "Nimbus Roman No9 L", Garamond, "Apple Garamond", "ITC Garamond Narrow", "New Century Schoolbook", "Century Schoolbook", "Century Schoolbook L", Georgia, serif',
-				'trebuchet_sans_serif'       => '"Segoe UI", Candara, "Bitstream Vera Sans", "DejaVu Sans", "Bitstream Vera Sans", "Trebuchet MS", Verdana, "Verdana Ref", sans-serif',
-				'verdana-based_sans_serif'   => 'Corbel, "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", "Liberation Sans", Verdana, "Verdana Ref", sans-serif',
-			],
-			/**
-			 * Default spacing values.
-			 */
-			'spacing'     => [
-				'gutter' => '1.25rem',
-			],
-		]
-	);
+	$theme = apply_filters( 'wp_irving_setup_site_theme', get_site_theme_from_json_files() );
 
 	// Get the entire theme.
 	if ( empty( $selector ) ) {
@@ -167,4 +78,72 @@ function get_site_theme( $selector = '', $default = null ) {
 
 	// Return the value found at the final selector segment.
 	return $value;
+}
+
+/**
+ * Loop through some directories importing components and registering them.
+ *
+ * @return bool|array Site theme array, or false if something went wrong.
+ */
+function get_site_theme_from_json_files() {
+
+	$theme = [];
+
+	$path = apply_filters( 'wp_irving_site_theme_json_directory_path', get_template_directory() . '/styles/' );
+
+	if ( ! is_dir( $path ) ) {
+		return [];
+	}
+
+	// Recursively loop through $path, including anything that ends in index.php.
+	$directory_iterator = new \RecursiveDirectoryIterator( $path );
+	$iterator           = new \RecursiveIteratorIterator( $directory_iterator );
+	$regex              = new \RegexIterator( $iterator, '/.+\/(.+)\.json$/', \RecursiveRegexIterator::ALL_MATCHES );
+
+	// Include each index.php entry point.
+	foreach ( $regex as $results ) {
+
+		// Validate the path.
+		$file_path = $results[0][0] ?? '';
+		if ( ! file_exists( $file_path ) ) {
+			continue;
+		}
+
+		// Get the name.
+		$file_name = $results[1][0] ?? '';
+
+		// Validate name.
+		if ( empty( $file_name ) ) {
+			wp_die(
+				sprintf(
+					// Translators: %1$s Template path.
+					esc_html__( 'Error: Empty filename found in %1$s.', 'wp-irving' ),
+					esc_html( $file_path )
+				)
+			);
+			return false;
+		}
+
+		// Decode the content.
+		// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+		$styles = file_get_contents( $file_path );
+		$styles = json_decode( $styles, true );
+
+		// Validate JSON.
+		if ( is_null( $styles ) ) {
+			wp_die(
+				sprintf(
+					// Translators: %1$s: Error message, %2$s: File path.
+					esc_html__( 'Error: %1$s found in %2$s.', 'wp-irving' ),
+					esc_html( json_last_error_msg() ),
+					esc_html( $file_path )
+				)
+			);
+			return false;
+		}
+
+		$theme[ $file_name ] = $styles;
+	}
+
+	return $theme;
 }
