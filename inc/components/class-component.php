@@ -557,18 +557,10 @@ class Component implements JsonSerializable {
 	 * Set the component theme.
 	 *
 	 * @param string $theme Theme name.
-	 * @param bool   $force Optional. Ignore the theme options. Default false.
 	 * @return self
 	 */
-	private function set_theme( string $theme, bool $force = false ): self {
-
-		// If the theme is a valid option, or we're forcing, update the value.
-		if (
-			in_array( $theme, $this->get_theme_options(), true )
-			|| $force
-		) {
-			$this->theme = $theme;
-		}
+	private function set_theme( string $theme ): self {
+		$this->theme = $theme;
 
 		return $this;
 	}

@@ -319,7 +319,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 			],
 			[
 				[ 'theme' => 'foo' ],
-				'default',
+				'foo',
 				'Invalid theme should fall back to defaults.',
 			],
 			[
