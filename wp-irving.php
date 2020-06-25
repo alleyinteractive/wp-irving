@@ -59,6 +59,7 @@ require_once WP_IRVING_PATH . '/inc/rewrites.php';
 require_once WP_IRVING_PATH . '/inc/class-context-store.php';
 require_once WP_IRVING_PATH . '/inc/admin-bar.php';
 require_once WP_IRVING_PATH . '/inc/helmet.php';
+require_once WP_IRVING_PATH . '/inc/site-theme.php';
 require_once WP_IRVING_PATH . '/inc/templates.php';
 
 // Debugging helpers.
