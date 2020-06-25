@@ -912,14 +912,6 @@ class Component implements JsonSerializable {
 	 * @return array
 	 */
 	public function jsonSerialize() {
-
-		/**
-		 * Filter component object before serialization.
-		 *
-		 * @param Component $this Current component instance.
-		 */
-		apply_filters( 'wp_irving_serialize_component', $this );
-
 		/**
 		 * Filter component array after serialization.
 		 *
