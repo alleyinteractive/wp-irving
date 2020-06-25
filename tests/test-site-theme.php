@@ -11,7 +11,7 @@ use WP_Irving\Templates;
 use WP_UnitTestCase;
 
 /**
- * Test helmet functionality.
+ * Test site theme functionality.
  *
  * @group templates
  */
@@ -42,7 +42,7 @@ class Test_Site_Theme extends WP_UnitTestCase {
 	public function setUp() {
 		parent::setUp();
 
-		// Replace the default theme with a testing theme.
+		// Replace the dynamically loaded data with local data.
 		add_filter(
 			'wp_irving_setup_site_theme',
 			function( $theme ) {
