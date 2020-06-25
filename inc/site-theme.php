@@ -64,7 +64,7 @@ function get_site_theme( $selector = '', $default = null ) {
 	// Loop through each segment of the selector.
 	foreach ( explode( '.', $selector ) as $segment ) {
 
-		// If it's not an array, or the key doesn't exisst, return the default instead.
+		// If it's not an array, or the key doesn't exist, return the default instead.
 		if (
 			! is_array( $value )
 			|| ! array_key_exists( $segment, $value )
