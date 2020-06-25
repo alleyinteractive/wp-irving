@@ -58,13 +58,15 @@ class Test_Site_Theme extends WP_UnitTestCase {
 	 *
 	 * @param string $selector       Dot notation string to select a theme
 	 *                               value.
+	 * @param mixed  $default        Default value when the selector does not
+	 *                               return a valid path/value.
 	 * @param mixed  $expected_value Value expected to be returned using the
 	 *                               selector.
 	 * @param string $message        Messagae if the test fails.
 	 */
-	public function test_get_site_theme( string $selector, $expected_value, string $message ) {
+	public function test_get_site_theme( string $selector, $default, $expected_value, string $message ) {
 		$this->assertEquals(
-			Templates\get_site_theme( $selector ),
+			Templates\get_site_theme( $selector, $default ),
 			$expected_value,
 			$message
 		);
@@ -79,28 +81,63 @@ class Test_Site_Theme extends WP_UnitTestCase {
 		return [
 			[
 				'',
+				null,
 				$this->site_theme,
 				'Could not select entire theme.',
 			],
 			[
 				'colors',
+				null,
 				$this->site_theme['colors'],
-				'Could not select top level array',
+				'Could not select a top level array',
 			],
 			[
 				'colors.black',
+				null,
 				$this->site_theme['colors']['black'],
-				'Could not select top level array.',
+				'Could not select a single value.',
+			],
+			[
+				'brand',
+				null,
+				$this->site_theme['brand'],
+				'Could not select a top level array.',
+			],
+			[
+				'brand.primary',
+				null,
+				$this->site_theme['brand']['primary'],
+				'Could not select a nested array.',
+			],
+			[
+				'brand.primary.main',
+				null,
+				$this->site_theme['brand']['primary']['main'],
+				'Could not select a double nested value.',
 			],
 			[
 				'colors.blue',
+				'Hello World',
+				'Hello World',
+				'`Hello World` not returned as default for selector that does not exist.',
+			],
+			[
+				'colors.blue',
+				null,
 				null,
 				'`null` not returned as default for selector that does not exist.',
 			],
 			[
 				'colors.blue.primary',
 				null,
+				null,
 				'`null` not returned as default for selector that does not exist.',
+			],
+			[
+				'colors.blue.primary',
+				'Hello World',
+				'Hello World',
+				'`Hello World` not returned as default for selector that does not exist.',
 			],
 		];
 	}
