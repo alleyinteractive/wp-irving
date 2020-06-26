@@ -11,11 +11,23 @@ use WP_UnitTestCase;
 use WP_Query;
 
 /**
- * Tests for the component class.
+ * Tests for WP_Irving\Components functions.
  *
  * @group components
  */
 class Test_Components extends WP_UnitTestCase {
+
+	/**
+	 * Setup.
+	 */
+	public function setUp() {
+		parent::setup();
+
+		global $wp_irving_context;
+
+		// Ensure we get a fresh context store for each test.
+		$wp_irving_context = null;
+	}
 
 	/**
 	 * Test default template context.
