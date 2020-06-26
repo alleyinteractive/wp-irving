@@ -457,6 +457,20 @@ class Component implements JsonSerializable {
 	}
 
 	/**
+	 * Set a single child component.
+	 *
+	 * @param mixed $child The child to add. Accepts string, array, or Component.
+	 * @return self
+	 */
+	public function set_child( $child ): self {
+		if ( is_string( $child ) ) {
+			$child = [ $child ];
+		}
+
+		return $this->set_children( [ $child ] );
+	}
+
+	/**
 	 * Prepend children.
 	 *
 	 * @param array $children Children.
