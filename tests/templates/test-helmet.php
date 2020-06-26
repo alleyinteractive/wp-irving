@@ -92,7 +92,7 @@ class Test_Helmet extends WP_UnitTestCase {
 	 * @return array
 	 */
 	public function get_helmet_setup_result(): array {
-		return Templates\setup_helmet(
+		return setup_helmet(
 			$this->get_blank_data_array(),
 			new \WP_Query(),
 			'site',
