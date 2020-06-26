@@ -5,9 +5,9 @@
  * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Templates;
 
-use WP_Irving\Templates;
+use WP_Irving\Components;
 use WP_UnitTestCase;
 
 /**
@@ -66,7 +66,7 @@ class Test_Templates extends WP_UnitTestCase {
 	 * @param array $paths Template path slugs.
 	 */
 	public function test_template_paths( $paths ) {
-		$path = Templates\locate_template( $paths );
+		$path = locate_template( $paths );
 
 		$this->assertTrue( file_exists( $path ) );
 	}
@@ -75,7 +75,7 @@ class Test_Templates extends WP_UnitTestCase {
 	 * Test that local template partial paths is working.
 	 */
 	public function test_template_partial_paths() {
-		$path = Templates\locate_template_part( 'sidebar' );
+		$path = locate_template_part( 'sidebar' );
 
 		$this->assertTrue( file_exists( $path ) );
 	}
@@ -86,7 +86,7 @@ class Test_Templates extends WP_UnitTestCase {
 	 * @group context
 	 */
 	public function test_components_use_context() {
-		Component\get_registry()->register_component(
+		Components\get_registry()->register_component(
 			'provider',
 			[
 				'config'           => [
@@ -110,7 +110,7 @@ class Test_Templates extends WP_UnitTestCase {
 			]
 		);
 
-		Component\get_registry()->register_component(
+		Components\get_registry()->register_component(
 			'consumer',
 			[
 				'config'      => [
@@ -147,7 +147,7 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 		];
 
-		$hydrated = json_decode( json_encode( Templates\hydrate_template( $template ) ), true );
+		$hydrated = json_decode( json_encode( hydrate_template( $template ) ), true );
 
 		$expected = [
 			[
@@ -178,8 +178,8 @@ class Test_Templates extends WP_UnitTestCase {
 		];
 
 		// Clean up.
-		Component\get_registry()->unregister_component( 'provider' );
-		Component\get_registry()->unregister_component( 'consumer' );
+		Components\get_registry()->unregister_component( 'provider' );
+		Components\get_registry()->unregister_component( 'consumer' );
 
 		$this->assertEquals( $expected, $hydrated, 'Template hydration is not using context.' );
 	}
@@ -234,7 +234,7 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$this->assertEquals(
 			$expected,
-			Templates\hydrate_template( $template ),
+			hydrate_template( $template ),
 			'Could not get context in non-registered components.'
 		);
 	}
@@ -248,7 +248,7 @@ class Test_Templates extends WP_UnitTestCase {
 			[ 'name' => 'template-parts/example' ],
 		];
 
-		$hydrated = Templates\hydrate_template( $template );
+		$hydrated = hydrate_template( $template );
 
 		$expected = [
 			[

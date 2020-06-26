@@ -1,6 +1,6 @@
 <?php
 /**
- * Templates.
+ * Template functionality.
  *
  * @package WP_Irving
  */
@@ -10,8 +10,13 @@ namespace WP_Irving\Templates;
 use WP_Irving\Components\Component;
 use WP_Query;
 
-// Bootstrap filters.
-add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 5 );
+/**
+ * Bootstrap filters.
+ */
+function bootstrap() {
+	add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 5 );
+}
+
 
 /**
  * Shallow template loader using core's template hierarchy.

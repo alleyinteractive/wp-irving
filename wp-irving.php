@@ -59,10 +59,9 @@ require_once WP_IRVING_PATH . '/inc/redirects.php';
 require_once WP_IRVING_PATH . '/inc/rewrites.php';
 
 // Template loading.
-
-require_once WP_IRVING_PATH . '/inc/admin-bar.php';
-require_once WP_IRVING_PATH . '/inc/helmet.php';
-require_once WP_IRVING_PATH . '/inc/templates.php';
+require_once WP_IRVING_PATH . '/inc/templates/admin-bar.php';
+require_once WP_IRVING_PATH . '/inc/templates/helmet.php';
+require_once WP_IRVING_PATH . '/inc/templates/namespace.php';
 
 // Debugging helpers.
 require_once WP_IRVING_PATH . '/inc/debug.php';
@@ -75,3 +74,4 @@ new REST_API\Form_Endpoint();
 
 // Bootstrap functionality.
 Components\bootstrap();
+Templates\bootstrap();

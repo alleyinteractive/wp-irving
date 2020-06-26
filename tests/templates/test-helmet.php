@@ -5,14 +5,9 @@
  * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Templates;
 
-use WP_Irving\Templates;
 use WP_Irving\Components\Component;
-use function WP_Irving\Templates\create_or_update_title;
-use function WP_Irving\Templates\get_title_from_helmet;
-use function WP_Irving\Templates\inject_head_tags;
-use function WP_Irving\Templates\parse_html;
 use WP_UnitTestCase;
 
 /**
