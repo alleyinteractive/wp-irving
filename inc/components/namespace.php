@@ -37,12 +37,12 @@ function get_registry(): Registry {
  */
 function get_context_store() {
 	global $wp_query;
-	static $context;
+	global $wp_irving_context;
 
-	if ( empty( $context ) ) {
-		$context = new Context_Store();
+	if ( empty( $wp_irving_context ) ) {
+		$wp_irving_context = new Context_Store();
 
-		$context->set(
+		$wp_irving_context->set(
 			[
 				'irving/post_id'  => get_the_ID(),
 				'irving/wp_query' => $wp_query,
@@ -50,7 +50,7 @@ function get_context_store() {
 		);
 	}
 
-	return $context;
+	return $wp_irving_context;
 }
 
 
