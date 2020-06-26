@@ -194,10 +194,7 @@ class Component implements JsonSerializable {
 			->set_config( $args['config'] )
 			->hydrate_config()
 			->set_theme( $args['theme'] ) // @todo, should this just be config?
-			->provide_context()
-			->set_children( $args['children'] )
-			->hydrate_children()
-			->reset_context();
+			->set_children( $args['children'] );
 
 		return $this;
 	}
@@ -408,7 +405,9 @@ class Component implements JsonSerializable {
 	 * @param array $children Children.
 	 * @return self
 	 */
-	private function set_children( array $children ): self {
+	public function set_children( array $children ): self {
+		// Set context before setting children.
+		$this->provide_context();
 
 		// Cast all children into arrays to support string notation.
 		$children = array_map(
@@ -422,7 +421,38 @@ class Component implements JsonSerializable {
 			$children
 		);
 
+		// Hydrate children.
+		// @todo: merge with map function above.
+		foreach ( $children as &$child ) {
+			// Only look for arrays with a `name` key.
+			if ( ! is_array( $child ) ) {
+				continue;
+			}
+
+			$name = $child[0];
+			$args = isset( $child[1] ) ? $child[1] : [];
+
+			// Replace the array with an initialized component instance.
+			$child = new Component( $name, $args );
+		}
+
+		if ( is_callable( $this->children_callback ) ) {
+			$new_children = call_user_func_array( $this->children_callback, [ $children, $this->config ] );
+
+			/*
+			 * Ensure the callback returns an array of children.
+			 * @todo Add error handling.
+			 */
+			if ( is_array( $new_children ) ) {
+				$children = $new_children;
+			}
+		}
+
 		$this->children = $this->reset_array( $children );
+
+		// Reset context after setting children.
+		$this->reset_context();
+
 		return $this;
 	}
 
@@ -432,7 +462,7 @@ class Component implements JsonSerializable {
 	 * @param array $children Children.
 	 * @return self
 	 */
-	private function prepend_children( array $children ): self {
+	public function prepend_children( array $children ): self {
 		return $this->set_children(
 			array_merge(
 				self::reset_array( $children ),
@@ -447,7 +477,7 @@ class Component implements JsonSerializable {
 	 * @param mixed $child Child.
 	 * @return self
 	 */
-	private function prepend_child( $child ): self {
+	public function prepend_child( $child ): self {
 		return $this->prepend_children( [ $child ] );
 	}
 
@@ -457,7 +487,7 @@ class Component implements JsonSerializable {
 	 * @param array $children Children.
 	 * @return self
 	 */
-	private function append_children( array $children ): self {
+	public function append_children( array $children ): self {
 		return $this->set_children(
 			array_merge(
 				$this->get_children(),
@@ -472,7 +502,7 @@ class Component implements JsonSerializable {
 	 * @param mixed $child Child.
 	 * @return self
 	 */
-	private function append_child( $child ): self {
+	public function append_child( $child ): self {
 		return $this->append_children( [ $child ] );
 	}
 
@@ -501,34 +531,11 @@ class Component implements JsonSerializable {
 	 *
 	 * @return self
 	 */
-	private function hydrate_children(): self {
+	private function hydrate_children() {
 
 		$children = $this->get_children();
 
-		foreach ( $children as &$child ) {
-			// Only look for arrays with a `name` key.
-			if ( ! is_array( $child ) ) {
-				continue;
-			}
 
-			$name = $child[0];
-			$args = isset( $child[1] ) ? $child[1] : [];
-
-			// Replace the array with an initialized component instance.
-			$child = new Component( $name, $args );
-		}
-
-		if ( is_callable( $this->children_callback ) ) {
-			$new_children = call_user_func_array( $this->children_callback, [ $children, $this->config ] );
-
-			/*
-			 * Ensure the callback returns an array of children.
-			 * @todo Add error handling.
-			 */
-			if ( is_array( $new_children ) ) {
-				$children = $new_children;
-			}
-		}
 
 		return $this->set_children( $children );
 	}
