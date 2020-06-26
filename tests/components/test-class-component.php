@@ -527,9 +527,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 						],
 					],
 					'children' => [
-						new Component( 'parent-child-001' ),
-						new Component( 'parent-child-002' ),
-						new Component( 'parent-child-003' ),
+						[ 'parent-child-001' ],
+						[ 'parent-child-002' ],
+						[ 'parent-child-003' ],
 					],
 				],
 			],
