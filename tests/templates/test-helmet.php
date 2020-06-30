@@ -107,9 +107,15 @@ class Test_Helmet extends WP_UnitTestCase {
 	 * @return Component
 	 */
 	public function get_example_meta_component(): Component {
-		return ( new Component( 'meta' ) )
-			->set_config( 'name', 'robots' )
-			->set_config( 'content', 'noindex, follow' );
+		return new Component(
+			'meta',
+			[
+				'config' => [
+					'name'    => 'robots',
+					'content' => 'noindex, follow',
+				],
+			]
+		);
 	}
 
 	/**

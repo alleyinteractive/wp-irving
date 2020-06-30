@@ -8,6 +8,7 @@
 namespace WP_Irving\Templates;
 
 use WP_Irving\Components;
+use WP_Irving\Components\Component;
 use WP_UnitTestCase;
 
 /**
@@ -27,14 +28,14 @@ class Test_Templates extends WP_UnitTestCase {
 		add_filter(
 			'wp_irving_template_path',
 			function () {
-				return dirname( __FILE__ ) . '/inc/templates';
+				return dirname( __FILE__ ) . '/templates';
 			}
 		);
 
 		add_filter(
 			'wp_irving_template_part_path',
 			function () {
-				return dirname( __FILE__ ) . '/inc/template-parts';
+				return dirname( __FILE__ ) . '/template-parts';
 			}
 		);
 	}
@@ -208,11 +209,13 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 		];
 
+		$hydrated = json_decode( json_encode( hydrate_template( $template ) ), true );
+
 		$expected = [
 			[
 				'name'     => 'provider',
 				'_alias'   => '',
-				'config'   => (object) [
+				'config'   => [
 					'testProvided' => 20,
 					'themeName'    => 'default',
 					'themeOptions' => [ 'default' ],
@@ -221,7 +224,7 @@ class Test_Templates extends WP_UnitTestCase {
 					[
 						'name'     => 'consumer',
 						'_alias'   => '',
-						'config'   => (object) [
+						'config'   => [
 							'testUsed'     => 20,
 							'themeName'    => 'default',
 							'themeOptions' => [ 'default' ],
@@ -234,7 +237,7 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$this->assertEquals(
 			$expected,
-			hydrate_template( $template ),
+			$hydrated,
 			'Could not get context in non-registered components.'
 		);
 	}
@@ -245,49 +248,22 @@ class Test_Templates extends WP_UnitTestCase {
 	public function test_templates_hydrate_partials() {
 		$template = [
 			[ 'name' => 'example/component' ],
-			[ 'name' => 'template-parts/example' ],
+			[ 'name' => 'template-part/example' ],
 		];
 
 		$hydrated = hydrate_template( $template );
 
 		$expected = [
-			[
-				'name'     => 'example/component',
-				'_alias'   => '',
-				'config'   => (object) [
-					'themeName'    => 'default',
-					'themeOptions' => [ 'default' ],
-				],
-				'children' => [],
-			],
-			[
-				'name'     => 'example/component1',
-				'_alias'   => '',
-				'config'   => (object) [
-					'themeName'    => 'default',
-					'themeOptions' => [ 'default' ],
-				],
-				'children' => [],
-			],
-			[
-				'name'     => 'example/component2',
-				'_alias'   => '',
-				'config'   => (object) [
-					'themeName'    => 'default',
-					'themeOptions' => [ 'default' ],
-				],
-				'children' => [
-					[
-						'name'     => 'example/component3',
-						'_alias'   => '',
-						'config'   => (object) [
-							'themeName'    => 'default',
-							'themeOptions' => [ 'default' ],
-						],
-						'children' => [],
+			new Component( 'example/component' ),
+			new Component( 'example/component1' ),
+			new Component(
+				'example/component2',
+				[
+					'children' => [
+						'example/component3',
 					],
-				],
-			],
+				]
+			),
 		];
 
 		$this->assertEquals( $expected, $hydrated, 'Template partial not hydrated correctly.' );
