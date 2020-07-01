@@ -26,11 +26,17 @@ function setup_site_theme_provider( array $data ): array {
 		return $data;
 	}
 
+	// Get and vaalidate the site_theme.
+	$site_theme = get_site_theme();
+	if ( empty( $site_theme ) ) {
+		return $data;
+	}
+
 	$data['providers'][] = new Component(
 		'irving/site-theme',
 		[
 			'config' => [
-				'theme' => get_site_theme(),
+				'theme' => $site_theme,
 			],
 		]
 	);
