@@ -459,20 +459,16 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 *
 	 * @dataProvider get_components_to_serialize
 	 * @covers Components::to_array
-	 * @group test
 	 *
-	 * @param string $slug     Component slug to load.
+	 * @param array  $args     Component args.
 	 * @param array  $expected Expected shape of serialized data.
 	 * @param string $message  Optional. Error message on failure. Default ''.
 	 */
-	public function test_json_serialize( string $slug, array $expected, string $message = '' ) {
-		// Component types are registered during setUp().
-		$component = new Component( $slug );
-
+	public function test_json_serialize( array $args, array $expected, string $message = '' ) {
 		// phpcs:disable WordPress.WP.AlternativeFunctions.json_encode_json_encode
 		$this->assertEquals(
 			json_encode( $expected ),
-			json_encode( $component ),
+			json_encode( new Component( ...$args ) ),
 			$message
 		);
 		// phpcs:enable
@@ -484,21 +480,87 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 * @return array
 	 */
 	public function get_components_to_serialize() {
+
+		/**
+		 * Makes use of registered component types that are
+		 * registered during the setUp() method, which is run
+		 * after the data provider is executed, so we must
+		 * return component args as the first param.
+		 */
 		return [
+			// Basic component serialization.
 			[
-				'test/basic',
+				[ 'test/basic' ],
 				[
 					'name'     => 'test/basic',
-					'_alias'   => '',
 					'config'   => (object) [
 						'themeName'    => 'default',
-						'themeOptions' => [
-							'default',
-						],
+						'themeOptions' => [ 'default' ],
 					],
 					'children' => [],
 				],
 				'Could not verify basic serialization.',
+			],
+			// Basic with configuration.
+			[
+				[
+					'test/basic',
+					[
+						'config' => [
+							'foo' => 'bar',
+						],
+					],
+				],
+				[
+					'name'     => 'test/basic',
+					'config'   => (object) [
+						'foo'          => 'bar',
+						'themeName'    => 'default',
+						'themeOptions' => [ 'default' ],
+					],
+					'children' => [],
+				],
+				'Could not verify basic serialization with config.',
+			],
+			// Aliasing.
+			[
+				[ 'test/alias' ],
+				[
+					'name'     => 'test/component',
+					'config'   => (object) [
+						'themeName'    => 'default',
+						'themeOptions' => [ 'default' ],
+					],
+					'children' => [],
+				],
+				'Could not verify aliasing worked.',
+			],
+			// Config schema.
+			[
+				[ 'test/schema' ],
+				[
+					'name'     => 'test/schema',
+					'config'   => (object) [
+						'testDefault'  => 'default',
+						'themeName'    => 'default',
+						'themeOptions' => [ 'default' ],
+					],
+					'children' => [],
+				],
+				'Could not verify default schema worked.',
+			],
+			// Registered theme options.
+			[
+				[ 'test/theme-options' ],
+				[
+					'name'     => 'test/theme-options',
+					'config'   => (object) [
+						'themeName'    => 'default',
+						'themeOptions' => [ 'primary', 'secondary' ],
+					],
+					'children' => [],
+				],
+				'Could not verify registered theme options.',
 			],
 		];
 	}
@@ -514,7 +576,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
-				'_alias'   => '',
 				'config'   => (object) [
 					'test'         => true,
 					'themeName'    => 'default',
@@ -536,7 +597,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
-				'_alias'   => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [

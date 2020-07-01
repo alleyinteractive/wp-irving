@@ -960,17 +960,21 @@ class Component implements JsonSerializable {
 		$this->set_config_value( 'theme_name', self::camel_case( $this->get_theme() ) );
 		$this->set_config_value( 'theme_options', array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) );
 
-		// Null any config keys where the config schema has hidden = true.
+		// Filter out hidden config values.
+		$config = $this->get_config();
+
 		foreach ( $this->get_schema() as $key => $schema ) {
-			if ( $schema['hidden'] ) {
-				$this->set_config_value( $key, null );
+			if ( $schema['hidden'] && isset( $config[ $key ] ) ) {
+				unset( $config[ $key ] );
 			}
 		}
 
+		// Rename to an alias if one is set.
+		$name = empty( $this->get_alias() ) ? $this->get_name() : $this->get_alias();
+
 		return [
-			'name'     => $this->get_name(),
-			'_alias'   => $this->get_alias(),
-			'config'   => (object) $this->camel_case_keys( $this->get_config() ),
+			'name'     => $name,
+			'config'   => (object) $this->camel_case_keys( $config ),
 			'children' => $this->get_children(),
 		];
 	}
