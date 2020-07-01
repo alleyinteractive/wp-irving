@@ -10,6 +10,7 @@ namespace WP_Irving\Templates;
 use WP_Irving\Components\Component;
 use WP_Irving\REST_API\Components_Endpoint;
 use WP_Query;
+use WP_REST_Request;
 
 /**
  * Bootstrap filters.
@@ -25,19 +26,19 @@ function bootstrap() {
  *
  * @param array               $data     Data object to be hydrated by
  *                                      templates.
- * @param \WP_Query           $query    The current WP_Query object.
+ * @param WP_Query            $query    The current WP_Query object.
  * @param string              $context  The context for this request.
  * @param string              $path     The path for this request.
- * @param \WP_REST_Request    $request  WP_REST_Request object.
+ * @param WP_REST_Request     $request  WP_REST_Request object.
  * @param Components_Endpoint $endpoint Current class instance.
  * @return array A hydrated data object.
  */
 function load_template(
 	array $data,
-	\WP_Query $query,
+	WP_Query $query,
 	string $context,
 	string $path,
-	\WP_REST_Request $request,
+	WP_REST_Request $request,
 	Components_Endpoint $endpoint
 ): array {
 
