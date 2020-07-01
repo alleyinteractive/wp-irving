@@ -8,7 +8,7 @@
 namespace WP_Irving;
 
 /**
- * Tests for Safe Redirect Maanger redirects
+ * Tests for Safe Redirect Manager redirects
  */
 class Test_Helpers {
 

@@ -5,8 +5,14 @@
  * @package WP_Irving
  */
 
+namespace WP_Irving;
+
+use WP_UnitTestCase;
+
 /**
- * Tests for integration with Safe Redirect Maanger.
+ * Tests for integration with Safe Redirect Manager.
+ *
+ * @group redirects
  */
 class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 
@@ -20,7 +26,7 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	/**
 	 * Components endpoint instance.
 	 *
-	 * @var \WP_Irving\REST_API\Components_Endpoint
+	 * @var \REST_API\Components_Endpoint
 	 */
 	public static $components_endpoint;
 
@@ -35,7 +41,7 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	 * Test suite setup.
 	 */
 	public static function setUpBeforeClass() {
-		self::$helpers = new \WP_Irving\Test_Helpers();
+		self::$helpers = new Test_Helpers();
 	}
 
 	/**

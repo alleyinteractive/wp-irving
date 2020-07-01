@@ -9,8 +9,11 @@
 namespace WP_Irving;
 
 use WP_UnitTestCase;
+use WPCOM_Legacy_Redirector;
 /**
  * Tests for integration with WPCOM Legacy Redirector.
+ *
+ * @group redirects
  */
 class Legacy_Redirector_Tests extends WP_UnitTestCase {
 
