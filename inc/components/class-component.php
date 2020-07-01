@@ -416,13 +416,14 @@ class Component implements JsonSerializable {
 					return (array) $child;
 				}
 
+				// Consider marking this as _doing_it_wrong
+				if ( $child instanceof Component ) {
+					return $child;
+				}
+
 				// Convert template syntax to argument syntax.
 				if ( isset( $child['name'] ) ) {
 					$child = [ $child['name'], $child ];
-				}
-
-				if ( $child instanceof Component ) {
-					_doing_it_wrong( __NAMESPACE__ . '\\Component::set_children', 'Children should be set in array syntax.', '0.2.0' );
 				}
 
 				return $child;
