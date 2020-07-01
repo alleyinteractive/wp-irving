@@ -91,7 +91,7 @@ class Test_Templates extends WP_UnitTestCase {
 	 * @param array  $expected Expected result from hydration.
 	 * @param string $message  Optional. Failure message.
 	 */
-	public function test_hydrate_template( $data, $expected, $message = '') {
+	public function test_hydrate_template( $data, $expected, $message = '' ) {
 		$this->assertEquals( $expected, hydrate_template( $data ), $message );
 	}
 
@@ -201,7 +201,7 @@ class Test_Templates extends WP_UnitTestCase {
 			'default' => [
 				new Component( 'test/component' ),
 			],
-			'page' => [
+			'page'    => [
 				new Component( 'test/component' ),
 			],
 		];
@@ -280,7 +280,7 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 		];
 
-		$hydrated = json_decode( json_encode( hydrate_template( $template ) ), true );
+		$hydrated = json_decode( wp_json_encode( hydrate_template( $template ) ), true );
 
 		$expected = [
 			[
@@ -343,7 +343,7 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 		];
 
-		$hydrated = json_decode( json_encode( hydrate_template( $template ) ), true );
+		$hydrated = json_decode( wp_json_encode( hydrate_template( $template ) ), true );
 
 		$expected = [
 			[
