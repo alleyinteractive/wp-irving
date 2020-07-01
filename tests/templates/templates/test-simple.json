@@ -1,0 +1,8 @@
+{
+  "default": [
+    { "name": "test/component" }
+  ],
+  "page": [
+		{ "name": "test/component" }
+  ]
+}

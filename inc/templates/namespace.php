@@ -38,10 +38,10 @@ function load_template(
 	\WP_REST_Request $request
 ): array {
 
-	$template = get_template_path( $query );
+	$template_path = get_template_path( $query );
 
-	if ( $template ) {
-		$data = array_merge( $data, prepare_data_from_template( $template ) );
+	if ( $template_path ) {
+		$data = array_merge( $data, prepare_data_from_template( $template_path ) );
 	}
 
 	// Include defaults from a template if this is a server render.
@@ -123,55 +123,60 @@ function get_template_path( WP_Query $query ): string {
 	return apply_filters( 'wp_irving_template_include', $template, $query );
 }
 
+
+
 /**
  * Prepares data for an Irving REST response from a template.
  *
- * @param string $template Full path to template.
- * @param string $type     Optional. The type of data being loaded from a template.
- *                         Defaults to 'page'.
+ * @param string $template_path Full path to template.
  * @return array An associative array prepared for an Irving REST Response.
  */
-function prepare_data_from_template( string $template, string $type = 'page' ): array {
+function prepare_data_from_template( string $template_path ): array {
 	$data = [];
 
+	$type = pathinfo( $template_path, PATHINFO_EXTENSION );
+
+	// Load template data.
 	ob_start();
-	include $template;
+	include $template_path;
 	$contents = ob_get_clean();
 
-	// This is a .json template.
-	if ( false !== strpos( $template, '.json' ) ) {
+	// Hydrate the template data.
+	switch ( $type ) {
+		case 'json':
+			// Attempt to json decode it.
+			$data = json_decode( $contents, true );
 
-		// Attempt to json decode it.
-		$data = json_decode( $contents, true );
+			// Check for .
+			if ( json_last_error() ) {
+				wp_send_json_error(
+					sprintf(
+						// Translators: %1$s: Error message, %2$s Template path.
+						esc_html__( 'Error: %1$s found in %2$s.', 'wp-irving' ),
+						esc_html( json_last_error_msg() ),
+						esc_html( $template_path )
+					),
+					500
+				);
+			}
 
-		// Check for .
-		if ( json_last_error() ) {
-			wp_send_json_error(
-				sprintf(
-					// Translators: %1$s: Error message, %2$s Template path.
-					esc_html__( 'Error: %1$s found in %2$s.', 'wp-irving' ),
-					esc_html( json_last_error_msg() ),
-					esc_html( $template )
-				),
-				500
-			);
-		}
-
-		$data = hydrate_template( $data );
+			// Hydrate page and default data separately.
+			if ( isset( $data['page'] ) || isset( $data['default'] ) ) {
+				if ( isset( $data['page'] ) ) {
+					$data['page'] = hydrate_template( $data['page'] );
+				}
+				if ( isset( $data['default'] ) ) {
+					$data['default'] = hydrate_template( $data['default'] );
+				}
+			} else {
+				$data = hydrate_template( $data );
+			}
+			break;
+		case 'php':
+		default:
+			// Assume PHP templates are already hydrated.
+			break;
 	}
-
-	if ( has_blocks( $contents ) ) {
-		$data[ $type ] = convert_blocks_to_components( parse_blocks( $contents ) );
-
-		return $data;
-	}
-
-	$data['page'] = [
-		[
-			'name'   => 'templates/error',
-			'config' => [ 'json_error' => json_last_error() ],
-		],
-	];
 
 	return $data;
 }
@@ -369,19 +374,19 @@ function hydrate_template( array $data ): array {
 
 	foreach ( $data as $component ) {
 		// First, handle template part matching.
-		if ( 'template-part' === $component['name'] ) {
+		if (
+			isset( $component['name'] ) &&
+			0 === strpos( $component['name'], 'template-part/' )
+		) {
 			$template_data = hydrate_template_parts( $component );
 
 			// If the component is converted to template data,
 			// add hydrated components to the array and move on.
 			if ( ! empty( $template_data ) ) {
 				array_push( $hydrated, ...$template_data );
-
-				// A little cleanup.
-				unset( $template_data );
 			}
 
-			break;
+			continue;
 		}
 
 		$component = new Component( $component['name'], $component );

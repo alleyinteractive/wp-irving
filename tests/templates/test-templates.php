@@ -82,6 +82,138 @@ class Test_Templates extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test data hydration.
+	 *
+	 * @dataProvider get_template_test_cases
+	 * @group hydration
+	 *
+	 * @param array  $data     Test data to hydrate.
+	 * @param array  $expected Expected result from hydration.
+	 * @param string $message  Optional. Failure message.
+	 */
+	public function test_hydrate_template( $data, $expected, $message = '') {
+		$this->assertEquals( $expected, hydrate_template( $data ), $message );
+	}
+
+	/**
+	 * Data provider for template hydration tests.
+	 *
+	 * @return array[] List of params.
+	 */
+	public function get_template_test_cases() {
+		return [
+			// Basic hydration.
+			[
+				// Template.
+				[
+					[ 'name' => 'test/component' ],
+					[ 'name' => 'test/component' ],
+				],
+				// Expected.
+				[
+					new Component( 'test/component' ),
+					new Component( 'test/component' ),
+				],
+				'Could not confirm template hydration.',
+			],
+			// Basic parent child.
+			[
+				// Template.
+				[
+					[
+						'name'     => 'test/parent',
+						'config'   => [],
+						'children' => [
+							[
+								'name'   => 'test/child',
+								'config' => [],
+							],
+						],
+					],
+				],
+				// Expected.
+				[
+					new Component(
+						'test/parent',
+						[
+							'children' => [
+								'test/child',
+							],
+						]
+					),
+				],
+				'Could not confirm parent/child hydration.',
+			],
+			// Basic template part hydration.
+			// Loaded from the template-parts/example.json.
+			[
+				// Template.
+				[
+					[ 'name' => 'template-part/example' ],
+				],
+				// Expected.
+				[
+					new Component( 'example/component1' ),
+					new Component(
+						'example/component2',
+						[
+							'children' => [
+								'example/component3',
+							],
+						]
+					),
+				],
+				'Template parts are not hydrating correctly.',
+			],
+			// Nested template part hydration.
+			// Loaded from the template-parts/example-nested.json.
+			[
+				// Template.
+				[
+					[ 'name' => 'template-part/example-nested' ],
+				],
+				// Expected.
+				[
+					new Component( 'example/component' ),
+					new Component( 'example/component1' ),
+					new Component(
+						'example/component2',
+						[
+							'children' => [
+								'example/component3',
+							],
+						]
+					),
+					new Component( 'example/component' ),
+				],
+				'Nested template parts are not hydrating correctly.',
+			],
+		];
+	}
+
+	/**
+	 * Test for prepare_data_from_template.
+	 *
+	 * @group hydration
+	 */
+	public function test_prepare_data_from_template() {
+		$expected = [
+			'default' => [
+				new Component( 'test/component' ),
+			],
+			'page' => [
+				new Component( 'test/component' ),
+			],
+		];
+
+		$template_path = locate_template( [ 'test-simple' ] );
+
+		$data = prepare_data_from_template( $template_path );
+
+		$this->assertEquals( $expected, $data );
+	}
+
+	/**
 	 * Test template hydration uses context.
 	 *
 	 * @group context
@@ -189,6 +321,8 @@ class Test_Templates extends WP_UnitTestCase {
 	 * Tests that context values are passed to non-registered components.
 	 */
 	public function test_templates_context_without_registration() {
+		$this->markTestSkipped( 'Setting context in templates not currently supported.' );
+
 		$template = [
 			[
 				'name'             => 'provider',
@@ -262,7 +396,7 @@ class Test_Templates extends WP_UnitTestCase {
 					'children' => [
 						'example/component3',
 					],
-				]
+				],
 			),
 		];
 
