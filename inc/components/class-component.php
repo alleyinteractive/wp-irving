@@ -416,7 +416,7 @@ class Component implements JsonSerializable {
 					return (array) $child;
 				}
 
-				// Consider marking this as _doing_it_wrong
+				// Consider marking this as _doing_it_wrong.
 				if ( $child instanceof Component ) {
 					return $child;
 				}
