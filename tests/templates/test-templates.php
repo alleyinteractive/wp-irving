@@ -396,7 +396,7 @@ class Test_Templates extends WP_UnitTestCase {
 					'children' => [
 						'example/component3',
 					],
-				],
+				]
 			),
 		];
 

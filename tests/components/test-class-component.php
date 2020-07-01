@@ -455,7 +455,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 					[ 'example/child-1' ],
 					'example/child-2',
 				],
-			],
+			]
 		);
 
 		// Children should return as Component classes.
