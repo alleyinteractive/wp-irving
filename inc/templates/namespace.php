@@ -8,26 +8,28 @@
 namespace WP_Irving\Templates;
 
 use WP_Irving\Components\Component;
+use WP_Irving\REST_API\Components_Endpoint;
 use WP_Query;
 
 /**
  * Bootstrap filters.
  */
 function bootstrap() {
-	add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 5 );
+	add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 6 );
 }
-
 
 /**
  * Shallow template loader using core's template hierarchy.
  *
  * Based on wp-includes/template-loader.php.
  *
- * @param array            $data    Data object to be hydrated by templates.
- * @param \WP_Query        $query   The current WP_Query object.
- * @param string           $context The context for this request.
- * @param string           $path    The path for this request.
- * @param \WP_REST_Request $request WP_REST_Request object.
+ * @param array               $data     Data object to be hydrated by
+ *                                      templates.
+ * @param \WP_Query           $query    The current WP_Query object.
+ * @param string              $context  The context for this request.
+ * @param string              $path     The path for this request.
+ * @param \WP_REST_Request    $request  WP_REST_Request object.
+ * @param Components_Endpoint $endpoint Current class instance.
  * @return array A hydrated data object.
  */
 function load_template(
@@ -35,7 +37,8 @@ function load_template(
 	\WP_Query $query,
 	string $context,
 	string $path,
-	\WP_REST_Request $request
+	\WP_REST_Request $request,
+	Components_Endpoint $endpoint
 ): array {
 
 	$template_path = get_template_path( $query );
@@ -54,10 +57,13 @@ function load_template(
 	}
 
 	// Automatically setup an admin bar component.
-	$data = setup_admin_bar( $data, $query, $context, $path, $request );
+	$data = \WP_Irving\setup_admin_bar( $data, $query, $context, $path, $request, $endpoint );
 
 	// Automatically setup the <Helmet> tag.
 	$data = setup_helmet( $data, $query, $context, $path, $request );
+
+	// Setup a global style provider.
+	$data = setup_site_theme_provider( $data );
 
 	return $data;
 }
