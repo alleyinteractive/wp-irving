@@ -131,7 +131,7 @@ class Registry {
 	/**
 	 * Loop through some directories importing components and registering them.
 	 *
-	 * @param array $directories Directoriess to recursively loop through and
+	 * @param array $directories Directories to recursively loop through and
 	 *                           load from.
 	 */
 	public function load_components( array $directories = [] ) {

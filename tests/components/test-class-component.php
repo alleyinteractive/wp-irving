@@ -69,26 +69,12 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Get a test component by the name.
-	 *
-	 * @param string $name Component name.
-	 * @return ?Component
-	 */
-	public function get_component( $name ) {
-		if ( isset( self::$components[ $name ] ) ) {
-			return clone self::$components[ $name ];
-		}
-
-		return assert( false, 'Could not load ' . $name );
-	}
-
-	/**
 	 * Tests default setup for a component.
 	 */
 	public function test_component_defaults() {
-		$component = new Component( 'example/name' );
+		$component = new Component( 'test/basic' );
 
-		$this->assertSame( 'example/name', $component->get_name(), 'Component name not set.' );
+		$this->assertSame( 'test/basic', $component->get_name(), 'Component name not set.' );
 		$this->assertSame( '', $component->get_alias(), 'Default alias not null.' );
 		$this->assertSame( [], $component->get_config(), 'Default config not empty.' );
 		$this->assertSame( [], $component->get_children(), 'Default children not empty.' );
@@ -469,24 +455,24 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-
-	/**
 	 * Tests for the `jsonSerialize()` method, which only calls `to_array()`.
 	 *
 	 * @dataProvider get_components_to_serialize
 	 * @covers Components::to_array
+	 * @group test
 	 *
 	 * @param string $slug     Component slug to load.
 	 * @param array  $expected Expected shape of serialized data.
 	 * @param string $message  Optional. Error message on failure. Default ''.
 	 */
 	public function test_json_serialize( string $slug, array $expected, string $message = '' ) {
-		$this->markTestIncomplete( 'Need to fix this.' );
+		// Component types are registered during setUp().
+		$component = new Component( $slug );
 
 		// phpcs:disable WordPress.WP.AlternativeFunctions.json_encode_json_encode
 		$this->assertEquals(
 			json_encode( $expected ),
-			json_encode( $this->get_component( $slug ) ),
+			json_encode( $component ),
 			$message
 		);
 		// phpcs:enable
@@ -500,25 +486,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 	public function get_components_to_serialize() {
 		return [
 			[
-				'basic-example',
+				'test/basic',
 				[
-					'name'     => 'irving/example',
-					'_alias'   => '',
-					'config'   => (object) [
-						'align'        => 'left',
-						'themeName'    => 'default',
-						'themeOptions' => [
-							'default',
-						],
-						'width'        => 'wide',
-					],
-					'children' => [],
-				],
-			],
-			[
-				'children-test-001',
-				[
-					'name'     => 'parent-example',
+					'name'     => 'test/basic',
 					'_alias'   => '',
 					'config'   => (object) [
 						'themeName'    => 'default',
@@ -526,42 +496,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 							'default',
 						],
 					],
-					'children' => [
-						[ 'parent-child-001' ],
-						[ 'parent-child-002' ],
-						[ 'parent-child-003' ],
-					],
-				],
-			],
-			[
-				'theme-options',
-				[
-					'name'     => 'example',
-					'_alias'   => '',
-					'config'   => (object) [
-						'themeName'    => 'primary',
-						'themeOptions' => [
-							'primary',
-							'secondary',
-						],
-					],
 					'children' => [],
 				],
-			],
-			[
-				'schema',
-				[
-					'name'     => 'irving/schema',
-					'_alias'   => '',
-					'config'   => (object) [
-						'wpQuery'      => null,
-						'themeName'    => 'default',
-						'themeOptions' => [
-							'default',
-						],
-					],
-					'children' => [],
-				],
+				'Could not verify basic serialization.',
 			],
 		];
 	}
