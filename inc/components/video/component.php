@@ -49,7 +49,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 				->set_config( 'content', wp_oembed_get( $component->get_config( 'video_url' ) ) )
 				->set_config( 'oembed', true )
 				->set_config( 'tag', 'div' )
-				->set_theme( 'responsive-video' );
+				->set_theme( 'responsive-embed' );
 		},
 	]
 );
