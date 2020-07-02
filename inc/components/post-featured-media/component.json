@@ -8,11 +8,6 @@
 			"default": "",
 			"type": "string"
 		},
-    "caption": {
-      "description": "Optional. Caption for the image.",
-      "default": "",
-      "type": "string"
-    },
 		"object_fit": {
 			"default": "cover",
 			"description": "Object fit property.",
