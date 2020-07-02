@@ -27,7 +27,7 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 			 * If an aspect ratio value exists, check if it's an alias from the
 			 * mapping (or not), and use as the wrapper's padding-bottom
 			 * property. Values not aliased in the component map should be
-			 * complete values with a percetnage ex. "20%".
+			 * complete values with a percentage ex. "20%".
 			 */
 			$aspect_ratio_mapping = [
 				'16:9'   => '56.25%',
