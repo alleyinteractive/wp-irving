@@ -16,7 +16,11 @@
 		"post_id": {
 			"default": 0,
 			"type": "integer"
-		}
+		},
+    "style": {
+      "default": [],
+      "type": "array"
+    }
 	},
 	"use_context": {
 		"irving/post_id": "post_id"

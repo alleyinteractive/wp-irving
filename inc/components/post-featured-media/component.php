@@ -4,7 +4,8 @@
  *
  * Display the post featured media.
  *
- * @todo Update to remove all material UI.
+ * @todo Hook up some UI on the backend to implement the different featured
+ * media options; ex. featured image, custom image, no image, or video.
  * @todo Consider creating a React component for this functionality.
  *
  * @package WP_Irving
@@ -29,13 +30,11 @@ if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
 			// Get the post ID from a context provider.
 			$post_id = $component->get_config( 'post_id' );
 
+			// Featured image.
 			$component->append_child(
 				[
 					'name'   => 'irving/post-featured-image',
-					'config' => [
-						'aspect_ratio' => $component->get_config( 'aspect_ratio' ),
-						'object_fit'   => $component->get_config( 'object_fit' ),
-					],
+					'config' => $component->get_config(),
 				]
 			);
 
