@@ -18,13 +18,6 @@ use WP_UnitTestCase;
 class Test_Class_Component extends WP_UnitTestCase {
 
 	/**
-	 * Associative array of components to use for testing.
-	 *
-	 * @var array
-	 */
-	public static $components = [];
-
-	/**
 	 * Class setup.
 	 */
 	public static function wpSetUpBeforeClass() {
@@ -96,7 +89,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests for the `get_alias()` method.
+	 * Tests for the get_alias() method.
 	 */
 	public function test_get_alias() {
 		// "test/alias" is a registered component type.
@@ -110,7 +103,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests for the `get_config()` method.
+	 * Tests for the get_config() method.
 	 */
 	public function test_get_config() {
 		$component = new Component(
@@ -214,7 +207,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests for the `get_config_by_key()` method.
+	 * Tests for the get_config_by_key() method.
 	 */
 	public function test_get_config_by_key() {
 		$component = new Component(
@@ -240,7 +233,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test get_theme_options()
+	 * Test get_theme_options().
 	 */
 	public function test_get_theme_options() {
 		// 'test/theme-options' is a registered component type.
@@ -254,7 +247,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test get_theme()
+	 * Test get_theme().
 	 *
 	 * @dataProvider provide_get_theme_data
 	 *
@@ -274,7 +267,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Data provider for test_get_theme
+	 * Data provider for test_get_theme().
 	 *
 	 * @return array[] Array of test arguments.
 	 */
@@ -359,7 +352,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Data provider for test_context_values_set
+	 * Data provider for test_context_values_set().
 	 *
 	 * @return array[]
 	 */
@@ -475,7 +468,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Data provider for 'test_json_serialize'
+	 * Data provider for test_json_serialize().
 	 *
 	 * @return array
 	 */
@@ -566,7 +559,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Tests for the component (array) filter in the `jsonSerialize()` method.
+	 * Tests for the component (array) filter in the jsonSerialize() method.
 	 */
 	public function test_json_serialize_component_array_filter() {
 		$component = new Component( 'irving/text' );

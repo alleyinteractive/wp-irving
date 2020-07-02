@@ -130,8 +130,6 @@ function get_template_path( WP_Query $query ): string {
 	return apply_filters( 'wp_irving_template_include', $template, $query );
 }
 
-
-
 /**
  * Prepares data for an Irving REST response from a template.
  *
@@ -154,7 +152,7 @@ function prepare_data_from_template( string $template_path ): array {
 			// Attempt to json decode it.
 			$data = json_decode( $contents, true );
 
-			// Check for .
+			// Check for errors during decoding.
 			if ( json_last_error() ) {
 				wp_send_json_error(
 					sprintf(
