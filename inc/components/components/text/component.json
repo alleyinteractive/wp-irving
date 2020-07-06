@@ -4,6 +4,7 @@
 	"theme_options": [
 		"default",
 		"unstyled",
+    "responsive-embed",
 		"html",
 		"caption",
 		"h1",
