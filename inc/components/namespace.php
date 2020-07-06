@@ -76,3 +76,62 @@ function auto_register_components() {
 	get_registry()->load_components( $directories );
 }
 
+/**
+ * Register a component.
+ *
+ * @param string $name Component name.
+ * @param array  $args Component args.
+ */
+function register_component( string $name, array $args = [] ) {
+	return get_registry()->register_component( $name, $args );
+}
+
+/**
+ * Register a component using a json config.
+ *
+ * @param string $config_path JSON config file.
+ * @param array  $args        Component args.
+ * @return bool Returns true if successful.
+ */
+function register_component_from_config( string $config_path, array $args = [] ): bool {
+
+	// Add the extension if necessary.
+	if ( false === strpos( $config_path, '.json' ) ) {
+		$config_path .= '.json';
+	}
+
+	// Validate the config file exists.
+	if ( ! file_exists( $config_path ) ) {
+		wp_die(
+			sprintf(
+				// Translators: %1$s: Error message, %2$s Template path.
+				esc_html__( 'Error: Could not find component.json at %1$s. Double check the filename.', 'wp-irving' ),
+				esc_html( $config_path )
+			)
+		);
+		return false;
+	}
+
+	// Load and decode JSON component config.
+	// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
+	$config = file_get_contents( $config_path );
+	$config = json_decode( $config, true );
+
+	// Validate config loaded and `name` is available.
+	if ( is_null( $config ) || ! isset( $config['name'] ) ) {
+		wp_die(
+			sprintf(
+				// Translators: %1$s: Error message, %2$s Template path.
+				esc_html__( 'Error: %1$s found in %2$s.', 'wp-irving' ),
+				esc_html( json_last_error_msg() ),
+				esc_html( $config_path )
+			)
+		);
+		return false;
+	}
+
+	return register_component(
+		$config['name'],
+		array_merge_recursive( $config, $args )
+	);
+}

@@ -50,7 +50,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 				continue;
 			}
 
-			get_registry()->register_component_from_config( $path );
+			register_component_from_config( $path );
 		}
 	}
 
