@@ -47,4 +47,54 @@ class Test_Components extends WP_UnitTestCase {
 		$this->assertEquals( $post->ID, $context->get( 'irving/post_id' ), 'Default post ID context not set.' );
 		$this->assertEquals( new WP_Query( [] ), $context->get( 'irving/wp_query' ), 'Default wp query context not set.' );
 	}
+
+	/**
+	 * Test output for core components.
+	 *
+	 * @dataProvider get_core_component_data
+	 * @group core-components
+	 *
+	 * @param string   $name     Name of the component being tested.
+	 * @param array    $expected Expected component after hydration.
+	 * @param callable $setup    Optional. A callback function used to set up state.
+	 */
+	public function test_core_components( string $name, array $expected, $setup = null ) {
+		// Run setup logic needed before creating the component.
+		if ( ! empty( $setup ) ) {
+			call_user_func( $setup );
+		}
+
+		$component = new Component( $name );
+
+		$this->assertSame(
+			wp_json_encode( $expected ),
+			wp_json_encode( $component ),
+			sprintf( 'Broken component: %s', esc_html( $name ) )
+		);
+	}
+
+	/**
+	 * Data provider for test_core_components().
+	 *
+	 * @return array Test args
+	 */
+	public function get_core_component_data() {
+		return [
+			[
+				'irving/archive-title',
+				[
+					'name'     => 'irving/archive-title',
+					'config'   => [
+						'content'      => 'Category: Uncategorized',
+						'themeName'    => 'default',
+						'themeOptions' => [ 'default' ],
+					],
+					'children' => [],
+				],
+				function() {
+					$this->go_to( '?cat=1' );
+				},
+			],
+		];
+	}
 }
