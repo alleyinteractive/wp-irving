@@ -1,15 +1,15 @@
 {
-	"name": "irving/post-provider",
-	"alias": "irving/fragment",
-	"category": "Data",
-	"description": "Post context provider.",
-	"config": {
-		"post_id": {
-			"default": 0,
-			"type": "integer"
-		}
-	},
-	"provides_context": {
-		"irving/post_id": "post_id"
-	}
+  "name": "irving/post-provider",
+  "alias": "irving/fragment",
+  "category": "Data",
+  "description": "Post context provider.",
+  "config": {
+    "post_id": {
+      "default": 0,
+      "type": "integer"
+    }
+  },
+  "provides_context": {
+    "irving/post_id": "post_id"
+  }
 }

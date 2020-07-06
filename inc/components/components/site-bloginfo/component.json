@@ -1,28 +1,28 @@
 {
-	"name": "irving/bloginfo",
-	"alias": "irving/text",
-	"category": "Site",
-	"description": "Easily call bloginfo().",
-	"config": {
-		"content": {
-			"default": "",
-			"type": "string"
-		},
-		"oembed": {
-			"default": false,
-			"type": "bool"
-		},
-		"show": {
-			"default": "name",
-			"type": "string"
-		},
-		"style": {
-			"default": [],
-			"type": "array"
-		},
-		"tag": {
-			"default": "span",
-			"type": "string"
-		}
-	}
+  "name": "irving/bloginfo",
+  "alias": "irving/text",
+  "category": "Site",
+  "description": "Easily call bloginfo().",
+  "config": {
+    "content": {
+      "default": "",
+      "type": "string"
+    },
+    "oembed": {
+      "default": false,
+      "type": "bool"
+    },
+    "show": {
+      "default": "name",
+      "type": "string"
+    },
+    "style": {
+      "default": [],
+      "type": "array"
+    },
+    "tag": {
+      "default": "span",
+      "type": "string"
+    }
+  }
 }

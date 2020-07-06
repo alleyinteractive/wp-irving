@@ -1,34 +1,34 @@
 {
-	"name": "irving/post-byline",
-	"alias": "irving/byline",
-	"description": "Display a list of content authors.",
-	"config": {
-		"single_delimiter": {
-			"default": " and ",
-			"type": "string",
-			"required": true
-		},
-		"multi_delimiter": {
-			"default": ", ",
-			"type": "string",
-			"required": true
-		},
-		"last_delimiter": {
-			"default": ", and ",
-			"type": "string",
-			"required": true
-		},
-		"post_id": {
-			"default": 0,
-			"type": "integer"
-		},
-		"pre_text": {
-			"default": "By ",
-			"type": "string",
-			"required": true
-		}
-	},
-	"use_context": {
-		"irving/post_id": "post_id"
-	}
+  "name": "irving/post-byline",
+  "alias": "irving/byline",
+  "description": "Display a list of content authors.",
+  "config": {
+    "single_delimiter": {
+      "default": " and ",
+      "type": "string",
+      "required": true
+    },
+    "multi_delimiter": {
+      "default": ", ",
+      "type": "string",
+      "required": true
+    },
+    "last_delimiter": {
+      "default": ", and ",
+      "type": "string",
+      "required": true
+    },
+    "post_id": {
+      "default": 0,
+      "type": "integer"
+    },
+    "pre_text": {
+      "default": "By ",
+      "type": "string",
+      "required": true
+    }
+  },
+  "use_context": {
+    "irving/post_id": "post_id"
+  }
 }

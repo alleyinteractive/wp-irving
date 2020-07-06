@@ -1,20 +1,20 @@
 {
-	"name": "irving/site-logo",
-	"alias": "irving/logo",
-	"category": "Modules",
-	"description": "Display the site name or logo.",
-	"config": {
-		"href": {
-			"default": "/",
-			"type": "string"
-		},
-		"logo_image_url": {
-			"default": "",
-			"type": "string"
-		},
-		"site_name": {
-			"default": "",
-			"type": "string"
-		}
-	}
+  "name": "irving/site-logo",
+  "alias": "irving/logo",
+  "category": "Modules",
+  "description": "Display the site name or logo.",
+  "config": {
+    "href": {
+      "default": "/",
+      "type": "string"
+    },
+    "logo_image_url": {
+      "default": "",
+      "type": "string"
+    },
+    "site_name": {
+      "default": "",
+      "type": "string"
+    }
+  }
 }

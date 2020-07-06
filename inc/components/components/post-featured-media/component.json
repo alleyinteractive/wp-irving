@@ -1,28 +1,28 @@
 {
-	"name": "irving/post-featured-media",
-	"alias": "irving/fragment",
-	"category": "Post",
-	"description": "Display the post featured media.",
-	"config": {
-		"aspect_ratio": {
-			"default": "",
-			"type": "string"
-		},
-		"object_fit": {
-			"default": "cover",
-			"description": "Object fit property.",
-			"type": "string"
-		},
-		"post_id": {
-			"default": 0,
-			"type": "integer"
-		},
+  "name": "irving/post-featured-media",
+  "alias": "irving/fragment",
+  "category": "Post",
+  "description": "Display the post featured media.",
+  "config": {
+    "aspect_ratio": {
+      "default": "",
+      "type": "string"
+    },
+    "object_fit": {
+      "default": "cover",
+      "description": "Object fit property.",
+      "type": "string"
+    },
+    "post_id": {
+      "default": 0,
+      "type": "integer"
+    },
     "style": {
       "default": [],
       "type": "array"
     }
-	},
-	"use_context": {
-		"irving/post_id": "post_id"
-	}
+  },
+  "use_context": {
+    "irving/post_id": "post_id"
+  }
 }
