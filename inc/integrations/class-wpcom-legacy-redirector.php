@@ -9,6 +9,8 @@
 
 namespace WP_Irving;
 
+use WPCOM_Legacy_Redirector as Legacy_Redirector;
+
 /**
  * Class to parse redirects using the WPCOM Legacy Redirector plugin.
  */
@@ -21,8 +23,8 @@ class WPCOM_Legacy_Redirector {
 
 		// Ensure WPCOM Legacy Redirector exists and is enabled.
 		if (
-			! class_exists( '\WPCOM_Legacy_Redirector' ) ||
-			! method_exists( '\WPCOM_Legacy_Redirector', 'get_redirect_uri' )
+			! class_exists( 'Legacy_Redirector' ) ||
+			! method_exists( 'Legacy_Redirector', 'get_redirect_uri' )
 		) {
 			return;
 		}
@@ -53,11 +55,11 @@ class WPCOM_Legacy_Redirector {
 
 		if ( $request_path ) {
 			// Look for an entry at the slashed version.
-			$redirect_uri = \WPCOM_Legacy_Redirector::get_redirect_uri( trailingslashit( $request_path ) );
+			$redirect_uri = Legacy_Redirector::get_redirect_uri( trailingslashit( $request_path ) );
 
 			// If we don't find a hit, check the unslashed version.
 			if ( empty( $redirect_uri ) ) {
-				$redirect_uri = \WPCOM_Legacy_Redirector::get_redirect_uri( rtrim( $request_path, '/' ) );
+				$redirect_uri = Legacy_Redirector::get_redirect_uri( rtrim( $request_path, '/' ) );
 			}
 
 			if ( $redirect_uri ) {

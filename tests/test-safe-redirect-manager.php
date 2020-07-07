@@ -5,8 +5,14 @@
  * @package WP_Irving
  */
 
+namespace WP_Irving;
+
+use WP_UnitTestCase;
+
 /**
- * Tests for integration with Safe Redirect Maanger.
+ * Tests for integration with Safe Redirect Manager.
+ *
+ * @group redirects
  */
 class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 
@@ -20,7 +26,7 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	/**
 	 * Components endpoint instance.
 	 *
-	 * @var \WP_Irving\REST_API\Components_Endpoint
+	 * @var \REST_API\Components_Endpoint
 	 */
 	public static $components_endpoint;
 
@@ -35,7 +41,7 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	 * Test suite setup.
 	 */
 	public static function setUpBeforeClass() {
-		self::$helpers = new \WP_Irving\Test_Helpers();
+		self::$helpers = new Test_Helpers();
 	}
 
 	/**
@@ -60,7 +66,7 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 
 		srm_create_redirect( '/foo/', '/bar/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/' );
-		$this->assertEquals( 'http://example.org/bar/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://' . WP_TESTS_DOMAIN . '/bar/', $response->data['redirectTo'] );
 	}
 
 	/**
@@ -70,14 +76,14 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 		$this->markasIncomplete();
 
 		// Internal, absolute URL destination.
-		srm_create_redirect( '/foo/bar/', 'http://example.org/baz/' );
+		srm_create_redirect( '/foo/bar/', 'http://' . WP_TESTS_DOMAIN . '/baz/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/' );
-		$this->assertEquals( 'http://example.org/baz/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://' . WP_TESTS_DOMAIN . '/baz/', $response->data['redirectTo'] );
 
 		// External, absolute URL destination.
-		srm_create_redirect( '/foo/bar/baz/', 'http://another-example.org/baz/' );
+		srm_create_redirect( '/foo/bar/baz/', 'http://another-' . WP_TESTS_DOMAIN . '/baz/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/baz/' );
-		$this->assertEquals( 'http://another-example.org/baz/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://another-' . WP_TESTS_DOMAIN . '/baz/', $response->data['redirectTo'] );
 	}
 
 	/**
@@ -86,9 +92,9 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 	public function test_absolute_to_relative() {
 		$this->markasIncomplete();
 
-		srm_create_redirect( 'http://example.org/foo/', '/bar/' );
+		srm_create_redirect( 'http://' . WP_TESTS_DOMAIN . '/foo/', '/bar/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/' );
-		$this->assertEquals( 'http://example.org/bar/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://' . WP_TESTS_DOMAIN . '/bar/', $response->data['redirectTo'] );
 	}
 
 	/**
@@ -98,14 +104,14 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 		$this->markasIncomplete();
 
 		// Internal, absolute URL destination.
-		srm_create_redirect( 'http://example.org/foo/bar/', 'http://example.org/baz/' );
+		srm_create_redirect( 'http://' . WP_TESTS_DOMAIN . '/foo/bar/', 'http://' . WP_TESTS_DOMAIN . '/baz/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/' );
-		$this->assertEquals( 'http://example.org/baz/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://' . WP_TESTS_DOMAIN . '/baz/', $response->data['redirectTo'] );
 
 		// External URL destination.
-		srm_create_redirect( 'http://example.org/foo/bar/baz/', 'http://another-example.org/baz/' );
+		srm_create_redirect( 'http://' . WP_TESTS_DOMAIN . '/foo/bar/baz/', 'http://another-' . WP_TESTS_DOMAIN . '/baz/' );
 		$response = self::$helpers->get_components_endpoint_response( '/foo/bar/baz/' );
-		$this->assertEquals( 'http://another-example.org/baz/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://another-' . WP_TESTS_DOMAIN . '/baz/', $response->data['redirectTo'] );
 	}
 
 	/**
@@ -119,22 +125,22 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 
 		// Request with trailing slash.
 		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash/' );
-		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://' . WP_TESTS_DOMAIN . '/destination/', $response->data['redirectTo'] );
 
 		// Request without trailing slash.
 		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash' );
-		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://' . WP_TESTS_DOMAIN . '/destination/', $response->data['redirectTo'] );
 
 		// Redirect from without trailing slash.
 		srm_create_redirect( '/trailing-slash', '/destination/' );
 
 		// Request with trailing slash.
 		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash/' );
-		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://' . WP_TESTS_DOMAIN . '/destination/', $response->data['redirectTo'] );
 
 		// Request without trailing slash.
 		$response = self::$helpers->get_components_endpoint_response( '/trailing-slash' );
-		$this->assertEquals( 'http://example.org/destination/', $response->data['redirectTo'] );
+		$this->assertEquals( 'http://' . WP_TESTS_DOMAIN . '/destination/', $response->data['redirectTo'] );
 	}
 
 	/**

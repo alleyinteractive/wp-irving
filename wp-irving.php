@@ -11,6 +11,8 @@
  * @package         WP_Irving
  */
 
+namespace WP_Irving;
+
 define( 'WP_IRVING_PATH', dirname( __FILE__ ) );
 define( 'WP_IRVING_URL', plugin_dir_url( __FILE__ ) );
 define( 'WP_IRVING_VERSION', '1.0' );
@@ -45,9 +47,10 @@ require_once WP_IRVING_PATH . '/inc/class-previews.php';
 require_once WP_IRVING_PATH . '/inc/class-cache.php';
 
 // Component registry.
-require_once WP_IRVING_PATH . '/inc/class-component.php';
-require_once WP_IRVING_PATH . '/inc/class-registry.php';
-require_once WP_IRVING_PATH . '/inc/registry.php';
+require_once WP_IRVING_PATH . '/inc/components/class-context-store.php';
+require_once WP_IRVING_PATH . '/inc/components/class-registry.php';
+require_once WP_IRVING_PATH . '/inc/components/class-component.php';
+require_once WP_IRVING_PATH . '/inc/components/namespace.php';
 
 // Redirects.
 require_once WP_IRVING_PATH . '/inc/redirects.php';
@@ -56,17 +59,20 @@ require_once WP_IRVING_PATH . '/inc/redirects.php';
 require_once WP_IRVING_PATH . '/inc/rewrites.php';
 
 // Template loading.
-require_once WP_IRVING_PATH . '/inc/class-context-store.php';
-require_once WP_IRVING_PATH . '/inc/admin-bar.php';
-require_once WP_IRVING_PATH . '/inc/helmet.php';
-require_once WP_IRVING_PATH . '/inc/site-theme.php';
-require_once WP_IRVING_PATH . '/inc/templates.php';
+require_once WP_IRVING_PATH . '/inc/templates/admin-bar.php';
+require_once WP_IRVING_PATH . '/inc/templates/helmet.php';
+require_once WP_IRVING_PATH . '/inc/templates/namespace.php';
+require_once WP_IRVING_PATH . '/inc/templates/site-theme.php';
 
 // Debugging helpers.
 require_once WP_IRVING_PATH . '/inc/debug.php';
 
 // Register endpoints.
-new \WP_Irving\REST_API\Components_Endpoint();
-new \WP_Irving\REST_API\Components_Registry_Endpoint();
-new \WP_Irving\REST_API\Data_Endpoint();
-new \WP_Irving\REST_API\Form_Endpoint();
+new REST_API\Components_Endpoint();
+new REST_API\Components_Registry_Endpoint();
+new REST_API\Data_Endpoint();
+new REST_API\Form_Endpoint();
+
+// Bootstrap functionality.
+Components\bootstrap();
+Templates\bootstrap();

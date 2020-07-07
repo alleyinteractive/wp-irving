@@ -1,0 +1,17 @@
+{
+  "name": "test/use-context",
+  "config": {
+    "foo": {
+      "default": "default",
+      "type": "string"
+    },
+    "baz": {
+      "default": "default",
+      "type": "string"
+    }
+  },
+  "use_context": {
+    "test/foo": "foo",
+    "test/baz": "baz"
+  }
+}
