@@ -969,11 +969,9 @@ class Component implements JsonSerializable {
 			}
 		}
 
-		// Rename to an alias if one is set.
-		$name = empty( $this->get_alias() ) ? $this->get_name() : $this->get_alias();
-
 		return [
-			'name'     => $name,
+			'name'     => $this->get_name(),
+			'_alias'   => $this->get_alias(),
 			'config'   => (object) $this->camel_case_keys( $config ),
 			'children' => $this->get_children(),
 		];

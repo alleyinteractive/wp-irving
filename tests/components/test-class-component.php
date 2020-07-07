@@ -486,6 +486,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 				[ 'test/basic' ],
 				[
 					'name'     => 'test/basic',
+					'_alias'   => '',
 					'config'   => (object) [
 						'themeName'    => 'default',
 						'themeOptions' => [ 'default' ],
@@ -506,6 +507,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 				],
 				[
 					'name'     => 'test/basic',
+					'_alias'   => '',
 					'config'   => (object) [
 						'foo'          => 'bar',
 						'themeName'    => 'default',
@@ -519,7 +521,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 			[
 				[ 'test/alias' ],
 				[
-					'name'     => 'test/component',
+					'name'     => 'test/alias',
+					'_alias'   => 'test/component',
 					'config'   => (object) [
 						'themeName'    => 'default',
 						'themeOptions' => [ 'default' ],
@@ -533,6 +536,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 				[ 'test/schema' ],
 				[
 					'name'     => 'test/schema',
+					'_alias'   => '',
 					'config'   => (object) [
 						'testDefault'  => 'default',
 						'themeName'    => 'default',
@@ -547,6 +551,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 				[ 'test/theme-options' ],
 				[
 					'name'     => 'test/theme-options',
+					'_alias'   => '',
 					'config'   => (object) [
 						'themeName'    => 'default',
 						'themeOptions' => [ 'primary', 'secondary' ],
@@ -569,6 +574,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
+				'_alias'   => '',
 				'config'   => (object) [
 					'test'         => true,
 					'themeName'    => 'default',
@@ -590,6 +596,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				'name'     => 'irving/text',
+				'_alias'   => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [
