@@ -35,7 +35,7 @@ function get_registry(): Registry {
  *
  * @return Context_Store The context store object.
  */
-function get_context_store() {
+function get_context_store(): Context_Store {
 	global $wp_query;
 	global $wp_irving_context;
 
