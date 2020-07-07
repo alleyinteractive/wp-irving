@@ -166,12 +166,12 @@ function prepare_data_from_template( string $template_path ): array {
 			}
 
 			// Hydrate page and default data separately.
-			if ( isset( $data['page'] ) || isset( $data['default'] ) ) {
+			if ( isset( $data['page'] ) || isset( $data['defaults'] ) ) {
 				if ( isset( $data['page'] ) ) {
 					$data['page'] = hydrate_template( $data['page'] );
 				}
-				if ( isset( $data['default'] ) ) {
-					$data['default'] = hydrate_template( $data['default'] );
+				if ( isset( $data['defaults'] ) ) {
+					$data['defaults'] = hydrate_template( $data['defaults'] );
 				}
 			} else {
 				$data = hydrate_template( $data );
@@ -246,6 +246,7 @@ function filter_template_loader() {
  * @return string The path to the found template.
  */
 function locate_template( array $templates ): string {
+
 	$template_path = get_stylesheet_directory() . '/templates/';
 
 	/**
@@ -273,6 +274,8 @@ function locate_template( array $templates ): string {
 			// Ensure filtered template paths are slashed.
 			$path = trailingslashit( $template_path ) . $template_base . '.' . $type;
 
+			// echo $path . "\n";
+
 			// If the file is located, break out of filetype loop.
 			if ( file_exists( $path ) ) {
 				$located = $path;
@@ -283,6 +286,32 @@ function locate_template( array $templates ): string {
 		// Break out of template type loop.
 		if ( $located ) {
 			break;
+		}
+
+		// If stylehseet and template directory don't match, look in the parent directory.
+		if (
+			get_template_directory() !== get_stylesheet_directory()
+			&& 0 === strpos( $template_path, get_stylesheet_directory() )
+		) {
+			$child_template_path = str_replace( get_stylesheet_directory(), get_template_directory(), $template_path );
+
+			foreach ( $filetypes as $type ) {
+				// Ensure filtered template paths are slashed.
+				$path = trailingslashit( $child_template_path ) . $template_base . '.' . $type;
+
+				// echo $path . "\n";
+
+				// If the file is located, break out of filetype loop.
+				if ( file_exists( $path ) ) {
+					$located = $path;
+					break;
+				}
+			}
+
+			// Break out of template type loop.
+			if ( $located ) {
+				break;
+			}
 		}
 	}
 
