@@ -31,7 +31,7 @@ function get_registry(): Registry {
 /**
  * Returns the context object.
  *
- * Sets the default 'irving/post' context when first called.
+ * Sets a default context when first called.
  *
  * @return Context_Store The context store object.
  */
@@ -75,4 +75,3 @@ function auto_register_components() {
 
 	get_registry()->load_components( $directories );
 }
-
