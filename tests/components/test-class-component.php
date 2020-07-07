@@ -562,13 +562,13 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 * Tests for the component (array) filter in the jsonSerialize() method.
 	 */
 	public function test_json_serialize_component_array_filter() {
-		$component = new Component( 'irving/text' );
+		$component = new Component( 'test/basic' );
 
 		add_filter( 'wp_irving_serialize_component_array', [ $this, 'wp_irving_serialize_component_array_action' ] );
 
 		$this->assertEquals(
 			[
-				'name'     => 'irving/text',
+				'name'     => 'test/basic',
 				'config'   => (object) [
 					'test'         => true,
 					'themeName'    => 'default',
@@ -585,11 +585,11 @@ class Test_Class_Component extends WP_UnitTestCase {
 		remove_filter( 'wp_irving_serialize_component_array', [ $this, 'wp_irving_serialize_component_array_action' ] );
 
 		// Reset to test again.
-		$component = new Component( 'irving/text' );
+		$component = new Component( 'test/basic' );
 
 		$this->assertEquals(
 			[
-				'name'     => 'irving/text',
+				'name'     => 'test/basic',
 				'config'   => (object) [
 					'themeName'    => 'default',
 					'themeOptions' => [
