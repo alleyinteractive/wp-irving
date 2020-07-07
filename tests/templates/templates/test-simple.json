@@ -3,6 +3,6 @@
     { "name": "test/component" }
   ],
   "page": [
-		{ "name": "test/component" }
+    { "name": "test/component" }
   ]
 }

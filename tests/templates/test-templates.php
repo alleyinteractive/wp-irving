@@ -285,6 +285,7 @@ class Test_Templates extends WP_UnitTestCase {
 		$expected = [
 			[
 				'name'     => 'provider',
+				'_alias'   => '',
 				'config'   => [
 					'propWithDefault'           => 'default value',
 					'propWithDefaultOverridden' => 20,
@@ -295,6 +296,7 @@ class Test_Templates extends WP_UnitTestCase {
 				'children' => [
 					[
 						'name'     => 'consumer',
+						'_alias'   => '',
 						'config'   => [
 							'propWithDefault'           => 'default value',
 							'propWithDefaultOverridden' => 20,

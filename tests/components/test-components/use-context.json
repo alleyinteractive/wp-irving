@@ -10,7 +10,7 @@
       "type": "string"
     }
   },
-	"use_context": {
+  "use_context": {
     "test/foo": "foo",
     "test/baz": "baz"
   }
