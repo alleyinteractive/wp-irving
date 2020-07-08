@@ -143,7 +143,7 @@ class Test_Components extends WP_UnitTestCase {
 						'_alias'   => '',
 						'config'   => (object) [
 							// The format of the archive title changed in WP version 5.5.
-							'content'      => version_compare( get_bloginfo( 'version' ), '5.5', '>=' ) ? 'Category: <span>Uncategorized</span>' : 'Category: Uncategorized',
+							'content'      => version_compare( get_bloginfo( 'version' ), '5.4.99', '>' ) ? 'Category: <span>Uncategorized</span>' : 'Category: Uncategorized',
 							'themeName'    => 'default',
 							'themeOptions' => [ 'default' ],
 						],
