@@ -288,7 +288,7 @@ function locate_template( array $templates ): string {
 
 		// If stylehseet and template directory don't match, look in the parent directory.
 		if (
-			get_template_directory() !== get_stylesheet_directory()
+			is_child_theme()
 			&& 0 === strpos( $template_path, get_stylesheet_directory() )
 		) {
 			$child_template_path = str_replace( get_stylesheet_directory(), get_template_directory(), $template_path );
