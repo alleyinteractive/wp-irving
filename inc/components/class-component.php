@@ -969,11 +969,23 @@ class Component implements JsonSerializable {
 			}
 		}
 
+		// Recursively apply to children.
+		$children = array_map(
+			function ( $child ) {
+				if ( ! $child instanceof Component ) {
+					return $child;
+				}
+
+				return $child->to_array();
+			},
+			$this->get_children()
+		);
+
 		return [
 			'name'     => $this->get_name(),
 			'_alias'   => $this->get_alias(),
 			'config'   => (object) $this->camel_case_keys( $config ),
-			'children' => $this->get_children(),
+			'children' => $children,
 		];
 	}
 }
