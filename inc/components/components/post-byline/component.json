@@ -5,27 +5,22 @@
   "config": {
     "single_delimiter": {
       "default": " and ",
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "multi_delimiter": {
       "default": ", ",
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "last_delimiter": {
       "default": ", and ",
-      "type": "string",
-      "required": true
+      "type": "string"
     },
     "post_id": {
-      "default": 0,
       "type": "integer"
     },
     "pre_text": {
       "default": "By ",
-      "type": "string",
-      "required": true
+      "type": "string"
     }
   },
   "use_context": {

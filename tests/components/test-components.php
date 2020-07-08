@@ -7,6 +7,7 @@
 
 namespace WP_Irving\Components;
 
+use WP_UnitTest_Factory;
 use WP_UnitTestCase;
 use WP_Query;
 
@@ -16,6 +17,57 @@ use WP_Query;
  * @group components
  */
 class Test_Components extends WP_UnitTestCase {
+
+	/**
+	 * Test author
+	 *
+	 * @var int Author ID.
+	 */
+	public static $author_id;
+
+	/**
+	 * Test post
+	 *
+	 * @var int Post ID.
+	 */
+	public static $post_id;
+
+	/**
+	 * Helper to get the author ID.
+	 *
+	 * @return int Author ID.
+	 */
+	public function get_author_id() {
+		return self::$author_id;
+	}
+
+	/**
+	 * Helper to get the post ID.
+	 *
+	 * @return int Post ID.
+	 */
+	public function get_post_id() {
+		return self::$post_id;
+	}
+
+	/**
+	 * Helper to get the post object
+	 *
+	 * @return WP_Post Post object.
+	 */
+	public function get_post() {
+		return get_post( self::$post_id );
+	}
+
+	/**
+	 * Set up shared fixtures.
+	 *
+	 * @param WP_UnitTest_Factory $factory Factory instance.
+	 */
+	public static function wpSetupBeforeClass( $factory ) {
+		self::$author_id = $factory->user->create();
+		self::$post_id   = $factory->post->create( [ 'post_author' => self::$author_id ] );
+	}
 
 	/**
 	 * Setup.
@@ -55,20 +107,22 @@ class Test_Components extends WP_UnitTestCase {
 	 * @group core-components
 	 *
 	 * @param string   $name     Name of the component being tested.
-	 * @param array    $expected Expected component after hydration.
+	 * @param callable $expected Callback to set the expected component after hydration.
 	 * @param callable $setup    Optional. A callback function used to set up state.
 	 */
-	public function test_core_components( string $name, array $expected, $setup = null ) {
+	public function test_core_components( string $name, callable $expected, callable $setup = null ) {
 		// Run setup logic needed before creating the component.
 		if ( ! empty( $setup ) ) {
 			call_user_func( $setup );
 		}
 
+		$expected  = call_user_func( $expected );
 		$component = new Component( $name );
 
-		$this->assertSame(
-			wp_json_encode( $expected ),
-			wp_json_encode( $component ),
+		$this->assertEquals(
+			$expected,
+			// Test in array syntax so it's easier to read diffs.
+			$component->to_array(),
 			sprintf( 'Broken component: %s', esc_html( $name ) )
 		);
 	}
@@ -79,20 +133,87 @@ class Test_Components extends WP_UnitTestCase {
 	 * @return array Test args
 	 */
 	public function get_core_component_data() {
+
 		return [
 			[
 				'irving/archive-title',
-				[
-					'name'     => 'irving/archive-title',
-					'config'   => [
-						'content'      => 'Category: Uncategorized',
-						'themeName'    => 'default',
-						'themeOptions' => [ 'default' ],
-					],
-					'children' => [],
-				],
-				function() {
+				function () {
+					return [
+						'name'     => 'irving/archive-title',
+						'_alias'   => '',
+						'config'   => (object) [
+							'content'      => 'Category: Uncategorized',
+							'themeName'    => 'default',
+							'themeOptions' => [ 'default' ],
+						],
+						'children' => [],
+					];
+				},
+				function () {
 					$this->go_to( '?cat=1' );
+				},
+			],
+			[
+				'irving/post-byline',
+				function () {
+					return [
+						'name'     => 'irving/post-byline',
+						'_alias'   => '',
+						'config'   => (object) [
+							'singleDelimiter' => ' and ',
+							'multiDelimiter'  => ', ',
+							'lastDelimiter'   => ', and ',
+							'preText'         => 'By ',
+							'postId'          => $this->get_post_id(),
+							'themeName'       => 'default',
+							'themeOptions'    => [ 'default' ],
+						],
+						'children' => [
+							[
+								'name'     => 'irving/link',
+								'_alias'   => '',
+								'config'   => (object) [
+									'href'         => get_author_posts_url( $this->get_author_id() ),
+									'rel'          => '',
+									'style'        => [],
+									'target'       => '',
+									'themeName'    => 'default',
+									'themeOptions' => [ 'default' ],
+								],
+								'children' => [
+									[
+										'name'     => 'irving/text',
+										'_alias'   => '',
+										'config'   => (object) [
+											'content'      => get_the_author_meta( 'display_name', $this->get_author_id() ),
+											'tag'          => 'span',
+											'html'         => false,
+											'oembed'       => false,
+											'style'        => [],
+											'themeName'    => 'default',
+											'themeOptions' => [
+												'default',
+												'unstyled',
+												'responsiveEmbed',
+												'html',
+												'caption',
+												'h1',
+												'h2',
+												'h3',
+												'h4',
+												'h5',
+												'h6',
+											],
+										],
+										'children' => [],
+									],
+								],
+							],
+						],
+					];
+				},
+				function() {
+					$this->go_to( '?p=' . $this->get_post_id() );
 				},
 			],
 		];
