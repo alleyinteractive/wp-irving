@@ -51,6 +51,26 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Helper to get the post content rendered.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string HTML output of post content.
+	 */
+	public function get_post_content( int $post_id = 0 ): string {
+		if ( empty( $post_id ) ) {
+			$post_id = $this->get_post_id();
+		}
+
+		$content = get_the_content( null, null, $post_id );
+
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
+		$content = apply_filters( 'the_content', $content );
+		$content = str_replace( ']]>', ']]&gt;', $content );
+
+		return $content;
+	}
+
+	/**
 	 * Helper to get the post object
 	 *
 	 * @return WP_Post Post object.
@@ -215,6 +235,28 @@ class Test_Components extends WP_UnitTestCase {
 					];
 				},
 				function() {
+					$this->go_to( '?p=' . $this->get_post_id() );
+				},
+			],
+			[
+				'irving/post-content',
+				function () {
+					return [
+						'name'     => 'irving/post-content',
+						'_alias'   => 'irving/text',
+						'config'   => (object) [
+							// The format of the archive title changed in WP version 5.5.
+							'content'      => $this->get_post_content(),
+							'html'         => true,
+							'oembed'       => true,
+							'postId'       => $this->get_post_id(),
+							'themeName'    => 'default',
+							'themeOptions' => [ 'default' ],
+						],
+						'children' => [],
+					];
+				},
+				function () {
 					$this->go_to( '?p=' . $this->get_post_id() );
 				},
 			],
