@@ -33,7 +33,7 @@ register_component_from_config(
 			$children[] = new Component(
 				'irving/link',
 				[
-					'config' => [
+					'config'   => [
 						'href' => get_author_posts_url( $author_id ),
 					],
 					'children' => [
