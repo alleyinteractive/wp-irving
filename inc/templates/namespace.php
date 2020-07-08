@@ -274,8 +274,6 @@ function locate_template( array $templates ): string {
 			// Ensure filtered template paths are slashed.
 			$path = trailingslashit( $template_path ) . $template_base . '.' . $type;
 
-			// echo $path . "\n";
-
 			// If the file is located, break out of filetype loop.
 			if ( file_exists( $path ) ) {
 				$located = $path;
@@ -298,8 +296,6 @@ function locate_template( array $templates ): string {
 			foreach ( $filetypes as $type ) {
 				// Ensure filtered template paths are slashed.
 				$path = trailingslashit( $child_template_path ) . $template_base . '.' . $type;
-
-				// echo $path . "\n";
 
 				// If the file is located, break out of filetype loop.
 				if ( file_exists( $path ) ) {
