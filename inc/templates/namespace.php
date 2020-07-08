@@ -286,7 +286,7 @@ function locate_template( array $templates ): string {
 			break;
 		}
 
-		// If stylehseet and template directory don't match, look in the parent directory.
+		// Support child themes if the template path is in the theme.
 		if (
 			is_child_theme()
 			&& 0 === strpos( $template_path, get_stylesheet_directory() )
@@ -349,6 +349,24 @@ function locate_template_part( string $template ): string {
 		// If the file is located, break out of filetype loop.
 		if ( file_exists( $path ) ) {
 			return $path;
+		}
+	}
+
+	// Support child themes if the template part path is in the theme.
+	if (
+		is_child_theme()
+		&& 0 === strpos( $template_part_path, get_stylesheet_directory() )
+	) {
+		$child_template_part_path = str_replace( get_stylesheet_directory(), get_template_directory(), $template_part_path );
+
+		foreach ( $filetypes as $type ) {
+			// Ensure filtered template paths are slashed.
+			$path = trailingslashit( $child_template_part_path ) . $template_base . '.' . $type;
+
+			// If the file is located, break out of filetype loop.
+			if ( file_exists( $path ) ) {
+				return $path;
+			}
 		}
 	}
 
