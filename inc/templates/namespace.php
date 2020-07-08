@@ -246,7 +246,6 @@ function filter_template_loader() {
  * @return string The path to the found template.
  */
 function locate_template( array $templates ): string {
-
 	$template_path = get_stylesheet_directory() . '/templates/';
 
 	/**
