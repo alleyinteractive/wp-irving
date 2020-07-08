@@ -301,7 +301,7 @@ class Component implements JsonSerializable {
 		foreach ( $this->get_schema() as $schema_key => $schema ) {
 			if (
 				empty( $this->get_config_by_key( $schema_key ) ) &&
-				! empty( $schema['default'] )
+				isset( $schema['default'] )
 			) {
 				$this->set_config_value( $schema_key, $schema['default'] );
 			}
