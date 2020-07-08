@@ -140,7 +140,7 @@ class Test_Components extends WP_UnitTestCase {
 				function () {
 					return [
 						'name'     => 'irving/archive-title',
-						'_alias'   => '',
+						'_alias'   => 'irving/html',
 						'config'   => (object) [
 							// The format of the archive title changed in WP version 5.5.
 							'content'      => version_compare( get_bloginfo( 'version' ), '5.4.99', '>' ) ? 'Category: <span>Uncategorized</span>' : 'Category: Uncategorized',
@@ -159,7 +159,7 @@ class Test_Components extends WP_UnitTestCase {
 				function () {
 					return [
 						'name'     => 'irving/post-byline',
-						'_alias'   => '',
+						'_alias'   => 'irving/byline',
 						'config'   => (object) [
 							'singleDelimiter' => ' and ',
 							'multiDelimiter'  => ', ',

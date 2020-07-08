@@ -1,6 +1,6 @@
 {
   "name": "irving/archive-title",
-  "alias": "irving/text",
+  "_alias": "irving/html",
   "category": "Archive",
   "description": "Get the archive title."
 }

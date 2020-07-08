@@ -1,6 +1,6 @@
 {
   "name": "irving/post-byline",
-  "alias": "irving/byline",
+  "_alias": "irving/byline",
   "description": "Display a list of content authors.",
   "config": {
     "single_delimiter": {
