@@ -1,6 +1,6 @@
 {
   "name": "irving/post-featured-media",
-  "alias": "irving/fragment",
+  "_alias": "irving/fragment",
   "category": "Post",
   "description": "Display the post featured media.",
   "config": {

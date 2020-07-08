@@ -1,6 +1,6 @@
 {
   "name": "irving/site-logo",
-  "alias": "irving/logo",
+  "_alias": "irving/logo",
   "category": "Modules",
   "description": "Display the site name or logo.",
   "config": {

@@ -1,6 +1,6 @@
 {
   "name": "irving/post-list",
-  "alias": "irving/fragment",
+  "_alias": "irving/fragment",
   "description": "Iterate through a WP_Query's posts.",
   "config": {
     "templates": {

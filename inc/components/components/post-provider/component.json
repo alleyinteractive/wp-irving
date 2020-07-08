@@ -1,6 +1,6 @@
 {
   "name": "irving/post-provider",
-  "alias": "irving/fragment",
+  "_alias": "irving/fragment",
   "category": "Data",
   "description": "Post context provider.",
   "config": {

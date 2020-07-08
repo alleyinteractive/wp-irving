@@ -1,6 +1,6 @@
 {
   "name": "irving/site-menu",
-  "alias": "irving/menu",
+  "_alias": "irving/menu",
   "category": "Modules",
   "description": "Output links as menu items.",
   "theme_options": [

@@ -1,6 +1,6 @@
 {
   "name": "irving/query-search-results-found",
-  "alias": "irving/text",
+  "_alias": "irving/text",
   "category": "Query",
   "description": "Display meta information about the search results.",
   "config": {

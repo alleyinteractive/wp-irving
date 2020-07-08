@@ -1,6 +1,6 @@
 {
   "name": "irving/post-excerpt",
-  "alias": "irving/text",
+  "_alias": "irving/text",
   "category": "Post",
   "description": "Get the post excerpt",
   "use_context": {

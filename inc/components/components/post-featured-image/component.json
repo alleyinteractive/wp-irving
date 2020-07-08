@@ -1,6 +1,6 @@
 {
   "name": "irving/post-featured-image",
-  "alias": "irving/image",
+  "_alias": "irving/image",
   "description": "Get the post featured image.",
   "use_context": {
     "irving/post_id": "post_id"

@@ -1,6 +1,6 @@
 {
   "name": "irving/query-pagination",
-  "alias": "irving/pagination",
+  "_alias": "irving/pagination",
   "description": "Pagination UI for a query.",
   "config": {
     "base_url": {

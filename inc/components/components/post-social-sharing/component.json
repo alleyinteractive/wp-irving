@@ -1,6 +1,6 @@
 {
   "name": "irving/post-social-sharing",
-  "alias": "irving/social-sharing",
+  "_alias": "irving/social-sharing",
   "description": "Displays a list of platforms to share content on.",
   "config": {
     "description": {

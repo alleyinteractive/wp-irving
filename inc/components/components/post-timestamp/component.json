@@ -1,6 +1,6 @@
 {
   "name": "irving/post-timestamp",
-  "alias": "irving/text",
+  "_alias": "irving/text",
   "description": "Get the post's timestamp(s).",
   "config": {
     "content_format": {
