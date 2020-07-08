@@ -25,13 +25,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Class tear down.
-	 */
-	public static function wpTearDownAfterClass() {
-		self::reset_component_registry();
-	}
-
-	/**
 	 * Register test components from config.
 	 */
 	public static function register_test_components() {
@@ -52,13 +45,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 
 			register_component_from_config( $path );
 		}
-	}
-
-	/**
-	 * Reset the registry after tests are completed.
-	 */
-	public static function reset_component_registry() {
-		get_registry()->reset();
 	}
 
 	/**
