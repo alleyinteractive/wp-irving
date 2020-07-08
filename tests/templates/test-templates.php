@@ -201,7 +201,7 @@ class Test_Templates extends WP_UnitTestCase {
 			'defaults' => [
 				new Component( 'test/component' ),
 			],
-			'page'    => [
+			'page'     => [
 				new Component( 'test/component' ),
 			],
 		];
