@@ -142,8 +142,8 @@ class Test_Components extends WP_UnitTestCase {
 						'name'     => 'irving/archive-title',
 						'_alias'   => '',
 						'config'   => (object) [
-							// The format of the archive title changed in WP version 5.6.
-							'content'      => version_compare( get_bloginfo( 'version' ), '5.5', '>' ) ? 'Category: <span>Uncategorized</span>' : 'Category: Uncategorized',
+							// The format of the archive title changed in WP version 5.5.
+							'content'      => version_compare( get_bloginfo( 'version' ), '5.5', '>=' ) ? 'Category: <span>Uncategorized</span>' : 'Category: Uncategorized',
 							'themeName'    => 'default',
 							'themeOptions' => [ 'default' ],
 						],
