@@ -391,6 +391,42 @@ class Test_Components extends WP_UnitTestCase {
 					$this->go_to( '?p=' . $this->get_post_id() );
 				},
 			],
+			[
+				'irving/post-featured-media',
+				function () {
+					return [
+						'name'     => 'irving/post-featured-media',
+						'_alias'   => 'irving/fragment',
+						'config'   => (object) [
+							'postId'       => $this->get_post_id(),
+							'aspectRatio'  => '',
+							'objectFit'    => 'cover',
+							'style'        => [],
+							'themeName'    => 'default',
+							'themeOptions' => [ 'default' ],
+						],
+						'children' => [
+							[
+								'name'     => 'irving/post-featured-image',
+								'_alias'   => 'irving/image',
+								'config'   => (object) [
+									'alt'          => 'Test alt text.',
+									'caption'      => 'Test caption text.',
+									'credit'       => 'Test credit text.',
+									'src'          => $this->get_attachment_url(),
+									'postId'       => $this->get_post_id(),
+									'themeName'    => 'default',
+									'themeOptions' => [ 'default' ],
+								],
+								'children' => [],
+							],
+						],
+					];
+				},
+				function () {
+					$this->go_to( '?p=' . $this->get_post_id() );
+				},
+			],
 		];
 	}
 }
