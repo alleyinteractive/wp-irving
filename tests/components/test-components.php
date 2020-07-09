@@ -71,6 +71,21 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Helper to get the post excerpt rendered.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string HTML output of post content.
+	 */
+	public function get_post_excerpt( int $post_id = 0 ): string {
+		if ( empty( $post_id ) ) {
+			$post_id = $this->get_post_id();
+		}
+
+		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
+		return apply_filters( 'the_excerpt', get_the_excerpt( $post_id ) );
+	}
+
+	/**
 	 * Helper to get the post object
 	 *
 	 * @return WP_Post Post object.
@@ -249,6 +264,49 @@ class Test_Components extends WP_UnitTestCase {
 							'content'      => $this->get_post_content(),
 							'html'         => true,
 							'oembed'       => true,
+							'postId'       => $this->get_post_id(),
+							'themeName'    => 'default',
+							'themeOptions' => [ 'default' ],
+						],
+						'children' => [],
+					];
+				},
+				function () {
+					$this->go_to( '?p=' . $this->get_post_id() );
+				},
+			],
+			[
+				'irving/post-excerpt',
+				function () {
+					return [
+						'name'     => 'irving/post-excerpt',
+						'_alias'   => 'irving/text',
+						'config'   => (object) [
+							// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
+							'content'      => $this->get_post_excerpt(),
+							'html'         => true,
+							'postId'       => $this->get_post_id(),
+							'themeName'    => 'default',
+							'themeOptions' => [ 'default' ],
+						],
+						'children' => [],
+					];
+				},
+				function () {
+					$this->go_to( '?p=' . $this->get_post_id() );
+				},
+			],
+			[
+				'irving/post-featured-image',
+				function () {
+					return [
+						'name'     => 'irving/post-featured-image',
+						'_alias'   => 'irving/image',
+						'config'   => (object) [
+							'alt'          => '',
+							'caption'      => '',
+							'credit'       => '',
+							'src'          => '',
 							'postId'       => $this->get_post_id(),
 							'themeName'    => 'default',
 							'themeOptions' => [ 'default' ],

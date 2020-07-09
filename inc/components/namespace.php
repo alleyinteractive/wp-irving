@@ -135,3 +135,23 @@ function register_component_from_config( string $config_path, array $args = [] )
 		array_merge_recursive( $config, $args )
 	);
 }
+
+/**
+ * Determine an `alt` attribute value for this image.
+ *
+ * @param int $attachment_id Attachment ID.
+ * @return string The alt attribute.
+ */
+function get_image_alt( int $attachment_id ): string {
+
+	// Get the alt.
+	$alt = get_post_meta( $attachment_id, '_wp_attachment_image_alt', true );
+
+	// Fallback to caption.
+	if ( empty( $alt ) ) {
+		$alt = wp_get_attachment_caption( get_post_thumbnail_id( $attachment_id ) );
+	}
+
+	// phpcs:ignore WordPressVIPMinimum.Functions.StripTags.StripTagsOneParameter
+	return trim( strip_tags( $alt ) );
+}
