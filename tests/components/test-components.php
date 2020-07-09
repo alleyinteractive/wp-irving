@@ -168,7 +168,7 @@ class Test_Components extends WP_UnitTestCase {
 		$wp_irving_context = null;
 
 		// Disable date organized uploads.
-		add_filter( 'upload_dir', 'upload_dir_no_subdir' );
+		add_filter( 'upload_dir', [ $this, 'upload_dir_no_subdir' ] );
 	}
 
 	/**
