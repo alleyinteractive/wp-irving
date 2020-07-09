@@ -198,10 +198,10 @@ class Test_Templates extends WP_UnitTestCase {
 	 */
 	public function test_prepare_data_from_template() {
 		$expected = [
-			'default' => [
+			'defaults' => [
 				new Component( 'test/component' ),
 			],
-			'page'    => [
+			'page'     => [
 				new Component( 'test/component' ),
 			],
 		];

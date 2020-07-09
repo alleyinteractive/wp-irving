@@ -94,7 +94,11 @@ function get_site_theme_from_json_files() {
 
 	$theme = [];
 
-	$path = apply_filters( 'wp_irving_site_theme_json_directory_path', get_template_directory() . '/styles/' );
+	$path = apply_filters( 'wp_irving_site_theme_json_directory_path', get_stylesheet_directory() . '/styles/' );
+
+	if ( ! is_dir( $path ) ) {
+		$path = apply_filters( 'wp_irving_site_theme_json_directory_path', get_template_directory() . '/styles/' );
+	}
 
 	if ( ! is_dir( $path ) ) {
 		return [];

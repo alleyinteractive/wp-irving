@@ -166,12 +166,12 @@ function prepare_data_from_template( string $template_path ): array {
 			}
 
 			// Hydrate page and default data separately.
-			if ( isset( $data['page'] ) || isset( $data['default'] ) ) {
+			if ( isset( $data['page'] ) || isset( $data['defaults'] ) ) {
 				if ( isset( $data['page'] ) ) {
 					$data['page'] = hydrate_template( $data['page'] );
 				}
-				if ( isset( $data['default'] ) ) {
-					$data['default'] = hydrate_template( $data['default'] );
+				if ( isset( $data['defaults'] ) ) {
+					$data['defaults'] = hydrate_template( $data['defaults'] );
 				}
 			} else {
 				$data = hydrate_template( $data );
@@ -284,6 +284,30 @@ function locate_template( array $templates ): string {
 		if ( $located ) {
 			break;
 		}
+
+		// Support child themes if the template path is in the theme.
+		if (
+			is_child_theme()
+			&& 0 === strpos( $template_path, get_stylesheet_directory() )
+		) {
+			$child_template_path = str_replace( get_stylesheet_directory(), get_template_directory(), $template_path );
+
+			foreach ( $filetypes as $type ) {
+				// Ensure filtered template paths are slashed.
+				$path = trailingslashit( $child_template_path ) . $template_base . '.' . $type;
+
+				// If the file is located, break out of filetype loop.
+				if ( file_exists( $path ) ) {
+					$located = $path;
+					break;
+				}
+			}
+
+			// Break out of template type loop.
+			if ( $located ) {
+				break;
+			}
+		}
 	}
 
 	return $located;
@@ -324,6 +348,24 @@ function locate_template_part( string $template ): string {
 		// If the file is located, break out of filetype loop.
 		if ( file_exists( $path ) ) {
 			return $path;
+		}
+	}
+
+	// Support child themes if the template part path is in the theme.
+	if (
+		is_child_theme()
+		&& 0 === strpos( $template_part_path, get_stylesheet_directory() )
+	) {
+		$child_template_part_path = str_replace( get_stylesheet_directory(), get_template_directory(), $template_part_path );
+
+		foreach ( $filetypes as $type ) {
+			// Ensure filtered template paths are slashed.
+			$path = trailingslashit( $child_template_part_path ) . $template_base . '.' . $type;
+
+			// If the file is located, break out of filetype loop.
+			if ( file_exists( $path ) ) {
+				return $path;
+			}
 		}
 	}
 
