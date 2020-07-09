@@ -26,6 +26,14 @@ class Test_Components extends WP_UnitTestCase {
 	public static $author_id;
 
 	/**
+	 * Test attachment
+	 *
+	 * @var int attachment ID.
+	 */
+	public static $attachment_id;
+
+
+	/**
 	 * Test post
 	 *
 	 * @var int Post ID.
@@ -39,6 +47,26 @@ class Test_Components extends WP_UnitTestCase {
 	 */
 	public function get_author_id() {
 		return self::$author_id;
+	}
+
+	/**
+	 * Helper to get the attachment ID.
+	 *
+	 * @return int attachment ID.
+	 */
+	public function get_attachment_id() {
+		return self::$attachment_id;
+	}
+
+	/**
+	 * Helper to get the attachment URL.
+	 *
+	 * @return string attachment URL.
+	 */
+	public function get_attachment_url() {
+		$uploads_dir = wp_get_upload_dir();
+
+		return trailingslashit( $uploads_dir['url'] ) . 'test-image.jpg';
 	}
 
 	/**
@@ -100,8 +128,32 @@ class Test_Components extends WP_UnitTestCase {
 	 * @param WP_UnitTest_Factory $factory Factory instance.
 	 */
 	public static function wpSetupBeforeClass( $factory ) {
+		// Test image.
+		self::$attachment_id = $factory->attachment->create_object(
+			'test-image.jpg',
+			null,
+			[
+				'post_mime_type' => 'image/jpeg',
+				'post_type'      => 'attachment',
+				'post_excerpt'   => 'Test caption text.',
+			]
+		);
+
+		// Set up alt text and credit content.
+		update_post_meta( self::$attachment_id, '_wp_attachment_image_alt', 'Test alt text.' );
+		update_post_meta( self::$attachment_id, 'credit', 'Test credit text.' );
+
+		// Test author.
 		self::$author_id = $factory->user->create();
-		self::$post_id   = $factory->post->create( [ 'post_author' => self::$author_id ] );
+
+		// Test post.
+		self::$post_id = $factory->post->create(
+			[
+				'post_author'   => self::$author_id,
+				'_thumbnail_id' => self::$attachment_id,
+			]
+		);
+
 	}
 
 	/**
@@ -114,6 +166,27 @@ class Test_Components extends WP_UnitTestCase {
 
 		// Ensure we get a fresh context store for each test.
 		$wp_irving_context = null;
+
+		// Disable date organized uploads.
+		add_filter( 'upload_dir', '_upload_dir_no_subdir' );
+	}
+
+	/**
+	 * Helper used with the `upload_dir` filter to remove the /year/month sub directories from the uploads path and URL.
+	 *
+	 * Taken from the WP PHPUnit test helpers.
+	 *
+	 * @param array $uploads The uploads path data.
+	 * @return array The altered array.
+	 */
+	public function _upload_dir_no_subdir( $uploads ) {
+		$subdir = $uploads['subdir'];
+
+		$uploads['subdir'] = '';
+		$uploads['path']   = str_replace( $subdir, '', $uploads['path'] );
+		$uploads['url']    = str_replace( $subdir, '', $uploads['url'] );
+
+		return $uploads;
 	}
 
 	/**
@@ -303,10 +376,10 @@ class Test_Components extends WP_UnitTestCase {
 						'name'     => 'irving/post-featured-image',
 						'_alias'   => 'irving/image',
 						'config'   => (object) [
-							'alt'          => '',
-							'caption'      => '',
-							'credit'       => '',
-							'src'          => '',
+							'alt'          => 'Test alt text.',
+							'caption'      => 'Test caption text.',
+							'credit'       => 'Test credit text.',
+							'src'          => $this->get_attachment_url(),
 							'postId'       => $this->get_post_id(),
 							'themeName'    => 'default',
 							'themeOptions' => [ 'default' ],
