@@ -168,7 +168,7 @@ class Test_Components extends WP_UnitTestCase {
 		$wp_irving_context = null;
 
 		// Disable date organized uploads.
-		add_filter( 'upload_dir', '_upload_dir_no_subdir' );
+		add_filter( 'upload_dir', 'upload_dir_no_subdir' );
 	}
 
 	/**
@@ -179,7 +179,7 @@ class Test_Components extends WP_UnitTestCase {
 	 * @param array $uploads The uploads path data.
 	 * @return array The altered array.
 	 */
-	public function _upload_dir_no_subdir( $uploads ) {
+	public function upload_dir_no_subdir( $uploads ) {
 		$subdir = $uploads['subdir'];
 
 		$uploads['subdir'] = '';
