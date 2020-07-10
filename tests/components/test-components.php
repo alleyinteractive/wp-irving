@@ -573,6 +573,33 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/post-permalink component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_post_permalink() {
+		$this->go_to( '?p=' . $this->get_post_id() );
+
+		$expected = $this->get_expected_component(
+			'irving/post-permalink',
+			[
+				'_alias' => 'irving/link',
+				'config' => [
+					'href'   => get_the_permalink( $this->get_post_id() ),
+					'rel'    => '',
+					'style'  => [],
+					'target' => '',
+					'postId' => $this->get_post_id(),
+				],
+			]
+		);
+
+		$component = new Component( 'irving/post-permalink' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.

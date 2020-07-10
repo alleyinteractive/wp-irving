@@ -2,6 +2,24 @@
   "name": "irving/post-permalink",
   "_alias": "irving/link",
   "description": "Get the post permalink.",
+  "config": {
+    "href": {
+      "default": "",
+      "type": "string"
+    },
+    "rel": {
+      "default": "",
+      "type": "string"
+    },
+    "style": {
+      "default": [],
+      "type": "array"
+    },
+    "target": {
+      "default": "",
+      "type": "string"
+    }
+  },
   "use_context": {
     "irving/post_id": "post_id"
   }

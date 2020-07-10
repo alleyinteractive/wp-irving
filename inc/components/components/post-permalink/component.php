@@ -9,23 +9,35 @@
 
 namespace WP_Irving\Components;
 
+use WP_Post;
+
 /**
  * Register the component and callback.
  */
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
+		'config_callback' => function ( array $config ): array {
+			$post_id = $config['post_id'];
 
-			// Get the post ID from a context provider.
-			$post_id = $component->get_config( 'post_id' );
-
-			$post = get_post( $post_id );
-			if ( ! $post instanceof \WP_Post ) {
-				return $component;
+			// Bail early if we have no post ID.
+			if ( ! $post_id ) {
+				return $config;
 			}
 
-			return $component->set_config( 'href', get_permalink( $post_id ) );
+			$permalink = get_the_permalink( $post_id );
+
+			// Bail if we have no permalink.
+			if ( is_wp_error( $permalink ) ) {
+				return $config;
+			}
+
+			return array_merge(
+				$config,
+				[
+					'href' => $permalink,
+				]
+			);
 		},
 	]
 );
