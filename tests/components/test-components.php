@@ -32,7 +32,6 @@ class Test_Components extends WP_UnitTestCase {
 	 */
 	public static $attachment_id;
 
-
 	/**
 	 * Test post
 	 *
