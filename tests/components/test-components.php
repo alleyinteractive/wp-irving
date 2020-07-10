@@ -175,7 +175,7 @@ class Test_Components extends WP_UnitTestCase {
 	 *
 	 * @param array  $expected Callback to set the expected component after hydration.
 	 * @param string $name     Name of the component being tested.
-	 * @param string $message    Optional. Message for failure.
+	 * @param string $message  Optional. Message for failure.
 	 */
 	public function assertComponentEquals( array $expected, string $name, string $message = '' ) {
 		$component = new Component( $name );
