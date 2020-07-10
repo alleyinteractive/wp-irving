@@ -138,7 +138,7 @@ function register_component_from_config( string $config_path, array $args = [] )
 }
 
 /**
- * Determine an `alt` attribute value for this image.
+ * Determine an `alt` attribute value for a given image.
  *
  * @param int $attachment_id Attachment ID.
  * @return string The alt attribute.
