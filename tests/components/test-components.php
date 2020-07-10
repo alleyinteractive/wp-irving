@@ -600,6 +600,58 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/post-provider component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_post_provider() {
+		// Register a component that receives the post_id context.
+		register_component(
+			'example/use-context',
+			[
+				'use_context' => [
+					'irving/post_id' => 'post_id',
+				],
+			]
+		);
+
+		$expected = $this->get_expected_component(
+			'irving/post-provider',
+			[
+				'_alias'   => 'irving/fragment',
+				'config'   => [
+					'postId' => $this->get_post_id(),
+				],
+				'children' => [
+					$this->get_expected_component(
+						'example/use-context',
+						[
+							'config' => [ 'postId' => $this->get_post_id() ],
+						]
+					),
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/post-provider',
+			[
+				'config'   => [
+					'post_id' => $this->get_post_id(),
+				],
+				'children' => [
+					[ 'name' => 'example/use-context' ],
+				],
+			]
+		);
+
+		// Cleanup.
+		unregister_component( 'example/use-context' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.

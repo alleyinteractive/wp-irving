@@ -88,6 +88,16 @@ function register_component( string $name, array $args = [] ): bool {
 }
 
 /**
+ * Unregister a component.
+ *
+ * @param string $name Component name.
+ * @return bool Returns true if successful.
+ */
+function unregister_component( string $name ): bool {
+	return get_registry()->unregister_component( $name );
+}
+
+/**
  * Register a component using a json config.
  *
  * @param string $config_path JSON config file.
