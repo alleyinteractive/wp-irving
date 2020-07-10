@@ -173,12 +173,13 @@ class Test_Components extends WP_UnitTestCase {
 	/**
 	 * Test output for core components.
 	 *
-	 * @param array  $expected Callback to set the expected component after hydration.
-	 * @param string $name     Name of the component being tested.
-	 * @param string $message  Optional. Message for failure.
+	 * @param array     $expected     Callback to set the expected component after hydration.
+	 * @param Component $component Name of the component being tested.
+	 * @param string    $message      Optional. Message for failure.
+	 *
+	 * @see \PHPUnit\Framework\Assert::assertEquals
 	 */
-	public function assertComponentEquals( array $expected, string $name, string $message = '' ) {
-		$component = new Component( $name );
+	public function assertComponentEquals( array $expected, Component $component, string $message = '' ) {
 
 		return $this->assertEquals(
 			$expected,
@@ -247,7 +248,9 @@ class Test_Components extends WP_UnitTestCase {
 			'children' => [],
 		];
 
-		$this->assertComponentEquals( $expected, 'irving/archive-title' );
+		$component = new Component( 'irving/archive-title' );
+
+		$this->assertComponentEquals( $expected, $component );
 	}
 
 	/**
@@ -314,7 +317,9 @@ class Test_Components extends WP_UnitTestCase {
 			],
 		];
 
-		$this->assertComponentEquals( $expected, 'irving/post-byline' );
+		$component = new Component( 'irving/post-byline' );
+
+		$this->assertComponentEquals( $expected, $component );
 	}
 
 	/**
@@ -340,7 +345,9 @@ class Test_Components extends WP_UnitTestCase {
 			'children' => [],
 		];
 
-		$this->assertComponentEquals( $expected, 'irving/post-content' );
+		$component = new Component( 'irving/post-content' );
+
+		$this->assertComponentEquals( $expected, $component );
 	}
 
 	/**
@@ -365,7 +372,9 @@ class Test_Components extends WP_UnitTestCase {
 			'children' => [],
 		];
 
-		$this->assertComponentEquals( $expected, 'irving/post-excerpt' );
+		$component = new Component( 'irving/post-excerpt' );
+
+		$this->assertComponentEquals( $expected, $component );
 	}
 
 	/**
@@ -391,7 +400,9 @@ class Test_Components extends WP_UnitTestCase {
 			'children' => [],
 		];
 
-		$this->assertComponentEquals( $expected, 'irving/post-featured-image' );
+		$component = new Component( 'irving/post-featured-image' );
+
+		$this->assertComponentEquals( $expected, $component );
 	}
 
 	/**
@@ -431,6 +442,113 @@ class Test_Components extends WP_UnitTestCase {
 			],
 		];
 
-		$this->assertComponentEquals( $expected, 'irving/post-featured-media' );
+		$component = new Component( 'irving/post-featured-media' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/post-list component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_post_list() {
+		$this->go_to( home_url() );
+
+		// Demo query args.
+		$query_args = [
+			'post__in' => [ $this->get_post_id() ],
+		];
+
+		// Demo templates.
+		$templates = [
+			'before'  => [
+				[ 'name' => 'example/before' ],
+			],
+			'after'   => [
+				[ 'name' => 'example/after' ],
+			],
+			'wrapper' => [ 'name' => 'example/wrapper' ],
+			'item'    => [ 'name' => 'example/item' ],
+		];
+
+		$expected = [
+			'name'     => 'irving/post-list',
+			'_alias'   => 'irving/fragment',
+			'config'   => (object) [
+				'templates'    => $templates,
+				'themeName'    => 'default',
+				'themeOptions' => [ 'default' ],
+			],
+			'children' => [
+				$this->get_expected_component( 'example/before' ),
+				$this->get_expected_component(
+					'example/wrapper',
+					[
+						'children' => [
+							$this->get_expected_component(
+								'irving/post-provider',
+								[
+									'_alias'   => 'irving/fragment',
+									'config'   => [
+										'postId' => $this->get_post_id(),
+									],
+									'children' => [
+										$this->get_expected_component( 'example/item' ),
+									],
+								]
+							),
+						],
+					],
+				),
+				$this->get_expected_component( 'example/after' ),
+			],
+		];
+
+		$component = new Component(
+			'irving/post-list',
+			[
+				'config' => [
+					'query_args' => $query_args,
+					'templates'  => $templates,
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Helper for creating expected output for components.
+	 *
+	 * Returns default values so you don't have to write as much boilerplate.
+	 *
+	 * @param string $name Component name.
+	 * @param array  $args Optional. Component args.
+	 * @return array Expected component array output including defaults.
+	 */
+	public function get_expected_component( string $name, array $args = [] ): array {
+
+		$args['name'] = $name;
+
+		$component = wp_parse_args(
+			$args,
+			[
+				'name'     => '',
+				'_alias'   => '',
+				'config'   => [],
+				'children' => [],
+			],
+		);
+
+		$component['config'] = (object) wp_parse_args(
+			$args['config'] ?? null,
+			[
+				'themeName'    => 'default',
+				'themeOptions' => [ 'default' ],
+			]
+		);
+
+		return $component;
 	}
 }

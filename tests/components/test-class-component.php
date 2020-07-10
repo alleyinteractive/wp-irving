@@ -417,8 +417,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 			'example/parent',
 			[
 				'children' => [
-					[ 'example/child-1' ],
-					'example/child-2',
+					'Text node.',
+					[ 'example/child' ],
+					[ 'name' => 'example/child' ],
 				],
 			]
 		);
@@ -426,8 +427,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 		// Children should return as Component classes.
 		$this->assertEquals(
 			[
-				new Component( 'example/child-1' ),
-				new Component( 'example/child-2' ),
+				'Text node.',
+				new Component( 'example/child' ),
+				new Component( 'example/child' ),
 			],
 			$component->get_children()
 		);

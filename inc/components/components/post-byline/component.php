@@ -38,11 +38,9 @@ register_component_from_config(
 					],
 					'children' => [
 						[
-							'irving/text',
-							[
-								'config' => [
-									'content' => get_the_author_meta( 'display_name', $author_id ),
-								],
+							'name'   => 'irving/text',
+							'config' => [
+								'content' => get_the_author_meta( 'display_name', $author_id ),
 							],
 						],
 					],
