@@ -1,39 +1,39 @@
 {
-	"name": "irving/text",
-	"description": "Output text.",
-	"theme_options": [
-		"default",
-		"unstyled",
+  "name": "irving/text",
+  "description": "Output text.",
+  "theme_options": [
+    "default",
+    "unstyled",
     "responsive-embed",
-		"html",
-		"caption",
-		"h1",
-		"h2",
-		"h3",
-		"h4",
-		"h5",
-		"h6"
-	],
-	"config": {
-		"content": {
-			"default": "",
-			"type": "string"
-		},
-		"html": {
-			"default": false,
-			"type": "bool"
-		},
-		"oembed": {
-			"default": false,
-			"type": "bool"
-		},
-		"style": {
-			"default": [],
-			"type": "array"
-		},
-		"tag": {
-			"default": "span",
-			"type": "string"
-		}
-	}
+    "html",
+    "caption",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6"
+  ],
+  "config": {
+    "content": {
+      "default": "",
+      "type": "string"
+    },
+    "html": {
+      "default": false,
+      "type": "bool"
+    },
+    "oembed": {
+      "default": false,
+      "type": "bool"
+    },
+    "style": {
+      "default": [],
+      "type": "array"
+    },
+    "tag": {
+      "default": "span",
+      "type": "string"
+    }
+  }
 }

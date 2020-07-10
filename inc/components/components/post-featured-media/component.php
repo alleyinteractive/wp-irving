@@ -13,30 +13,17 @@
 
 namespace WP_Irving\Components;
 
-if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
-	return;
-}
-
 /**
  * Register the component and callback.
  */
-get_registry()->register_component_from_config(
+register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
-
-			// Get the post ID from a context provider.
-			$post_id = $component->get_config( 'post_id' );
-
-			// Featured image.
-			$component->append_child(
-				[
-					'name'   => 'irving/post-featured-image',
-					'config' => $component->get_config(),
-				]
-			);
-
-			return $component;
+		'children_callback' => function( array $children, array $config ): array {
+			// This wraps the irving/post-featured-image component.
+			return [
+				new Component( 'irving/post-featured-image' ),
+			];
 		},
 	]
 );

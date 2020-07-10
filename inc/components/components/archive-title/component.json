@@ -1,6 +1,12 @@
 {
-	"name": "irving/archive-title",
-	"alias": "irving/text",
-	"category": "Archive",
-	"description": "Get the archive title."
+  "name": "irving/archive-title",
+  "_alias": "irving/text",
+  "category": "Archive",
+  "description": "Get the archive title.",
+  "config": {
+    "html": {
+      "default": true,
+      "type": "bool"
+    }
+  }
 }

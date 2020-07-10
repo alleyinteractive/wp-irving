@@ -1,52 +1,52 @@
 {
-	"name": "irving/post-social-sharing",
-	"alias": "irving/social-sharing",
-	"description": "Displays a list of platforms to share content on.",
-	"config": {
-		"description": {
-			"default": "",
-			"description": "Description of the shared content.",
-			"required": false,
-			"type": "string"
-		},
-		"image_url": {
-			"default": "",
-			"description": "Preview image for the shared content.",
-			"required": false,
-			"type": "string"
-		},
-		"platforms": {
-			"default": [
-				"email",
-				"facebook",
-				"linkedin",
-				"pinterest",
-				"reddit",
-				"twitter",
-				"whatsapp"
-			],
-			"required": true,
-			"type": "array"
-		},
-		"post_id": {
-			"default": 0,
-			"required": true,
-			"type": "integer"
-		},
-		"title": {
-			"default": "",
-			"description": "Title of the shared content.",
-			"required": false,
-			"type": "string"
-		},
-		"url": {
-			"default": "",
-			"description": "URL of the shared content.",
-			"required": false,
-			"type": "string"
-		}
-	},
-	"use_context": {
-		"irving/post_id": "post_id"
-	}
+  "name": "irving/post-social-sharing",
+  "_alias": "irving/social-sharing",
+  "description": "Displays a list of platforms to share content on.",
+  "config": {
+    "description": {
+      "default": "",
+      "description": "Description of the shared content.",
+      "required": false,
+      "type": "string"
+    },
+    "image_url": {
+      "default": "",
+      "description": "Preview image for the shared content.",
+      "required": false,
+      "type": "string"
+    },
+    "platforms": {
+      "default": [
+        "email",
+        "facebook",
+        "linkedin",
+        "pinterest",
+        "reddit",
+        "twitter",
+        "whatsapp"
+      ],
+      "required": true,
+      "type": "array"
+    },
+    "post_id": {
+      "default": 0,
+      "required": true,
+      "type": "integer"
+    },
+    "title": {
+      "default": "",
+      "description": "Title of the shared content.",
+      "required": false,
+      "type": "string"
+    },
+    "url": {
+      "default": "",
+      "description": "URL of the shared content.",
+      "required": false,
+      "type": "string"
+    }
+  },
+  "use_context": {
+    "irving/post_id": "post_id"
+  }
 }

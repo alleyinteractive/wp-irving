@@ -1,21 +1,21 @@
 {
-	"name": "irving/post-list",
-	"alias": "irving/fragment",
-	"description": "Iterate through a WP_Query's posts.",
-	"config": {
-		"templates": {
-			"type": "array"
-		},
-		"query_args": {
-			"hidden": true,
-			"type": "array"
-		},
-		"wp_query": {
-			"hidden": true,
-			"type": "object"
-		}
-	},
-	"provides_context": {
-		"irving/wp_query": "wp_query"
-	}
+  "name": "irving/post-list",
+  "_alias": "irving/fragment",
+  "description": "Iterate through a WP_Query's posts.",
+  "config": {
+    "templates": {
+      "type": "array"
+    },
+    "query_args": {
+      "hidden": true,
+      "type": "array"
+    },
+    "wp_query": {
+      "hidden": true,
+      "type": "object"
+    }
+  },
+  "provides_context": {
+    "irving/wp_query": "wp_query"
+  }
 }

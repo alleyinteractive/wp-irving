@@ -1,64 +1,64 @@
 {
-	"name": "irving/image",
-	"description": "Output an image.",
-	"config": {
-		"allow_upscaling": {
-			"default": false,
-			"description": "Allow an image to be scaled to larger than its actual width.",
-			"type": "bool"
-		},
-		"alt": {
-			"description": "Optional. Value of the alt attribute.",
-			"type": "string"
-		},
-		"aspect_ratio": {
-			"description": "Optional. Aspect ratio for the image to conform to. Can be a float (\"0.6667\"), a ratio (\"16 / 9\"), or a predfined ratio (\"square\").",
-			"type": "string"
-		},
-		"caption": {
-			"description": "Optional. Caption for the image.",
-			"default": "",
-			"type": "string"
-		},
-		"class_name": {
-			"description": "Optional. Classname.",
-			"type": "string"
-		},
-		"fallback_src": {
-			"description": "Optional. URL for the image source if \"src\" is not set.",
-			"type": "string"
-		},
-		"loading": {
-			"defaul": "lazy",
-			"description": "Required. \"eager\" or \"lazy\".",
-			"type": "string"
-		},
-		"object_fit": {
-			"default": "cover",
-			"description": "Object fit property.",
-			"type": "string"
-		},
-		"picture_sources": {
-			"description": "Optional. Array of sources for the <picture> tag.",
-			"type": "array"
-		},
-		"show_meta": {
-			"default": true,
-			"description": "Display meta.",
-			"type": "bool"
-		},
-		"src": {
-			"description": "Optional. URL for the image source.",
-			"type": "string"
-		},
-		"style": {
-			"default": [],
-			"type": "array"
-		},
-		"photon_transformations": {
-			"description": "A set of Photon API transformations in the order they should be performed",
-			"default": [],
-			"type": "array"
-		}
-	}
+  "name": "irving/image",
+  "description": "Output an image.",
+  "config": {
+    "allow_upscaling": {
+      "default": false,
+      "description": "Allow an image to be scaled to larger than its actual width.",
+      "type": "bool"
+    },
+    "alt": {
+      "description": "Optional. Value of the alt attribute.",
+      "type": "string"
+    },
+    "aspect_ratio": {
+      "description": "Optional. Aspect ratio for the image to conform to. Can be a float (\"0.6667\"), a ratio (\"16 / 9\"), or a predfined ratio (\"square\").",
+      "type": "string"
+    },
+    "caption": {
+      "description": "Optional. Caption for the image.",
+      "default": "",
+      "type": "string"
+    },
+    "class_name": {
+      "description": "Optional. Classname.",
+      "type": "string"
+    },
+    "fallback_src": {
+      "description": "Optional. URL for the image source if \"src\" is not set.",
+      "type": "string"
+    },
+    "loading": {
+      "defaul": "lazy",
+      "description": "Required. \"eager\" or \"lazy\".",
+      "type": "string"
+    },
+    "object_fit": {
+      "default": "cover",
+      "description": "Object fit property.",
+      "type": "string"
+    },
+    "picture_sources": {
+      "description": "Optional. Array of sources for the <picture> tag.",
+      "type": "array"
+    },
+    "show_meta": {
+      "default": true,
+      "description": "Display meta.",
+      "type": "bool"
+    },
+    "src": {
+      "description": "Optional. URL for the image source.",
+      "type": "string"
+    },
+    "style": {
+      "default": [],
+      "type": "array"
+    },
+    "photon_transformations": {
+      "description": "A set of Photon API transformations in the order they should be performed",
+      "default": [],
+      "type": "array"
+    }
+  }
 }

@@ -1,6 +1,6 @@
 {
   "name": "irving/video",
-  "alias": "irving/text",
+  "_alias": "irving/text",
   "description": "Render an HTML video embed responsively.",
   "config": {
     "aspect_ratio": {
