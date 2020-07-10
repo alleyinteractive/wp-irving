@@ -1,0 +1,16 @@
+{
+    "name": "irving/head",
+    "description": "HTML <head> management.",
+    "config": {
+      "content": {
+        "default": "",
+        "description": "HTML tags",
+        "type": "string"
+      },
+      "title": {
+        "default": "",
+        "description": "<title> tag contents",
+        "type": "string"
+      }
+    }
+}

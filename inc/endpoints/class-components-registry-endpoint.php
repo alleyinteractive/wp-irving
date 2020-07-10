@@ -8,6 +8,7 @@
 namespace WP_Irving\REST_API;
 
 use WP_Irving\REST_API\Endpoint;
+use WP_Irving\Components;
 
 /**
  * Components Registry endpoint.
@@ -24,7 +25,7 @@ class Components_Registry_Endpoint extends Endpoint {
 			[
 				'methods'  => \WP_REST_Server::READABLE,
 				'callback' => function() {
-					return get_registry()->get_registered_components();
+					return Components\get_registry()->get_registered_components();
 				},
 			]
 		);

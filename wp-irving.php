@@ -21,6 +21,9 @@ define( 'WP_IRVING_VERSION', '1.0' );
 register_activation_hook( __FILE__, 'flush_rewrite_rules' );
 register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 
+// Utilities.
+require_once WP_IRVING_PATH . '/inc/utils/html-markup.php';
+
 // Base classes.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
 

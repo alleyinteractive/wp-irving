@@ -409,11 +409,10 @@ class Component implements JsonSerializable {
 		// Set context before setting children.
 		$this->provide_context();
 
-		// Cast all children into arrays to support string notation.
 		$children = array_map(
 			function ( $child ) {
 				if ( is_string( $child ) ) {
-					return (array) $child;
+					return $child;
 				}
 
 				// Consider marking this as _doing_it_wrong.
