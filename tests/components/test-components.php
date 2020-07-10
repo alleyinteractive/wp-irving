@@ -453,8 +453,6 @@ class Test_Components extends WP_UnitTestCase {
 	 * @group core-components
 	 */
 	public function test_component_post_list() {
-		$this->go_to( home_url() );
-
 		// Demo query args.
 		$query_args = [
 			'post__in' => [ $this->get_post_id() ],
@@ -472,38 +470,35 @@ class Test_Components extends WP_UnitTestCase {
 			'item'    => [ 'name' => 'example/item' ],
 		];
 
-		$expected = [
-			'name'     => 'irving/post-list',
-			'_alias'   => 'irving/fragment',
-			'config'   => (object) [
-				'templates'    => $templates,
-				'themeName'    => 'default',
-				'themeOptions' => [ 'default' ],
-			],
-			'children' => [
-				$this->get_expected_component( 'example/before' ),
-				$this->get_expected_component(
-					'example/wrapper',
-					[
-						'children' => [
-							$this->get_expected_component(
-								'irving/post-provider',
-								[
-									'_alias'   => 'irving/fragment',
-									'config'   => [
-										'postId' => $this->get_post_id(),
-									],
-									'children' => [
-										$this->get_expected_component( 'example/item' ),
-									],
-								]
-							),
+		$expected = $this->get_expected_component(
+			'irving/post-list',
+			[
+				'_alias'   => 'irving/fragment',
+				'children' => [
+					$this->get_expected_component( 'example/before' ),
+					$this->get_expected_component(
+						'example/wrapper',
+						[
+							'children' => [
+								$this->get_expected_component(
+									'irving/post-provider',
+									[
+										'_alias'   => 'irving/fragment',
+										'config'   => [
+											'postId' => $this->get_post_id(),
+										],
+										'children' => [
+											$this->get_expected_component( 'example/item' ),
+										],
+									]
+								),
+							],
 						],
-					],
-				),
-				$this->get_expected_component( 'example/after' ),
-			],
-		];
+					),
+					$this->get_expected_component( 'example/after' ),
+				],
+			]
+		);
 
 		$component = new Component(
 			'irving/post-list',
@@ -512,6 +507,65 @@ class Test_Components extends WP_UnitTestCase {
 					'query_args' => $query_args,
 					'templates'  => $templates,
 				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/post-list component without data.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_post_list_no_results() {
+		$expected = $this->get_expected_component(
+			'irving/post-list',
+			[
+				'_alias'   => 'irving/fragment',
+				'children' => [
+					'No results found.',
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/post-list',
+			[
+				'children' => [ 'No results found.' ],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/post-list component without data.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_post_list_no_results_template() {
+		$expected = $this->get_expected_component(
+			'irving/post-list',
+			[
+				'_alias'   => 'irving/fragment',
+				'children' => [
+					$this->get_expected_component( 'example/none' ),
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/post-list',
+			[
+				'config'   => [
+					'templates' => [
+						'no_results' => [
+							[ 'name' => 'example/none' ],
+						],
+					],
+				],
+				'children' => [ 'No results found.' ],
 			]
 		);
 

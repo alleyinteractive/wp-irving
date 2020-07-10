@@ -4,6 +4,7 @@
   "description": "Iterate through a WP_Query's posts.",
   "config": {
     "templates": {
+      "hidden": true,
       "type": "array",
       "default": []
     },

@@ -38,53 +38,58 @@ register_component_from_config(
 			return $config;
 		},
 		'children_callback' => function ( array $children, array $config ): array {
-			$after      = (array) ( $config['templates']['after'] ?? [] );
-			$wrapper    = (array) ( $config['templates']['wrapper'] ?? [] );
-			$item       = (array) ( $config['templates']['item'] ?? [] );
-			$before     = (array) ( $config['templates']['before'] ?? [] );
-			$no_results = (array) ( $config['templates']['no_results'] ?? [ 'no results found' ] );
+			$templates = wp_parse_args(
+				$config['templates'],
+				[
+					'before'     => [],
+					'after'      => [],
+					'wrapper'    => [],
+					'item'       => [],
+					'no_results' => [ __( 'No results found.', 'wp-irving' ) ],
+				]
+			);
 
 			$query = $config['wp_query'];
 
 			// Bail early if no posts found.
 			if ( ! $query->have_posts() ) {
-				return [ $no_results ];
+				return $templates['no_results'];
 			}
 
 			$post_ids = wp_list_pluck( $query->posts, 'ID' );
 			$post_ids = post_list_get_and_add_used_post_ids( $post_ids );
 
 			$children = array_map(
-				function ( $post_id ) use ( $item ) {
+				function ( $post_id ) use ( $templates ) {
 					return [
 						'name'     => 'irving/post-provider',
 						'config'   => [
 							'post_id' => $post_id,
 						],
-						'children' => [ $item ],
+						'children' => [ $templates['item'] ],
 					];
 				},
 				$post_ids
 			);
 
 			// Wrap the children.
-			if ( ! empty( $wrapper ) ) {
+			if ( ! empty( $templates['wrapper'] ) ) {
 				$children = [
 					array_merge(
-						$wrapper,
+						$templates['wrapper'],
 						[ 'children' => $children ]
 					),
 				];
 			}
 
 			// Prepend before components.
-			if ( ! empty( $before ) ) {
-				array_unshift( $children, ...$before );
+			if ( ! empty( $templates['before'] ) ) {
+				array_unshift( $children, ...$templates['before'] );
 			}
 
 			// Append after components.
-			if ( ! empty( $after ) ) {
-				array_push( $children, ...$after );
+			if ( ! empty( $templates['after'] ) ) {
+				array_push( $children, ...$templates['after'] );
 			}
 
 			return $children;
