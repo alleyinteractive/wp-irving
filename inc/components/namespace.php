@@ -82,7 +82,7 @@ function auto_register_components() {
  * @param string $name Component name.
  * @param array  $args Component args.
  */
-function register_component( string $name, array $args = [] ) {
+function register_component( string $name, array $args = [] ): bool {
 	return get_registry()->register_component( $name, $args );
 }
 
