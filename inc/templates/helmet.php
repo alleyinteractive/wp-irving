@@ -41,7 +41,7 @@ function setup_helmet(
 				'irving/head',
 				[
 					'config' => [
-						'context' => 'defaults'
+						'context' => 'defaults',
 					],
 				]
 			)
@@ -55,7 +55,7 @@ function setup_helmet(
 			'irving/head',
 			[
 				'config' => [
-					'context' => 'page'
+					'context' => 'page',
 				],
 			]
 		)
@@ -78,8 +78,8 @@ function get_favicon_markup(): string {
 /**
  * Parse WP's favicon markup and inject it into the Helmet component.
  *
- * @param Component $helmet Helmet component to modify.
- * @return Component
+ * @param array $children Children for the <head>.
+ * @return array
  */
 function inject_favicon( array $children ): array {
 	return array_merge(

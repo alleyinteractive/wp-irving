@@ -33,7 +33,7 @@ class Yoast {
 	/**
 	 * Parse Yoast's head markup, inject into the Helmet component.
 	 *
-	 * @param aarray $children
+	 * @param array $children Children for the <head>.
 	 * @return array
 	 */
 	public function inject_yoast_tags_into_head_children( array $children ): array {
