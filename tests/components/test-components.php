@@ -173,8 +173,8 @@ class Test_Components extends WP_UnitTestCase {
 	/**
 	 * Test output for core components.
 	 *
-	 * @param array     $expected     Callback to set the expected component after hydration.
-	 * @param Component $component Name of the component being tested.
+	 * @param array     $expected     Shape of the expected component after hydration.
+	 * @param Component $component    Component being tested.
 	 * @param string    $message      Optional. Message for failure.
 	 *
 	 * @see \PHPUnit\Framework\Assert::assertEquals
