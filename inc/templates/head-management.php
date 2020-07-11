@@ -1,6 +1,7 @@
 <?php
 /**
- * Helmet helpers to manage the <head> in templates.
+ * Automatically inject an `irving/head` component to manage the document
+ * <head>.
  *
  * @package WP_Irving
  */
@@ -11,25 +12,21 @@ use WP_Irving\Components\Component;
 use WP_Irving\Utils;
 
 /**
- * Manage the template head by automatically inserting Helmet tags.
+ * Manage the <head> by automatically inserting an `irving/head` component.
  *
- * @param array            $data    Data object to be hydrated by templates.
- * @param \WP_Query        $query   The current WP_Query object.
- * @param string           $context The context for this request.
- * @param string           $path    The path for this request.
- * @param \WP_REST_Request $request WP_REST_Request object.
+ * @param array     $data    Data object to be hydrated by templates.
+ * @param \WP_Query $query   The current WP_Query object.
+ * @param string    $context The context for this request.
  * @return array The updated endpoint data.
  */
-function setup_helmet(
+function setup_head(
 	array $data,
 	\WP_Query $query,
-	string $context,
-	string $path,
-	\WP_REST_Request $request
+	string $context
 ): array {
 
 	// Disable Helmet management via filter.
-	if ( ! apply_filters( 'wp_irving_setup_helmet', true ) ) {
+	if ( ! apply_filters( 'wp_irving_setup_head', true ) ) {
 		return $data;
 	}
 
@@ -72,7 +69,7 @@ function setup_helmet(
 function get_favicon_markup(): string {
 	ob_start();
 	wp_site_icon();
-	return ob_get_clean();
+	return trim( ob_get_clean() );
 }
 
 /**
@@ -84,7 +81,7 @@ function get_favicon_markup(): string {
 function inject_favicon( array $children ): array {
 	return array_merge(
 		$children,
-		\WP_Irving\Utils\html_to_components( get_favicon_markup(), [ 'link' ] )
+		\WP_Irving\Utils\html_to_components( get_favicon_markup(), [ 'link', 'meta' ] )
 	);
 }
 add_action( 'wp_irving_defaults_head_component_children', __NAMESPACE__ . '\inject_favicon' );

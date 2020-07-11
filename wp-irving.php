@@ -63,7 +63,7 @@ require_once WP_IRVING_PATH . '/inc/rewrites.php';
 
 // Template loading.
 require_once WP_IRVING_PATH . '/inc/templates/admin-bar.php';
-require_once WP_IRVING_PATH . '/inc/templates/helmet.php';
+require_once WP_IRVING_PATH . '/inc/templates/head-management.php';
 require_once WP_IRVING_PATH . '/inc/templates/namespace.php';
 require_once WP_IRVING_PATH . '/inc/templates/site-theme.php';
 

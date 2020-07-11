@@ -32,12 +32,7 @@ get_registry()->register_component_from_config(
 				]
 			);
 
-			/**
-			 * Filter the children values for all instances of this component.
-			 *
-			 * @param array $children Config array for this component instance.
-			 */
-			return apply_filters( "wp_irving_{$context}_head_component_children", $children );
+			return $children;
 		},
 	]
 );

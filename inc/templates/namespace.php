@@ -60,8 +60,8 @@ function load_template(
 	// Automatically setup an admin bar component.
 	$data = \WP_Irving\setup_admin_bar( $data, $query, $context, $path, $request, $endpoint );
 
-	// Automatically setup the <Helmet> tag.
-	$data = setup_helmet( $data, $query, $context, $path, $request );
+	// Automatically setup the <Head> component.
+	$data = setup_head( $data, $query, $context, $path, $request );
 
 	// Setup a global style provider.
 	$data = setup_site_theme_provider( $data );

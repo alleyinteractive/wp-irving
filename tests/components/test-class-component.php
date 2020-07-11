@@ -432,7 +432,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 			[
 				'children' => [
 					[ 'example/child-1' ],
-					'example/child-2',
+					'Foo Bar',
 				],
 			]
 		);
@@ -441,7 +441,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 		$this->assertEquals(
 			[
 				new Component( 'example/child-1' ),
-				new Component( 'example/child-2' ),
+				'Foo Bar',
 			],
 			$component->get_children()
 		);

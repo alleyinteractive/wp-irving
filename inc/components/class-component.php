@@ -457,6 +457,17 @@ class Component implements JsonSerializable {
 			}
 		}
 
+		/**
+		 * Filter the children values for all instances of this component.
+		 *
+		 * @todo Decide how this filter should be approached. This is a
+		 *       temporary solution that requires discussion.
+		 *
+		 * @param array $children Children for this component.
+		 * @param array $config   Config for this component.
+		 */
+		$children = apply_filters( $this->get_name() . '_component_children', $children, $this->config );
+
 		$this->children = $this->reset_array( $children );
 
 		// Reset context after setting children.

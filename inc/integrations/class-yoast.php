@@ -25,13 +25,13 @@ class Yoast {
 		}
 
 		if ( ! is_admin() ) {
-			// Parse Yoast's head markup and inject it into the Helmet component.
+			// Parse Yoast's head markup and inject it into the Head component.
 			add_filter( 'wp_irving_page_head_component_children', [ $this, 'inject_yoast_tags_into_head_children' ] );
 		}
 	}
 
 	/**
-	 * Parse Yoast's head markup, inject into the Helmet component.
+	 * Parse Yoast's head markup, inject into the Head component.
 	 *
 	 * @param array $children Children for the <head>.
 	 * @return array
