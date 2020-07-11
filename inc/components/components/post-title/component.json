@@ -1,9 +1,9 @@
 {
-	"name": "irving/post-title",
-	"alias": "irving/text",
-	"category": "Post",
-	"description": "Get the post title",
-	"use_context": {
-		"irving/post_id": "post_id"
-	}
+  "name": "irving/post-title",
+  "_alias": "irving/text",
+  "category": "Post",
+  "description": "Get the post title",
+  "use_context": {
+    "irving/post_id": "post_id"
+  }
 }

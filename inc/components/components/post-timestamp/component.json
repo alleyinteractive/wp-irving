@@ -1,29 +1,29 @@
 {
-	"name": "irving/post-timestamp",
-	"alias": "irving/text",
-	"description": "Get the post's timestamp(s).",
-	"config": {
-		"content_format": {
-			"default": "%1$s",
-			"description": "The format string used by `sprintf()`. Used to build the `content` output. See callback for all available replacements.",
-			"type": "string"
-		},
-		"modified_date_format": {
-			"default": "",
-			"description": "Format for the modified timestamp. Empty string defaults to WordPress' option.",
-			"type": "string"
-		},
-		"post_id": {
-			"default": 0,
-			"type": "integer"
-		},
-		"published_date_format": {
-			"default": "",
-			"description": "Format for the timestamp. Empty string defaults to WordPress' option.",
-			"type": "string"
-		}
-	},
-	"use_context": {
-		"irving/post_id": "post_id"
-	}
+  "name": "irving/post-timestamp",
+  "_alias": "irving/text",
+  "description": "Get the post's timestamp(s).",
+  "config": {
+    "content_format": {
+      "default": "%1$s",
+      "description": "The format string used by `sprintf()`. Used to build the `content` output. See callback for all available replacements.",
+      "type": "string"
+    },
+    "modified_date_format": {
+      "default": "",
+      "description": "Format for the modified timestamp. Empty string defaults to WordPress' option.",
+      "type": "string"
+    },
+    "post_id": {
+      "default": 0,
+      "type": "integer"
+    },
+    "published_date_format": {
+      "default": "",
+      "description": "Format for the timestamp. Empty string defaults to WordPress' option.",
+      "type": "string"
+    }
+  },
+  "use_context": {
+    "irving/post_id": "post_id"
+  }
 }

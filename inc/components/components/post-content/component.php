@@ -11,33 +11,33 @@
 
 namespace WP_Irving\Components;
 
-if ( ! function_exists( '\WP_Irving\get_registry' ) ) {
-	return;
-}
-
 /**
  * Register the component and callback.
  */
-get_registry()->register_component_from_config(
+register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
+		'config_callback' => function( array $config ): array {
 
-			// Get the post ID from a context provider.
-			$post_id = $component->get_config( 'post_id' );
+			$post_id = $config['post_id'];
+
+			// Bail early if the post ID is not set.
+			if ( ! $post_id ) {
+				return $config;
+			}
 
 			/**
 			 * Taken directly from Gutenberg.
 			 *
 			 * @see https://github.com/WordPress/gutenberg/blob/30cd85aebe14eee995e3162f09d31f4d4786f101/packages/block-library/src/post-content/index.php#L23
 			 */
-			$post_content = apply_filters( 'the_content', str_replace( ']]>', ']]&gt;', get_the_content( null, false, $post_id ) ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			$content = apply_filters( 'the_content', str_replace( ']]>', ']]&gt;', get_the_content( null, false, $post_id ) ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
-			return $component
-				->set_config( 'content', $post_content )
-				->set_theme( 'html' )
-				->set_config( 'html', true )
-				->set_config( 'oembed', true );
+			$config['content'] = $content;
+			$config['html']    = true;
+			$config['oembed']  = true;
+
+			return $config;
 		},
 	]
 );

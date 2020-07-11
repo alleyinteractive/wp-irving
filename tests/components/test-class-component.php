@@ -25,13 +25,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Class tear down.
-	 */
-	public static function wpTearDownAfterClass() {
-		self::reset_component_registry();
-	}
-
-	/**
 	 * Register test components from config.
 	 */
 	public static function register_test_components() {
@@ -50,15 +43,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 				continue;
 			}
 
-			get_registry()->register_component_from_config( $path );
+			register_component_from_config( $path );
 		}
-	}
-
-	/**
-	 * Reset the registry after tests are completed.
-	 */
-	public static function reset_component_registry() {
-		get_registry()->reset();
 	}
 
 	/**
@@ -567,13 +553,13 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 * Tests for the component (array) filter in the jsonSerialize() method.
 	 */
 	public function test_json_serialize_component_array_filter() {
-		$component = new Component( 'irving/text' );
+		$component = new Component( 'test/basic' );
 
 		add_filter( 'wp_irving_serialize_component_array', [ $this, 'wp_irving_serialize_component_array_action' ] );
 
 		$this->assertEquals(
 			[
-				'name'     => 'irving/text',
+				'name'     => 'test/basic',
 				'_alias'   => '',
 				'config'   => (object) [
 					'test'         => true,
@@ -591,11 +577,11 @@ class Test_Class_Component extends WP_UnitTestCase {
 		remove_filter( 'wp_irving_serialize_component_array', [ $this, 'wp_irving_serialize_component_array_action' ] );
 
 		// Reset to test again.
-		$component = new Component( 'irving/text' );
+		$component = new Component( 'test/basic' );
 
 		$this->assertEquals(
 			[
-				'name'     => 'irving/text',
+				'name'     => 'test/basic',
 				'_alias'   => '',
 				'config'   => (object) [
 					'themeName'    => 'default',
