@@ -12,7 +12,7 @@ namespace WP_Irving\Components;
 /**
  * Register the component and callback.
  */
-get_registry()->register_component_from_config(
+register_component_from_config(
 	__DIR__ . '/component',
 	[
 		'children_callback' => function( $children, $config ): array {
