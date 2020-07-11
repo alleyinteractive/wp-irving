@@ -25,12 +25,12 @@ function setup_head(
 	string $context
 ): array {
 
-	// Disable Helmet management via filter.
+	// Disable `irving/head` management via filter.
 	if ( ! apply_filters( 'wp_irving_setup_head', true ) ) {
 		return $data;
 	}
 
-	// Unshift a helmet component to the top of the `defaults` array.
+	// Unshift a `irving/head` component to the top of the `defaults` array.
 	if ( 'site' === $context ) {
 		array_unshift(
 			$data['defaults'],
@@ -45,7 +45,7 @@ function setup_head(
 		);
 	}
 
-	// Unshift a helmet component to the top of the `page` array.
+	// Unshift a `irving/head` component to the top of the `page` array.
 	array_unshift(
 		$data['page'],
 		new Component(
@@ -73,7 +73,7 @@ function get_favicon_markup(): string {
 }
 
 /**
- * Parse WP's favicon markup and inject it into the Helmet component.
+ * Parse WP's favicon markup and inject it into the `irving/head` component.
  *
  * @param array $children Children for the <head>.
  * @return array

@@ -167,7 +167,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 		// Disable functionality.
 		add_filter( 'wp_irving_setup_head', '__return_false' );
 
-		// Run `setup_helmet()` on empty/blank data.
+		// Run `setup_head()` on empty/blank data.
 		$component_endpoint_result = $this->get_head_setup_result();
 
 		// Nothing should have happened.
