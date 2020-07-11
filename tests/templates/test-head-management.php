@@ -118,7 +118,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 		return setup_head(
 			$this->get_blank_data_array(),
 			new \WP_Query(),
-			'site',
+			'site'
 		);
 	}
 
