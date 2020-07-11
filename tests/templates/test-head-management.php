@@ -138,7 +138,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 				[
 					'config' => [
 						'context' => 'defaults',
-					]
+					],
 				]
 			),
 			$component_endpoint_result['defaults'][0],
@@ -151,7 +151,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 				[
 					'config' => [
 						'context' => 'page',
-					]
+					],
 				]
 			),
 			$component_endpoint_result['page'][0],
@@ -184,7 +184,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 	public function test_children_filter() {
 
 		// Add a fiter that modifies the `irving/head` component children.
-		add_filter( 'irving/head_component_children', [ $this, 'example_children_callback' ], 10, 2 );
+		add_filter( 'wp_irving_component_children_irving/head', [ $this, 'example_children_callback' ], 10, 2 );
 
 		// Test that the filter has been applied.
 		$component_endpoint_result = $this->get_head_setup_result();
@@ -195,7 +195,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 				new Component(
 					'irving/head',
 					[
-						'config' => [
+						'config'   => [
 							'context' => 'defaults',
 						],
 						'children' => [
@@ -207,7 +207,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 									],
 								]
 							),
-						]
+						],
 					]
 				),
 			],
@@ -221,8 +221,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 				new Component(
 					'irving/head',
 					[
-
-						'config' => [
+						'config'   => [
 							'context' => 'page',
 						],
 						'children' => [
@@ -234,7 +233,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 									],
 								]
 							),
-						]
+						],
 					]
 				),
 			],
@@ -243,7 +242,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 		);
 
 		// Remove the filter.
-		// remove_filter( '/irving/head_component_children', [ $this, 'example_children_callback' ], 10 );
+		remove_filter( 'wp_irving_component_children_irving/head', [ $this, 'example_children_callback' ], 10 );
 	}
 
 	/**
@@ -255,14 +254,13 @@ class Test_Head_Management extends WP_UnitTestCase {
 	 * @return array `irving/head` children.
 	 */
 	public function example_children_callback( array $children, array $config ): array {
-		print_r($config);
 		return [
 			new Component(
 				'meta',
 				[
 					'config' => [
 						'context' => $config['context'] ?? '',
-					]
+					],
 				]
 			),
 		];
@@ -331,7 +329,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 					]
 				),
 			],
-			inject_favicon([]),
+			inject_favicon( [] ),
 			'Parsed favicon markup incorrect'
 		);
 	}

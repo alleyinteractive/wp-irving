@@ -17,7 +17,6 @@ use WP_UnitTestCase;
  */
 class Test_HTML_Markup extends WP_UnitTestCase {
 
-
 	/**
 	 * Example output from Yoast's `wpseo_head` action.
 	 *
@@ -75,7 +74,7 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 				'<title> markup not parsed correctly.',
 			],
 			[
-		 		// Test a <meta> element.
+				// Test a <meta> element.
 				'<meta name="description" content="Hello World" />',
 				[ 'meta' ],
 				[
@@ -92,7 +91,7 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 				'<meta> markup not parsed correctly.',
 			],
 			[
-		 		// Test a <link> element.
+				// Test a <link> element.
 				'<link rel="canonical" href="https://irvingjs.com/" />',
 				[ 'link' ],
 				[
@@ -109,15 +108,15 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 				'<link> markup not parsed correctly.',
 			],
 			[
-		 		// Test an <a> element.
+				// Test an <a> element.
 				'<a href="/hello-world/">Hello World</a>',
 				[ 'a' ],
 				[
 					new Component(
 						'a',
 						[
-							'config' => [
-								'href'  => '/hello-world/',
+							'config'   => [
+								'href' => '/hello-world/',
 							],
 							'children' => [
 								'Hello World',
@@ -128,16 +127,16 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 				'<a> markup not parsed correctly.',
 			],
 			[
-		 		// Test a search for <link> when none exist.
+				// Test a search for <link> when none exist.
 				'<meta name="description" content="Hello World" />',
 				[ 'link' ],
 				[],
 				'Tag selector not working as expected.',
 			],
 			[
-		 		// Test multiple <meta> elements..
-		 		'<meta name="description" content="Just another WordPress site" />
-		 		<meta name="robots" content="index, follow" />',
+				// Test multiple <meta> elements..
+				'<meta name="description" content="Just another WordPress site" />
+				<meta name="robots" content="index, follow" />',
 				[ 'meta' ],
 				[
 					new Component(
@@ -162,7 +161,7 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 				'Selecting multiple tags not working as expected.',
 			],
 			[
-		 		// Test multiple tags.
+				// Test multiple tags.
 				$this->example_markup,
 				[ 'title', 'meta', 'link' ],
 				[
@@ -220,10 +219,10 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 						]
 					),
 				],
-				'Tag selector not working as expected.'
+				'Tag selector not working as expected.',
 			],
 			[
-		 		// Test the return order of multiple tags.
+				// Test the return order of multiple tags.
 				$this->example_markup,
 				[ 'link', 'meta', 'title' ],
 				[

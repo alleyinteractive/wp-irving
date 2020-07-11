@@ -466,7 +466,7 @@ class Component implements JsonSerializable {
 		 * @param array $children Children for this component.
 		 * @param array $config   Config for this component.
 		 */
-		$children = apply_filters( $this->get_name() . '_component_children', $children, $this->config );
+		$children = apply_filters( 'wp_irving_component_children_' . $this->get_name(), $children, $this->config );
 
 		$this->children = $this->reset_array( $children );
 
