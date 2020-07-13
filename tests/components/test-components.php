@@ -493,7 +493,7 @@ class Test_Components extends WP_UnitTestCase {
 									]
 								),
 							],
-						],
+						]
 					),
 					$this->get_expected_component( 'example/after' ),
 				],
