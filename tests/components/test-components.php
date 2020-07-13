@@ -493,7 +493,7 @@ class Test_Components extends WP_UnitTestCase {
 									]
 								),
 							],
-						],
+						]
 					),
 					$this->get_expected_component( 'example/after' ),
 				],
@@ -619,7 +619,7 @@ class Test_Components extends WP_UnitTestCase {
 				'_alias'   => '',
 				'config'   => [],
 				'children' => [],
-			],
+			]
 		);
 
 		$component['config'] = (object) wp_parse_args(
