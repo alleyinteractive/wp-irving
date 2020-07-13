@@ -15,7 +15,7 @@ namespace WP_Irving\Components;
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'children_callback' => function( $children, $config ): array {
+		'children_callback' => function( array $children, array $config ): array {
 
 			// Get the context of the head.
 			$context = $config['context'] ?? '';

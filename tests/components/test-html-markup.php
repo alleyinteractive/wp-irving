@@ -5,9 +5,9 @@
  * @package WP_Irving
  */
 
-namespace WP_Irving\Utils;
+namespace WP_Irving\Components;
 
-use WP_Irving\Components\Component;
+use \WP_Irving\Components\Component;
 use WP_UnitTestCase;
 
 /**
@@ -43,6 +43,7 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 	 * @param  string $message  Message if assertion fails.
 	 */
 	public function test_html_to_components( string $markup, array $tags, array $expected, string $message ) {
+		// print_r(html_to_components( $markup, $tags ));
 		$this->assertEquals(
 			$expected,
 			html_to_components( $markup, $tags ),

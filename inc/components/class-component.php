@@ -458,15 +458,13 @@ class Component implements JsonSerializable {
 		}
 
 		/**
-		 * Filter the children values for all instances of this component.
+		 * Filter the children values after the callback possibly fires.
 		 *
-		 * @todo Decide how this filter should be approached. This is a
-		 *       temporary solution that requires discussion.
-		 *
-		 * @param array $children Children for this component.
-		 * @param array $config   Config for this component.
+		 * @param array  $children Children for this component.
+		 * @param array  $config   Config for this component.
+		 * @param string $name     Name of this component.
 		 */
-		$children = apply_filters( 'wp_irving_component_children_' . $this->get_name(), $children, $this->config );
+		$children = apply_filters( 'wp_irving_component_children', $children, $this->config, $this->get_name() );
 
 		$this->children = $this->reset_array( $children );
 

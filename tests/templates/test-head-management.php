@@ -184,7 +184,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 	public function test_children_filter() {
 
 		// Add a fiter that modifies the `irving/head` component children.
-		add_filter( 'wp_irving_component_children_irving/head', [ $this, 'example_children_callback' ], 10, 2 );
+		add_filter( 'wp_irving_component_children', [ $this, 'example_children_callback' ], 10, 3 );
 
 		// Test that the filter has been applied.
 		$component_endpoint_result = $this->get_head_setup_result();
@@ -242,7 +242,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 		);
 
 		// Remove the filter.
-		remove_filter( 'wp_irving_component_children_irving/head', [ $this, 'example_children_callback' ], 10 );
+		remove_filter( 'wp_irving_component_children', [ $this, 'example_children_callback' ], 10 );
 	}
 
 	/**
@@ -253,7 +253,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 	 * @param array $config   `irving/head` config.
 	 * @return array `irving/head` children.
 	 */
-	public function example_children_callback( array $children, array $config ): array {
+	public function example_children_callback( array $children, array $config, string $name ): array {
 		return [
 			new Component(
 				'meta',

@@ -7,7 +7,7 @@
 
 namespace WP_Irving;
 
-use WP_Irving\Utils;
+use WP_Irving\Components;
 
 /**
  * Yoast.
@@ -26,20 +26,31 @@ class Yoast {
 
 		if ( ! is_admin() ) {
 			// Parse Yoast's head markup and inject it into the Head component.
-			add_filter( 'wp_irving_page_head_component_children', [ $this, 'inject_yoast_tags_into_head_children' ] );
+			add_filter( 'wp_irving_component_children', [ $this, 'inject_yoast_tags_into_head_children' ], 10, 3 );
 		}
 	}
 
 	/**
 	 * Parse Yoast's head markup, inject into the Head component.
 	 *
-	 * @param array $children Children for the <head>.
+	 * @param array  $children Children for this component.
+	 * @param array  $config   Config for this component.
+	 * @param string $name     Name of this component.
 	 * @return array
 	 */
-	public function inject_yoast_tags_into_head_children( array $children ): array {
+	public function inject_yoast_tags_into_head_children( array $children, array $config, string $name ): array {
+
+		// Ony run this action on the `irving/head` in a `page` context.
+		if (
+			'irving/head' !== $name
+			|| 'page' !== ( $config['context'] ?? 'page' )
+		) {
+			return $children;
+		}
+
 		return array_merge(
 			$children,
-			\WP_Irving\Utils\html_to_components( $this->get_yoasts_head_markup(), [ 'title', 'meta', 'link' ] )
+			Components\html_to_components( $this->get_yoasts_head_markup(), [ 'title', 'meta', 'link' ] )
 		);
 	}
 
