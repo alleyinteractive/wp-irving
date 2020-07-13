@@ -240,20 +240,24 @@ class Test_Head_Management extends WP_UnitTestCase {
 			$component_endpoint_result['page'],
 			'`page` component array did not have the filtered changes.'
 		);
-
-		// Remove the filter.
-		remove_filter( 'wp_irving_component_children', [ $this, 'example_children_callback' ], 10 );
 	}
 
 	/**
 	 * Helper function that can be used to test the
 	 * `wp_irving_component_children` filter.
 	 *
-	 * @param array $children `irving/head` children.
-	 * @param array $config   `irving/head` config.
+	 * @param array  $children Children for this component.
+	 * @param array  $config   Config for this component.
+	 * @param string $name     Name of this component.
 	 * @return array `irving/head` children.
 	 */
 	public function example_children_callback( array $children, array $config, string $name ): array {
+
+		// Ony run this action on the `irving/head` component.
+		if ( 'irving/head' !== $name ) {
+			return $children;
+		}
+
 		return [
 			new Component(
 				'meta',
@@ -329,9 +333,8 @@ class Test_Head_Management extends WP_UnitTestCase {
 					]
 				),
 			],
-			inject_favicon( [] ),
+			inject_favicon( [], [], 'irving/head' ),
 			'Parsed favicon markup incorrect'
 		);
 	}
-
 }
