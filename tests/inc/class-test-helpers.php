@@ -47,4 +47,23 @@ class Test_Helpers {
 
 		return $response;
 	}
+
+	/**
+	 * Helper used with the `upload_dir` filter to remove the /year/month sub directories from the uploads path and URL.
+	 *
+	 * Taken from the WP PHPUnit test helpers.
+	 *
+	 * @param array $uploads The uploads path data.
+	 * @return array The altered array.
+	 */
+	public static function upload_dir_no_subdir( $uploads ) {
+		$subdir = $uploads['subdir'];
+
+		$uploads['subdir'] = '';
+		$uploads['path']   = str_replace( $subdir, '', $uploads['path'] );
+		$uploads['url']    = str_replace( $subdir, '', $uploads['url'] );
+
+		return $uploads;
+	}
+
 }
