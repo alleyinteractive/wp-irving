@@ -7,6 +7,7 @@
 
 namespace WP_Irving\Templates;
 
+use WP_Irving\Components;
 use WP_Irving\Components\Component;
 use WP_Irving\REST_API\Components_Endpoint;
 use WP_Query;
@@ -17,6 +18,7 @@ use WP_REST_Request;
  */
 function bootstrap() {
 	add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 6 );
+	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_favicon', 10, 3 );
 }
 
 /**
@@ -60,8 +62,8 @@ function load_template(
 	// Automatically setup an admin bar component.
 	$data = \WP_Irving\setup_admin_bar( $data, $query, $context, $path, $request, $endpoint );
 
-	// Automatically setup the <Helmet> tag.
-	$data = setup_helmet( $data, $query, $context, $path, $request );
+	// Automatically setup the <Head> component.
+	$data = setup_head( $data, $query, $context, $path, $request );
 
 	// Setup a global style provider.
 	$data = setup_site_theme_provider( $data );
@@ -464,4 +466,89 @@ function hydrate_template_parts( array $data ): array {
 	}
 
 	return prepare_data_from_template( $template );
+}
+
+/**
+ * Manage the <head> by automatically inserting an `irving/head` component.
+ *
+ * @param array     $data    Data object to be hydrated by templates.
+ * @param \WP_Query $query   The current WP_Query object.
+ * @param string    $context The context for this request.
+ * @return array The updated endpoint data.
+ */
+function setup_head(
+	array $data,
+	\WP_Query $query,
+	string $context
+): array {
+
+	// Disable `irving/head` management via filter.
+	if ( ! apply_filters( 'wp_irving_setup_head', true ) ) {
+		return $data;
+	}
+
+	// Unshift a `irving/head` component to the top of the `defaults` array.
+	if ( 'site' === $context ) {
+		array_unshift(
+			$data['defaults'],
+			new Component(
+				'irving/head',
+				[
+					'config' => [
+						'context' => 'defaults',
+					],
+				]
+			)
+		);
+	}
+
+	// Unshift a `irving/head` component to the top of the `page` array.
+	array_unshift(
+		$data['page'],
+		new Component(
+			'irving/head',
+			[
+				'config' => [
+					'context' => 'page',
+				],
+			]
+		)
+	);
+
+	return $data;
+}
+
+/**
+ * Capture the markup output by WordPress for the favicon.
+ *
+ * @return string
+ */
+function get_favicon_markup(): string {
+	ob_start();
+	wp_site_icon();
+	return trim( ob_get_clean() );
+}
+
+/**
+ * Parse WP's favicon markup and inject it into the `irving/head` component.
+ *
+ * @param array  $children Children for this component.
+ * @param array  $config   Config for this component.
+ * @param string $name     Name of this component.
+ * @return array
+ */
+function inject_favicon( array $children, array $config, string $name ): array {
+
+	// Ony run this action on the `irving/head` in a `page` context.
+	if (
+		'irving/head' !== $name
+		|| 'page' !== ( $config['context'] ?? 'page' )
+	) {
+		return $children;
+	}
+
+	return array_merge(
+		$children,
+		Components\html_to_components( get_favicon_markup(), [ 'link', 'meta' ] )
+	);
 }

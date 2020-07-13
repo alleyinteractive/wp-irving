@@ -409,9 +409,9 @@ class Component implements JsonSerializable {
 		// Set context before setting children.
 		$this->provide_context();
 
-		// Cast all children into arrays to support string notation.
 		$children = array_map(
 			function ( $child ) {
+
 				// Consider marking this as _doing_it_wrong.
 				if ( $child instanceof Component ) {
 					return $child;
@@ -447,6 +447,15 @@ class Component implements JsonSerializable {
 			// Replace the array with an initialized component instance.
 			$child = new Component( $child['name'], $child );
 		}
+
+		/**
+		 * Filter the children values after the callback possibly fires.
+		 *
+		 * @param array  $children Children for this component.
+		 * @param array  $config   Config for this component.
+		 * @param string $name     Name of this component.
+		 */
+		$children = apply_filters( 'wp_irving_component_children', $children, $this->config, $this->get_name() );
 
 		// Set children.
 		$this->children = $this->reset_array( $children );

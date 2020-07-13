@@ -167,7 +167,7 @@ class Test_Components extends WP_UnitTestCase {
 		$wp_irving_context = null;
 
 		// Disable date organized uploads.
-		add_filter( 'upload_dir', [ $this, 'upload_dir_no_subdir' ] );
+		add_filter( 'upload_dir', 'WP_Irving\Test_Helpers::upload_dir_no_subdir' );
 	}
 
 	/**
@@ -187,25 +187,6 @@ class Test_Components extends WP_UnitTestCase {
 			$component->to_array(),
 			$message
 		);
-	}
-
-
-	/**
-	 * Helper used with the `upload_dir` filter to remove the /year/month sub directories from the uploads path and URL.
-	 *
-	 * Taken from the WP PHPUnit test helpers.
-	 *
-	 * @param array $uploads The uploads path data.
-	 * @return array The altered array.
-	 */
-	public function upload_dir_no_subdir( $uploads ) {
-		$subdir = $uploads['subdir'];
-
-		$uploads['subdir'] = '';
-		$uploads['path']   = str_replace( $subdir, '', $uploads['path'] );
-		$uploads['url']    = str_replace( $subdir, '', $uploads['url'] );
-
-		return $uploads;
 	}
 
 	/**
