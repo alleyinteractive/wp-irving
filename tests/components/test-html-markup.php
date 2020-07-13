@@ -7,7 +7,7 @@
 
 namespace WP_Irving\Components;
 
-use \WP_Irving\Components\Component;
+use WP_Irving\Components\Component;
 use WP_UnitTestCase;
 
 /**
