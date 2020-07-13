@@ -411,18 +411,20 @@ class Component implements JsonSerializable {
 
 		$children = array_map(
 			function ( $child ) {
-				if ( is_string( $child ) ) {
-					return $child;
-				}
 
 				// Consider marking this as _doing_it_wrong.
 				if ( $child instanceof Component ) {
 					return $child;
 				}
 
-				// Convert template syntax to argument syntax.
-				if ( isset( $child['name'] ) ) {
-					$child = [ $child['name'], $child ];
+				// Convert argument syntax to template syntax.
+				if ( is_array( $child ) && ! isset( $child['name'] ) ) {
+					$child = array_merge(
+						[
+							'name' => $child[0],
+						],
+						$child[1] ?? []
+					);
 				}
 
 				return $child;
@@ -430,31 +432,20 @@ class Component implements JsonSerializable {
 			$children
 		);
 
+		// Run registered children_callback functions.
+		if ( is_callable( $this->children_callback ) ) {
+			$children = call_user_func_array( $this->children_callback, [ $children, $this->config ] );
+		}
+
 		// Hydrate children.
-		// @todo: merge with map function above.
 		foreach ( $children as &$child ) {
-			// Only look for arrays with a `name` key.
+			// Let strings be strings.
 			if ( ! is_array( $child ) ) {
 				continue;
 			}
 
-			$name = $child[0];
-			$args = isset( $child[1] ) ? $child[1] : [];
-
 			// Replace the array with an initialized component instance.
-			$child = new Component( $name, $args );
-		}
-
-		if ( is_callable( $this->children_callback ) ) {
-			$new_children = call_user_func_array( $this->children_callback, [ $children, $this->config ] );
-
-			/*
-			 * Ensure the callback returns an array of children.
-			 * @todo Add error handling.
-			 */
-			if ( is_array( $new_children ) ) {
-				$children = $new_children;
-			}
+			$child = new Component( $child['name'], $child );
 		}
 
 		/**
@@ -466,6 +457,7 @@ class Component implements JsonSerializable {
 		 */
 		$children = apply_filters( 'wp_irving_component_children', $children, $this->config, $this->get_name() );
 
+		// Set children.
 		$this->children = $this->reset_array( $children );
 
 		// Reset context after setting children.

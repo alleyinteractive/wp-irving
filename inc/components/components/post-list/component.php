@@ -9,24 +9,19 @@
 
 namespace WP_Irving\Components;
 
+use WP_Query;
+
 /**
  * Register the component and callback.
  */
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
-
+		'config_callback'   => function ( array $config ): array {
 			global $wp_query;
-			$post_query = $wp_query;
+			$query = $wp_query;
 
-			$after      = (array) ( $component->get_config( 'templates' )['after'] ?? [] );
-			$wrapper    = (array) ( $component->get_config( 'templates' )['wrapper'] ?? [] );
-			$item       = (array) ( $component->get_config( 'templates' )['item'] ?? [] );
-			$before     = (array) ( $component->get_config( 'templates' )['before'] ?? [] );
-			$no_results = (array) ( $component->get_config( 'templates' )['no_results'] ?? [ 'no results found' ] );
-
-			$query_args = (array) $component->get_config( 'query_args' );
+			$query_args = $config['query_args'] ?? [];
 
 			if ( ! empty( $query_args ) ) {
 
@@ -34,44 +29,70 @@ register_component_from_config(
 					$query_args['post__not_in'] = post_list_get_and_add_used_post_ids();
 				}
 
-				$post_query = new \WP_Query( $query_args );
+				// Create a new `WP_Query` object for the data provider/consumers.
+				$query = new WP_Query( $query_args );
 			}
 
-			// Set the `wp_query` for the data provider/consumers.
-			$component->set_config( 'wp_query', $post_query );
+			$config['wp_query'] = $query;
 
-			// No results.
-			if ( ! $post_query->have_posts() ) {
-				return $component->set_children( $no_results );
+			return $config;
+		},
+		'children_callback' => function ( array $children, array $config ): array {
+			$templates = wp_parse_args(
+				$config['templates'],
+				[
+					'before'     => [],
+					'after'      => [],
+					'wrapper'    => [],
+					'item'       => [],
+					'no_results' => [ __( 'No results found.', 'wp-irving' ) ],
+				]
+			);
+
+			$query = $config['wp_query'];
+
+			// Bail early if no posts found.
+			if ( ! $query->have_posts() ) {
+				return $templates['no_results'];
 			}
 
-			$post_ids = wp_list_pluck( $post_query->posts, 'ID' );
+			$post_ids = wp_list_pluck( $query->posts, 'ID' );
+			$post_ids = post_list_get_and_add_used_post_ids( $post_ids );
 
-			post_list_get_and_add_used_post_ids( $post_ids );
+			$children = array_map(
+				function ( $post_id ) use ( $templates ) {
+					return [
+						'name'     => 'irving/post-provider',
+						'config'   => [
+							'post_id' => $post_id,
+						],
+						'children' => [ $templates['item'] ],
+					];
+				},
+				$post_ids
+			);
 
-			$items = [];
-			foreach ( $post_ids as $post_id ) {
-
-				$items[] = [
-					'name'     => 'irving/post-provider',
-					'config'   => [
-						'post_id' => $post_id,
-					],
-					'children' => $item,
+			// Wrap the children.
+			if ( ! empty( $templates['wrapper'] ) ) {
+				$children = [
+					array_merge(
+						$templates['wrapper'],
+						[ 'children' => $children ]
+					),
 				];
 			}
 
-			$component->set_children( $items );
-
-			// Wrap the children.
-			if ( ! empty( $wrapper ) ) {
-				$component->set_child( ( \WP_Irving\Templates\setup_component( $wrapper[0] ) )->set_children( $component->get_children() ) );
+			// Prepend before components.
+			if ( ! empty( $templates['before'] ) ) {
+				array_unshift( $children, ...$templates['before'] );
 			}
 
-			$component->prepend_children( $before );
-			$component->append_children( $after );
+			// Append after components.
+			if ( ! empty( $templates['after'] ) ) {
+				array_push( $children, ...$templates['after'] );
+			}
 
-			return $component;
+			return $children;
 		},
 	]
 );

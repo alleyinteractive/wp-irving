@@ -137,7 +137,8 @@ class Test_Templates extends WP_UnitTestCase {
 						'test/parent',
 						[
 							'children' => [
-								new Component( 'test/child' ),
+							// old::: 	new Component( 'test/child' ),
+							[ 'name' => 'test/child' ],
 							],
 						]
 					),
@@ -158,7 +159,8 @@ class Test_Templates extends WP_UnitTestCase {
 						'example/component2',
 						[
 							'children' => [
-								new Component( 'example/component3' ),
+							// old::: 	new Component( 'example/component3' ),
+							[ 'name' => 'example/component3' ],
 							],
 						]
 					),
@@ -180,7 +182,8 @@ class Test_Templates extends WP_UnitTestCase {
 						'example/component2',
 						[
 							'children' => [
-								new Component( 'example/component3' ),
+							// old::: 	new Component( 'example/component3' ),
+							[ 'name' => 'example/component3' ],
 							],
 						]
 					),
@@ -394,7 +397,8 @@ class Test_Templates extends WP_UnitTestCase {
 				'example/component2',
 				[
 					'children' => [
-						new Component( 'example/component3' ),
+						// old::: new Component( 'example/component3' ),
+						[ 'name' => 'example/component3' ],
 					],
 				]
 			),
