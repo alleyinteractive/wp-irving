@@ -151,7 +151,6 @@ class Component implements JsonSerializable {
 			'visibility_callback' => null, // @todo implement.
 		];
 
-		// phpcs:ignore WordPress.PHP.DisallowShortTernary
 		$schema = get_registry()->get_registered_component( $this->name ) ?: [];
 
 		$schema = wp_parse_args(

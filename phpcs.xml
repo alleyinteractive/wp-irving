@@ -6,6 +6,12 @@
     <rule ref="vendor/alley/alley-coding-standards" />
 
     <!-- Project customizations go here -->
+
+	<rule ref="WordPress">
+		<!-- Allow short ternary expressions -->
+		<exclude name="WordPress.PHP.DisallowShortTernary" />
+	</rule>
+
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<!--
