@@ -669,6 +669,73 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/post-timestamp component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_post_timestamp() {
+		$this->go_to( '?p=' . $this->get_post_id() );
+
+		$modified_date = get_the_modified_date( '', $this->get_post_id() );
+		$post_date     = get_the_date( '', $this->get_post_id() );
+
+		$expected = $this->get_expected_component(
+			'irving/post-timestamp',
+			[
+				'_alias' => 'irving/text',
+				'config' => [
+					'content'      => $post_date,
+					'modifiedDate' => $modified_date,
+					'postId'       => $this->get_post_id(),
+					'postDate'     => $post_date,
+				],
+			]
+		);
+
+		$component = new Component( 'irving/post-timestamp' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/post-timestamp component with non-default formats.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_post_timestamp_with_formats() {
+		$this->go_to( '?p=' . $this->get_post_id() );
+
+		$modified_date = get_the_modified_date( 'l F j, Y', $this->get_post_id() );
+		$post_date     = get_the_date( 'Ymd', $this->get_post_id() );
+
+		$expected = $this->get_expected_component(
+			'irving/post-timestamp',
+			[
+				'_alias' => 'irving/text',
+				'config' => [
+					'content'      => sprintf( 'Posted: %1$s. Modified: %2$s', $post_date, $modified_date ),
+					'modifiedDate' => $modified_date,
+					'postId'       => $this->get_post_id(),
+					'postDate'     => $post_date,
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/post-timestamp',
+			[
+				'config' => [
+					'content_format'       => 'Posted: %1$s. Modified: %2$s',
+					'modified_date_format' => 'l F j, Y',
+					'post_date_format'     => 'Ymd',
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.

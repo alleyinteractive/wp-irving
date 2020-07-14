@@ -15,28 +15,36 @@ namespace WP_Irving\Components;
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
+		'config_callback' => function( array $config ): array {
 
-			// Get the post ID from a context provider.
-			$post_id = $component->get_config( 'post_id' );
+			$post_id = $config['post_id'];
 
-			$post = get_post( $post_id );
-			if ( ! $post instanceof \WP_Post ) {
-				return $component;
+			// Bail if there is no post ID.
+			if ( ! $post_id ) {
+				return $config;
 			}
 
-			return $component->set_config(
-				'content',
-				sprintf(
-					/**
-					 * Translators:
-					 * %1$s - Published timestamp.
-					 * %2$s - Modified timestamp.
-					 */
-					$component->get_config( 'content_format' ),
-					get_the_date( $component->get_config( 'published_date_format' ), $post_id ),
-					get_the_modified_date( $component->get_config( 'modified_date_format' ), $post_id )
-				)
+			$post_date     = get_the_date( $config['post_date_format'], $post_id );
+			$modified_date = get_the_modified_date( $config['modified_date_format'], $post_id );
+
+			$content = sprintf(
+				/**
+				 * Translators:
+				 * %1$s - Published timestamp.
+				 * %2$s - Modified timestamp.
+				 */
+				$config['content_format'],
+				esc_html( $post_date ),
+				esc_html( $modified_date ),
+			);
+
+			return array_merge(
+				$config,
+				[
+					'content'       => $content,
+					'modified_date' => $modified_date,
+					'post_date'     => $post_date,
+				]
 			);
 		},
 	]

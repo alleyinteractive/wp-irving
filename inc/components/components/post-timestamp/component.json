@@ -3,24 +3,36 @@
   "_alias": "irving/text",
   "description": "Get the post's timestamp(s).",
   "config": {
+    "content": {
+      "default": "",
+      "type": "string"
+    },
     "content_format": {
       "default": "%1$s",
-      "description": "The format string used by `sprintf()`. Used to build the `content` output. See callback for all available replacements.",
+      "type": "string",
+      "hidden": true
+    },
+    "modified_date": {
+      "default": "",
       "type": "string"
     },
     "modified_date_format": {
       "default": "",
-      "description": "Format for the modified timestamp. Empty string defaults to WordPress' option.",
-      "type": "string"
+      "type": "string",
+      "hidden": true
     },
     "post_id": {
       "default": 0,
-      "type": "integer"
+      "type": "int"
     },
-    "published_date_format": {
+    "post_date": {
       "default": "",
-      "description": "Format for the timestamp. Empty string defaults to WordPress' option.",
       "type": "string"
+    },
+    "post_date_format": {
+      "default": "",
+      "type": "string",
+      "hidden": true
     }
   },
   "use_context": {
