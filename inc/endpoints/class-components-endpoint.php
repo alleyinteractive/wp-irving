@@ -251,6 +251,7 @@ class Components_Endpoint extends Endpoint {
 					$page_type = apply_filters( 'wp_irving_page_type', 'page' );
 
 					// This is a verbose page match, let's check to be sure about it.
+					// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_page_by_path_get_page_by_path
 					$page = get_page_by_path( $matches[ $varmatch[1] ], OBJECT, $page_type );
 
 					if ( ! $page ) {
