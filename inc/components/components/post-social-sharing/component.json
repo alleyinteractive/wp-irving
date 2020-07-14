@@ -5,14 +5,10 @@
   "config": {
     "description": {
       "default": "",
-      "description": "Description of the shared content.",
-      "required": false,
       "type": "string"
     },
     "image_url": {
       "default": "",
-      "description": "Preview image for the shared content.",
-      "required": false,
       "type": "string"
     },
     "platforms": {
@@ -25,24 +21,18 @@
         "twitter",
         "whatsapp"
       ],
-      "required": true,
       "type": "array"
     },
     "post_id": {
       "default": 0,
-      "required": true,
-      "type": "integer"
+      "type": "int"
     },
     "title": {
       "default": "",
-      "description": "Title of the shared content.",
-      "required": false,
       "type": "string"
     },
     "url": {
       "default": "",
-      "description": "URL of the shared content.",
-      "required": false,
       "type": "string"
     }
   },

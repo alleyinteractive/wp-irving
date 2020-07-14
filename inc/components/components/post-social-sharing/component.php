@@ -9,33 +9,33 @@
 
 namespace WP_Irving\Components;
 
+use WP_Post;
+
 /**
  * Register the component and callback.
  */
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
+		'config_callback' => function( array $config ): array {
 
-			// Get the post ID from a context provider, or fallback to the global.
-			$post_id = $component->get_config( 'post_id' );
+			// Ensure we have a valid post ID.
+			$post = get_post( $config['post_id'] );
 
-			// Validate the post.
-			$post = get_post( $post_id );
-			if ( ! $post instanceof \WP_Post ) {
-				return $component;
+			// Bail early if not a post.
+			if ( ! $post instanceof WP_Post ) {
+				return $config;
 			}
 
-			$component->merge_config(
+			return array_merge(
+				$config,
 				[
-					'description' => apply_filters( 'the_excerpt', get_the_excerpt( $post_id ) ), // phpcs:ignore
-					'image_url'   => get_the_post_thumbnail_url( $post_id, 'full' ),
-					'title'       => get_the_title( $post_id ),
-					'url'         => get_the_permalink( $post_id ),
+					'description' => apply_filters( 'the_excerpt', get_the_excerpt( $post ) ), // phpcs:ignore
+					'image_url'   => get_the_post_thumbnail_url( $post, 'full' ),
+					'title'       => get_the_title( $post ),
+					'url'         => get_the_permalink( $post ),
 				]
 			);
-
-			return $component;
 		},
 	]
 );

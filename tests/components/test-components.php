@@ -633,6 +633,42 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/post-permalink component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_post_social_sharing() {
+		$this->go_to( '?p=' . $this->get_post_id() );
+
+		$expected = $this->get_expected_component(
+			'irving/post-social-sharing',
+			[
+				'_alias' => 'irving/social-sharing',
+				'config' => [
+					'description' => $this->get_post_excerpt(),
+					'imageUrl'    => $this->get_attachment_url(),
+					'platforms'   => [
+						'email',
+						'facebook',
+						'linkedin',
+						'pinterest',
+						'reddit',
+						'twitter',
+						'whatsapp',
+					],
+					'postId'      => $this->get_post_id(),
+					'title'       => get_the_title( $this->get_post_id() ),
+					'url'         => get_the_permalink( $this->get_post_id() ),
+				],
+			]
+		);
+
+		$component = new Component( 'irving/post-social-sharing' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.
