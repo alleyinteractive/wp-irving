@@ -851,6 +851,7 @@ class Test_Components extends WP_UnitTestCase {
 
 		$this->assertComponentEquals( $expected, $component );
 	}
+
 	/**
 	 * Test irving/query-search-form component with a custom format.
 	 *
