@@ -887,6 +887,65 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/site-info component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_site_info() {
+
+		$show_types = [
+			'',
+			'name',
+			'description',
+			'wpurl',
+			'url',
+			'admin_email',
+			'charset',
+			'version',
+			'html_type',
+			'language',
+			'stylesheet_url',
+			'stylesheet_directory',
+			'template_url',
+			'template_directory',
+			'pingback_url',
+			'atom_url',
+			'rdf_url',
+			'rss_url',
+			'rss2_url',
+			'comments_atom_url',
+			'comments_rss2_url',
+		];
+
+		foreach ( $show_types as $show ) {
+			$expected = $this->get_expected_component(
+				'irving/site-info',
+				[
+					'_alias' => 'irving/text',
+					'config' => [
+						'content' => get_bloginfo( $show ),
+						'oembed'  => false,
+						'show'    => $show,
+						'style'   => [],
+						'tag'     => 'span',
+					],
+				]
+			);
+
+			$component = new Component(
+				'irving/site-info',
+				[
+					'config' => [
+						'show' => $show,
+					],
+				],
+			);
+
+			$this->assertComponentEquals( $expected, $component, "Failed with show value of {$show}." );
+		}
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.

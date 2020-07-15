@@ -17,9 +17,10 @@ namespace WP_Irving\Components;
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
-			$content = (string) get_bloginfo( $component->get_config( 'show' ) );
-			return $component->set_config( 'content', $content );
+		'config_callback' => function ( array $config ): array {
+			$config['content'] = get_bloginfo( $config['show'] );
+
+			return $config;
 		},
 	]
 );
