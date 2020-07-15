@@ -946,6 +946,33 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/site-logo component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_site_logo() {
+		// Set our test image as the site logo.
+		set_theme_mod( 'custom_logo', $this->get_attachment_id() );
+
+		$expected = $this->get_expected_component(
+			'irving/site-logo',
+			[
+				'_alias' => 'irving/logo',
+				'config' => [
+					'href'         => '/',
+					'logoImageUrl' => $this->get_attachment_url(),
+					'siteName'     => get_bloginfo( 'name' ),
+				],
+			]
+		);
+
+		$component = new Component( 'irving/site-logo' );
+
+		$this->assertComponentEquals( $expected, $component );
+
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.
