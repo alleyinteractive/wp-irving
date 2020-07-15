@@ -15,12 +15,14 @@ namespace WP_Irving\Components;
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
+		'config_callback' => function ( array $config ): array {
 
-			// Get the WP_Query object from a context provider.
-			$wp_query = $component->get_config( 'wp_query' );
+			// Get the WP_Query object is always set via context.
+			$wp_query = $config['wp_query'];
 
-			return $component->set_config( 'search_term', $wp_query->get( 's' ) ?? '' );
+			$config['search_term'] = $wp_query->get( 's' ) ?? '';
+
+			return $config;
 		},
 	]
 );

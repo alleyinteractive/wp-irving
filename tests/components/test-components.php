@@ -800,6 +800,32 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/query-search-form component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_query_search_form() {
+		$this->go_to( '?s=Irving' );
+
+		$expected = $this->get_expected_component(
+			'irving/query-search-form',
+			[
+				'_alias' => 'irving/search-form',
+				'config' => [
+					'baseUrl'            => '/',
+					'searchTerm'         => 'Irving',
+					'searchTermQueryArg' => 's',
+					'style'              => [],
+				],
+			]
+		);
+
+		$component = new Component( 'irving/query-search-form' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.
