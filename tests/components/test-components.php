@@ -826,6 +826,67 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/query-search-form component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_query_search_results_found() {
+		// Create a unique test post to show up in search.
+		$this->factory->post->create( [ 'post_title' => 'Irving Search' ] );
+
+		$this->go_to( '?s=Irving%20Search' );
+
+		$expected = $this->get_expected_component(
+			'irving/query-search-results-found',
+			[
+				'_alias' => 'irving/text',
+				'config' => [
+					'content'       => '1 results found for "Irving Search"',
+					'contentFormat' => '%1$s results found for "%2$s"',
+				],
+			]
+		);
+
+		$component = new Component( 'irving/query-search-results-found' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+	/**
+	 * Test irving/query-search-form component with a custom format.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_query_search_results_found_content_format() {
+		// Create several test posts to show up in search.
+		$this->factory->post->create_many( 15, [ 'post_title' => 'Irving Search' ] );
+
+		$this->go_to( '?s=Irving%20Search' );
+
+		$expected = $this->get_expected_component(
+			'irving/query-search-results-found',
+			[
+				'_alias' => 'irving/text',
+				'config' => [
+					'content'       => 'Found 15 results for "Irving Search" on page 1 of 2',
+					'contentFormat' => 'Found %1$s results for "%2$s" on page %3$s of %4$s',
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/query-search-results-found',
+			[
+				'config' => [
+					'content_format' => 'Found %1$s results for "%2$s" on page %3$s of %4$s',
+				],
+			],
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.
