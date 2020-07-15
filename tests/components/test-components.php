@@ -884,7 +884,6 @@ class Test_Components extends WP_UnitTestCase {
 		);
 
 		$this->assertComponentEquals( $expected, $component );
-
 	}
 
 	/**
