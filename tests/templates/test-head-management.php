@@ -259,10 +259,10 @@ class Test_Head_Management extends WP_UnitTestCase {
 	 */
 	public function test_get_favicon_markup() {
 		$this->assertEquals(
-			'<link rel="icon" href="http://example.org/wp-content/uploads/test-image.jpg" sizes="32x32" />
-<link rel="icon" href="http://example.org/wp-content/uploads/test-image.jpg" sizes="192x192" />
-<link rel="apple-touch-icon" href="http://example.org/wp-content/uploads/test-image.jpg" />
-<meta name="msapplication-TileImage" content="http://example.org/wp-content/uploads/test-image.jpg" />',
+			'<link rel="icon" href="' . $this->get_attachment_url() . '" sizes="32x32" />
+<link rel="icon" href="' . $this->get_attachment_url() . '" sizes="192x192" />
+<link rel="apple-touch-icon" href="' . $this->get_attachment_url() . '" />
+<meta name="msapplication-TileImage" content="' . $this->get_attachment_url() . '" />',
 			get_favicon_markup(),
 			'Favicon markup incorrect'
 		);
@@ -280,7 +280,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 					'link',
 					[
 						'config' => [
-							'href'  => 'http://example.org/wp-content/uploads/test-image.jpg',
+							'href'  => $this->get_attachment_url(),
 							'rel'   => 'icon',
 							'sizes' => '32x32',
 						],
@@ -290,7 +290,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 					'link',
 					[
 						'config' => [
-							'href'  => 'http://example.org/wp-content/uploads/test-image.jpg',
+							'href'  => $this->get_attachment_url(),
 							'rel'   => 'icon',
 							'sizes' => '192x192',
 						],
@@ -300,7 +300,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 					'link',
 					[
 						'config' => [
-							'href' => 'http://example.org/wp-content/uploads/test-image.jpg',
+							'href' => $this->get_attachment_url(),
 							'rel'  => 'apple-touch-icon',
 						],
 					]
@@ -309,7 +309,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 					'meta',
 					[
 						'config' => [
-							'content' => 'http://example.org/wp-content/uploads/test-image.jpg',
+							'content' => $this->get_attachment_url(),
 							'name'    => 'msapplication-TileImage',
 						],
 					]
