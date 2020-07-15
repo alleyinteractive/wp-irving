@@ -9,17 +9,14 @@
     },
     "search_term": {
       "default": "",
-      "description": "The string being searched for.",
       "type": "string"
     },
     "search_term_query_arg": {
       "default": "s",
-      "description": "The query var used for the search term.",
       "type": "string"
     },
     "style": {
       "default": [],
-      "required": false,
       "type": "array"
     },
     "wp_query": {
