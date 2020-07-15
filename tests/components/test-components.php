@@ -761,6 +761,45 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/query-pagination component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_query_pagination() {
+		// Set up test specific category.
+		$cat = wp_insert_category( [ 'cat_name' => 'query-pagination' ] );
+
+		// Set up test posts.
+		$this->factory()->post->create_many(
+			30,
+			// Set up special category for these tests.
+			[ 'post_category' => [ $cat ] ]
+		);
+
+		$this->go_to( "?cat={$cat}&paged=2" );
+
+		$expected = $this->get_expected_component(
+			'irving/query-pagination',
+			[
+				'_alias' => 'irving/pagination',
+				'config' => [
+					'currentPage'         => 2,
+					'totalPages'          => 3,
+					'baseUrl'             => '/',
+					'displayFirstAndLast' => true,
+					'displayPrevAndNext'  => true,
+					'paginationFormat'    => 'page/%1$d/',
+					'range'               => 5,
+				],
+			]
+		);
+
+		$component = new Component( 'irving/query-pagination' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.

@@ -18,21 +18,26 @@ namespace WP_Irving\Components;
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
+		'config_callback' => function ( array $config ): array {
 
 			// Get the WP_Query object from a context provider.
-			$wp_query = $component->get_config( 'wp_query' );
+			$wp_query = $config['wp_query'];
 
 			// Convert to integer and set to page 1 if needed.
 			$current_page = absint( $wp_query->get( 'paged' ) );
+			$total_pages  = absint( $wp_query->max_num_pages );
+
 			if ( 0 === $current_page ) {
 				$current_page = 1;
 			}
 
-			$component->set_config( 'current_page', $current_page );
-			$component->set_config( 'total_pages', $wp_query->max_num_pages );
-
-			return $component;
+			return array_merge(
+				$config,
+				[
+					'current_page' => $current_page,
+					'total_pages'  => $total_pages,
+				]
+			);
 		},
 	]
 );
