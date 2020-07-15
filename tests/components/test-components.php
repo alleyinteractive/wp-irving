@@ -149,6 +149,7 @@ class Test_Components extends WP_UnitTestCase {
 		self::$post_id = $factory->post->create(
 			[
 				'post_author'   => self::$author_id,
+				'post_title'    => "It's like this & that.", // Tests HTML entities.
 				'_thumbnail_id' => self::$attachment_id,
 			]
 		);
@@ -731,6 +732,30 @@ class Test_Components extends WP_UnitTestCase {
 				],
 			]
 		);
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/post-title component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_post_title() {
+		$this->go_to( '?p=' . $this->get_post_id() );
+
+		$expected = $this->get_expected_component(
+			'irving/post-title',
+			[
+				'_alias' => 'irving/text',
+				'config' => [
+					'content' => 'It’s like this & that.', // Texturized.
+					'postId'  => $this->get_post_id(),
+				],
+			]
+		);
+
+		$component = new Component( 'irving/post-title' );
 
 		$this->assertComponentEquals( $expected, $component );
 	}

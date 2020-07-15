@@ -15,12 +15,14 @@ namespace WP_Irving\Components;
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
+		'config_callback' => function ( array $config ): array {
 
-			// Get the post ID from a context provider.
-			$post_id = $component->get_config( 'post_id' );
+			// Post ID is set via context and should always have a value.
+			$title = get_the_title( $config['post_id'] );
 
-			return $component->set_config( 'content', html_entity_decode( get_the_title( $post_id ) ) );
+			$config['content'] = html_entity_decode( $title, ENT_QUOTES, get_bloginfo( 'charset' ) );
+
+			return $config;
 		},
 	]
 );
