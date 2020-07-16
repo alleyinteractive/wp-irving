@@ -1,8 +1,8 @@
 {
-  "name": "irving/bloginfo",
+  "name": "irving/site-info",
   "_alias": "irving/text",
   "category": "Site",
-  "description": "Easily call bloginfo().",
+  "description": "Displays information about the current site.",
   "config": {
     "content": {
       "default": "",
