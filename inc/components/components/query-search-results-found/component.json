@@ -6,7 +6,10 @@
   "config": {
     "content_format": {
       "default": "%1$s results found for \"%2$s\"",
-      "description": "The format string used by `sprintf()`. Used to build the `content` output. See callback for all available replacements.",
+      "type": "string"
+    },
+    "content": {
+      "default": "",
       "type": "string"
     },
     "wp_query": {
