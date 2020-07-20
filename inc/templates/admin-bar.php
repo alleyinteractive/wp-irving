@@ -9,7 +9,6 @@ namespace WP_Irving;
 
 use WP_Irving\Components\Component;
 use WP_Irving\REST_API\Components_Endpoint;
-use WP_Irving\Cache;
 
 /**
  * Automatically insert the admin bar component.
@@ -388,6 +387,12 @@ add_action( 'admin_footer', __NAMESPACE__ . '\cache_purge_click_listener', 95 );
  * is fired.
  */
 function cache_purge_callback() {
-	Cache::instance()->fire_wipe_request();
+	// If the site is running on a pantheon environment, purge the cache
+	// through the `pantheon_flush_site()` method.
+	if ( function_exists( 'pantheon_wp_clear_edge_paths' ) ) {
+		\WP_Irving\Pantheon::instance()->pantheon_flush_site();
+	} else {
+		\WP_Irving\Cache::instance()->fire_wipe_request();
+	}
 }
 add_action( 'wp_ajax_irving_cache_purge', __NAMESPACE__ . '\cache_purge_callback', 100 );
