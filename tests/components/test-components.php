@@ -973,6 +973,135 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/site-menu component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_site_menu() {
+		// Create some test pages.
+		$posts = $this->factory->post->create_many( 4, [ 'post_type' => 'page' ] );
+
+		// Create a test menu.
+		$menu_id = wp_create_nav_menu( 'test-menu' );
+
+		$menu_items = [];
+
+		// Set up menu items.
+		foreach ( $posts as $key => $post ) {
+			$menu_args = [
+				'menu-item-type'      => 'post_type',
+				'menu-item-object'    => 'page',
+				'menu-item-status'    => 'publish',
+				'menu-item-title'     => "Post {$post}",
+				'menu-item-object-id' => $post,
+				// Menus above the second in the array children of the previous item.
+				'menu-item-parent-id' => ( $key > 1 ) ? $menu_items[ $key - 1 ] : 0,
+			];
+
+			$menu_items[] = wp_update_nav_menu_item( $menu_id, 0, $menu_args );
+		}
+
+		// Set the test menu to our test location.
+		set_theme_mod(
+			'nav_menu_locations',
+			[
+				'test-location' => $menu_id,
+			]
+		);
+
+		$expected = $this->get_expected_component(
+			'irving/site-menu',
+			[
+				'_alias'   => 'irving/menu',
+				'config'   => [
+					'displayName'  => false,
+					'location'     => 'test-location',
+					'menuId'       => $menu_id,
+					'menuName'     => 'test-menu',
+					'themeOptions' => [
+						'default',
+						'defaultVertical',
+					],
+				],
+				'children' => [
+					$this->get_expected_component(
+						'irving/menu-item',
+						[
+							'config' => [
+								'attributeTitle' => '',
+								'classes'        => [],
+								'id'             => $menu_items[0],
+								'parentId'       => 0,
+								'target'         => '',
+								'title'          => get_the_title( $menu_items[0] ),
+								'url'            => get_the_permalink( $menu_items[0] ),
+							],
+						]
+					),
+					$this->get_expected_component(
+						'irving/menu-item',
+						[
+							'config'   => [
+								'attributeTitle' => '',
+								'classes'        => [],
+								'id'             => $menu_items[1],
+								'parentId'       => 0,
+								'target'         => '',
+								'title'          => get_the_title( $menu_items[1] ),
+								'url'            => get_the_permalink( $menu_items[1] ),
+							],
+							'children' => [
+								$this->get_expected_component(
+									'irving/menu-item',
+									[
+										'config'   => [
+											'attributeTitle' => '',
+											'classes'  => [],
+											'id'       => $menu_items[2],
+											'parentId' => $menu_items[1],
+											'target'   => '',
+											'title'    => get_the_title( $menu_items[2] ),
+											'url'      => get_the_permalink( $menu_items[2] ),
+										],
+										'children' => [
+											$this->get_expected_component(
+												'irving/menu-item',
+												[
+													'config' => [
+														'attributeTitle' => '',
+														'classes'  => [],
+														'id'       => $menu_items[3],
+														'parentId' => $menu_items[2],
+														'target'   => '',
+														'title'    => get_the_title( $menu_items[3] ),
+														'url'      => get_the_permalink( $menu_items[3] ),
+													],
+												]
+											),
+										],
+									]
+								),
+							],
+						]
+					),
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/site-menu',
+			[
+				'config' => [
+					'location' => 'test-location',
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.

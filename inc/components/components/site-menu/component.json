@@ -13,12 +13,14 @@
       "default": false
     },
     "location": {
-      "type": "string",
-      "required": true
+      "type": "string"
+    },
+    "menu_id": {
+      "type": "int"
     },
     "menu_name": {
       "type": "string",
-      "required": true
+      "defualt": "Default"
     }
   }
 }
