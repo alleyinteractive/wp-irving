@@ -9,6 +9,7 @@ namespace WP_Irving;
 
 use WP_Irving\Components\Component;
 use WP_Irving\REST_API\Components_Endpoint;
+use WP_Irving\Cache;
 
 /**
  * Automatically insert the admin bar component.
@@ -171,7 +172,8 @@ function add_admin_bar_nodes( \WP_Admin_Bar $admin_bar ) {
 			get_admin_api_items(), // Admin-only API links.
 			get_frontend_api_items(), // Frontend-only API links.
 			get_setting_items(), // Irving settings.
-			get_documentation_items() // Documentation.
+			get_documentation_items(), // Documentation.
+			get_cache_items(), // Cache busting.
 		)
 	);
 }
@@ -348,3 +350,44 @@ function get_documentation_items(): array {
 		],
 	];
 }
+
+/**
+ * Get an array of Irving cache busting node args to be passed into
+ * admin_bar->add_node().
+ *
+ * @return array
+ */
+function get_cache_items(): array {
+	return [
+		[
+			'id'    => 'irving-cache-purge',
+			'title' => __( 'Clear The Cache', 'wp-irving' ),
+			'href'  => '#',
+		],
+	];
+}
+
+/**
+ * Register the click listener for the `irving-cache-purge` node. Register
+ * an action event, `wp_ajax_irving_cache_purge`, on click using WP ajax.
+ */
+function cache_purge_click_listener() {
+	?>
+		<script type="text/javascript">
+			jQuery('#wp-admin-bar-irving-cache-purge').on('click', function() {
+				const data = { 'action': 'irving_cache_purge' };
+				jQuery.post( '<?php echo admin_url( 'admin-ajax.php' ) ?>', data );
+			});
+		</script>
+	<?php
+}
+add_action( 'admin_footer',  __NAMESPACE__ . '\cache_purge_click_listener', 95 );
+
+/**
+ * Purge the cache. Called when the `wp_ajax_irving_cache_purge` action
+ * is fired.
+ */
+function cache_purge_callback() {
+	Cache::instance()->fire_wipe_request();
+}
+add_action( 'wp_ajax_irving_cache_purge', __NAMESPACE__ . '\cache_purge_callback', 100 );
