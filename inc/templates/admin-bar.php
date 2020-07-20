@@ -390,7 +390,7 @@ function cache_purge_callback() {
 	// If the site is running on a pantheon environment, purge the cache
 	// through the `pantheon_flush_site()` method.
 	if ( function_exists( 'pantheon_wp_clear_edge_paths' ) ) {
-		\WP_Irving\Pantheon::instance()->pantheon_flush_site();
+		\WP_Irving\Pantheon::pantheon_flush_site();
 	} else {
 		\WP_Irving\Cache::instance()->fire_wipe_request();
 	}
