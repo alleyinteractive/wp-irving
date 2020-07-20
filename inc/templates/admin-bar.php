@@ -376,12 +376,12 @@ function cache_purge_click_listener() {
 		<script type="text/javascript">
 			jQuery('#wp-admin-bar-irving-cache-purge').on('click', function() {
 				const data = { 'action': 'irving_cache_purge' };
-				jQuery.post( '<?php echo admin_url( 'admin-ajax.php' ) ?>', data );
+				jQuery.post( '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', data );
 			});
 		</script>
 	<?php
 }
-add_action( 'admin_footer',  __NAMESPACE__ . '\cache_purge_click_listener', 95 );
+add_action( 'admin_footer', __NAMESPACE__ . '\cache_purge_click_listener', 95 );
 
 /**
  * Purge the cache. Called when the `wp_ajax_irving_cache_purge` action
