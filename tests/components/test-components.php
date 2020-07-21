@@ -1102,6 +1102,42 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/video component.
+	 *
+	 * @group core-components
+	 * @group video
+	 */
+	public function test_component_video() {
+		$expected = $this->get_expected_component(
+			'irving/video',
+			[
+				'_alias' => 'irving/text',
+				'config' => [
+					'aspectRatio' => '16:9',
+					'videoUrl'    => 'https://www.youtube.com/watch?v=ITt0uThK1G0',
+					'content'     => wp_oembed_get( 'https://www.youtube.com/watch?v=ITt0uThK1G0' ),
+					'oembed'      => true,
+					'tag'         => 'div',
+					'style'       => [
+						'paddingBottom' => '56.25%',
+					],
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/video',
+			[
+				'config' => [
+					'video_url' => 'https://www.youtube.com/watch?v=ITt0uThK1G0',
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.

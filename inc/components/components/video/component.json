@@ -5,12 +5,18 @@
   "config": {
     "aspect_ratio": {
       "default": "16:9",
-      "description": "Required. Video ratio as a CSS property, ex. \"padding-bottom: `{aspect_ratio}%\". Alias options include `square`, `1;1`, `4:3`, `16:9`.",
+      "type": "string"
+    },
+    "oembed": {
+      "default": true,
+      "type": "bool"
+    },
+    "tag": {
+      "default": "div",
       "type": "string"
     },
     "video_url": {
       "default": "",
-      "description": "Required. URL of the video. Currently supports YouTube and Vimeo.",
       "type": "string"
     }
   }
