@@ -357,8 +357,7 @@ function get_documentation_items(): array {
  * @return array
  */
 function get_cache_items(): array {
-
-	return [
+	$arr = [
 		[
 			'id'    => 'irving-cache',
 			'title' => __( 'Clear The Cache', 'wp-irving' ),
@@ -368,12 +367,19 @@ function get_cache_items(): array {
 			'parent' => 'irving-cache',
 			'title'  => __( 'Clear Site Cache', 'wp-irving' ),
 		],
-		[
+	];
+
+	// On VIP Go environments, enable the option to purge the
+	// URL specific page cache. Do not show on admin pages.
+	if ( !is_admin() && function_exists( 'wpcom_vip_purge_edge_cache_for_url' ) ) {
+		$arr[] = [
 			'id'     => 'irving-cache-two',
 			'parent' => 'irving-cache',
 			'title'  => __( 'Clear Page Cache', 'wp-irving' ),
-		],
-	];
+		];
+	}
+
+	return $arr;
 }
 
 /**
@@ -391,7 +397,7 @@ function cache_purge_click_listener() {
 			jQuery('#wp-admin-bar-irving-cache-two').on('click', function() {
 				const data = {
 					'action': 'irving_page_cache_purge',
-					'route': 'current_route_goes_here',
+					'route': window.location.href,
 				};
 				jQuery.post( '<?php echo $rest_endpoint ?>', data );
 			});

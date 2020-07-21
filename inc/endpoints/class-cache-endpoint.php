@@ -56,7 +56,7 @@ class Cache_Endpoint extends Endpoint {
 
             if ( $action === 'irving_page_cache_purge' ) {
                 // Get the route.
-                $route = request_params['route'];
+                $route = $request_params['route'];
                 // Ensure the requested route is not empty prior
                 // to firing the action.
                 if ( !empty( $route ) ) {
@@ -82,7 +82,11 @@ class Cache_Endpoint extends Endpoint {
      *
      * @param string $route The target route to purge from the cache.
      */
-    public function purge_page_cache( $args ) {
-        // Do something.
+    public function purge_page_cache( $route ) {
+        // Check to see if the action is being executed on a VIP Go enabled
+        // environment. If so, use VIP's purge function.
+        if ( function_exists( 'wpcom_vip_purge_edge_cache_for_url' ) ) {
+            wpcom_vip_purge_edge_cache_for_url( $route );
+        }
     }
 }
