@@ -20,7 +20,7 @@
     },
     "menu_name": {
       "type": "string",
-      "defualt": "Default"
+      "default": "Default"
     }
   }
 }
