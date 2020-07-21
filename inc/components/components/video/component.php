@@ -15,7 +15,7 @@ namespace WP_Irving\Components;
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
+		'config_callback' => function ( array $config ): array {
 
 			/**
 			 * If an aspect ratio value exists, check if it's an alias from the
@@ -31,19 +31,22 @@ register_component_from_config(
 				'square' => '100%',
 			];
 
-			$aspect_ratio = $component->get_config( 'aspect_ratio' );
+			$aspect_ratio = $config['aspect_ratio'];
+
+			// Update the style based on aspect ratio.
 			if ( is_string( $aspect_ratio ) && ! empty( $aspect_ratio ) ) {
 				$aspect_ratio                    = $aspect_ratio_mapping[ $aspect_ratio ] ?? $aspect_ratio; // Possibly use mapping.
-				$updated_style                   = $component->get_config( 'style' ); // Get the current value of `style`.
+				$updated_style                   = $config['style'] ?? []; // Get the current value of `style`.
 				$updated_style['padding-bottom'] = $aspect_ratio; // Set the `padding-bottom` property.
-				$component->set_config( 'style', $updated_style ); // Save.
 			}
 
-			return $component
-				->set_config( 'content', wp_oembed_get( $component->get_config( 'video_url' ) ) )
-				->set_config( 'oembed', true )
-				->set_config( 'tag', 'div' )
-				->set_theme( 'responsive-embed' );
+			return array_merge(
+				$config,
+				[
+					'content' => wp_oembed_get( $config['video_url'] ),
+					'style'   => $updated_style ?? $config['style'],
+				]
+			);
 		},
 	]
 );
