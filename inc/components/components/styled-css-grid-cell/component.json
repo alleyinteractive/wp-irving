@@ -2,23 +2,18 @@
   "name": "styled-css-grid/cell",
   "config": {
     "area": {
-      "description": "The grid-area CSS property. Not provided by default.",
       "type": "string"
     },
     "center": {
-      "description": "Horizontally align the text contents of the cell. Default is false.",
       "type": "string"
     },
     "height": {
-      "description": "Cell height in units, default is 1.",
       "type": "number"
     },
     "left": {
-      "description": "The grid-column-start CSS property. Not provided by default.",
       "type": "string"
     },
     "middle": {
-      "description": "Vertically align the contents of the cell. Default is false.",
       "type": "string"
     },
     "style": {
@@ -26,11 +21,9 @@
       "type": "array"
     },
     "top": {
-      "description": "The grid-row-start CSS property. Not provided by default.",
       "type": "string"
     },
     "width": {
-      "description": "Cell width in units, default is 1.",
       "type": "number"
     }
   }

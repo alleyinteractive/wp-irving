@@ -10,12 +10,11 @@
     },
     "object_fit": {
       "default": "cover",
-      "description": "Object fit property.",
       "type": "string"
     },
     "post_id": {
       "default": 0,
-      "type": "integer"
+      "type": "int"
     },
     "style": {
       "default": [],

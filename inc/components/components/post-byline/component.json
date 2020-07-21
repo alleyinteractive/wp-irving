@@ -16,7 +16,7 @@
       "type": "string"
     },
     "post_id": {
-      "type": "integer"
+      "type": "int"
     },
     "pre_text": {
       "default": "By ",
