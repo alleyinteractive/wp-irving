@@ -372,7 +372,7 @@ function get_cache_items(): array {
 	$is_external_env = function_exists( 'wpcom_vip_purge_edge_cache_for_url' ) || function_exists( 'patheon_wp_clear_edge_paths' );
 	// On VIP Go environments, enable the option to purge the
 	// URL specific page cache. Do not show on admin pages.
-	if ( !is_admin() && $is_external_env ) {
+	if ( ! is_admin() && $is_external_env ) {
 		$arr[] = [
 			'id'     => 'irving-cache-two',
 			'parent' => 'irving-cache',
@@ -388,19 +388,19 @@ function get_cache_items(): array {
  * an action event, `wp_ajax_irving_cache_purge`, on click using WP ajax.
  */
 function cache_purge_click_listener() {
-	$rest_endpoint = esc_url( site_url( '/wp-json/irving/v1/purge-cache' ) );
+	$rest_endpoint = site_url( '/wp-json/irving/v1/purge-cache' );
 	?>
 		<script type="text/javascript">
 			jQuery('#wp-admin-bar-irving-cache-one').on('click', function() {
 				const data = { 'action': 'irving_site_cache_purge' };
-				jQuery.post( '<?php echo $rest_endpoint ?>', data );
+				jQuery.post( '<?php echo esc_url( $rest_endpoint ); ?>', data );
 			});
 			jQuery('#wp-admin-bar-irving-cache-two').on('click', function() {
 				const data = {
 					'action': 'irving_page_cache_purge',
 					'route': window.location.href,
 				};
-				jQuery.post( '<?php echo $rest_endpoint ?>', data );
+				jQuery.post( '<?php echo esc_url( $rest_endpoint ); ?>', data );
 			});
 		</script>
 	<?php
