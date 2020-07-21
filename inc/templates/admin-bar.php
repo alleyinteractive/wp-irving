@@ -357,11 +357,21 @@ function get_documentation_items(): array {
  * @return array
  */
 function get_cache_items(): array {
+
 	return [
 		[
-			'id'    => 'irving-cache-purge',
+			'id'    => 'irving-cache',
 			'title' => __( 'Clear The Cache', 'wp-irving' ),
-			'href'  => '#',
+		],
+		[
+			'id'     => 'irving-cache-one',
+			'parent' => 'irving-cache',
+			'title'  => __( 'Clear Site Cache', 'wp-irving' ),
+		],
+		[
+			'id'     => 'irving-cache-two',
+			'parent' => 'irving-cache',
+			'title'  => __( 'Clear Page Cache', 'wp-irving' ),
 		],
 	];
 }
@@ -371,28 +381,21 @@ function get_cache_items(): array {
  * an action event, `wp_ajax_irving_cache_purge`, on click using WP ajax.
  */
 function cache_purge_click_listener() {
+	$rest_endpoint = esc_url( site_url( '/wp-json/irving/v1/purge-cache' ) );
 	?>
 		<script type="text/javascript">
-			jQuery('#wp-admin-bar-irving-cache-purge').on('click', function() {
-				const data = { 'action': 'irving_cache_purge' };
-				jQuery.post( '<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', data );
+			jQuery('#wp-admin-bar-irving-cache-one').on('click', function() {
+				const data = { 'action': 'irving_site_cache_purge' };
+				jQuery.post( '<?php echo $rest_endpoint ?>', data );
+			});
+			jQuery('#wp-admin-bar-irving-cache-two').on('click', function() {
+				const data = {
+					'action': 'irving_page_cache_purge',
+					'route': 'current_route_goes_here',
+				};
+				jQuery.post( '<?php echo $rest_endpoint ?>', data );
 			});
 		</script>
 	<?php
 }
 add_action( 'admin_footer', __NAMESPACE__ . '\cache_purge_click_listener', 95 );
-
-/**
- * Purge the cache. Called when the `wp_ajax_irving_cache_purge` action
- * is fired.
- */
-function cache_purge_callback() {
-	// If the site is running on a pantheon environment, purge the cache
-	// through the `pantheon_flush_site()` method.
-	if ( function_exists( 'pantheon_wp_clear_edge_paths' ) ) {
-		\WP_Irving\Pantheon::pantheon_flush_site();
-	} else {
-		\WP_Irving\Cache::instance()->fire_wipe_request();
-	}
-}
-add_action( 'wp_ajax_irving_cache_purge', __NAMESPACE__ . '\cache_purge_callback', 100 );

@@ -27,8 +27,7 @@ class Cache_Endpoint extends Endpoint {
             self::get_namespace(),
             '/purge-cache',
             [
-                // 'methods'  => \WP_REST_Server::CREATABLE,
-                'methods'  => \WP_REST_Server::READABLE,
+                'methods'  => \WP_REST_Server::CREATABLE,
                 'callback' => [ $this, 'get_route_response' ],
             ]
         );
@@ -42,7 +41,6 @@ class Cache_Endpoint extends Endpoint {
 	 * @return array
 	 */
     public function get_route_response( $request ) {
-        // phpcs:ignore WordPress.WP.GlobalVariablesOverride.OverrideProhibited
-        global $wp;
+        return $request;
     }
 }
