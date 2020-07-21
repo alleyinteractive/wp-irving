@@ -7,6 +7,14 @@
       "default": "16:9",
       "type": "string"
     },
+    "oembed": {
+      "default": true,
+      "type": "bool"
+    },
+    "tag": {
+      "default": "div",
+      "type": "string"
+    },
     "video_url": {
       "default": "",
       "type": "string"
