@@ -13,6 +13,7 @@
       "default": false
     },
     "location": {
+      "default": "",
       "type": "string"
     },
     "menu_id": {
