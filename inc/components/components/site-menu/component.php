@@ -9,75 +9,108 @@
 
 namespace WP_Irving\Components;
 
+use WP_Post;
+use WP_Term;
+
 /**
  * Register the component and callback.
  */
 register_component_from_config(
 	__DIR__ . '/component',
 	[
-		'callback' => function( Component $component ): Component {
+		'config_callback'   => function ( array $config ): array {
 
-			// Menu location.
-			$location    = $component->get_config( 'location' );
-			$menu_id     = get_nav_menu_locations()[ $component->get_config( 'location' ) ] ?? 0;
-			$menu_object = wp_get_nav_menu_object( $menu_id );
+			// Get menu ID for the selected location.
+			$config['menu_id'] = get_nav_menu_locations()[ $config['location'] ] ?? 0;
 
-			// Invalid menu.
-			if ( ! $menu_object instanceof \WP_Term ) {
-				return $component->set_children( [] );
+			if ( ! $config['menu_id'] ) {
+				return $config;
 			}
 
-			// Include the menu name.
-			$component->set_config( 'menu_name', $menu_object->name ?? 'Default' );
+			$menu_object = wp_get_nav_menu_object( $config['menu_id'] );
 
-			// Recursively build the children components.
-			$component->set_children( convert_menu_to_components( (array) wp_get_nav_menu_items( $menu_id ) ) );
+			// Invalid menu.
+			if ( ! $menu_object instanceof WP_Term ) {
+				return $config;
+			}
 
-			return $component;
+			$config['menu_name'] = $menu_object->name ?? $config['menu_name'];
+
+			return $config;
+		},
+		'children_callback' => function ( array $children, array $config ): array {
+
+			$menu_id = $config['menu_id'];
+
+			// Bail early if no menu is found.
+			if ( ! $menu_id ) {
+				return $children;
+			}
+
+			$menu_items = wp_get_nav_menu_items( $config['menu_name'] );
+
+			/*
+			 * Sort the menu items into two groups: top level items, and a list
+			 * of sub-menu items organized by parent ID. Then we can recursively
+			 * convert top level items to components, and pass the list of sub-menu
+			 * items as possible children to be resolved and removed from the list.
+			 */
+			$top_level_items = [];
+			$sub_menu_items  = [];
+
+			foreach ( $menu_items as $menu_item ) {
+				if ( ! $menu_item->menu_item_parent ) {
+					$top_level_items[] = $menu_item;
+				} else {
+					$sub_menu_items[ $menu_item->menu_item_parent ][] = $menu_item;
+				}
+			}
+
+			foreach ( $top_level_items as $item ) {
+				$children[] = convert_menu_to_components( $item, $sub_menu_items );
+			}
+
+			return $children;
 		},
 	]
 );
 
+
 /**
- * Recursively build a menu component with all the menu items.
+ * Convert a WP nav menu item into a component.
  *
- * @param array   $menu_items Array of \WP_Post menu items.
- * @param integer $parent_id  Parent ID of the menu item we're iterating on.
+ * Children are passed by reference to make recursive calls more performant.
+ *
+ * @param WP_Post $menu_item A menu item post object.
+ * @param array   $children  Optional. Array of possible children to match with parents.
  * @return array
  */
-function convert_menu_to_components( array $menu_items, $parent_id = 0 ) {
+function convert_menu_to_components( WP_Post $menu_item, &$children = [] ) {
 
-	$menu = [];
+	// Convert the menu class instance into a simpler array format.
+	$component = new Component(
+		'irving/menu-item',
+		[
+			'config' => [
+				'attribute_title' => (string) $menu_item->attr_title,
+				'classes'         => array_filter( (array) $menu_item->classes ),
+				'id'              => absint( $menu_item->ID ),
+				'parent_id'       => absint( $menu_item->menu_item_parent ),
+				'target'          => (string) $menu_item->target,
+				'title'           => (string) $menu_item->title,
+				'url'             => get_the_permalink( $menu_item ),
+			],
+		]
+	);
 
-	foreach ( $menu_items as $menu_item ) {
-
-		// Validate the menu item object.
-		if ( ! $menu_item instanceof \WP_Post ) {
-			continue;
+	if ( isset( $children[ $menu_item->ID ] ) ) {
+		foreach ( $children[ $menu_item->ID ] as $child ) {
+			$component->set_child( convert_menu_to_components( $child, $children ) );
 		}
 
-		// Convert the menu class instance into a simpler array format.
-		$menu_item = new Component(
-			'irving/menu-item',
-			[
-				'config' => [
-					'attribute_title' => (string) $menu_item->attr_title,
-					'classes'         => array_filter( (array) $menu_item->classes ),
-					'id'              => absint( $menu_item->ID ),
-					'parent_id'       => absint( $menu_item->menu_item_parent ),
-					'target'          => (string) $menu_item->target,
-					'title'           => (string) $menu_item->title,
-					'url'             => (string) $menu_item->url ?? get_the_permalink( $menu_item ),
-				],
-			]
-		);
-
-		// If the parent ID matches this loop, recursively build the children.
-		if ( $menu_item->get_config( 'parent_id' ) === $parent_id ) {
-			$menu_item->set_children( convert_menu_to_components( $menu_items, $menu_item->get_config( 'id' ) ) );
-			$menu[] = $menu_item;
-		}
+		// Remove children of this item once they're converted.
+		unset( $children[ $menu_item->ID ] );
 	}
 
-	return $menu;
+	return $component;
 }

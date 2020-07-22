@@ -301,7 +301,11 @@ class Components_Endpoint extends Endpoint {
 			}
 		}
 
-		if ( ! empty( $query ) || ! empty( $this->params['s'] ?? '' ) ) {
+		if (
+			! empty( $query ) ||
+			! empty( $this->params['s'] ?? '' ) ||
+			! empty( $this->params['preview'] ?? '' )
+		) {
 
 			// Fix an issue where `add_query_arg` doesn't work with already
 			// encoded strings missing the equal.
