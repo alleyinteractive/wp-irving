@@ -20,8 +20,8 @@ class Cache_Endpoint extends Endpoint {
 		// Register the route.
 		add_action( 'rest_api_init', [ $this, 'register_rest_routes' ] );
 		// Cache purge actions.
-		add_action( 'irving_site_cache_purge', [ $this, 'purge_site_cache' ] );
-		add_action( 'irving_page_cache_purge', [ $this, 'purge_page_cache' ] );
+		add_action( 'wp_irving_site_cache_purge', [ $this, 'purge_site_cache' ] );
+		add_action( 'wp_irving_page_cache_purge', [ $this, 'purge_page_cache' ] );
 	}
 
 	/**
@@ -52,7 +52,7 @@ class Cache_Endpoint extends Endpoint {
 		// Ensure the action exists prior to firing.
 		if ( ! empty( $action ) ) {
 			if ( 'irving_site_cache_purge' === $action ) {
-				do_action( $action );
+				do_action( 'wp_' . $action );
 			}
 
 			if ( 'irving_page_cache_purge' === $action ) {
@@ -61,7 +61,7 @@ class Cache_Endpoint extends Endpoint {
 				// Ensure the requested route is not empty prior
 				// to firing the action.
 				if ( ! empty( $route ) ) {
-					do_action( $action, $route );
+					do_action( 'wp_' . $action, $route );
 				}
 			}
 		}
@@ -80,7 +80,7 @@ class Cache_Endpoint extends Endpoint {
 
 	/**
 	 * Purge the cache for a specific route/page.
-	 * d
+	 *
 	 * @param string $route The target route to purge from the cache.
 	 */
 	public function purge_page_cache( $route ) {

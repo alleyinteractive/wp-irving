@@ -369,10 +369,11 @@ function get_cache_items(): array {
 		],
 	];
 
-	$is_external_env = function_exists( 'wpcom_vip_purge_edge_cache_for_url' ) || function_exists( 'patheon_wp_clear_edge_paths' );
-	// On VIP Go environments, enable the option to purge the
-	// URL specific page cache. Do not show on admin pages.
-	if ( ! is_admin() && $is_external_env ) {
+	$is_vip      = function_exists( 'wpcom_vip_purge_edge_cache_for_url' );
+	$is_pantheon = function_exists( 'patheon_wp_clear_edge_paths' );
+	// On VIP Go & pantheon environments, enable the option to purge the
+	// URL specific page cache.
+	if ( $is_vip || $is_pantheon ) {
 		$arr[] = [
 			'id'     => 'irving-cache-two',
 			'parent' => 'irving-cache',
