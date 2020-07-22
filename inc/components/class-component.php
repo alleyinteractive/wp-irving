@@ -8,6 +8,7 @@
 namespace WP_Irving\Components;
 
 use JsonSerializable;
+use WP_Irving\Templates;
 
 /**
  * An object representing a component.
@@ -408,28 +409,33 @@ class Component implements JsonSerializable {
 		// Set context before setting children.
 		$this->provide_context();
 
-		$children = array_map(
-			function ( $child ) {
+		foreach ( $children as $key => &$child ) {
 
-				// Consider marking this as _doing_it_wrong.
-				if ( $child instanceof Component ) {
-					return $child;
-				}
+			// Consider marking this as _doing_it_wrong.
+			if ( $child instanceof Component ) {
+				continue;
+			}
 
-				// Convert argument syntax to template syntax.
-				if ( is_array( $child ) && ! isset( $child['name'] ) ) {
-					$child = array_merge(
-						[
-							'name' => $child[0],
-						],
-						$child[1] ?? []
-					);
-				}
+			// Handle template parts.
+			if (
+				isset( $child['name'] ) &&
+				0 === strpos( $child['name'], 'template-part' )
+			) {
+				$template_data = Templates\hydrate_template_parts( $child );
+				array_splice( $children, $key, 1, $template_data );
+				continue;
+			}
 
-				return $child;
-			},
-			$children
-		);
+			// Convert argument syntax to template syntax.
+			if ( is_array( $child ) && ! isset( $child['name'] ) ) {
+				$child = array_merge(
+					[
+						'name' => $child[0],
+					],
+					$child[1] ?? []
+				);
+			}
+		}
 
 		// Run registered children_callback functions.
 		if ( is_callable( $this->children_callback ) ) {
