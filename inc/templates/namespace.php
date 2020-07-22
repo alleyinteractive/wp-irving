@@ -154,6 +154,12 @@ function prepare_data_from_template( string $template_path ): array {
 			// Attempt to json decode it.
 			$data = json_decode( $contents, true );
 
+			// If a template part only includes a single component,
+			// we need to wrap it in another array.
+			if ( count( $data ) > 0 && ! isset( $data[0] ) ) {
+				$data = [ $data ];
+			}
+
 			// Check for errors during decoding.
 			if ( json_last_error() ) {
 				wp_send_json_error(
