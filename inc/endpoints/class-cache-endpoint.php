@@ -52,7 +52,7 @@ class Cache_Endpoint extends Endpoint {
 		// Ensure the action exists prior to firing.
 		if ( ! empty( $action ) ) {
 			if ( 'irving_site_cache_purge' === $action ) {
-				do_action( 'wp_' . $action );
+				do_action( 'wp_irving_site_cache_purge' );
 			}
 
 			if ( 'irving_page_cache_purge' === $action ) {
@@ -61,7 +61,7 @@ class Cache_Endpoint extends Endpoint {
 				// Ensure the requested route is not empty prior
 				// to firing the action.
 				if ( ! empty( $route ) ) {
-					do_action( 'wp_' . $action, $route );
+					do_action( 'wp_irving_page_cache_purge', $route );
 				}
 			}
 		}
