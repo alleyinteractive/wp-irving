@@ -1,5 +1,10 @@
 [
   { "name": "example/component" },
   { "name": "template-part/example" },
-  { "name": "example/component" }
+  {
+    "name": "example/component",
+    "children": [
+      { "name": "template-part/simple" }
+    ]
+  }
 ]

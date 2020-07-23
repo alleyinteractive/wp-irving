@@ -419,6 +419,12 @@ function convert_blocks_to_components( array $blocks ): array {
  */
 function hydrate_template( array $data ): array {
 
+	// Check whether the root of the template data is a single
+	// component, and wrap it in another array if so.
+	if ( count( $data ) > 0 && isset( $data['name'] ) ) {
+		$data = [ $data ];
+	}
+
 	$hydrated = [];
 
 	foreach ( $data as $component ) {

@@ -184,7 +184,14 @@ class Test_Templates extends WP_UnitTestCase {
 							],
 						]
 					),
-					new Component( 'example/component' ),
+					new Component(
+						'example/component',
+						[
+							'children' => [
+								[ 'name' => 'example/component' ],
+							],
+						]
+					),
 				],
 				'Nested template parts are not hydrating correctly.',
 			],
