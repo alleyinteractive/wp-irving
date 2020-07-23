@@ -59,24 +59,30 @@ register_component_from_config(
 			$post_ids = wp_list_pluck( $query->posts, 'ID' );
 			$post_ids = post_list_get_and_add_used_post_ids( $post_ids );
 
+			// Ensure single items are wrapped in an array.
+			$item = ( isset( $templates['item'][0] ) ) ? $templates['item'] : [ $templates['item'] ];
+
 			$children = array_map(
-				function ( $post_id ) use ( $templates ) {
+				function ( $post_id ) use ( $item ) {
 					return [
 						'name'     => 'irving/post-provider',
 						'config'   => [
 							'post_id' => $post_id,
 						],
-						'children' => [ $templates['item'] ],
+						'children' => $item,
 					];
 				},
 				$post_ids
 			);
 
+			// If a list of components are set as a wrapper, only use the first.
+			$wrapper = $templates['wrapper'][0] ?? $templates['wrapper'];
+
 			// Wrap the children.
-			if ( ! empty( $templates['wrapper'] ) ) {
+			if ( ! empty( $wrapper ) ) {
 				$children = [
 					array_merge(
-						$templates['wrapper'],
+						$wrapper,
 						[ 'children' => $children ]
 					),
 				];

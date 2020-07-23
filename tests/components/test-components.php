@@ -452,6 +452,22 @@ class Test_Components extends WP_UnitTestCase {
 			'item'    => [ 'name' => 'example/item' ],
 		];
 
+		// Demo templates with item and wrapper in array format.
+		$templates_alt = [
+			'before'  => [
+				[ 'name' => 'example/before' ],
+			],
+			'after'   => [
+				[ 'name' => 'example/after' ],
+			],
+			'wrapper' => [
+				[ 'name' => 'example/wrapper' ],
+			],
+			'item'    => [
+				[ 'name' => 'example/item' ],
+			],
+		];
+
 		$expected = $this->get_expected_component(
 			'irving/post-list',
 			[
@@ -492,7 +508,18 @@ class Test_Components extends WP_UnitTestCase {
 			]
 		);
 
+		$component_alt = new Component(
+			'irving/post-list',
+			[
+				'config' => [
+					'query_args' => $query_args,
+					'templates'  => $templates,
+				],
+			]
+		);
+
 		$this->assertComponentEquals( $expected, $component );
+		$this->assertComponentEquals( $expected, $component_alt );
 	}
 
 	/**
