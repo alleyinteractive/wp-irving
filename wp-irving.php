@@ -29,6 +29,7 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-registry-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-data-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
+require_once WP_IRVING_PATH . '/inc/endpoints/class-cache-endpoint.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
@@ -71,6 +72,7 @@ new REST_API\Components_Endpoint();
 new REST_API\Components_Registry_Endpoint();
 new REST_API\Data_Endpoint();
 new REST_API\Form_Endpoint();
+new REST_API\Cache_Endpoint();
 
 // Bootstrap functionality.
 Components\bootstrap();

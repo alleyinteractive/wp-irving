@@ -171,7 +171,8 @@ function add_admin_bar_nodes( \WP_Admin_Bar $admin_bar ) {
 			get_admin_api_items(), // Admin-only API links.
 			get_frontend_api_items(), // Frontend-only API links.
 			get_setting_items(), // Irving settings.
-			get_documentation_items() // Documentation.
+			get_documentation_items(), // Documentation.
+			get_cache_items(), // Cache busting.
 		)
 	);
 }
@@ -348,3 +349,61 @@ function get_documentation_items(): array {
 		],
 	];
 }
+
+/**
+ * Get an array of Irving cache busting node args to be passed into
+ * admin_bar->add_node().
+ *
+ * @return array
+ */
+function get_cache_items(): array {
+	$arr = [
+		[
+			'id'    => 'irving-cache',
+			'title' => __( 'Clear The Cache', 'wp-irving' ),
+		],
+		[
+			'id'     => 'irving-cache-one',
+			'parent' => 'irving-cache',
+			'title'  => __( 'Clear Site Cache', 'wp-irving' ),
+		],
+	];
+
+	$is_vip      = function_exists( 'wpcom_vip_purge_edge_cache_for_url' );
+	$is_pantheon = function_exists( 'patheon_wp_clear_edge_paths' );
+	// On VIP Go & pantheon environments, enable the option to purge the
+	// URL specific page cache.
+	if ( $is_vip || $is_pantheon ) {
+		$arr[] = [
+			'id'     => 'irving-cache-two',
+			'parent' => 'irving-cache',
+			'title'  => __( 'Clear Page Cache', 'wp-irving' ),
+		];
+	}
+
+	return $arr;
+}
+
+/**
+ * Register the click listener for the `irving-cache-purge` node. Register
+ * an action event, `wp_ajax_irving_cache_purge`, on click using WP ajax.
+ */
+function cache_purge_click_listener() {
+	$rest_endpoint = site_url( '/wp-json/irving/v1/purge-cache' );
+	?>
+		<script type="text/javascript">
+			jQuery('#wp-admin-bar-irving-cache-one').on('click', function() {
+				const data = { 'action': 'irving_site_cache_purge' };
+				jQuery.post( '<?php echo esc_url( $rest_endpoint ); ?>', data );
+			});
+			jQuery('#wp-admin-bar-irving-cache-two').on('click', function() {
+				const data = {
+					'action': 'irving_page_cache_purge',
+					'route': window.location.href,
+				};
+				jQuery.post( '<?php echo esc_url( $rest_endpoint ); ?>', data );
+			});
+		</script>
+	<?php
+}
+add_action( 'admin_footer', __NAMESPACE__ . '\cache_purge_click_listener', 95 );
