@@ -51,8 +51,12 @@ class Cache_Endpoint extends Endpoint {
 
 		// Ensure the action exists prior to firing.
 		if ( ! empty( $action ) ) {
+			$response = new \WP_REST_Response( true );
+
 			if ( 'irving_site_cache_purge' === $action ) {
 				do_action( 'wp_irving_site_cache_purge' );
+
+				return $response;
 			}
 
 			if ( 'irving_page_cache_purge' === $action ) {
@@ -62,9 +66,15 @@ class Cache_Endpoint extends Endpoint {
 				// to firing the action.
 				if ( ! empty( $route ) ) {
 					do_action( 'wp_irving_page_cache_purge', $route );
+
+					return $response;
 				}
 			}
 		}
+
+		$response = new \WP_REST_Response( false );
+
+		return $response;
 	}
 
 	/**
@@ -88,10 +98,12 @@ class Cache_Endpoint extends Endpoint {
 		// environment. If so, use VIP's purge function.
 		if ( function_exists( 'wpcom_vip_purge_edge_cache_for_url' ) ) {
 			wpcom_vip_purge_edge_cache_for_url( $route );
+			return true;
 		}
 		// Check for Pantheon environments.
 		if ( function_exists( 'patheon_wp_clear_edge_paths' ) ) {
 			pantheon_wp_clear_edge_paths( [ $route ] );
+			return true;
 		}
 	}
 }
