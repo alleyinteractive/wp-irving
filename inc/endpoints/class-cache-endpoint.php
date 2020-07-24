@@ -98,12 +98,10 @@ class Cache_Endpoint extends Endpoint {
 		// environment. If so, use VIP's purge function.
 		if ( function_exists( 'wpcom_vip_purge_edge_cache_for_url' ) ) {
 			wpcom_vip_purge_edge_cache_for_url( $route );
-			return true;
 		}
 		// Check for Pantheon environments.
 		if ( function_exists( 'patheon_wp_clear_edge_paths' ) ) {
 			pantheon_wp_clear_edge_paths( [ $route ] );
-			return true;
 		}
 	}
 }
