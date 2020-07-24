@@ -366,7 +366,7 @@ function get_cache_items(): array {
 			'id'     => 'irving-cache-one',
 			'parent' => 'irving-cache',
 			'title'  => __( 'Clear Site Cache', 'wp-irving' ),
-			'href'   => '#'
+			'href'   => '#',
 		],
 	];
 
@@ -379,7 +379,7 @@ function get_cache_items(): array {
 			'id'     => 'irving-cache-two',
 			'parent' => 'irving-cache',
 			'title'  => __( 'Clear Page Cache', 'wp-irving' ),
-			'href'   => '#'
+			'href'   => '#',
 		];
 	}
 
