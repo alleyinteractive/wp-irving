@@ -51,12 +51,15 @@ class Cache_Endpoint extends Endpoint {
 
 		// Ensure the action exists prior to firing.
 		if ( ! empty( $action ) ) {
-			$response = new \WP_REST_Response( true );
+			$response = [
+				'success' => true,
+				'message' => __( 'Cache purged successfully.', 'wp-irving' ),
+			];
 
 			if ( 'irving_site_cache_purge' === $action ) {
 				do_action( 'wp_irving_site_cache_purge' );
 
-				return $response;
+				return new \WP_REST_Response( $response );
 			}
 
 			if ( 'irving_page_cache_purge' === $action ) {
@@ -67,12 +70,12 @@ class Cache_Endpoint extends Endpoint {
 				if ( ! empty( $route ) ) {
 					do_action( 'wp_irving_page_cache_purge', $route );
 
-					return $response;
+					return new \WP_REST_Response( $response );
 				}
 			}
 		}
 
-		$response = new \WP_REST_Response( false );
+		$response = new \WP_Error( 500, __( 'There was an error clearing the cache. Please check the network tab in the developer console for more information.', 'wp-irving' ) );
 
 		return $response;
 	}
