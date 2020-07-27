@@ -366,6 +366,7 @@ function get_cache_items(): array {
 			'id'     => 'irving-cache-one',
 			'parent' => 'irving-cache',
 			'title'  => __( 'Clear Site Cache', 'wp-irving' ),
+			'href'   => '#',
 		],
 	];
 
@@ -378,6 +379,7 @@ function get_cache_items(): array {
 			'id'     => 'irving-cache-two',
 			'parent' => 'irving-cache',
 			'title'  => __( 'Clear Page Cache', 'wp-irving' ),
+			'href'   => '#',
 		];
 	}
 
@@ -394,14 +396,22 @@ function cache_purge_click_listener() {
 		<script type="text/javascript">
 			jQuery('#wp-admin-bar-irving-cache-one').on('click', function() {
 				const data = { 'action': 'irving_site_cache_purge' };
-				jQuery.post( '<?php echo esc_url( $rest_endpoint ); ?>', data );
+				jQuery.post(
+					'<?php echo esc_url( $rest_endpoint ); ?>',
+					data,
+					function(response) { alert(response.message); }
+				).fail(function(error) { alert(error.responseJSON.message); });;
 			});
 			jQuery('#wp-admin-bar-irving-cache-two').on('click', function() {
 				const data = {
 					'action': 'irving_page_cache_purge',
 					'route': window.location.href,
 				};
-				jQuery.post( '<?php echo esc_url( $rest_endpoint ); ?>', data );
+				jQuery.post(
+					'<?php echo esc_url( $rest_endpoint ); ?>',
+					data,
+					function(response) { alert(response.message); }
+				).fail(function(error) { alert(error.responseJSON.message); });
 			});
 		</script>
 	<?php
