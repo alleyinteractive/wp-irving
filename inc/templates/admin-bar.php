@@ -47,9 +47,9 @@ function setup_admin_bar(
 	}
 
 	// Only show the admin bar if logged in.
-	if ( ! is_user_logged_in() ) {
-		return $data;
-	}
+	// if ( ! is_user_logged_in() ) {
+	// 	return $data;
+	// }
 
 	// Unshift an admin bar component to the top of the `page` array.
 	array_unshift(
@@ -128,6 +128,30 @@ function wp_head() {
 				top.postMessage({
 					hovered: false,
 				}, home);
+			});
+
+			var rest_endpoint = "<?php echo esc_url( site_url( '/wp-json/irving/v1/purge-cache' ) ); ?>";
+
+			// Register the cache purge click listeners for front-end pages.
+			jQuery('#wp-admin-bar-irving-cache-one').on('click', function() {
+				const data = { 'action': 'irving_site_cache_purge' };
+				jQuery.post(
+					rest_endpoint,
+					data,
+					function(response) { alert(response.message); }
+				).fail(function(error) { alert(error.responseJSON.message); });;
+			});
+
+			jQuery('#wp-admin-bar-irving-cache-two').on('click', function() {
+				const data = {
+					'action': 'irving_page_cache_purge',
+					'route': window.location.href,
+				};
+				jQuery.post(
+					rest_endpoint,
+					data,
+					function(response) { alert(response.message); }
+				).fail(function(error) { alert(error.responseJSON.message); });
 			});
 		}, false);
 	</script>
@@ -357,6 +381,10 @@ function get_documentation_items(): array {
  * @return array
  */
 function get_cache_items(): array {
+	$redirect_url = is_admin()
+		? site_url( $_SERVER['REQUEST_URI'] )
+		: home_url( $_SERVER['REQUEST_URI'] );
+
 	$arr = [
 		[
 			'id'    => 'irving-cache',
@@ -366,7 +394,7 @@ function get_cache_items(): array {
 			'id'     => 'irving-cache-one',
 			'parent' => 'irving-cache',
 			'title'  => __( 'Clear Site Cache', 'wp-irving' ),
-			'href'   => '#',
+			'href'   => $redirect_url,
 		],
 	];
 
@@ -379,7 +407,7 @@ function get_cache_items(): array {
 			'id'     => 'irving-cache-two',
 			'parent' => 'irving-cache',
 			'title'  => __( 'Clear Page Cache', 'wp-irving' ),
-			'href'   => '#',
+			'href'   => $redirect_url,
 		];
 	}
 
@@ -387,8 +415,7 @@ function get_cache_items(): array {
 }
 
 /**
- * Register the click listener for the `irving-cache-purge` node. Register
- * an action event, `wp_ajax_irving_cache_purge`, on click using WP ajax.
+ * Register the cache purge click listeners for admin pages.
  */
 function cache_purge_click_listener() {
 	$rest_endpoint = site_url( '/wp-json/irving/v1/purge-cache' );
