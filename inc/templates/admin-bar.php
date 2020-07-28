@@ -381,9 +381,13 @@ function get_documentation_items(): array {
  * @return array
  */
 function get_cache_items(): array {
+	$request_uri = '';
+	if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+		$request_uri = $_SERVER['REQUEST_URI'];
+	}
 	$redirect_url = is_admin()
-		? site_url( $_SERVER['REQUEST_URI'] )
-		: home_url( $_SERVER['REQUEST_URI'] );
+		? site_url( $request_uri )
+		: home_url( $request_uri );
 
 	$arr = [
 		[
