@@ -98,7 +98,7 @@ function convert_menu_to_components( WP_Post $menu_item, &$children = [] ) {
 				'parent_id'       => absint( $menu_item->menu_item_parent ),
 				'target'          => (string) $menu_item->target,
 				'title'           => (string) $menu_item->title,
-				'url'             => get_the_permalink( $menu_item ),
+				'url'             => (string) $menu_item->url,
 			],
 		]
 	);
