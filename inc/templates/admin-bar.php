@@ -383,7 +383,7 @@ function get_documentation_items(): array {
 function get_cache_items(): array {
 	$request_uri = '';
 	if ( isset( $_SERVER['REQUEST_URI'] ) ) {
-		$request_uri = $_SERVER['REQUEST_URI'];
+		$request_uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) );
 	}
 	$redirect_url = is_admin()
 		? site_url( $request_uri )
