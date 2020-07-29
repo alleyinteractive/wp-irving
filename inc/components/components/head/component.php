@@ -27,7 +27,7 @@ register_component_from_config(
 					'children' => [
 						( 'defaults' === $context ) ?
 							get_bloginfo( 'name' ) :
-							wp_title( '&raquo;', false ),
+							html_entity_decode( wp_get_document_title() ),
 					],
 				]
 			);
