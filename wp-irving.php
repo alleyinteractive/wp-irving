@@ -31,6 +31,9 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-data-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-cache-endpoint.php';
 
+// Integrations manager.
+require_once WP_IRVING_PATH . '/inc/class-integrations.php';
+
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
