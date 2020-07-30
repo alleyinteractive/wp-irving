@@ -65,6 +65,9 @@ function load_template(
 	// Automatically setup the <Head> component.
 	$data = setup_head( $data, $query, $context, $path, $request );
 
+	// Automatically setup any active integrations.
+	$data = setup_integrations( $data );
+
 	// Setup a global style provider.
 	$data = setup_site_theme_provider( $data );
 
@@ -520,6 +523,32 @@ function setup_head(
 			]
 		)
 	);
+
+	return $data;
+}
+
+/**
+ * Manage any active integrations by inserting an `irving/integrations` component.
+ *
+ * @param array $data Data object to be hydrated by template.
+ * @return array The update endpoint data.
+ */
+function setup_integrations( $data ) {
+	// Get any set integrations options.
+	$options = get_option( 'irving_integrations' );
+
+	// If options are present, append the integrations component into the endpoint response.
+	if ( ! empty( $options ) ) {
+		array_push(
+			$data['page'],
+			new Component(
+				'irving/integrations',
+				[
+					'config' => $options,
+				],
+			)
+		);
+	}
 
 	return $data;
 }
