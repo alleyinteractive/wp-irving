@@ -53,7 +53,7 @@ class Integrations {
         add_settings_section(
             'irving_integrations_settings',
             __( 'Add keys for integrations to be passed to the front-end.', 'wp-irving' ),
-            'set_irving_integrations_keys',
+            [ $this, 'set_irving_integrations_keys' ],
             'irving_integrations'
         );
 
