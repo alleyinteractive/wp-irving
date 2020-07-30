@@ -1061,7 +1061,7 @@ class Test_Components extends WP_UnitTestCase {
 								'parentId'       => 0,
 								'target'         => '',
 								'title'          => get_the_title( $menu_items[0] ),
-								'url'            => $menu_items[0]->url,
+								'url'            => get_the_permalink( $menu_items[0] ),
 							],
 						]
 					),
@@ -1075,7 +1075,7 @@ class Test_Components extends WP_UnitTestCase {
 								'parentId'       => 0,
 								'target'         => '',
 								'title'          => get_the_title( $menu_items[1] ),
-								'url'            => $menu_items[1]->url,
+								'url'            => get_the_permalink( $menu_items[1] ),
 							],
 							'children' => [
 								$this->get_expected_component(
