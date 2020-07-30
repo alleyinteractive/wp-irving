@@ -47,7 +47,7 @@ class Integrations {
      */
     public function register_settings_fields() {
         // Register a new setting for the integrations manager to consume/set.
-        register_setting( 'wp-irving-integrations', 'irving_integrations_options' );
+        register_setting( 'wp-irving-integrations', 'irving_integrations' );
 
         // Register the section.
         add_settings_section(
@@ -61,8 +61,12 @@ class Integrations {
         add_settings_field(
             'irving_integrations_ga_key',
             __( 'Google Analytics Tracking ID', 'wp-irving' ),
-            'get_ga_key',
-            'irving_integrations_settings'
+            [ $this, 'get_ga_key' ],
+            'irving_integrations',
+            'irving_integrations_settings',
+            [
+                'id' => 'irving_integrations_ga_key',
+            ]
         );
     }
 
@@ -72,9 +76,10 @@ class Integrations {
         <?php
     }
 
-    public function get_ga_key() {
+    public function get_ga_key( $args ) {
+        $options = get_option( 'irving_integrations_options' );
         ?>
-            <p><?php esc_html_e( 'Take the red pill.', 'wp-irving' ); ?></p>
+            <input type="text" name="<?php echo esc_attr( $args[ 'id' ] ); ?>" value="<?php echo esc_attr( $options[ $args[ 'id' ] ] ); ?>"/>
         <?php
     }
 
@@ -96,6 +101,14 @@ class Integrations {
      * Render the settings page.
      */
     public function render() {
+        // Check if the user have submitted the settings
+        if ( isset( $_GET['settings-updated'] ) ) {
+            add_settings_error( 'irving_integrations_messages', 'irving_integrations_message', __( 'Settings Saved', 'wporg' ) );
+        }
+
+         // Show error/update messages
+        settings_errors( 'irving_integrations_messages' );
+
         ?>
             <div class="wrap">
                 <h1 class="wp-heading-inline">
@@ -104,7 +117,7 @@ class Integrations {
 
                 <hr class="wp-header-end">
 
-                <form method="post">
+                <form method="post" action="options.php">
                     <?php settings_fields( 'irving_integrations' ); ?>
 
                     <?php do_settings_sections( 'irving_integrations' ); ?>
