@@ -37,7 +37,45 @@ class Integrations {
      */
     public function setup() {
 		// Register admin page.
-		add_action( 'admin_menu', [ $this, 'register_admin' ] );
+        add_action( 'admin_menu', [ $this, 'register_admin' ] );
+        // Register settings fields for integrations.
+        add_action( 'admin_init', [ $this, 'register_settings_fields' ], 10, 2 );
+    }
+
+    /**
+     * Register settings fields for display.
+     */
+    public function register_settings_fields() {
+        // Register a new setting for the integrations manager to consume/set.
+        register_setting( 'wp-irving-integrations', 'irving_integrations_options' );
+
+        // Register the section.
+        add_settings_section(
+            'irving_integrations_settings',
+            __( 'Add keys for integrations to be passed to the front-end.', 'wp-irving' ),
+            'set_irving_integrations_keys',
+            'irving_integrations'
+        );
+
+        // Register a new field for the Google Analytics integration.
+        add_settings_field(
+            'irving_integrations_ga_key',
+            __( 'Google Analytics Tracking ID', 'wp-irving' ),
+            'get_ga_key',
+            'irving_integrations_settings'
+        );
+    }
+
+    public function set_irving_integrations_keys() {
+        ?>
+            <p><?php esc_html_e( 'Follow the white rabbit.', 'wp-irving' ); ?></p>
+        <?php
+    }
+
+    public function get_ga_key() {
+        ?>
+            <p><?php esc_html_e( 'Take the red pill.', 'wp-irving' ); ?></p>
+        <?php
     }
 
     /**
@@ -67,6 +105,11 @@ class Integrations {
                 <hr class="wp-header-end">
 
                 <form method="post">
+                    <?php settings_fields( 'irving_integrations' ); ?>
+
+                    <?php do_settings_sections( 'irving_integrations' ); ?>
+
+                    <?php submit_button( __( 'Save Settings', 'wp-irving' ) ); ?>
                 </form>
             </div>
         <?php
