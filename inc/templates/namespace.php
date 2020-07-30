@@ -539,15 +539,25 @@ function setup_integrations( $data ) {
 
 	// If options are present, append the integrations component into the endpoint response.
 	if ( ! empty( $options ) ) {
-		array_push(
-			$data['page'],
-			new Component(
-				'irving/integrations',
-				[
-					'config' => $options,
-				],
-			)
-		);
+		$config = [];
+		foreach ( $options as $option_key => $option_value ) {
+			if ( ! empty( $option_value ) ) {
+				$config[$option_key] = $option_value;
+			}
+		}
+
+		// Don't return an integrations config if no keys are present.
+		if ( ! empty( $config ) ) {
+			array_push(
+				$data['page'],
+				new Component(
+					'irving/integrations',
+					[
+						'config' => $config,
+					],
+				)
+			);
+		}
 	}
 
 	return $data;

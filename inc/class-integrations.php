@@ -10,7 +10,7 @@
  /**
   * Class for managing integrations in Irving.
   */
-class Integrations {
+class Integrations { 
 
     /**
      * Holds the option values to be set.
@@ -65,19 +65,19 @@ class Integrations {
 
         // Register a new field for the Google Analytics integration.
         add_settings_field(
-            'irving_integrations_ga_key',
+            'ga_tracking_id',
             __( 'Google Analytics Tracking ID', 'wp-irving' ),
             [ $this, 'get_ga_key' ],
             'wp_irving_integrations',
             'irving_integrations_settings',
             [
-                'id' => 'irving_integrations_ga_key',
+                'id' => 'ga_tracking_id',
             ]
         );
     }
 
     public function get_ga_key( $args ) {
-        $ga_key = $this->options[ $args[ 'id' ] ];
+        $ga_key = isset( $this->options[ $args[ 'id' ] ] ) ? $this->options[ $args[ 'id' ] ] : '';
 
         ?>
             <input type="text" name="irving_integrations[<?php echo esc_attr( $args[ 'id' ] ); ?>]" value="<?php echo isset( $ga_key ) ? esc_attr( $ga_key ) : '' ?>" />
