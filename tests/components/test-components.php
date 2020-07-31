@@ -1061,7 +1061,7 @@ class Test_Components extends WP_UnitTestCase {
 								'parentId'       => 0,
 								'target'         => '',
 								'title'          => get_the_title( $menu_items[0] ),
-								'url'            => get_the_permalink( $menu_items[0] ),
+								'url'            => get_the_permalink( $posts[0] ),
 							],
 						]
 					),
@@ -1075,7 +1075,7 @@ class Test_Components extends WP_UnitTestCase {
 								'parentId'       => 0,
 								'target'         => '',
 								'title'          => get_the_title( $menu_items[1] ),
-								'url'            => get_the_permalink( $menu_items[1] ),
+								'url'            => get_the_permalink( $posts[1] ),
 							],
 							'children' => [
 								$this->get_expected_component(
@@ -1088,7 +1088,7 @@ class Test_Components extends WP_UnitTestCase {
 											'parentId' => $menu_items[1],
 											'target'   => '',
 											'title'    => get_the_title( $menu_items[2] ),
-											'url'      => get_the_permalink( $menu_items[2] ),
+											'url'      => get_the_permalink( $posts[2] ),
 										],
 										'children' => [
 											$this->get_expected_component(
@@ -1101,7 +1101,7 @@ class Test_Components extends WP_UnitTestCase {
 														'parentId' => $menu_items[2],
 														'target'   => '',
 														'title'    => get_the_title( $menu_items[3] ),
-														'url'      => get_the_permalink( $menu_items[3] ),
+														'url'      => get_the_permalink( $posts[3] ),
 													],
 												]
 											),
