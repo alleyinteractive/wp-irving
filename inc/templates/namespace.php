@@ -550,12 +550,10 @@ function setup_integrations( $data ) {
 		if ( ! empty( $config ) ) {
 			array_push(
 				$data['page'],
-				new Component(
-					'irving/integrations',
-					[
-						'config' => $config,
-					],
-				)
+				[
+					'name'   => 'irving/integrations',
+					'config' => $config,
+				]
 			);
 		}
 	}

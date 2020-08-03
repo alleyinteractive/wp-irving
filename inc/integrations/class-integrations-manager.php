@@ -10,13 +10,7 @@
  /**
   * Class for managing integrations in Irving.
   */
-class Integrations { 
-
-    /**
-     * Holds the option values to be set.
-     */
-    private $options;
-
+class Integrations_Manager {
 
     /**
      * Class instance.
@@ -42,7 +36,7 @@ class Integrations {
      * Class constructor.
      */
     public function setup() {
-		// Register admin page.
+        // Register admin page.
         add_action( 'admin_menu', [ $this, 'register_admin' ] );
         // Register settings fields for integrations.
         add_action( 'admin_init', [ $this, 'register_settings_fields' ], 10, 2 );
@@ -54,7 +48,6 @@ class Integrations {
     public function register_settings_fields() {
         // Register a new setting for the integrations manager to consume/set.
         register_setting( 'wp_irving_integrations', 'irving_integrations' );
-
         // Register the section.
         add_settings_section(
             'irving_integrations_settings',
@@ -62,26 +55,6 @@ class Integrations {
             '',
             'wp_irving_integrations'
         );
-
-        // Register a new field for the Google Analytics integration.
-        add_settings_field(
-            'ga_tracking_id',
-            __( 'Google Analytics Tracking ID', 'wp-irving' ),
-            [ $this, 'get_ga_key' ],
-            'wp_irving_integrations',
-            'irving_integrations_settings',
-            [
-                'id' => 'ga_tracking_id',
-            ]
-        );
-    }
-
-    public function get_ga_key( $args ) {
-        $ga_key = isset( $this->options[ $args[ 'id' ] ] ) ? $this->options[ $args[ 'id' ] ] : '';
-
-        ?>
-            <input type="text" name="irving_integrations[<?php echo esc_attr( $args[ 'id' ] ); ?>]" value="<?php echo isset( $ga_key ) ? esc_attr( $ga_key ) : '' ?>" />
-        <?php
     }
 
     /**
@@ -102,8 +75,6 @@ class Integrations {
      * Render the settings page.
      */
     public function render() {
-        $this->options = get_option( 'irving_integrations' );
-
         // Check if the user have submitted the settings
         if ( isset( $_GET['settings-updated'] ) ) {
             add_settings_error(
@@ -135,6 +106,6 @@ class Integrations {
 add_action(
     'init',
     function() {
-        \WP_Irving\Integrations::instance();
+        \WP_Irving\Integrations_Manager::instance();
     }
 );
