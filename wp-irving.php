@@ -39,6 +39,7 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-pico.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
 
