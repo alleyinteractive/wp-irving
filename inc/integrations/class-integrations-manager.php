@@ -5,11 +5,11 @@
  * @package WP_Irving
  */
 
- namespace WP_Irving;
+namespace WP_Irving;
 
- /**
-  * Class for managing integrations in Irving.
-  */
+/**
+ * Class for managing integrations in Irving.
+ */
 class Integrations_Manager {
 
 	/**
@@ -76,7 +76,7 @@ class Integrations_Manager {
 	 */
 	public function render() {
 		// Check if the user have submitted the settings.
-		if ( isset( $_GET['settings-updated'] ) ) {
+		if ( isset( $_GET['settings-updated'] ) ) { // phpcs:ignore
 			add_settings_error(
 				'irving_integrations_messages',
 				'irving_integrations_message',
