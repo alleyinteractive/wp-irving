@@ -549,11 +549,15 @@ function setup_integrations( $data ) {
 		// Don't return an integrations config if no keys are present.
 		if ( ! empty( $config ) ) {
 			array_push(
-				$data['page'],
-				[
-					'name'   => 'irving/integrations',
-					'config' => $config,
-				]
+				$data['defaults'],
+				new Component(
+					'irving/integrations',
+					[
+						'config' => [
+							'integrations' => $config,
+						]
+					]
+				)
 			);
 		}
 	}
