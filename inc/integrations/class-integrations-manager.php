@@ -75,7 +75,7 @@ class Integrations_Manager {
 	 * Render the settings page.
 	 */
 	public function render() {
-		// Check if the user have submitted the settings
+		// Check if the user have submitted the settings.
 		if ( isset( $_GET['settings-updated'] ) ) {
 			add_settings_error(
 				'irving_integrations_messages',

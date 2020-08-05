@@ -14,6 +14,8 @@ class Google_Analytics {
 
 	/**
 	 * Holds the option values to be set.
+	 *
+	 * @var array
 	 */
 	private $options;
 
@@ -27,7 +29,7 @@ class Google_Analytics {
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ], 10, 2 );
 		// Filter the updated option values prior to submission.
-		add_filter( 'pre_update_option_irving_integrations', [ $this, 'format_option_for_update' ], 10, 2);
+		add_filter( 'pre_update_option_irving_integrations', [ $this, 'format_option_for_update' ], 10, 2 );
 	}
 
 	/**
@@ -49,21 +51,23 @@ class Google_Analytics {
 
 	/**
 	 * Render an input for the GA Tracking ID.
+	 *
+	 * @param array $args Arguments for input.
 	 */
 	public function render_tracking_id_input( $args ) {
 		// Check to see if there is an existing GA configuration in the option.
-		$option = isset( $this->options['google_analytics'] ) ? $this->options['google_analytics'][ $args[ 'id' ] ] : '';
+		$option = isset( $this->options['google_analytics'] ) ? $this->options['google_analytics'][ $args['id'] ] : '';
 		$ga_key = ! empty( $option ) ? $option : '';
 
 		?>
-			<input type="text" name="irving_integrations[<?php echo esc_attr( 'ga_' . $args[ 'id' ] ); ?>]" value="<?php echo esc_attr( $ga_key ); ?>" />
+			<input type="text" name="irving_integrations[<?php echo esc_attr( 'ga_' . $args['id'] ); ?>]" value="<?php echo esc_attr( $ga_key ); ?>" />
 		<?php
 	}
 
 	/**
 	 * Group the updated options based on the integration prefix.
 	 *
-	 * @param array  $options The updated options.
+	 * @param array $options The updated options.
 	 * @return array $arr The formatted options.
 	 */
 	public function format_option_for_update( $options ): array {
@@ -73,7 +77,7 @@ class Google_Analytics {
 		foreach ( $options as $option_key => $option_val ) {
 			// Build the config array for Google Analytics.
 			if ( strpos( $option_key, 'ga_' ) !== false ) {
-				$arr['google_analytics'][str_replace( 'ga_', '', $option_key )] = $option_val;
+				$arr['google_analytics'][ str_replace( 'ga_', '', $option_key ) ] = $option_val;
 			}
 		}
 
