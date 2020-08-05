@@ -542,7 +542,7 @@ function setup_integrations( $data ) {
 		$config = [];
 		foreach ( $options as $option_key => $option_value ) {
 			if ( ! empty( $option_value ) ) {
-				$config[$option_key] = $option_value;
+				$config[ $option_key ] = $option_value;
 			}
 		}
 
@@ -555,7 +555,7 @@ function setup_integrations( $data ) {
 					[
 						'config' => [
 							'integrations' => $config,
-						]
+						],
 					]
 				)
 			);
