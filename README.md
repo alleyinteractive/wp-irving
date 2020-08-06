@@ -15,5 +15,10 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 ## Changelog ##
 
+### 0.2.0 ###
+This update includes major improvements to the way developers can build layouts for Irving sites using WordPress.
+
+[See release notes](https://github.com/alleyinteractive/wp-irving/releases/tag/0.2.0)
+
 ### 0.1.0 ###
 First stable release of the WP-Irving plugin.
