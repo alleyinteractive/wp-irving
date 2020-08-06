@@ -95,8 +95,8 @@ class Components_Endpoint extends Endpoint {
 			self::get_namespace(),
 			'/components/',
 			[
-				'methods'             => \WP_REST_Server::READABLE,
 				'callback'            => [ $this, 'get_route_response' ],
+				'methods'             => \WP_REST_Server::READABLE,
 				'permission_callback' => [ $this, 'permissions_check' ],
 			]
 		);

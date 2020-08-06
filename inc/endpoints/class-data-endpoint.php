@@ -46,8 +46,9 @@ class Data_Endpoint extends Endpoint {
 				self::get_namespace(),
 				'/data/' . $endpoint['slug'],
 				[
-					'methods'  => \WP_REST_Server::READABLE,
-					'callback' => $endpoint['callback'],
+					'callback'            => $endpoint['callback'],
+					'methods'             => \WP_REST_Server::READABLE,
+					'permission_callback' => '__return_true',
 				]
 			);
 		}

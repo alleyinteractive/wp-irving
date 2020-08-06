@@ -32,8 +32,9 @@ class Cache_Endpoint extends Endpoint {
 			self::get_namespace(),
 			'/purge-cache',
 			[
-				'methods'  => \WP_REST_Server::CREATABLE,
-				'callback' => [ $this, 'get_route_response' ],
+				'callback'            => [ $this, 'get_route_response' ],
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'permission_callback' => '__return_true',
 			]
 		);
 	}
