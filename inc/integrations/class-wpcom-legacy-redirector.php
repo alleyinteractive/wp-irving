@@ -7,7 +7,7 @@
  * @see https://github.com/Automattic/WPCOM-Legacy-Redirector
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 use WPCOM_Legacy_Redirector as Legacy_Redirector;
 
@@ -17,9 +17,28 @@ use WPCOM_Legacy_Redirector as Legacy_Redirector;
 class WPCOM_Legacy_Redirector {
 
 	/**
+	 * Class instance.
+	 *
+	 * @var null|self
+	 */
+	protected static $instance;
+
+	/**
+	 * Get class instance.
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+		}
+		return static::$instance;
+	}
+
+	/**
 	 * Constructor for class.
 	 */
-	public function __construct() {
+	public function setup() {
 
 		// Ensure WPCOM Legacy Redirector exists and is enabled.
 		if (
@@ -92,10 +111,3 @@ class WPCOM_Legacy_Redirector {
 		return $data;
 	}
 }
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\WPCOM_Legacy_Redirector();
-	}
-);

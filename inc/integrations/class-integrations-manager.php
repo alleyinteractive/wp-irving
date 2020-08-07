@@ -1,11 +1,14 @@
 <?php
 /**
- * WP Irving Integrations Manager
+ * WP Irving Integrations Manager.
+ *
+ * Register a settings page that manages integration key/value pairs to be sent
+ * to the front end using the components API.
  *
  * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 /**
  * Class for managing integrations in Irving.
@@ -27,19 +30,82 @@ class Integrations_Manager {
 	public static function instance() {
 		if ( ! isset( static::$instance ) ) {
 			static::$instance = new static();
-			static::$instance->setup();
 		}
 		return static::$instance;
 	}
 
 	/**
-	 * Class constructor.
+	 * Instantiate each integration's class instance and run through its setup procedures.
 	 */
-	public function setup() {
+	public function setup_integrations() {
 		// Register admin page.
 		add_action( 'admin_menu', [ $this, 'register_admin' ] );
 		// Register settings fields for integrations.
-		add_action( 'admin_init', [ $this, 'register_settings_fields' ], 10, 2 );
+		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
+
+		// Archiveless.
+		$archiveless = (
+			new \WP_Irving\Integrations\Archiveless()
+		)::instance();
+		$archiveless->setup();
+
+		// Google Analytics.
+		$google_analytics = (
+			new \WP_Irving\Integrations\Google_Analytics()
+		)::instance();
+		$google_analytics->setup();
+
+		// Google AMP.
+		$google_amp = (
+			new \WP_Irving\Integrations\Google_AMP()
+		)::instance();
+		$google_amp->setup();
+
+		// New Relic.
+		$new_relic = (
+			new \WP_Irving\Integrations\New_Relic()
+		)::instance();
+		$new_relic->setup();
+
+		// Pantheon.
+		$pantheon = (
+			new \WP_Irving\Integrations\Pantheon()
+		)::instance();
+		$pantheon->setup();
+
+		// Safe Redirect Manager.
+		$safe_redirect_manager = (
+			new \WP_Irving\Integrations\Safe_Redirect_Manager()
+		)::instance();
+		$safe_redirect_manager->setup();
+
+		// VIP Go.
+		$vip_go = (
+			new \WP_Irving\Integrations\VIP_Go()
+		)::instance();
+		$vip_go->setup();
+
+		// WPCOM Legacy Redirector.
+		$wpcom_legacy_redirector = (
+			new \WP_Irving\Integrations\WPCOM_Legacy_Redirector()
+		)::instance();
+		$wpcom_legacy_redirector->setup();
+
+		// Yoast.
+		$yoast = (
+			new \WP_Irving\Integrations\Yoast()
+		)::instance();
+		$yoast->setup();
+	}
+
+	/**
+	 * Instantiate each plugin integration's class instance and run through its setup procedures.
+	 */
+	public function setup_plugin_integrations() {
+		$jwt_auth = (
+			new \WP_Irving\Integrations\JWT_Auth()
+		)::instance();
+		$jwt_auth->setup();
 	}
 
 	/**
@@ -63,8 +129,8 @@ class Integrations_Manager {
 	public function register_admin() {
 		add_submenu_page(
 			'options-general.php',
-			__( 'Irving Integrations', 'wp-irving' ),
-			__( 'Irving Integrations', 'wp-irving' ),
+			esc_html__( 'Irving Integrations', 'wp-irving' ),
+			esc_html__( 'Irving Integrations', 'wp-irving' ),
 			'manage_options',
 			'wp-irving-integrations',
 			[ $this, 'render' ]
@@ -80,7 +146,7 @@ class Integrations_Manager {
 			add_settings_error(
 				'irving_integrations_messages',
 				'irving_integrations_message',
-				__( 'Settings Saved', 'wp-irving' ),
+				esc_html__( 'Settings Saved', 'wp-irving' ),
 				'updated'
 			);
 		}
@@ -88,7 +154,7 @@ class Integrations_Manager {
 		?>
 			<div class="wrap">
 				<h1 class="wp-heading-inline">
-					<?php esc_html_e( 'WP-Irving - Integrations Manager', 'wp-irving' ); ?>
+					<?php esc_html_e( 'WP Irving - Integrations Manager', 'wp-irving' ); ?>
 				</h1>
 
 				<hr class="wp-header-end">
@@ -102,10 +168,3 @@ class Integrations_Manager {
 		<?php
 	}
 }
-
-add_action(
-	'init',
-	function() {
-		\WP_Irving\Integrations_Manager::instance();
-	}
-);

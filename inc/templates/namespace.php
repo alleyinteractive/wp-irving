@@ -533,34 +533,38 @@ function setup_head(
  * @param array $data Data object to be hydrated by template.
  * @return array The update endpoint data.
  */
-function setup_integrations( $data ) {
+function setup_integrations( array $data ): array {
 	// Get any set integrations options.
 	$options = get_option( 'irving_integrations' );
 
 	// If options are present, append the integrations component into the endpoint response.
-	if ( ! empty( $options ) ) {
-		$config = [];
-		foreach ( $options as $option_key => $option_value ) {
-			if ( ! empty( $option_value ) ) {
-				$config[ $option_key ] = $option_value;
+	$options = array_filter(
+		$options,
+		function( $option ) {
+			foreach ( $option as $key => $value ) {
+				return ! empty( $value ) ?? [ $key => $value ];
 			}
-		}
+		},
+		ARRAY_FILTER_USE_BOTH
+	);
 
-		// Don't return an integrations config if no keys are present.
-		if ( ! empty( $config ) ) {
-			array_push(
-				$data['defaults'],
-				new Component(
-					'irving/integrations',
-					[
-						'config' => [
-							'integrations' => $config,
-						],
-					]
-				)
-			);
-		}
+	// Bail early if no options are present.
+	if ( empty( $options ) ) {
+		return $data;
 	}
+
+	// Don't return an integrations config if no keys are present.
+	array_push(
+		$data['defaults'],
+		new Component(
+			'irving/integrations',
+			[
+				'config' => [
+					'integrations' => $options,
+				],
+			]
+		)
+	);
 
 	return $data;
 }

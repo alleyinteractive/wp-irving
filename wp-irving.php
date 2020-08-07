@@ -32,7 +32,6 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-form-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-cache-endpoint.php';
 
 // Integrations.
-require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-analytics.php';
@@ -43,6 +42,21 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
+// Integrations Manager.
+require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
+// Instantiate the integrations manager and the child integration's instances.
+add_action(
+    'init',
+    function() {
+        ( new \WP_Irving\Integrations\Integrations_Manager )::instance()->setup_integrations();
+    }
+);
+add_action(
+    'plugins_loaded',
+    function() {
+        ( new \WP_Irving\Integrations\Integrations_Manager )::instance()->setup_plugin_integrations();
+    }
+);
 
 // Replicating WP Core functionality.
 require_once WP_IRVING_PATH . '/inc/class-admin.php';

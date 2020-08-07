@@ -5,12 +5,19 @@
  * @package WP_Irving;
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 /**
  * Class to integrate Google Analytics with Irving.
  */
 class Google_Analytics {
+
+	/**
+	 * The option key for the integration.
+	 *
+	 * @var string
+	 */
+	private $option_key = 'google_analytics';
 
 	/**
 	 * Holds the option values to be set.
@@ -20,17 +27,36 @@ class Google_Analytics {
 	private $options;
 
 	/**
-	 * Constructor for class.
+	 * Class instance.
+	 *
+	 * @var null|self
 	 */
-	public function __construct() {
+	protected static $instance;
+
+	/**
+	 * Get class instance.
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+		}
+		return static::$instance;
+	}
+
+	/**
+	 * Setup the singleton. Validate JWT is installed, and setup hooks.
+	 */
+	public function setup() {
 		// Retrieve any existing integrations options.
 		$this->options = get_option( 'irving_integrations' );
-
 		// Register settings fields for integrations.
-		add_action( 'admin_init', [ $this, 'register_settings_fields' ], 10, 2 );
+		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
 		// Filter the updated option values prior to submission.
-		add_filter( 'pre_update_option_irving_integrations', [ $this, 'format_option_for_update' ], 10, 2 );
+		add_filter( 'pre_update_option_irving_integrations', [ $this, 'group_and_format_options_for_storage' ] );
 	}
+
 
 	/**
 	 * Register settings fields for display.
@@ -38,8 +64,8 @@ class Google_Analytics {
 	public function register_settings_fields() {
 		// Register a new field for the Google Analytics integration.
 		add_settings_field(
-			'ga_tracking_id',
-			__( 'Google Analytics Tracking ID', 'wp-irving' ),
+			'wp_irving_ga_tracking_id',
+			esc_html__( 'Google Analytics Tracking ID', 'wp-irving' ),
 			[ $this, 'render_tracking_id_input' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings',
@@ -54,10 +80,9 @@ class Google_Analytics {
 	 *
 	 * @param array $args Arguments for input.
 	 */
-	public function render_tracking_id_input( $args ) {
+	public function render_tracking_id_input( array $args ) {
 		// Check to see if there is an existing GA configuration in the option.
-		$option = isset( $this->options['google_analytics'] ) ? $this->options['google_analytics'][ $args['id'] ] : '';
-		$ga_key = ! empty( $option ) ? $option : '';
+		$ga_key = $this->options['google_analytics'][ $args['id'] ] ?? '';
 
 		?>
 			<input type="text" name="irving_integrations[<?php echo esc_attr( 'ga_' . $args['id'] ); ?>]" value="<?php echo esc_attr( $ga_key ); ?>" />
@@ -65,30 +90,22 @@ class Google_Analytics {
 	}
 
 	/**
-	 * Group the updated options based on the integration prefix.
+	 * Loop through the updated options, group them by their integration's key,
+	 * and remove any prefix set by the option's input.
 	 *
 	 * @param array $options The updated options.
-	 * @return array $arr The formatted options.
+	 * @return array The formatted options.
 	 */
-	public function format_option_for_update( $options ): array {
-		// Construct an empty array.
-		$arr = [];
+	public function group_and_format_options_for_storage( array $options ): array {
+		$formatted_options = [];
 
-		foreach ( $options as $option_key => $option_val ) {
+		foreach ( $options as $key => $val ) {
 			// Build the config array for Google Analytics.
-			if ( strpos( $option_key, 'ga_' ) !== false ) {
-				$arr['google_analytics'][ str_replace( 'ga_', '', $option_key ) ] = $option_val;
+			if ( strpos( $key, 'ga_' ) !== false ) {
+				$formatted_options[ $this->option_key ][ str_replace( 'ga_', '', $key ) ] = $val;
 			}
 		}
 
-		return $arr;
+		return $formatted_options;
 	}
-
 }
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\Google_Analytics();
-	}
-);

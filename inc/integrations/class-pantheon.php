@@ -5,7 +5,7 @@
  * @package WP_Irving;
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 /**
  * Class to handle modifications specific to Pantheon.
@@ -13,9 +13,28 @@ namespace WP_Irving;
 class Pantheon {
 
 	/**
+	 * Class instance.
+	 *
+	 * @var null|self
+	 */
+	protected static $instance;
+
+	/**
+	 * Get class instance.
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+		}
+		return static::$instance;
+	}
+
+	/**
 	 * Constructor for class.
 	 */
-	public function __construct() {
+	public function setup() {
 		if ( ! function_exists( 'pantheon_wp_clear_edge_paths' ) ) {
 			return;
 		}
@@ -76,10 +95,3 @@ class Pantheon {
 		}
 	}
 }
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\Pantheon();
-	}
-);

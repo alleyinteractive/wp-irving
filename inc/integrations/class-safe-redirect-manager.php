@@ -5,12 +5,31 @@
  * @package WP_Irving;
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 /**
  * Class to parse redirects using the Safe Redirect Manager plugin.
  */
 class Safe_Redirect_Manager {
+
+	/**
+	 * Class instance.
+	 *
+	 * @var null|self
+	 */
+	protected static $instance;
+
+	/**
+	 * Get class instance.
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+		}
+		return static::$instance;
+	}
 
 	/**
 	 * Reference to Safe Redirect Manager SRM_Redirect singleton instance.
@@ -29,7 +48,7 @@ class Safe_Redirect_Manager {
 	/**
 	 * Constructor for class.
 	 */
-	public function __construct() {
+	public function setup() {
 		// Ensure Safe Redirect Manager exists and is enabled.
 		if ( ! class_exists( '\SRM_Redirect' ) || ! method_exists( '\SRM_Redirect', 'match_redirect' ) ) {
 			return;
@@ -90,10 +109,3 @@ class Safe_Redirect_Manager {
 		return $path;
 	}
 }
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\Safe_Redirect_Manager();
-	}
-);

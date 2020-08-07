@@ -5,7 +5,7 @@
  * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 /**
  * Singleton class for creating a cross-domain cookie with a JSON Web Token
@@ -42,7 +42,6 @@ class JWT_Auth {
 	public static function instance() {
 		if ( ! isset( static::$instance ) ) {
 			static::$instance = new static();
-			static::$instance->setup();
 		}
 		return static::$instance;
 	}
@@ -244,10 +243,3 @@ class JWT_Auth {
 		return [];
 	}
 }
-
-add_action(
-	'plugins_loaded',
-	function() {
-		( new \WP_Irving\JWT_Auth() )->instance();
-	}
-);

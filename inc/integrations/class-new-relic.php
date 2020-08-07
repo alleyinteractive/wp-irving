@@ -5,7 +5,7 @@
  * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 /**
  * Class to integrate New Relic with Irving.
@@ -13,9 +13,28 @@ namespace WP_Irving;
 class New_Relic {
 
 	/**
+	 * Class instance.
+	 *
+	 * @var null|self
+	 */
+	protected static $instance;
+
+	/**
+	 * Get class instance.
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+		}
+		return static::$instance;
+	}
+
+	/**
 	 * Constructor for class.
 	 */
-	public function __construct() {
+	public function setup() {
 		remove_action( 'rest_dispatch_request', 'wpcom_vip_rest_routes_for_newrelic' );
 		add_filter( 'rest_dispatch_request', [ $this, 'rest_routes_for_newrelic' ], 10, 4 );
 	}
@@ -68,10 +87,3 @@ class New_Relic {
 		return $dispatch_result;
 	}
 }
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\New_Relic();
-	}
-);
