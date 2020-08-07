@@ -544,8 +544,7 @@ function setup_integrations( array $data ): array {
 			foreach ( $option as $key => $value ) {
 				return ! empty( $value ) ?? [ $key => $value ];
 			}
-		},
-		ARRAY_FILTER_USE_BOTH
+		}
 	);
 
 	// Bail early if no options are present.
