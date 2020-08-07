@@ -555,7 +555,7 @@ function setup_integrations( array $data ): array {
 	if ( ! empty( $options ) ) {
 		// Don't return an integrations config if no keys are present.
 		array_push(
-			$data['defaults'],
+			$data['page'],
 			new Component(
 				'irving/integrations',
 				[
