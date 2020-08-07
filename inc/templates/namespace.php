@@ -537,6 +537,11 @@ function setup_integrations( array $data ): array {
 	// Get any set integrations options.
 	$options = get_option( 'irving_integrations' );
 
+	// Bail early if no options are present.
+	if ( empty( $options ) ) {
+		return $data;
+	}
+
 	// If options are present, append the integrations component into the endpoint response.
 	$options = array_filter(
 		$options,
@@ -547,23 +552,20 @@ function setup_integrations( array $data ): array {
 		}
 	);
 
-	// Bail early if no options are present.
-	if ( empty( $options ) ) {
-		return $data;
+	if ( ! empty( $options ) ) {
+		// Don't return an integrations config if no keys are present.
+		array_push(
+			$data['defaults'],
+			new Component(
+				'irving/integrations',
+				[
+					'config' => [
+						'integrations' => $options,
+					],
+				]
+			)
+		);
 	}
-
-	// Don't return an integrations config if no keys are present.
-	array_push(
-		$data['defaults'],
-		new Component(
-			'irving/integrations',
-			[
-				'config' => [
-					'integrations' => $options,
-				],
-			]
-		)
-	);
 
 	return $data;
 }
