@@ -44,15 +44,16 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.p
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
 // Integrations Manager.
 require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
-// Instantiate the integrations manager and the child integration's instances.
-( new \WP_Irving\Integrations\Integrations_Manager )::instance();
-
+// Instantiate the integrations manager.
+new \WP_Irving\Integrations\Integrations_Manager;
+// Setup child integrations on `init`.
 add_action(
 	'init',
 	function() {
 		\WP_Irving\Integrations\Integrations_Manager::instance()->setup_integrations();
 	}
 );
+// Setup child plugin integrations on `plugins_loaded`.
 add_action(
 	'plugins_loaded',
 	function() {
