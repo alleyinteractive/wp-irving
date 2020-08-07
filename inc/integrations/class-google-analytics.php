@@ -68,10 +68,7 @@ class Google_Analytics {
 			esc_html__( 'Google Analytics Tracking ID', 'wp-irving' ),
 			[ $this, 'render_tracking_id_input' ],
 			'wp_irving_integrations',
-			'irving_integrations_settings',
-			[
-				'id' => 'tracking_id',
-			]
+			'irving_integrations_settings'
 		);
 	}
 
@@ -80,12 +77,12 @@ class Google_Analytics {
 	 *
 	 * @param array $args Arguments for input.
 	 */
-	public function render_tracking_id_input( array $args ) {
+	public function render_tracking_id_input() {
 		// Check to see if there is an existing GA configuration in the option.
-		$ga_key = $this->options['google_analytics'][ $args['id'] ] ?? '';
+		$ga_key = $this->options[ $this->option_key ]['tracking_id'] ?? '';
 
 		?>
-			<input type="text" name="irving_integrations[<?php echo esc_attr( 'ga_' . $args['id'] ); ?>]" value="<?php echo esc_attr( $ga_key ); ?>" />
+			<input type="text" name="irving_integrations[<?php echo esc_attr( 'ga_tracking_id' ); ?>]" value="<?php echo esc_attr( $ga_key ); ?>" />
 		<?php
 	}
 
