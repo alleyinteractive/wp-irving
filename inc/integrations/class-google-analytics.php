@@ -74,8 +74,6 @@ class Google_Analytics {
 
 	/**
 	 * Render an input for the GA Tracking ID.
-	 *
-	 * @param array $args Arguments for input.
 	 */
 	public function render_tracking_id_input() {
 		// Check to see if there is an existing GA configuration in the option.
