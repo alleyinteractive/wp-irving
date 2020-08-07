@@ -46,16 +46,16 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
 // Instantiate the integrations manager and the child integration's instances.
 add_action(
-    'init',
-    function() {
-        ( new \WP_Irving\Integrations\Integrations_Manager )::instance()->setup_integrations();
-    }
+	'init',
+	function() {
+		( ( new \WP_Irving\Integrations\Integrations_Manager )::instance() )->setup_integrations();
+	}
 );
 add_action(
-    'plugins_loaded',
-    function() {
-        ( new \WP_Irving\Integrations\Integrations_Manager )::instance()->setup_plugin_integrations();
-    }
+	'plugins_loaded',
+	function() {
+		( ( new \WP_Irving\Integrations\Integrations_Manager )::instance() )->setup_plugin_integrations();
+	}
 );
 
 // Replicating WP Core functionality.
