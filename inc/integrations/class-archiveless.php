@@ -31,6 +31,9 @@ class Archiveless {
 		return static::$instance;
 	}
 
+	/**
+	 * Constructor for class.
+	 */
 	public function setup() {
 		// Ensure Archiveless exists and is enabled.
 		if ( ! class_exists( '\Archiveless' ) ) {
