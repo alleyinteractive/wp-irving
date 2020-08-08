@@ -28,7 +28,7 @@ class Test_Class_Cache_Endpoint extends WP_UnitTestCase {
 	public function create_rest_request( $params = [] ): WP_REST_REQUEST {
 
 		// Build the cache endpoint url.
-		$endpoint_url = 'http://' . WP_TESTS_DOMAIN . '/wp-json/irving/v1/purge-cache/';
+		$endpoint_url = 'irving/v1/purge-cache/';
 
 		// Endpoint parameters.
 		$params = wp_parse_args(
