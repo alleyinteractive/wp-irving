@@ -50,8 +50,8 @@ class Cache_Endpoint extends Endpoint {
 		/**
 		 * Filter the permissions check.
 		 *
-		 * @param bool|\WP_Error   $retval  Returned value.
-		 * @param WP_REST_Request $request The request sent to the API.
+		 * @param bool|callable   $permission_callback Filtered `permission_callback` value.
+		 * @param WP_REST_Request $request             Endpoint request.
 		 */
 		return apply_filters( 'wp_irving_cache_endpoint_permissions_check', current_user_can( 'manage_options' ), $request );
 	}
