@@ -62,7 +62,7 @@ class Data_Endpoint extends Endpoint {
 
 			// Build the route, and unset the slug.
 			$route = '/data/' . $args['slug'];
-			unset($args['slug']);
+			unset( $args['slug'] );
 
 			register_rest_route( self::get_namespace(), $route, $args );
 		}

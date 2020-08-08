@@ -30,7 +30,7 @@ class Test_Class_Cache_Endpoint extends WP_UnitTestCase {
 		// Build the cache endpoint url.
 		$endpoint_url = 'http://' . WP_TESTS_DOMAIN . '/wp-json/irving/v1/purge-cache/';
 
-		// Endpoint parameters
+		// Endpoint parameters.
 		$params = wp_parse_args(
 			$params,
 			[
@@ -40,7 +40,7 @@ class Test_Class_Cache_Endpoint extends WP_UnitTestCase {
 		);
 
 		// Build full url and do a POST request.
-		$request  = new WP_REST_Request( 'POST', $endpoint_url,  );
+		$request = new WP_REST_Request( 'POST', $endpoint_url );
 		$request->set_body_params( $params );
 
 		return $request;
@@ -68,7 +68,7 @@ class Test_Class_Cache_Endpoint extends WP_UnitTestCase {
 		$endpoint = new REST_API\Cache_Endpoint();
 
 		// Create and get a user with the subscriber role.
-		$subscriber    = $this->factory->user->create_and_get();
+		$subscriber = $this->factory->user->create_and_get();
 		wp_set_current_user( $subscriber->ID );
 
 		$this->assertEquals(

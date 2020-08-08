@@ -29,8 +29,8 @@ class Test_Class_Data_Endpoint extends WP_UnitTestCase {
 			function( $data ) {
 				return [
 					[
-						'slug'                => 'return-true',
-						'callback'            => function() {
+						'slug'     => 'return-true',
+						'callback' => function() {
 							return [ 'Hello World' ];
 						},
 					],
