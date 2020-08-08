@@ -48,7 +48,7 @@ class Data_Endpoint extends Endpoint {
 				[
 					'callback'            => $endpoint['callback'],
 					'methods'             => \WP_REST_Server::READABLE,
-					'permission_callback' => '__return_true',
+					'permission_callback' => $endpoint['permission_callback'] ?? '__return_true',
 				]
 			);
 		}
