@@ -80,10 +80,3 @@ class VIP_Go {
 		return $purge_urls;
 	}
 }
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\Integrations\VIP_Go();
-	}
-);

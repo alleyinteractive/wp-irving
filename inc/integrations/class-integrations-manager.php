@@ -35,77 +35,13 @@ class Integrations_Manager {
 	}
 
 	/**
-	 * Instantiate each integration's class instance and run through its setup procedures.
+	 * Register the manager's page and settings fields.
 	 */
-	public function setup_integrations() {
+	public function setup() {
 		// Register admin page.
 		add_action( 'admin_menu', [ $this, 'register_admin' ] );
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
-
-		// Archiveless.
-		$archiveless = (
-			new \WP_Irving\Integrations\Archiveless()
-		)::instance();
-		$archiveless->setup();
-
-		// Google Analytics.
-		$google_analytics = (
-			new \WP_Irving\Integrations\Google_Analytics()
-		)::instance();
-		$google_analytics->setup();
-
-		// Google AMP.
-		$google_amp = (
-			new \WP_Irving\Integrations\Google_AMP()
-		)::instance();
-		$google_amp->setup();
-
-		// New Relic.
-		$new_relic = (
-			new \WP_Irving\Integrations\New_Relic()
-		)::instance();
-		$new_relic->setup();
-
-		// Pantheon.
-		$pantheon = (
-			new \WP_Irving\Integrations\Pantheon()
-		)::instance();
-		$pantheon->setup();
-
-		// Safe Redirect Manager.
-		$safe_redirect_manager = (
-			new \WP_Irving\Integrations\Safe_Redirect_Manager()
-		)::instance();
-		$safe_redirect_manager->setup();
-
-		// VIP Go.
-		$vip_go = (
-			new \WP_Irving\Integrations\VIP_Go()
-		)::instance();
-		$vip_go->setup();
-
-		// WPCOM Legacy Redirector.
-		$wpcom_legacy_redirector = (
-			new \WP_Irving\Integrations\WPCOM_Legacy_Redirector()
-		)::instance();
-		$wpcom_legacy_redirector->setup();
-
-		// Yoast.
-		$yoast = (
-			new \WP_Irving\Integrations\Yoast()
-		)::instance();
-		$yoast->setup();
-	}
-
-	/**
-	 * Instantiate each plugin integration's class instance and run through its setup procedures.
-	 */
-	public function setup_plugin_integrations() {
-		$jwt_auth = (
-			new \WP_Irving\Integrations\JWT_Auth()
-		)::instance();
-		$jwt_auth->setup();
 	}
 
 	/**

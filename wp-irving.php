@@ -42,24 +42,8 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
-// Integrations Manager.
 require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
-// Instantiate the integrations manager.
-new \WP_Irving\Integrations\Integrations_Manager();
-// Setup child integrations on `init`.
-add_action(
-	'init',
-	function() {
-		\WP_Irving\Integrations\Integrations_Manager::instance()->setup_integrations();
-	}
-);
-// Setup child plugin integrations on `plugins_loaded`.
-add_action(
-	'plugins_loaded',
-	function() {
-		\WP_Irving\Integrations\Integrations_Manager::instance()->setup_plugin_integrations();
-	}
-);
+require_once WP_IRVING_PATH . '/inc/integrations/namespace.php';
 
 // Replicating WP Core functionality.
 require_once WP_IRVING_PATH . '/inc/class-admin.php';
@@ -96,3 +80,4 @@ new REST_API\Cache_Endpoint();
 // Bootstrap functionality.
 Components\bootstrap();
 Templates\bootstrap();
+Integrations\bootstrap();
