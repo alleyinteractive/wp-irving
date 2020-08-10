@@ -5,7 +5,7 @@
  * @package WP_Irving;
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 /**
  * Class to replicate Archiveless's query modifications.
@@ -13,9 +13,28 @@ namespace WP_Irving;
 class Archiveless {
 
 	/**
+	 * Class instance.
+	 *
+	 * @var null|self
+	 */
+	protected static $instance;
+
+	/**
+	 * Get class instance.
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+		}
+		return static::$instance;
+	}
+
+	/**
 	 * Constructor for class.
 	 */
-	public function __construct() {
+	public function setup() {
 		// Ensure Archiveless exists and is enabled.
 		if ( ! class_exists( '\Archiveless' ) ) {
 			return;
@@ -59,11 +78,3 @@ class Archiveless {
 		return $where;
 	}
 }
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\Archiveless();
-	} 
-);
-
