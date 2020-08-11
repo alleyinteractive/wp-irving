@@ -31,8 +31,9 @@ class Data_Endpoint extends Endpoint {
 		 * @param array $data_endpoints {
 		 *     Data endpoint slugs and callback functions.
 		 *
-		 *     @type string   $slug     The slug for the data endpoint.
-		 *     @type callable $callback Response callback to use when the endpoint is called.
+		 *     @type string   $slug                The slug for the data endpoint.
+		 *     @type callable $callback            Response callback to use when the endpoint is called.
+		 *     @type callable $permission_callback Permission callback to use when the endpoint is called.
 		 * }
 		 */
 		$data_endpoints = (array) apply_filters( 'wp_irving_data_endpoints', [] );
@@ -41,15 +42,29 @@ class Data_Endpoint extends Endpoint {
 			return;
 		}
 
-		foreach ( $data_endpoints as $endpoint ) {
-			register_rest_route(
-				self::get_namespace(),
-				'/data/' . $endpoint['slug'],
+		// Register each endpoint.
+		foreach ( $data_endpoints as $args ) {
+
+			$args = wp_parse_args(
+				$args,
 				[
-					'methods'  => \WP_REST_Server::READABLE,
-					'callback' => $endpoint['callback'],
+					'callback'            => '__return_true',
+					'methods'             => \WP_REST_Server::READABLE,
+					'permission_callback' => '__return_true',
+					'slug'                => '',
 				]
 			);
+
+			// Ensure we have a slug.
+			if ( empty( $args['slug'] ) || ! is_string( $args['slug'] ) ) {
+				continue;
+			}
+
+			// Build the route, and unset the slug.
+			$route = '/data/' . $args['slug'];
+			unset( $args['slug'] );
+
+			register_rest_route( self::get_namespace(), $route, $args );
 		}
 	}
 }
