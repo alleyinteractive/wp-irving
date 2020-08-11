@@ -8,6 +8,7 @@
 namespace WP_Irving\Integrations;
 
 use WP_Irving\Components;
+use WP_Irving\Component;
 
 /**
  * Yoast.
@@ -59,28 +60,20 @@ class Yoast {
 	 */
 	public function inject_yoast_schema_into_integrations_config( array $config ): array {
 
-		// Create a DOMDocument and parse it.
-		$dom = new \DOMDocument();
-		@$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $this->get_yoasts_head_markup() ); // phpcs:ignore
+		$components = Components\html_to_components( $this->get_yoasts_head_markup(), ['script'] );
+		$schema     = '';
 
-		// Retrieve the scripts.
-		$nodes = $dom->getElementsByTagName( 'script' );
+		foreach ( $components as $component ) {
+			$component_config   = $component->get_config();
+			$component_children = $component->get_children();
 
-		$schema = '';
-		// phpcs:disable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-		foreach ( $nodes as $node ) {
-			$is_target_node = false;
-			// Ensure we're only setting the schema on the correct node.
-			foreach ( $node->attributes as $attribute ) {
-				if ( 'application/ld+json' === $attribute->nodeValue ) {
-					$is_target_node = true;
-				}
-			}
-			if ( $is_target_node ) {
-				$schema = $node->nodeValue;
+			if (
+				isset( $component_config['type'] )
+				&& 'application/ld+json' === $component_config['type']
+			) {
+				$schema = $component->get_children()[0];
 			}
 		}
-		// phpcs:enable WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 
 		// Bail early if no schema has been set.
 		if ( empty( $schema ) ) {
