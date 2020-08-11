@@ -46,7 +46,49 @@ class Yoast {
 		if ( ! is_admin() ) {
 			// Parse Yoast's head markup and inject it into the Head component.
 			add_filter( 'wp_irving_component_children', [ $this, 'inject_yoast_tags_into_head_children' ], 10, 3 );
+			add_filter( 'wp_irving_integrations_config', [ $this, 'inject_yoast_schema_into_integrations_config'], 10, 1 );
 		}
+	}
+
+	/**
+	 * Parse Yoast's head markup and inject the `application/ld+json` schema into
+	 * the integrations config to be automatically managed on the front-end.
+	 *
+	 * @param array $config The current configuration.
+	 * @return array The updated configuration.
+	 */
+	public function inject_yoast_schema_into_integrations_config( array $config ): array {
+		// Create a DOMDocument and parse it.
+		$dom = new \DOMDocument();
+		@$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $this->get_yoasts_head_markup() ); // phpcs:ignore
+
+		// Retrieve the scripts.
+		$nodes = $dom->getElementsByTagName( 'script' );
+		// Define the schema.
+		$schema = '';
+
+		foreach ($nodes as $node) {
+			$is_ld_json = false;
+			// Ensure we're only setting the schema on the correct node.
+			foreach ($node->attributes as $attribute) {
+				if ( $attribute->nodeValue === 'application/ld+json' ) {
+					$is_ld_json = true;
+				}
+			}
+			if ( $is_ld_json ) {
+				$schema = $node->nodeValue;
+			}
+		}
+
+		// Bail early if no schema has been set.
+		if ( empty( $schema ) ) {
+			return $config;
+		}
+
+		return array_merge(
+			$config,
+			[ 'yoast_schema' => [ 'content' => $schema ] ]
+		);
 	}
 
 	/**

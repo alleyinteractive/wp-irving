@@ -552,6 +552,14 @@ function setup_integrations( array $data ): array {
 		}
 	);
 
+	/**
+	 * Filter the config values to retrieve any values set by an integration
+	 * that are not present in the options array.
+	 *
+	 * @param array $options The current options.
+	 */
+	$options = apply_filters( 'wp_irving_integrations_config', $options );
+
 	if ( ! empty( $options ) ) {
 		// Don't return an integrations config if no keys are present.
 		array_push(
