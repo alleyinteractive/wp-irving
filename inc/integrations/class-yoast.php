@@ -60,30 +60,23 @@ class Yoast {
 	 */
 	public function inject_yoast_schema_into_integrations_config( array $config ): array {
 
-		$components = Components\html_to_components( $this->get_yoasts_head_markup(), [ 'script' ] );
-		$schema     = '';
-
-		foreach ( $components as $component ) {
-			$component_config   = $component->get_config();
-			$component_children = $component->get_children();
-
-			if (
-				isset( $component_config['type'] )
-				&& 'application/ld+json' === $component_config['type']
-			) {
-				$schema = $component->get_children()[0];
-			}
-		}
-
-		// Bail early if no schema has been set.
-		if ( empty( $schema ) ) {
-			return $config;
-		}
-
-		return array_merge(
-			$config,
-			[ 'yoast_schema' => [ 'content' => $schema ] ]
+		// Parse Yoast's head markup for the appliction/ld+json script tag.
+		preg_match(
+			'/<script type="application\/ld\+json"[^>]+>(.+)<\/script>/',
+			$this->get_yoasts_head_markup(),
+			$matches
 		);
+
+		// Set the content. The match at the `0` index represents the full match, with
+		// the match at the `1` index representing the target group.
+		$content = $matches[1] ?? "";
+
+		// If the content exists, add it to the configuration array.
+		if ( ! empty( $content ) ) {
+			$config[] = [ 'yoast_schema' => [ 'content' => $content ] ];
+		}
+
+		return $config;
 	}
 
 	/**
