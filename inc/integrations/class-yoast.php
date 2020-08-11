@@ -47,7 +47,7 @@ class Yoast {
 		if ( ! is_admin() ) {
 			// Parse Yoast's head markup and inject it into the Head component.
 			add_filter( 'wp_irving_component_children', [ $this, 'inject_yoast_tags_into_head_children' ], 10, 3 );
-			add_filter( 'wp_irving_integrations_config', [ $this, 'inject_yoast_schema_into_integrations_config' ], 10, 1 );
+			add_filter( 'wp_irving_integrations_config', [ $this, 'inject_yoast_schema_into_integrations_config' ] );
 		}
 	}
 
