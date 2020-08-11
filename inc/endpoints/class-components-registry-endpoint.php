@@ -23,10 +23,11 @@ class Components_Registry_Endpoint extends Endpoint {
 			self::get_namespace(),
 			'/registered-components/',
 			[
-				'methods'  => \WP_REST_Server::READABLE,
-				'callback' => function() {
+				'callback'            => function() {
 					return Components\get_registry()->get_registered_components();
 				},
+				'methods'             => \WP_REST_Server::READABLE,
+				'permission_callback' => '__return_true',
 			]
 		);
 	}
