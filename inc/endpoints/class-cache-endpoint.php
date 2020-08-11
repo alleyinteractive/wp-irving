@@ -32,10 +32,28 @@ class Cache_Endpoint extends Endpoint {
 			self::get_namespace(),
 			'/purge-cache',
 			[
-				'methods'  => \WP_REST_Server::CREATABLE,
-				'callback' => [ $this, 'get_route_response' ],
+				'callback'            => [ $this, 'get_route_response' ],
+				'methods'             => \WP_REST_Server::CREATABLE,
+				'permission_callback' => [ $this, 'permissions_check' ],
 			]
 		);
+	}
+
+	/**
+	 * Permissions check.
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 * @return bool|\WP_Error
+	 */
+	public function permissions_check( $request ) {
+
+		/**
+		 * Filter the permissions check.
+		 *
+		 * @param bool|callable   $permission_callback Filtered `permission_callback` value.
+		 * @param WP_REST_Request $request             Endpoint request.
+		 */
+		return apply_filters( 'wp_irving_cache_endpoint_permissions_check', current_user_can( 'manage_options' ), $request );
 	}
 
 	/**
