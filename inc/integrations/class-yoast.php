@@ -64,18 +64,17 @@ class Yoast {
 
 		// Retrieve the scripts.
 		$nodes = $dom->getElementsByTagName( 'script' );
-		// Define the schema.
-		$schema = '';
 
+		$schema = '';
 		foreach ($nodes as $node) {
-			$is_ld_json = false;
+			$is_target_node = false;
 			// Ensure we're only setting the schema on the correct node.
 			foreach ($node->attributes as $attribute) {
 				if ( $attribute->nodeValue === 'application/ld+json' ) {
-					$is_ld_json = true;
+					$is_target_node = true;
 				}
 			}
-			if ( $is_ld_json ) {
+			if ( $is_target_node ) {
 				$schema = $node->nodeValue;
 			}
 		}
