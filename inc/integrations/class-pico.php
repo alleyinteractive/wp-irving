@@ -5,60 +5,64 @@
  * @package WP_Irving
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 use WP_Irving\Components\Component;
 use Pico_Setup;
 use Pico_Widget;
 
 /**
- * Pico.
+ * Class to integrate Pico with Irving.
  */
 class Pico {
 
 	/**
-	 * Constructor for class.
+	 * Class instance.
+	 *
+	 * @var null|self
 	 */
-	public function __construct() {
+	protected static $instance;
 
-		// Ensure Yoast exists and is enabled.
+	/**
+	 * Get class instance.
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+		}
+		return static::$instance;
+	}
+
+	/**
+	 * Setup the singleton. Validate JWT is installed, and setup hooks.
+	 */
+	public function setup() {
+
+		// Ensure Pico exists and is enabled.
 		if ( ! defined( 'PICO_VERSION' ) ) {
 			return;
 		}
 
 		if ( ! is_admin() ) {
-			add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\setup_pico', 10, 4 );
+			add_filter( 'irving_integrations_option', [ $this, 'inject_pico_configuration' ] );
 		}
 	}
-}
 
-function setup_pico(
-	array $data,
-	\WP_Query $query,
-	string $context,
-	string $path
-): array {
+	/**
+	 * Modify the `irving_integrations` options to include pico.
+	 *
+	 * @param array $options Integrations options key.
+	 * @return array Updated options array.
+	 */
+	public function inject_pico_configuration( $options ): array {
 
-	// Unshift a `irving/pico` component to the top of the `page` array.
-	array_unshift(
-		$data['page'],
-		new Component(
-			'irving/pico',
-			[
-				'config' => [
-					'publisher_id' => Pico_Setup::get_publisher_id(),
-					'page_info'    => Pico_Widget::get_current_view_info(),
-				],
-			]
-		)
-	);
+		$options['pico'] = [
+			'publisher_id' => Pico_Setup::get_publisher_id(),
+			'page_info'    => Pico_Widget::get_current_view_info(),
+		];
 
-	return $data;
-}
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\Pico();
+		return $options;
 	}
-);
+}
