@@ -69,7 +69,7 @@ class Yoast {
 
 		// Set the content. The match at the `0` index represents the full match, with
 		// the match at the `1` index representing the target group.
-		$content = $matches[1] ?? "";
+		$content = $matches[1] ?? '';
 
 		// If the content exists, add it to the configuration array.
 		if ( ! empty( $content ) ) {
