@@ -5,7 +5,7 @@
  * @package WP_Irving;
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 /**
  * Class to handle modifications specific to VIP Go.
@@ -13,9 +13,28 @@ namespace WP_Irving;
 class VIP_Go {
 
 	/**
+	 * Class instance.
+	 *
+	 * @var null|self
+	 */
+	protected static $instance;
+
+	/**
+	 * Get class instance.
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+		}
+		return static::$instance;
+	}
+
+	/**
 	 * Constructor for class.
 	 */
-	public function __construct() {
+	public function setup() {
 
 		if ( ! ( defined( 'WPCOM_IS_VIP_ENV' ) && WPCOM_IS_VIP_ENV ) ) {
 			return;
@@ -61,10 +80,3 @@ class VIP_Go {
 		return $purge_urls;
 	}
 }
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\VIP_Go();
-	}
-);

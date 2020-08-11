@@ -5,7 +5,7 @@
  * @package WP_Irving;
  */
 
-namespace WP_Irving;
+namespace WP_Irving\Integrations;
 
 /**
  * Class to integrate Google AMP with Irving.
@@ -13,9 +13,28 @@ namespace WP_Irving;
 class Google_AMP {
 
 	/**
+	 * Class instance.
+	 *
+	 * @var null|self
+	 */
+	protected static $instance;
+
+	/**
+	 * Get class instance.
+	 *
+	 * @return self
+	 */
+	public static function instance() {
+		if ( ! isset( static::$instance ) ) {
+			static::$instance = new static();
+		}
+		return static::$instance;
+	}
+
+	/**
 	 * Constructor for class.
 	 */
-	public function __construct() {
+	public function setup() {
 
 		// Ensure the AMP plugin exists and is enabled.
 		if ( ! function_exists( 'is_amp_endpoint' ) ) {
@@ -37,10 +56,3 @@ class Google_AMP {
 		}
 	}
 }
-
-add_action(
-	'init',
-	function() {
-		new \WP_Irving\Google_AMP();
-	}
-);
