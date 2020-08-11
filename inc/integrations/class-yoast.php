@@ -60,7 +60,7 @@ class Yoast {
 	 */
 	public function inject_yoast_schema_into_integrations_config( array $config ): array {
 
-		$components = Components\html_to_components( $this->get_yoasts_head_markup(), ['script'] );
+		$components = Components\html_to_components( $this->get_yoasts_head_markup(), [ 'script' ] );
 		$schema     = '';
 
 		foreach ( $components as $component ) {
