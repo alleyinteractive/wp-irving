@@ -57,7 +57,7 @@ class Data_Endpoint extends Endpoint {
 
 			// Ensure we have a slug.
 			if ( empty( $args['slug'] ) || ! is_string( $args['slug'] ) ) {
-				break;
+				continue;
 			}
 
 			// Build the route, and unset the slug.

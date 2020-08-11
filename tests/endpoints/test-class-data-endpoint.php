@@ -21,9 +21,11 @@ use WP_UnitTestCase;
 class Test_Class_Data_Endpoint extends WP_UnitTestCase {
 
 	/**
-	 * Class setup.
+	 * Setup.
 	 */
-	public static function wpSetUpBeforeClass() {
+	public function setUp() {
+		parent::setup();
+
 		add_filter(
 			'wp_irving_data_endpoints',
 			function( $data ) {

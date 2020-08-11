@@ -78,9 +78,11 @@ class Test_Class_Cache_Endpoint extends WP_UnitTestCase {
 		);
 
 		// Create and get a user with the administrator role.
-		$administrator = $this->factory->user->create_and_get();
-		$administrator->add_role( 'administrator' );
-		$administrator->remove_role( 'subscriber' );
+		$administrator = $this->factory->user->create_and_get(
+			[
+				'role' => 'administrator',
+			]
+		);
 		wp_set_current_user( $administrator->ID );
 
 		$this->assertEquals(
