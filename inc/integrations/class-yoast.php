@@ -8,6 +8,7 @@
 namespace WP_Irving\Integrations;
 
 use WP_Irving\Components;
+use WP_Irving\Component;
 
 /**
  * Yoast.
@@ -46,7 +47,36 @@ class Yoast {
 		if ( ! is_admin() ) {
 			// Parse Yoast's head markup and inject it into the Head component.
 			add_filter( 'wp_irving_component_children', [ $this, 'inject_yoast_tags_into_head_children' ], 10, 3 );
+			add_filter( 'wp_irving_integrations_config', [ $this, 'inject_yoast_schema_into_integrations_config' ] );
 		}
+	}
+
+	/**
+	 * Parse Yoast's head markup and inject the `application/ld+json` schema into
+	 * the integrations config to be automatically managed on the front-end.
+	 *
+	 * @param array $config The current configuration.
+	 * @return array The updated configuration.
+	 */
+	public function inject_yoast_schema_into_integrations_config( array $config ): array {
+
+		// Parse Yoast's head markup for the appliction/ld+json script tag.
+		preg_match(
+			'/<script type="application\/ld\+json"[^>]+>(.+)<\/script>/',
+			$this->get_yoasts_head_markup(),
+			$matches
+		);
+
+		// Set the content. The match at the `0` index represents the full match, with
+		// the match at the `1` index representing the target group.
+		$content = $matches[1] ?? '';
+
+		// If the content exists, add it to the configuration array.
+		if ( ! empty( $content ) ) {
+			$config[] = [ 'yoast_schema' => [ 'content' => $content ] ];
+		}
+
+		return $config;
 	}
 
 	/**
