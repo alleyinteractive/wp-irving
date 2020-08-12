@@ -535,7 +535,7 @@ function setup_head(
  * @param string    $context The context for this request.
  * @return array The updated endpoint data.
  */
-function setup_integrations( array $data, \WP_Query $query, string $context ): array {
+function setup_integrations( array $data, WP_Query $query, string $context ): array {
 	// Inject the integrations manager into the defaults key.
 	if ( 'site' === $context ) {
 		array_push(
