@@ -17,26 +17,7 @@ use Pico_Widget;
 class Pico {
 
 	/**
-	 * Class instance.
-	 *
-	 * @var null|self
-	 */
-	protected static $instance;
-
-	/**
-	 * Get class instance.
-	 *
-	 * @return self
-	 */
-	public static function instance() {
-		if ( ! isset( static::$instance ) ) {
-			static::$instance = new static();
-		}
-		return static::$instance;
-	}
-
-	/**
-	 * Setup the singleton. Validate JWT is installed, and setup hooks.
+	 * Setup the integration.
 	 */
 	public function setup() {
 
@@ -46,22 +27,34 @@ class Pico {
 		}
 
 		if ( ! is_admin() ) {
-			add_filter( 'irving_integrations_option', [ $this, 'inject_pico_configuration' ] );
+			// Filter the integrations manager to include our Pico props.
+			add_filter( 'irving_integrations_option', [ $this, 'inject_pico' ] );
+
+			// Wrap content with `<div id="pico"></div>`.
+			add_filter( 'the_content', [ 'Pico_Widget', 'filter_content' ] );
 		}
 	}
 
 	/**
-	 * Modify the `irving_integrations` options to include pico.
+	 * Inject Pico props into the integrations manager option.
 	 *
-	 * @param array $options Integrations options key.
-	 * @return array Updated options array.
+	 * @param array $options Integrations option array.
+	 * @return array Updated options.
 	 */
-	public function inject_pico_configuration( $options ): array {
+	public function inject_pico( array $options ): array {
+		// Get and validate the publisher id.
+		$publisher_id = Pico_Setup::get_publisher_id();
+		if ( empty( $publisher_id ) ) {
+			return $options;
+		}
 
 		$options['pico'] = [
 			'publisher_id' => Pico_Setup::get_publisher_id(),
 			'page_info'    => Pico_Widget::get_current_view_info(),
 		];
+
+		// Taxonomies always need to be an object.
+		$options['pico']['page_info']['taxonomies'] = (object) $options['pico']['page_info']['taxonomies'];
 
 		return $options;
 	}

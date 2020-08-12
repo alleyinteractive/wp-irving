@@ -547,7 +547,7 @@ function setup_integrations( array $data, \WP_Query $query, string $context ): a
 	}
 
 	// Get any set integrations options.
-	$options = get_option( 'irving_integrations' );
+	$options = (array) get_option( 'irving_integrations' );
 
 	/**
 	 * Modify the value stored in the `irving_integraionts` option before it's
@@ -557,7 +557,7 @@ function setup_integrations( array $data, \WP_Query $query, string $context ): a
 	 *
 	 * @var mixed
 	 */
-	$options = apply_filters( 'irving_integrations_option', $options );
+	$options = array_filter( apply_filters( 'irving_integrations_option', $options ) );
 
 	// Bail early if no options are present.
 	if ( empty( $options ) ) {
