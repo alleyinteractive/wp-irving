@@ -551,11 +551,13 @@ function setup_integrations( array $data, \WP_Query $query, string $context ): a
 
 	/**
 	 * Modify the value stored in the `irving_integraionts` option before it's
-	 * used. This is esentially an alias for the `option_{$option}` filter, but
-	 * specificaly targeted to this functionality to clarify developer
-	 * experience.
+	 * used.
 	 *
-	 * @var mixed
+	 * This is essentially an alias for the `option_{$option}` filter, but
+	 * by declaring this explicitly, we can make it more clear to developers
+	 * how to modify the value correctly.
+	 *
+	 * @var array
 	 */
 	$options = array_filter( apply_filters( 'wp_irving_integrations_option', $options ) );
 
