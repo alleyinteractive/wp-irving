@@ -531,7 +531,7 @@ function setup_head(
  * Manage any active integrations by inserting an `irving/integrations` component.
  *
  * @param array     $data    Data object to be hydrated by templates.
- * @param \WP_Query $query   The current WP_Query object.
+ * @param WP_Query $query   The current WP_Query object.
  * @param string    $context The context for this request.
  * @return array The updated endpoint data.
  */
