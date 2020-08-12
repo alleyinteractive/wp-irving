@@ -55,7 +55,7 @@ class Pico {
 		];
 
 		// Taxonomies always need to be an object.
-		$options['pico']['page_info']['taxonomies'] = (object) $options['pico']['page_info']['taxonomies'];
+		$options['pico']['page_info']['taxonomies'] = (object) ( $options['pico']['page_info']['taxonomies'] ?? [] );
 
 		return $options;
 	}
