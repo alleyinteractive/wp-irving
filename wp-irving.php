@@ -24,6 +24,9 @@ register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 // Base classes.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
 
+// Base traits.
+require_once WP_IRVING_PATH . '/inc/trait-singleton.php';
+
 // API.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-registry-endpoint.php';

@@ -7,7 +7,7 @@
 
 namespace WP_Irving\Integrations;
 
-use WP_Irving\Components\Component;
+use WP_Irving\Singleton;
 use Pico_Setup;
 use Pico_Widget;
 
@@ -15,6 +15,7 @@ use Pico_Widget;
  * Class to integrate Pico with Irving.
  */
 class Pico {
+	use Singleton;
 
 	/**
 	 * Setup the integration.
