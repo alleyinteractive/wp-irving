@@ -7,6 +7,8 @@
 
 namespace WP_Irving;
 
+/* phpcs:disable WordPressVIPMinimum.Variables.VariableAnalysis.StaticOutsideClass */
+
 /**
  * Make a class into a singleton.
  */
