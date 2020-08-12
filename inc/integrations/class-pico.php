@@ -28,7 +28,7 @@ class Pico {
 
 		if ( ! is_admin() ) {
 			// Filter the integrations manager to include our Pico props.
-			add_filter( 'irving_integrations_option', [ $this, 'inject_pico' ] );
+			add_filter( 'wp_irving_integrations_option', [ $this, 'inject_pico' ] );
 
 			// Wrap content with `<div id="pico"></div>`.
 			add_filter( 'the_content', [ 'Pico_Widget', 'filter_content' ] );

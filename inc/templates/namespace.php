@@ -557,7 +557,7 @@ function setup_integrations( array $data, \WP_Query $query, string $context ): a
 	 *
 	 * @var mixed
 	 */
-	$options = array_filter( apply_filters( 'irving_integrations_option', $options ) );
+	$options = array_filter( apply_filters( 'wp_irving_integrations_option', $options ) );
 
 	// Bail early if no options are present.
 	if ( empty( $options ) ) {
