@@ -77,6 +77,5 @@ function load_integrations( array $integrations ) {
 			// Create a singleton instance of this integration.
 			$integration = call_user_func( [ $class, 'instance' ] );
 		}
-
 	}
 }
