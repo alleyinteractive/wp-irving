@@ -73,7 +73,10 @@ class Yoast {
 
 		// If the content exists, add it to the configuration array.
 		if ( ! empty( $content ) ) {
-			$config[] = [ 'yoast_schema' => [ 'content' => $content ] ];
+			$config = array_merge(
+				$config,
+				[ 'yoast_schema' => [ 'content' => $content ] ]
+			);
 		}
 
 		return $config;
