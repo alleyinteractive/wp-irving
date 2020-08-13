@@ -72,13 +72,11 @@ function auto_register_plugin_integrations() {
 function load_integrations( array $integrations ) {
 	foreach ( $integrations as $type => $class ) {
 
-		// Ensure the integration exists, and has an `instance` method using a
-		// singleton pattern.
-		if ( ! class_exists( $class ) || ! method_exists( $class, 'instance' ) ) {
-			continue;
+		// Ensure the integration exists and has an instance method.
+		if ( is_callable( [ $class, 'instance' ] ) ) {
+			// Create a singleton instance of this integration.
+			$integration = call_user_func( [ $class, 'instance' ] );
 		}
 
-		// Create a singleton instance of this integration.
-		$integration = call_user_func( [ $class, 'instance' ] );
 	}
 }
