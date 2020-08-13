@@ -38,12 +38,12 @@ class Jetpack {
 	 */
 	public function setup() {
 
-        if ( function_exists( '\stats_build_view_data' ) ) {
-            // Inject the Jetpack stats script into the Head component.
+		if ( function_exists( '\stats_build_view_data' ) ) {
+			// Inject the Jetpack stats script into the Head component.
 			add_filter( 'wp_irving_component_children', [ $this, 'inject_jetpack_stats_script_head_children' ], 10, 3 );
 			// Inject the Site Stats component into the integrations config.
 			add_filter( 'wp_irving_integrations_config', [ $this, 'inject_jetpack_stats_into_integrations_config' ] );
-        }
+		}
 	}
 
 	/**
@@ -62,20 +62,20 @@ class Jetpack {
 			|| 'page' !== ( $config['context'] ?? 'page' )
 		) {
 			return $children;
-        }
+		}
 
 		return array_merge(
-            $children,
-            [
-                new Component(
-                    'script',
-                    [
-                        'config' => [
-                            'src' => 'https://stats.wp.com/e-' . gmdate( 'YW' ) . '.js',
-                        ],
-                    ]
-                )
-            ]
+			$children,
+			[
+				new Component(
+					'script',
+					[
+						'config' => [
+							'src' => 'https://stats.wp.com/e-' . gmdate( 'YW' ) . '.js',
+						],
+					]
+				),
+			]
 		);
 	}
 
