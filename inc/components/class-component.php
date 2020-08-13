@@ -543,13 +543,21 @@ class Component implements JsonSerializable {
 	 * @return self
 	 */
 	private function hydrate_config(): self {
-		if ( is_callable( $this->config_callback ) ) {
-			$new_config = call_user_func_array( $this->config_callback, [ $this->get_config() ] );
+		/**
+		 * Filter the config values before the config callback fires.
+		 *
+		 * @param array  $config Config for this component.
+		 * @param string $name   Name of this component.
+		 */
+		$new_config = apply_filters( 'wp_irving_component_config_pre_hydration', $this->get_config(), $this->get_name() );
 
-			// @todo Add error handling.
-			if ( is_array( $new_config ) ) {
-				$this->set_config( $new_config );
-			}
+		if ( is_callable( $this->config_callback ) ) {
+			$new_config = call_user_func_array( $this->config_callback, [ $new_config ] );
+		}
+
+		// @todo Add error handling.
+		if ( is_array( $new_config ) ) {
+			$this->set_config( $new_config );
 		}
 
 		return $this;
