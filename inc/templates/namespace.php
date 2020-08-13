@@ -66,7 +66,7 @@ function load_template(
 	$data = setup_head( $data, $query, $context, $path, $request );
 
 	// Automatically setup any active integrations.
-	$data = setup_integrations( $data );
+	$data = setup_integrations( $data, $query, $context, $path, $request );
 
 	// Setup a global style provider.
 	$data = setup_site_theme_provider( $data );
@@ -530,12 +530,36 @@ function setup_head(
 /**
  * Manage any active integrations by inserting an `irving/integrations` component.
  *
- * @param array $data Data object to be hydrated by template.
- * @return array The update endpoint data.
+ * @param array    $data    Data object to be hydrated by templates.
+ * @param WP_Query $query   The current WP_Query object.
+ * @param string   $context The context for this request.
+ * @return array The updated endpoint data.
  */
-function setup_integrations( array $data ): array {
+function setup_integrations( array $data, WP_Query $query, string $context ): array {
+	// Inject the integrations manager into the defaults key.
+	if ( 'site' === $context ) {
+		array_push(
+			$data['defaults'],
+			new Component(
+				'irving/integrations'
+			)
+		);
+	}
+
 	// Get any set integrations options.
-	$options = get_option( 'irving_integrations' );
+	$options = (array) get_option( 'irving_integrations' );
+
+	/**
+	 * Modify the value stored in the `irving_integraionts` option before it's
+	 * used.
+	 *
+	 * This is essentially an alias for the `option_{$option}` filter, but
+	 * by declaring this explicitly, we can make it more clear to developers
+	 * how to modify the value correctly.
+	 *
+	 * @var array
+	 */
+	$options = array_filter( apply_filters( 'wp_irving_integrations_option', $options ) );
 
 	// Bail early if no options are present.
 	if ( empty( $options ) ) {

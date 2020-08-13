@@ -7,6 +7,7 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\Singleton;
 use WP_Irving\Components;
 use WP_Irving\Component;
 
@@ -14,25 +15,7 @@ use WP_Irving\Component;
  * Yoast.
  */
 class Yoast {
-
-	/**
-	 * Class instance.
-	 *
-	 * @var null|self
-	 */
-	protected static $instance;
-
-	/**
-	 * Get class instance.
-	 *
-	 * @return self
-	 */
-	public static function instance() {
-		if ( ! isset( static::$instance ) ) {
-			static::$instance = new static();
-		}
-		return static::$instance;
-	}
+	use Singleton;
 
 	/**
 	 * Constructor for class.
