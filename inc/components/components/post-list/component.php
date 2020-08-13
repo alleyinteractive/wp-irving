@@ -57,7 +57,9 @@ register_component_from_config(
 			}
 
 			$post_ids = wp_list_pluck( $query->posts, 'ID' );
-			$post_ids = post_list_get_and_add_used_post_ids( $post_ids );
+
+			// Add the current $post_ids to the list of used ids.
+			post_list_get_and_add_used_post_ids( $post_ids );
 
 			// Ensure single items are wrapped in an array.
 			$item = ( isset( $templates['item'][0] ) ) ? $templates['item'] : [ $templates['item'] ];
