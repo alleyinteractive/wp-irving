@@ -549,7 +549,7 @@ class Component implements JsonSerializable {
 		 * @param array  $config Config for this component.
 		 * @param string $name   Name of this component.
 		 */
-		$new_config = apply_filters( 'wp_irving_component_config', $this->get_config(), $this->get_name() );
+		$new_config = apply_filters( 'wp_irving_component_config_pre_hydration', $this->get_config(), $this->get_name() );
 
 		if ( is_callable( $this->config_callback ) ) {
 			$new_config = call_user_func_array( $this->config_callback, [ $new_config ] );
