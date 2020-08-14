@@ -430,7 +430,7 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$hydrated = hydrate_template( $template );
 
-		WP_Irving\Components\get_context_store()->set( [ 'test/context' => 'foo' ] );
+		\WP_Irving\Components\get_context_store()->set( [ 'test/context' => 'foo' ] );
 		$expected = [
 			new Component(
 				'test/context-provider',
