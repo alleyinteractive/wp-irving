@@ -26,7 +26,7 @@ register_component_from_config(
 				return $config;
 			}
 
-			// WPCS: slow query ok.
+			// phpcs:ignore WordPress.DB.SlowDBQuery
 			$config['meta_value'] = get_post_meta( $post_id, $meta_key, $single );
 
 			return $config;
