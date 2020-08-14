@@ -9,6 +9,7 @@ namespace WP_Irving\Templates;
 
 use WP_Irving\Components;
 use WP_Irving\Components\Component;
+use WP_Irving\Templates;
 use WP_UnitTestCase;
 
 /**
@@ -421,7 +422,7 @@ class Test_Templates extends WP_UnitTestCase {
 					[
 						'name'        => 'test/use-context-template',
 						'use_context' => [
-							'test/context' => 'bar'
+							'test/context' => 'bar',
 						],
 					],
 				],
@@ -430,19 +431,19 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$hydrated = hydrate_template( $template );
 
-		get_context_store()->set( [ 'test/context' => 'foo'] );
+		get_context_store()->set( [ 'test/context' => 'foo' ] );
 		$expected = [
 			new Component(
 				'test/context-provider',
 				[
-					'config' => [
+					'config'   => [
 						'value' => 'foo',
 					],
 					'children' => [
 						new Component(
 							'test/use-context-template',
 							[
-								'config' => [
+								'config'      => [
 									'bar' => 'foo',
 								],
 								'use_context' => [
