@@ -409,4 +409,52 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$this->assertEquals( $expected, $hydrated, 'Template partial not hydrated correctly.' );
 	}
+
+	/**
+	 * Test use_context in templates.
+	 */
+	public function test_template_use_context() {
+		$template = [
+			[
+				'name'     => 'test/context-provider',
+				'children' => [
+					[
+						'name'        => 'test/use-context-template',
+						'use_context' => [
+							'test/context' => 'bar'
+						],
+					],
+				],
+			],
+		];
+
+		$hydrated = hydrate_template( $template );
+
+		get_context_store()->set( [ 'test/context' => 'foo'] );
+		$expected = [
+			new Component(
+				'test/context-provider',
+				[
+					'config' => [
+						'value' => 'foo',
+					],
+					'children' => [
+						new Component(
+							'test/use-context-template',
+							[
+								'config' => [
+									'bar' => 'foo',
+								],
+								'use_context' => [
+									'test/context' => 'bar',
+								],
+							],
+						),
+					],
+				],
+			),
+		];
+
+		$this->assertEquals( $expected, $hydrated, 'Template with use_context not hydrated correctly.' );
+	}
 }
