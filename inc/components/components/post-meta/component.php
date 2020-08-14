@@ -19,15 +19,14 @@ register_component_from_config(
 	[
 		'config_callback' => function( array $config ): array {
 			$post_id  = $config['post_id'] ?: 0;
-			$meta_key = $config['meta_key'] ?? null;
+			$key      = $config['key'] ?? null;
 			$single   = $config['single'] ?? true;
 
-			if ( ! $post_id || ! $meta_key ) {
+			if ( ! $post_id || ! $key ) {
 				return $config;
 			}
 
-			// phpcs:ignore WordPress.DB.SlowDBQuery
-			$config['meta_value'] = get_post_meta( $post_id, $meta_key, $single );
+			$config['value'] = get_post_meta( $post_id, $key, $single );
 
 			return $config;
 		},
