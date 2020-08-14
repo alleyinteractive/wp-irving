@@ -20,12 +20,14 @@ register_component_from_config(
 		'config_callback' => function( array $config ): array {
 			$post_id  = $config['post_id'] ?: 0;
 			$meta_key = $config['meta_key'] ?? null;
+			$single   = $config['single'] ?? true;
 
 			if ( ! $post_id || ! $meta_key ) {
 				return $config;
 			}
 
-			$config['meta_value'] = get_post_meta( $post_id, $meta_key, true );
+			// WPCS: slow query ok.
+			$config['meta_value'] = get_post_meta( $post_id, $meta_key, $single );
 
 			return $config;
 		},
