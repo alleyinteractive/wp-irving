@@ -9,7 +9,6 @@ namespace WP_Irving\Templates;
 
 use WP_Irving\Components;
 use WP_Irving\Components\Component;
-use WP_Irving\Templates;
 use WP_UnitTestCase;
 
 /**
@@ -431,7 +430,7 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$hydrated = hydrate_template( $template );
 
-		get_context_store()->set( [ 'test/context' => 'foo' ] );
+		WP_Irving\Components\get_context_store()->set( [ 'test/context' => 'foo' ] );
 		$expected = [
 			new Component(
 				'test/context-provider',
