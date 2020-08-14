@@ -1,0 +1,21 @@
+{
+  "name": "irving/post-meta",
+  "_alias": "irving/fragment",
+  "description": "Provide context for a specific post meta value.",
+  "config": {
+    "meta_key": {
+      "type": "string"
+    },
+    "single": {
+      "type": "boolean",
+      "default": true
+    },
+    "meta_value": {}
+  },
+  "provides_context": {
+    "irving/post-meta": "meta_value"
+  },
+  "use_context": {
+    "irving/post_id": "post_id"
+  }
+}
