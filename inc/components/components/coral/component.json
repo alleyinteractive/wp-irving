@@ -1,0 +1,10 @@
+{
+    "name": "irving/coral",
+    "description": "",
+    "config": {
+        "embed_URL": {
+          "default": "",
+          "type": "string"
+        }
+    }
+}
