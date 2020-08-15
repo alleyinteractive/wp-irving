@@ -22,9 +22,8 @@ register_component_from_config(
 			if ( ! $term_id ) {
 				return $config;
 			}
-			echo 'yo'; die();
 
-			$link = get_term_link( $term_id );
+			$link = get_term_link( (int) $term_id );
 
 			// Bail if we have no link.
 			if ( is_wp_error( $link ) ) {
