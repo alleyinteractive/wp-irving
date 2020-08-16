@@ -555,6 +555,17 @@ class Component implements JsonSerializable {
 			$new_config = call_user_func_array( $this->config_callback, [ $new_config ] );
 		}
 
+		/**
+		 * Filter the config values after the config callback fires.
+		 *
+		 * Note: This fitler uses `after_hydration` instead of `post_hydration`
+		 * to avoid confusion with `post` in the WordPress context.
+		 *
+		 * @param array  $config Config for this component.
+		 * @param string $name   Name of this component.
+		 */
+		$new_config = apply_filters( 'wp_irving_component_config_after_hydration', $new_config, $this->get_name() );
+
 		// @todo Add error handling.
 		if ( is_array( $new_config ) ) {
 			$this->set_config( $new_config );
