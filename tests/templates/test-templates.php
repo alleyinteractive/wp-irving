@@ -446,7 +446,7 @@ class Test_Templates extends WP_UnitTestCase {
 						'name'     => 'test/use-context-template',
 						'_alias'   => '',
 						'config'   => [
-							'bar' => 'foo',
+							'bar'          => 'foo',
 							'themeName'    => 'default',
 							'themeOptions' => [ 'default' ],
 						],

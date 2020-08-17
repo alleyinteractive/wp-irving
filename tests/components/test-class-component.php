@@ -61,6 +61,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 
 			// After registration, save the name for later cleanup.
 			if ( $registered ) {
+				// phpcs:ignore WordPressVIPMinimum.Performance.FetchingRemoteData.FileGetContentsUnknown
 				$config = file_get_contents( $path );
 				$config = json_decode( $config, true );
 
