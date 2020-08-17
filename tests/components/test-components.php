@@ -228,7 +228,7 @@ class Test_Components extends WP_UnitTestCase {
 	 * @group context
 	 */
 	public function test_template_default_context() {
-		// Override the global post object for this test.
+		// Override the global post and wp_query objects for this test.
 		global $post;
 
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -238,7 +238,21 @@ class Test_Components extends WP_UnitTestCase {
 
 		// Test initial context.
 		$this->assertEquals( $post->ID, $context->get( 'irving/post_id' ), 'Default post ID context not set.' );
+		$this->assertNull( $context->get( 'irving/term_id' ), 'Default term ID context not set.' );
 		$this->assertEquals( new WP_Query( [] ), $context->get( 'irving/wp_query' ), 'Default wp query context not set.' );
+	}
+
+	/**
+	 * Test default template context on a category archive.
+	 *
+	 * @group context
+	 */
+	public function test_template_default_context_on_category_archive() {
+		$this->go_to( '?taxonomy=category&term=' . $this->get_term()->slug );
+
+		$context = get_context_store();
+
+		$this->assertEquals( $this->get_term_id(), $context->get( 'irving/term_id' ), 'Default term ID context not set.' );
 	}
 
 	/**
