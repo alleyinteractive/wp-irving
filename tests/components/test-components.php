@@ -138,6 +138,15 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Helper to get the term object
+	 *
+	 * @return WP_Term Term object.
+	 */
+	public function get_term() {
+		return get_term( self::$term_id );
+	}
+
+	/**
 	 * Set up shared fixtures.
 	 *
 	 * @param WP_UnitTest_Factory $factory Factory instance.
@@ -170,12 +179,12 @@ class Test_Components extends WP_UnitTestCase {
 			]
 		);
 
-		// self::$term_id = $factory->term->create(
-		// 	[
-		// 		'name'     => 'Example Category',
-		// 		'taxonomy' => 'category',
-		// 	]
-		// );
+		self::$term_id = $factory->term->create(
+			[
+				'name'     => 'Example Category',
+				'taxonomy' => 'category',
+			]
+		);
 
 	}
 
@@ -1199,6 +1208,57 @@ class Test_Components extends WP_UnitTestCase {
 
 		// Cleanup.
 		unregister_component( 'example/use-context' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/term-name component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_term_name() {
+		$this->go_to( '?taxonomy=category&term=' . $this->get_term()->slug );
+
+		$expected = $this->get_expected_component(
+			'irving/term-name',
+			[
+				'_alias'   => 'irving/text',
+				'config'   => [
+					'content' => $this->get_term()->name,
+					'termId'  => $this->get_term_id(),
+				],
+			]
+		);
+
+		$component = new Component( 'irving/term-name' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/term-link component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_term_link() {
+		$this->go_to( '?taxonomy=category&term=' . $this->get_term()->slug );
+
+		$expected = $this->get_expected_component(
+			'irving/term-link',
+			[
+				'_alias' => 'irving/link',
+				'config' => [
+					'href'   => get_term_link( (int) $this->get_term_id() ),
+					'rel'    => '',
+					'style'  => [],
+					'target' => '',
+					'termId' => $this->get_term_id(),
+				],
+			]
+		);
+
+		$component = new Component( 'irving/term-link' );
 
 		$this->assertComponentEquals( $expected, $component );
 	}
