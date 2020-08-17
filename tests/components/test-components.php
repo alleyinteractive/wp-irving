@@ -1223,8 +1223,8 @@ class Test_Components extends WP_UnitTestCase {
 		$expected = $this->get_expected_component(
 			'irving/term-name',
 			[
-				'_alias'   => 'irving/text',
-				'config'   => [
+				'_alias' => 'irving/text',
+				'config' => [
 					'content' => $this->get_term()->name,
 					'termId'  => $this->get_term_id(),
 				],
