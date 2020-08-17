@@ -18,10 +18,24 @@ use WP_UnitTestCase;
 class Test_Class_Component extends WP_UnitTestCase {
 
 	/**
+	 * Test components.
+	 *
+	 * @var array List of registered test component names.
+	 */
+	public static $test_components = [];
+
+	/**
 	 * Class setup.
 	 */
 	public static function wpSetUpBeforeClass() {
 		self::register_test_components();
+	}
+
+	/**
+	 * Class cleanup.
+	 */
+	public static function wpTearDownAfterClass() {
+		self::unregister_test_components();
 	}
 
 	/**
@@ -43,7 +57,24 @@ class Test_Class_Component extends WP_UnitTestCase {
 				continue;
 			}
 
-			register_component_from_config( $path );
+			$registered = register_component_from_config( $path );
+
+			// After registration, save the name for later cleanup.
+			if ( $registered ) {
+				$config = file_get_contents( $path );
+				$config = json_decode( $config, true );
+
+				self::$test_components[] = $config['name'];
+			}
+		}
+	}
+
+	/**
+	 * Remove test components registered during wpSetUpBeforeClass().
+	 */
+	public static function unregister_test_components() {
+		foreach ( self::$test_components as $component ) {
+			unregister_component( $component );
 		}
 	}
 
