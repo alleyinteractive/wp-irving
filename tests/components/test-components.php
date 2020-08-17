@@ -40,6 +40,13 @@ class Test_Components extends WP_UnitTestCase {
 	public static $post_id;
 
 	/**
+	 * Test term.
+	 *
+	 * @var int Term ID.
+	 */
+	public static $term_id;
+
+	/**
 	 * Helper to get the author ID.
 	 *
 	 * @return int Author ID.
@@ -122,6 +129,15 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Helper to get the term ID.
+	 *
+	 * @return int Term ID.
+	 */
+	public function get_term_id() {
+		return self::$term_id;
+	}
+
+	/**
 	 * Set up shared fixtures.
 	 *
 	 * @param WP_UnitTest_Factory $factory Factory instance.
@@ -153,6 +169,13 @@ class Test_Components extends WP_UnitTestCase {
 				'_thumbnail_id' => self::$attachment_id,
 			]
 		);
+
+		// self::$term_id = $factory->term->create(
+		// 	[
+		// 		'name'     => 'Example Category',
+		// 		'taxonomy' => 'category',
+		// 	]
+		// );
 
 	}
 
@@ -1126,6 +1149,58 @@ class Test_Components extends WP_UnitTestCase {
 
 		$this->assertComponentEquals( $expected, $component );
 
+	}
+
+	/**
+	 * Test irving/term-provider component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_term_provider() {
+		// Register a component that receives the term_id context.
+		register_component(
+			'example/use-context',
+			[
+				'use_context' => [
+					'irving/term_id' => 'term_id',
+				],
+			]
+		);
+
+		$expected = $this->get_expected_component(
+			'irving/term-provider',
+			[
+				'_alias'   => 'irving/fragment',
+				'config'   => [
+					'termId' => $this->get_term_id(),
+				],
+				'children' => [
+					$this->get_expected_component(
+						'example/use-context',
+						[
+							'config' => [ 'termId' => $this->get_term_id() ],
+						]
+					),
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/term-provider',
+			[
+				'config'   => [
+					'term_id' => $this->get_term_id(),
+				],
+				'children' => [
+					[ 'name' => 'example/use-context' ],
+				],
+			]
+		);
+
+		// Cleanup.
+		unregister_component( 'example/use-context' );
+
+		$this->assertComponentEquals( $expected, $component );
 	}
 
 	/**
