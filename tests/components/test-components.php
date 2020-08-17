@@ -442,18 +442,18 @@ class Test_Components extends WP_UnitTestCase {
 
 		// Demo templates.
 		$templates = [
-			'before'  => [
+			'before'        => [
 				[ 'name' => 'example/before' ],
 			],
-			'after'   => [
+			'after'         => [
 				[ 'name' => 'example/after' ],
 			],
 			'wrapper'       => [ 'name' => 'example/wrapper' ],
 			'item'          => [ 'name' => 'example/item' ],
 			'interstitials' => [
 				0 => [
-					[ 'name' => 'example/interstitial' ]
-				]
+					[ 'name' => 'example/interstitial' ],
+				],
 			],
 		];
 
