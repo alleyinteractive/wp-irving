@@ -448,8 +448,13 @@ class Test_Components extends WP_UnitTestCase {
 			'after'   => [
 				[ 'name' => 'example/after' ],
 			],
-			'wrapper' => [ 'name' => 'example/wrapper' ],
-			'item'    => [ 'name' => 'example/item' ],
+			'wrapper'       => [ 'name' => 'example/wrapper' ],
+			'item'          => [ 'name' => 'example/item' ],
+			'interstitials' => [
+				0 => [
+					[ 'name' => 'example/interstitial' ]
+				]
+			],
 		];
 
 		// Demo templates with item and wrapper in array format.
@@ -478,6 +483,7 @@ class Test_Components extends WP_UnitTestCase {
 						'example/wrapper',
 						[
 							'children' => [
+								$this->get_expected_component( 'example/interstitial' ),
 								$this->get_expected_component(
 									'irving/post-provider',
 									[
