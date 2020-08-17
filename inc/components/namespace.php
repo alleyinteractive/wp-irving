@@ -46,6 +46,7 @@ function get_context_store(): Context_Store {
 			[
 				'irving/post_id'  => get_the_ID(),
 				'irving/wp_query' => $wp_query,
+				'irving/term_id'  => ( $wp_query->get_queried_object() instanceof \WP_Term ) ? $wp_query->get_queried_object_id() : null,
 			]
 		);
 	}
