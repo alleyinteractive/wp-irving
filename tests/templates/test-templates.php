@@ -287,7 +287,7 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 		];
 
-		$hydrated = json_decode( wp_json_encode( hydrate_template( $template ) ), true );
+		$hydrated = $this->get_hydrated_template_array( $template );
 
 		$expected = [
 			[
@@ -350,7 +350,7 @@ class Test_Templates extends WP_UnitTestCase {
 			],
 		];
 
-		$hydrated = json_decode( wp_json_encode( hydrate_template( $template ) ), true );
+		$hydrated = $this->get_hydrated_template_array( $template );
 
 		$expected = [
 			[
@@ -409,4 +409,67 @@ class Test_Templates extends WP_UnitTestCase {
 
 		$this->assertEquals( $expected, $hydrated, 'Template partial not hydrated correctly.' );
 	}
+
+	/**
+	 * Test use_context in templates.
+	 */
+	public function test_template_use_context() {
+		Components\register_component_from_config( dirname( __DIR__ ) . '/components/test-components/context-provider.json' );
+
+		$template = [
+			[
+				'name'     => 'test/context-provider',
+				'children' => [
+					[
+						'name'        => 'test/use-context-template',
+						'use_context' => [
+							'test/context' => 'bar',
+						],
+					],
+				],
+			],
+		];
+
+		$hydrated = $this->get_hydrated_template_array( $template );
+
+		$expected = [
+			[
+				'name'     => 'test/context-provider',
+				'_alias'   => '',
+				'config'   => [
+					'value'        => 'foo',
+					'themeName'    => 'default',
+					'themeOptions' => [ 'default' ],
+				],
+				'children' => [
+					[
+						'name'     => 'test/use-context-template',
+						'_alias'   => '',
+						'config'   => [
+							'bar'          => 'foo',
+							'themeName'    => 'default',
+							'themeOptions' => [ 'default' ],
+						],
+						'children' => [],
+					],
+				],
+			],
+		];
+
+		// Clean up.
+		Components\get_registry()->unregister_component( 'test/context-provider' );
+
+		$this->assertEquals( $expected, $hydrated, 'Template with use_context not hydrated correctly.' );
+	}
+
+	/**
+	 * Helper function to hydrate a template and return in array format.
+	 *
+	 * @param array $template Template array to hydrate.
+	 * @return array Serialized hydrated array.
+	 */
+	public function get_hydrated_template_array( array $template ): array {
+		return json_decode( wp_json_encode( hydrate_template( $template ) ), true );
+	}
+
 }
