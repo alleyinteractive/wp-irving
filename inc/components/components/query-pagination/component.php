@@ -53,9 +53,8 @@ function get_base_url( $wp_query ) {
 	// Default to '/' for the base URL.
 	$base_url = '/';
 
-	if ( $wp_query->is_archive() ) {
-		$term_id = $wp_query->get_queried_object_id();
-		$url     = get_term_link( $term_id );
+	if ( $wp_query->is_archive() && $wp_query->get_queried_object() instanceof \WP_Term ) {
+		$url = get_term_link( (int) $wp_query->get_queried_object_id() );
 		return wp_parse_url( $url, PHP_URL_PATH );
 	}
 
