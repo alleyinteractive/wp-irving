@@ -13,6 +13,6 @@
     "irving/term_id": "term_id"
   },
   "use_context": {
-    "irving/post_meta": "term_id"
+    "irving/term_id": "term_id"
   }
 }
