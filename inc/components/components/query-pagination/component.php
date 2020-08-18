@@ -34,6 +34,7 @@ register_component_from_config(
 			return array_merge(
 				$config,
 				[
+					'base_url'     => $config['base_url'] ?? get_base_url( $wp_query ),
 					'current_page' => $current_page,
 					'total_pages'  => $total_pages,
 				]
@@ -41,3 +42,22 @@ register_component_from_config(
 		},
 	]
 );
+
+/**
+ * Get the base URL based on the query.
+ *
+ * @param \WP_Query $wp_query The WP Query object.
+ * @return string
+ */
+function get_base_url( $wp_query ) {
+	// Default to '/' for the base URL.
+	$base_url = '/';
+
+	if ( $wp_query->is_archive() ) {
+		$term_id = $wp_query->get_queried_object_id();
+		$url     = get_term_link( $term_id );
+		return wp_parse_url( $url, PHP_URL_PATH );
+	}
+
+	return $base_url;
+}
