@@ -43,7 +43,7 @@ register_component_from_config(
 
 			$wp_term_query = $config['wp_term_query'];
 
-			// Bail early if no posts found.
+			// Bail early if no terms found.
 			if ( empty( $wp_term_query->terms ?? [] ) ) {
 				return $templates['no_results'];
 			}
