@@ -1,0 +1,18 @@
+{
+  "name": "irving/term-provider",
+  "_alias": "irving/fragment",
+  "category": "Term",
+  "description": "Term context provider.",
+  "config": {
+    "term_id": {
+      "default": 0,
+      "type": "integer"
+    }
+  },
+  "provides_context": {
+    "irving/term_id": "term_id"
+  },
+  "use_context": {
+    "irving/term_id": "term_id"
+  }
+}

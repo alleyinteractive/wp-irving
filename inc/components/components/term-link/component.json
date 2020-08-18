@@ -1,0 +1,26 @@
+{
+  "name": "irving/term-link",
+  "_alias": "irving/link",
+  "description": "Get the term link.",
+  "config": {
+    "href": {
+      "default": "",
+      "type": "string"
+    },
+    "rel": {
+      "default": "",
+      "type": "string"
+    },
+    "style": {
+      "default": [],
+      "type": "array"
+    },
+    "target": {
+      "default": "",
+      "type": "string"
+    }
+  },
+  "use_context": {
+    "irving/term_id": "term_id"
+  }
+}

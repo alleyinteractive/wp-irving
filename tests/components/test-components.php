@@ -40,6 +40,13 @@ class Test_Components extends WP_UnitTestCase {
 	public static $post_id;
 
 	/**
+	 * Test term.
+	 *
+	 * @var int Term ID.
+	 */
+	public static $term_id;
+
+	/**
 	 * Helper to get the author ID.
 	 *
 	 * @return int Author ID.
@@ -122,6 +129,24 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Helper to get the term ID.
+	 *
+	 * @return int Term ID.
+	 */
+	public function get_term_id() {
+		return self::$term_id;
+	}
+
+	/**
+	 * Helper to get the term object
+	 *
+	 * @return WP_Term Term object.
+	 */
+	public function get_term() {
+		return get_term( self::$term_id );
+	}
+
+	/**
 	 * Set up shared fixtures.
 	 *
 	 * @param WP_UnitTest_Factory $factory Factory instance.
@@ -151,6 +176,13 @@ class Test_Components extends WP_UnitTestCase {
 				'post_author'   => self::$author_id,
 				'post_title'    => "It's like this & that.", // Tests HTML entities.
 				'_thumbnail_id' => self::$attachment_id,
+			]
+		);
+
+		self::$term_id = $factory->term->create(
+			[
+				'name'     => 'Example Category',
+				'taxonomy' => 'category',
 			]
 		);
 
@@ -196,7 +228,7 @@ class Test_Components extends WP_UnitTestCase {
 	 * @group context
 	 */
 	public function test_template_default_context() {
-		// Override the global post object for this test.
+		// Override the global post and wp_query objects for this test.
 		global $post;
 
 		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
@@ -206,7 +238,21 @@ class Test_Components extends WP_UnitTestCase {
 
 		// Test initial context.
 		$this->assertEquals( $post->ID, $context->get( 'irving/post_id' ), 'Default post ID context not set.' );
+		$this->assertNull( $context->get( 'irving/term_id' ), 'Default term ID context not set.' );
 		$this->assertEquals( new WP_Query( [] ), $context->get( 'irving/wp_query' ), 'Default wp query context not set.' );
+	}
+
+	/**
+	 * Test default template context on a category archive.
+	 *
+	 * @group context
+	 */
+	public function test_template_default_context_on_category_archive() {
+		$this->go_to( '?taxonomy=category&term=' . $this->get_term()->slug );
+
+		$context = get_context_store();
+
+		$this->assertEquals( $this->get_term_id(), $context->get( 'irving/term_id' ), 'Default term ID context not set.' );
 	}
 
 	/**
@@ -442,14 +488,19 @@ class Test_Components extends WP_UnitTestCase {
 
 		// Demo templates.
 		$templates = [
-			'before'  => [
+			'before'        => [
 				[ 'name' => 'example/before' ],
 			],
-			'after'   => [
+			'after'         => [
 				[ 'name' => 'example/after' ],
 			],
-			'wrapper' => [ 'name' => 'example/wrapper' ],
-			'item'    => [ 'name' => 'example/item' ],
+			'wrapper'       => [ 'name' => 'example/wrapper' ],
+			'item'          => [ 'name' => 'example/item' ],
+			'interstitials' => [
+				0 => [
+					[ 'name' => 'example/interstitial' ],
+				],
+			],
 		];
 
 		// Demo templates with item and wrapper in array format.
@@ -478,6 +529,7 @@ class Test_Components extends WP_UnitTestCase {
 						'example/wrapper',
 						[
 							'children' => [
+								$this->get_expected_component( 'example/interstitial' ),
 								$this->get_expected_component(
 									'irving/post-provider',
 									[
@@ -1126,6 +1178,109 @@ class Test_Components extends WP_UnitTestCase {
 
 		$this->assertComponentEquals( $expected, $component );
 
+	}
+
+	/**
+	 * Test irving/term-provider component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_term_provider() {
+		// Register a component that receives the term_id context.
+		register_component(
+			'example/use-context',
+			[
+				'use_context' => [
+					'irving/term_id' => 'term_id',
+				],
+			]
+		);
+
+		$expected = $this->get_expected_component(
+			'irving/term-provider',
+			[
+				'_alias'   => 'irving/fragment',
+				'config'   => [
+					'termId' => $this->get_term_id(),
+				],
+				'children' => [
+					$this->get_expected_component(
+						'example/use-context',
+						[
+							'config' => [ 'termId' => $this->get_term_id() ],
+						]
+					),
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/term-provider',
+			[
+				'config'   => [
+					'term_id' => $this->get_term_id(),
+				],
+				'children' => [
+					[ 'name' => 'example/use-context' ],
+				],
+			]
+		);
+
+		// Cleanup.
+		unregister_component( 'example/use-context' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/term-name component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_term_name() {
+		$this->go_to( '?taxonomy=category&term=' . $this->get_term()->slug );
+
+		$expected = $this->get_expected_component(
+			'irving/term-name',
+			[
+				'_alias' => 'irving/text',
+				'config' => [
+					'content' => $this->get_term()->name,
+					'termId'  => $this->get_term_id(),
+				],
+			]
+		);
+
+		$component = new Component( 'irving/term-name' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/term-link component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_term_link() {
+		$this->go_to( '?taxonomy=category&term=' . $this->get_term()->slug );
+
+		$expected = $this->get_expected_component(
+			'irving/term-link',
+			[
+				'_alias' => 'irving/link',
+				'config' => [
+					'href'   => get_term_link( (int) $this->get_term_id() ),
+					'rel'    => '',
+					'style'  => [],
+					'target' => '',
+					'termId' => $this->get_term_id(),
+				],
+			]
+		);
+
+		$component = new Component( 'irving/term-link' );
+
+		$this->assertComponentEquals( $expected, $component );
 	}
 
 	/**
