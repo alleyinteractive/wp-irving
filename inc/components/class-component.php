@@ -558,7 +558,7 @@ class Component implements JsonSerializable {
 		/**
 		 * Filter the config values after the config callback fires.
 		 *
-		 * Note: This fitler uses `after_hydration` instead of `post_hydration`
+		 * Note: This filter uses `after_hydration` instead of `post_hydration`
 		 * to avoid confusion with `post` in the WordPress context.
 		 *
 		 * @param array  $config Config for this component.
