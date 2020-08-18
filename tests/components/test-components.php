@@ -1328,7 +1328,7 @@ class Test_Components extends WP_UnitTestCase {
 			'irving/term-list',
 			[
 				'_alias'   => 'irving/fragment',
-				'config'  => [
+				'config'   => [
 					'objectIds' => [ $this->get_post_id() ],
 				],
 				'children' => [
