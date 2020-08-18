@@ -1,0 +1,9 @@
+{
+  "name": "irving/term-name",
+  "_alias": "irving/text",
+  "category": "Term",
+  "description": "Get the term name.",
+  "use_context": {
+    "irving/term_id": "term_id"
+  }
+}
