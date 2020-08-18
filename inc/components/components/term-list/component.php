@@ -48,7 +48,6 @@ register_component_from_config(
 				return $templates['no_results'];
 			}
 
-
 			// Ensure single items are wrapped in an array.
 			$item = ( isset( $templates['item'][0] ) ) ? $templates['item'] : [ $templates['item'] ];
 

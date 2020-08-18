@@ -1284,6 +1284,111 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/term-list component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_term_list() {
+		// Demo templates.
+		$templates = [
+			'before'        => [
+				[ 'name' => 'example/before' ],
+			],
+			'after'         => [
+				[ 'name' => 'example/after' ],
+			],
+			'wrapper'       => [ 'name' => 'example/wrapper' ],
+			'item'          => [ 'name' => 'example/item' ],
+			'interstitials' => [
+				0 => [
+					[ 'name' => 'example/interstitial' ],
+				],
+			],
+		];
+
+		// Demo templates with item and wrapper in array format.
+		$templates_alt = [
+			'before'  => [
+				[ 'name' => 'example/before' ],
+			],
+			'after'   => [
+				[ 'name' => 'example/after' ],
+			],
+			'wrapper' => [
+				[ 'name' => 'example/wrapper' ],
+			],
+			'item'    => [
+				[ 'name' => 'example/item' ],
+			],
+		];
+
+		$categories = wp_get_post_categories( $this->get_post_id() );
+
+		$expected = $this->get_expected_component(
+			'irving/term-list',
+			[
+				'_alias'   => 'irving/fragment',
+				'config'  => [
+					'objectIds' => [ $this->get_post_id() ],
+				],
+				'children' => [
+					$this->get_expected_component( 'example/before' ),
+					$this->get_expected_component(
+						'example/wrapper',
+						[
+							'children' => [
+								$this->get_expected_component( 'example/interstitial' ),
+								$this->get_expected_component(
+									'irving/term-provider',
+									[
+										'_alias'   => 'irving/fragment',
+										'config'   => [
+											'termId' => $categories[0],
+										],
+										'children' => [
+											$this->get_expected_component( 'example/item' ),
+										],
+									]
+								),
+							],
+						]
+					),
+					$this->get_expected_component( 'example/after' ),
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/term-list',
+			[
+				'config' => [
+					'object_ids' => [ $this->get_post_id() ],
+					'query_args' => [
+						'taxonomy' => 'category',
+					],
+					'templates'  => $templates,
+				],
+			]
+		);
+
+		$component_alt = new Component(
+			'irving/term-list',
+			[
+				'config' => [
+					'object_ids' => [ $this->get_post_id() ],
+					'query_args' => [
+						'taxonomy' => 'category',
+					],
+					'templates'  => $templates,
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+		$this->assertComponentEquals( $expected, $component_alt );
+	}
+
+	/**
 	 * Test irving/video component.
 	 *
 	 * @group core-components
