@@ -183,13 +183,15 @@ class Component implements JsonSerializable {
 		$args = wp_parse_args(
 			$args,
 			[
-				'config'   => [],
-				'children' => [],
-				'theme'    => 'default',
+				'config'      => [],
+				'children'    => [],
+				'use_context' => [],
+				'theme'       => 'default',
 			]
 		);
 
 		$this
+			->add_use_context( $args['use_context'] )
 			->apply_context()
 			->set_config( $args['config'] )
 			->hydrate_config()
@@ -778,6 +780,17 @@ class Component implements JsonSerializable {
 	 */
 	private function set_use_context( array $use_context ): self {
 		$this->use_context = $use_context;
+		return $this;
+	}
+
+	/**
+	 * Add more entries to the use context map without overwriting old ones.
+	 *
+	 * @param array $use_context Context consumer.
+	 * @return self
+	 */
+	private function add_use_context( array $use_context ): self {
+		$this->set_use_context( array_merge( $this->get_use_context(), $use_context ) );
 		return $this;
 	}
 
