@@ -1,0 +1,26 @@
+{
+  "name": "irving/term-list",
+  "_alias": "irving/fragment",
+  "category": "Term.",
+  "config": {
+    "templates": {
+      "default": [],
+      "hidden": true,
+      "type": "array"
+    },
+    "object_ids": {
+    },
+    "query_args": {
+      "default": [],
+      "hidden": true,
+      "type": "array"
+    },
+    "wp_term_query": {
+      "hidden": true,
+      "type": "object"
+    }
+  },
+  "provides_context": {
+    "irving/wp_term_query": "wp_term_query"
+  }
+}
