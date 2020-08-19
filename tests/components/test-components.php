@@ -857,6 +857,8 @@ class Test_Components extends WP_UnitTestCase {
 
 		$this->go_to( "?cat={$cat}&paged=2" );
 
+		$category = get_category( $cat );
+
 		$expected = $this->get_expected_component(
 			'irving/query-pagination',
 			[
@@ -864,7 +866,7 @@ class Test_Components extends WP_UnitTestCase {
 				'config' => [
 					'currentPage'         => 2,
 					'totalPages'          => 3,
-					'baseUrl'             => '/',
+					'baseUrl'             => "/category/{$category->slug}/",
 					'displayFirstAndLast' => true,
 					'displayPrevAndNext'  => true,
 					'paginationFormat'    => 'page/%1$d/',
