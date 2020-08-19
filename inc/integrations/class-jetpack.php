@@ -7,31 +7,14 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\Singleton;
 use WP_Irving\Components\Component;
 
 /**
  * Jetpack.
  */
 class Jetpack {
-
-	/**
-	 * Class instance.
-	 *
-	 * @var null|self
-	 */
-	protected static $instance;
-
-	/**
-	 * Get class instance.
-	 *
-	 * @return self
-	 */
-	public static function instance() {
-		if ( ! isset( static::$instance ) ) {
-			static::$instance = new static();
-		}
-		return static::$instance;
-	}
+	use Singleton;
 
 	/**
 	 * Constructor for class.

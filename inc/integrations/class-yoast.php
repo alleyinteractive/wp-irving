@@ -9,7 +9,6 @@ namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
 use WP_Irving\Components;
-use WP_Irving\Component;
 
 /**
  * Yoast.
