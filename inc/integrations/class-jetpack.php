@@ -63,7 +63,7 @@ class Jetpack {
 	}
 
 	/**
-	 * Inject the SiteStats component into the integrations config.
+	 * Inject the JetpackSiteStats component into the integrations config.
 	 *
 	 * @param array $config The current configuration.
 	 * @return array The updated configuration.
@@ -80,7 +80,7 @@ class Jetpack {
 		if ( ! empty( $data ) ) {
 			$config = array_merge(
 				$config,
-				[ 'site_stats' => [ 'data' => $data ] ]
+				[ 'jetpack_site_stats' => [ 'data' => $data ] ]
 			);
 		}
 
