@@ -65,5 +65,4 @@ class Test_Helpers {
 
 		return $uploads;
 	}
-
 }

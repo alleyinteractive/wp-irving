@@ -7,29 +7,13 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\Singleton;
+
 /**
  * Class to parse redirects using the Safe Redirect Manager plugin.
  */
 class Safe_Redirect_Manager {
-
-	/**
-	 * Class instance.
-	 *
-	 * @var null|self
-	 */
-	protected static $instance;
-
-	/**
-	 * Get class instance.
-	 *
-	 * @return self
-	 */
-	public static function instance() {
-		if ( ! isset( static::$instance ) ) {
-			static::$instance = new static();
-		}
-		return static::$instance;
-	}
+	use Singleton;
 
 	/**
 	 * Reference to Safe Redirect Manager SRM_Redirect singleton instance.

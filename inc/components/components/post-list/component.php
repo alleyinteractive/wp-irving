@@ -41,11 +41,12 @@ register_component_from_config(
 			$templates = wp_parse_args(
 				$config['templates'],
 				[
-					'before'     => [],
-					'after'      => [],
-					'wrapper'    => [],
-					'item'       => [],
-					'no_results' => [ __( 'No results found.', 'wp-irving' ) ],
+					'after'         => [],
+					'before'        => [],
+					'interstitials' => [],
+					'item'          => [],
+					'no_results'    => [ __( 'No results found.', 'wp-irving' ) ],
+					'wrapper'       => [],
 				]
 			);
 
@@ -57,7 +58,9 @@ register_component_from_config(
 			}
 
 			$post_ids = wp_list_pluck( $query->posts, 'ID' );
-			$post_ids = post_list_get_and_add_used_post_ids( $post_ids );
+
+			// Add the current $post_ids to the list of used ids.
+			post_list_get_and_add_used_post_ids( $post_ids );
 
 			// Ensure single items are wrapped in an array.
 			$item = ( isset( $templates['item'][0] ) ) ? $templates['item'] : [ $templates['item'] ];
@@ -74,6 +77,30 @@ register_component_from_config(
 				},
 				$post_ids
 			);
+
+			// Inject interstitals.
+			if ( ! empty( $templates['interstitials'] ) ) {
+				// Track each interstitial that successfully injects, to
+				// account for subsequent injections.
+				$additional_offset = 0;
+
+				foreach ( $templates['interstitials'] as $position => $interstitial ) {
+					if (
+						empty( $interstitial ) // $interstitial can't be empty.
+						|| ! is_array( $interstitial ) // Or an array.
+						|| absint( $position ) !== $position // $position must be an integer.
+						|| $position > count( $children ) // And we must have more children than the position.
+						|| array_keys( $interstitial ) !== range( 0, count( $interstitial ) - 1 ) // And ensure $interstitial is a sequential array.
+					) {
+						continue;
+					}
+
+					// Inject the interstitial.
+					array_splice( $children, $position + $additional_offset, 0, $interstitial );
+
+					$additional_offset++;
+				}
+			}
 
 			// If a list of components are set as a wrapper, only use the first.
 			$wrapper = $templates['wrapper'][0] ?? $templates['wrapper'];

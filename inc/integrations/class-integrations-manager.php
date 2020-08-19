@@ -10,29 +10,13 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\Singleton;
+
 /**
  * Class for managing integrations in Irving.
  */
 class Integrations_Manager {
-
-	/**
-	 * Class instance.
-	 *
-	 * @var null|self
-	 */
-	protected static $instance;
-
-	/**
-	 * Get class instance.
-	 *
-	 * @return self
-	 */
-	public static function instance() {
-		if ( ! isset( static::$instance ) ) {
-			static::$instance = new static();
-		}
-		return static::$instance;
-	}
+	use Singleton;
 
 	/**
 	 * Register the manager's page and settings fields.

@@ -183,13 +183,15 @@ class Component implements JsonSerializable {
 		$args = wp_parse_args(
 			$args,
 			[
-				'config'   => [],
-				'children' => [],
-				'theme'    => 'default',
+				'config'      => [],
+				'children'    => [],
+				'use_context' => [],
+				'theme'       => 'default',
 			]
 		);
 
 		$this
+			->add_use_context( $args['use_context'] )
 			->apply_context()
 			->set_config( $args['config'] )
 			->hydrate_config()
@@ -543,13 +545,32 @@ class Component implements JsonSerializable {
 	 * @return self
 	 */
 	private function hydrate_config(): self {
-		if ( is_callable( $this->config_callback ) ) {
-			$new_config = call_user_func_array( $this->config_callback, [ $this->get_config() ] );
+		/**
+		 * Filter the config values before the config callback fires.
+		 *
+		 * @param array  $config Config for this component.
+		 * @param string $name   Name of this component.
+		 */
+		$new_config = apply_filters( 'wp_irving_component_config_pre_hydration', $this->get_config(), $this->get_name() );
 
-			// @todo Add error handling.
-			if ( is_array( $new_config ) ) {
-				$this->set_config( $new_config );
-			}
+		if ( is_callable( $this->config_callback ) ) {
+			$new_config = call_user_func_array( $this->config_callback, [ $new_config ] );
+		}
+
+		/**
+		 * Filter the config values after the config callback fires.
+		 *
+		 * Note: This filter uses `after_hydration` instead of `post_hydration`
+		 * to avoid confusion with `post` in the WordPress context.
+		 *
+		 * @param array  $config Config for this component.
+		 * @param string $name   Name of this component.
+		 */
+		$new_config = apply_filters( 'wp_irving_component_config_after_hydration', $new_config, $this->get_name() );
+
+		// @todo Add error handling.
+		if ( is_array( $new_config ) ) {
+			$this->set_config( $new_config );
 		}
 
 		return $this;
@@ -759,6 +780,17 @@ class Component implements JsonSerializable {
 	 */
 	private function set_use_context( array $use_context ): self {
 		$this->use_context = $use_context;
+		return $this;
+	}
+
+	/**
+	 * Add more entries to the use context map without overwriting old ones.
+	 *
+	 * @param array $use_context Context consumer.
+	 * @return self
+	 */
+	private function add_use_context( array $use_context ): self {
+		$this->set_use_context( array_merge( $this->get_use_context(), $use_context ) );
 		return $this;
 	}
 

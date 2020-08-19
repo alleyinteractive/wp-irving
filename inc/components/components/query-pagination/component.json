@@ -4,7 +4,6 @@
   "description": "Pagination UI for a query.",
   "config": {
     "base_url": {
-      "default": "/",
       "type": "string"
     },
     "current_page": {

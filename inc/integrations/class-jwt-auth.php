@@ -7,11 +7,14 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\Singleton;
+
 /**
  * Singleton class for creating a cross-domain cookie with a JSON Web Token
  * that Irving core can read and use for Component API authentication.
  */
 class JWT_Auth {
+	use Singleton;
 
 	/**
 	 * Cookie name that Irving core expects.
@@ -26,25 +29,6 @@ class JWT_Auth {
 	 * @var string
 	 */
 	const KEYPAIR_NAME = 'wp-irving-jwt-auth';
-
-	/**
-	 * Class instance.
-	 *
-	 * @var null|self
-	 */
-	protected static $instance;
-
-	/**
-	 * Get class instance
-	 *
-	 * @return self
-	 */
-	public static function instance() {
-		if ( ! isset( static::$instance ) ) {
-			static::$instance = new static();
-		}
-		return static::$instance;
-	}
 
 	/**
 	 * Setup the singleton. Validate JWT is installed, and setup hooks.

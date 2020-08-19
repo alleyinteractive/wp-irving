@@ -1,0 +1,11 @@
+{
+	"name": "test/context-provider",
+	"config": {
+		"value": {
+			"default": "foo"
+		}
+	},
+	"provides_context": {
+		"test/context": "value"
+	}
+}

@@ -21,7 +21,6 @@ function bootstrap() {
 function load_integrations_manager() {
 	// Instantiate the integrations manager.
 	$manager = new \WP_Irving\Integrations\Integrations_Manager();
-	$manager->setup();
 
 	// Register integrations.
 	auto_register_integrations();
@@ -56,6 +55,7 @@ function auto_register_integrations() {
 function auto_register_plugin_integrations() {
 	$integrations = [
 		'jwt_auth' => __NAMESPACE__ . '\JWT_Auth',
+		'pico'     => __NAMESPACE__ . '\Pico',
 	];
 
 	// Allow new integrations to be added via a filter.
@@ -72,7 +72,11 @@ function auto_register_plugin_integrations() {
  */
 function load_integrations( array $integrations ) {
 	foreach ( $integrations as $type => $class ) {
-		$integration = new $class();
-		$integration->setup();
+
+		// Ensure the integration exists and has an instance method.
+		if ( is_callable( [ $class, 'instance' ] ) ) {
+			// Create a singleton instance of this integration.
+			$integration = call_user_func( [ $class, 'instance' ] );
+		}
 	}
 }

@@ -24,6 +24,9 @@ register_deactivation_hook( __FILE__, 'flush_rewrite_rules' );
 // Base classes.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
 
+// Base traits.
+require_once WP_IRVING_PATH . '/inc/trait-singleton.php';
+
 // API.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-registry-endpoint.php';
@@ -41,6 +44,7 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-pico.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';

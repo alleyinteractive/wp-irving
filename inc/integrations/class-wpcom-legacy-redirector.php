@@ -9,31 +9,14 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\Singleton;
 use WPCOM_Legacy_Redirector as Legacy_Redirector;
 
 /**
  * Class to parse redirects using the WPCOM Legacy Redirector plugin.
  */
 class WPCOM_Legacy_Redirector {
-
-	/**
-	 * Class instance.
-	 *
-	 * @var null|self
-	 */
-	protected static $instance;
-
-	/**
-	 * Get class instance.
-	 *
-	 * @return self
-	 */
-	public static function instance() {
-		if ( ! isset( static::$instance ) ) {
-			static::$instance = new static();
-		}
-		return static::$instance;
-	}
+	use Singleton;
 
 	/**
 	 * Constructor for class.
