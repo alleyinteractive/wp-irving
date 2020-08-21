@@ -34,27 +34,27 @@ class Coral {
 	 */
 	public function setup() {
 		// Retrieve any existing integrations options.
-        $this->options = get_option( 'irving_integrations' );
+		$this->options = get_option( 'irving_integrations' );
 
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
 
 		// Filter the updated option values prior to submission.
-        add_filter( 'pre_update_option_irving_integrations', [ $this, 'group_and_format_options_for_storage' ] );
+		add_filter( 'pre_update_option_irving_integrations', [ $this, 'group_and_format_options_for_storage' ] );
 
-        $pico_sso_enabled = $this->options[ $this->option_key ]['pico_sso_enabled'] ?? false;
-    
-        if ( ! empty( $pico_sso_enabled ) ){
-            // Expose data to the endpoint.
-            add_filter(
-                'wp_irving_data_endpoints',
-                function ( $endpoints ) {
-                    $endpoints[] = $this->get_endpoint_settings();
+		$sso_secret = $this->options[ $this->option_key ]['sso_secret'] ?? false;
 
-                    return $endpoints;
-                }
-            );
-        }
+		if ( ! empty( $sso_secret ) ){
+			// Expose data to the endpoint.
+			add_filter(
+				'wp_irving_data_endpoints',
+				function ( $endpoints ) {
+					$endpoints[] = $this->get_endpoint_settings();
+
+					return $endpoints;
+				}
+			);
+		}
 	}
 
 	/**
@@ -66,14 +66,6 @@ class Coral {
 			'wp_irving_coral_sso_secret',
 			esc_html__( 'Coral SSO Secret', 'wp-irving' ),
 			[ $this, 'render_coral_sso_secret_input' ],
-			'wp_irving_integrations',
-			'irving_integrations_settings'
-        );
-
-		add_settings_field(
-			'wp_irving_coral_pico_sso_enabled',
-			esc_html__( 'Enable Coral SSO with Pico', 'wp-irving' ),
-			[ $this, 'render_pico_sso_enabled_checkbox' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
 		);
@@ -88,18 +80,6 @@ class Coral {
 
 		?>
 			<input type="text" name="irving_integrations[<?php echo esc_attr( 'coral_sso_secret' ); ?>]" value="<?php echo esc_attr( $sso_secret ); ?>" />
-		<?php
-    }
-
-    /**
-	 * Render an checkbox that will register the Pico verification endpoint.
-	 */
-	public function render_pico_sso_enabled_checkbox() {
-		// Check to see if Pico SSO is enabled in the option.
-		$sso_enabled = $this->options[ $this->option_key ]['pico_sso_enabled'] ?? false;
-
-		?>
-			<input type="checkbox" name="irving_integrations[<?php echo esc_attr( 'coral_pico_sso_enabled' ); ?>]" value="<?php echo esc_attr( $sso_enabled ); ?>" />
 		<?php
 	}
 
@@ -118,69 +98,70 @@ class Coral {
 			if ( strpos( $key, 'coral_' ) !== false) {
 				$formatted_options[ $this->option_key ][ str_replace( 'coral_', '', $key ) ] = $val;
 			}
-        }
+		}
 
-        // Make sure this option's values are not passed to the endpoint.
-        $formatted_options[ $this->option_key ]['private'] = true;
+		// Make sure this option's values are not passed to the endpoint.
+		$formatted_options[ $this->option_key ]['private'] = true;
 
 		return $formatted_options;
-    }
-    
+	}
 
-    /**
-     * Get the endpoint settings.
-     *
-     * @return array Endpoint settings.
-     */
+	/**
+	 * Get the endpoint settings.
+	 *
+	 * @return array Endpoint settings.
+	 */
 	public function get_endpoint_settings(): array {
 		return [
-			'slug'     => 'verify_pico_user',
+			'slug'     => 'validate_sso_user',
 			'callback' => [ $this, 'process_endpoint_request' ],
 		];
 	}
 
-    /**
-     * Get the data for the Pico user endpoint verification request.
-     *
-     * @param \WP_REST_Request $request The request object.
-     */
+	/**
+	 * Get the data for the Pico user endpoint verification request.
+	 *
+	 * @param \WP_REST_Request $request The request object.
+	 */
 	public function process_endpoint_request( \WP_REST_Request $request ) {
 		// Allow access from the frontend.
 		header( 'Access-Control-Allow-Origin: ' . home_url() );
 
 		$user = $request->get_param( 'user' );
 
-		if ( ! empty( $user ) ) {
+		// Verify the user's credentials.
+		$verified_user = apply_filters( 'wp_irving_verify_coral_user', $user );
+
+		if ( ! empty( $verified_user ) ) {
 			$credentials = [
 				'jti'  => uniqid(),
 				'exp'  => time() + (90 * 86400), // JWT will expire in 90 days.
 				'iat'  => time(),
 				'user' => [
-					'id'       => '628bdc61-6616-4add-bfec-dd79156715d4', // This will be retrieved from the Pico verification response. Fix this later.
-					'email'    => $user,
-					'username' => explode( '@', $user ),
+					'id'       => $verified_user['id'],
+					'email'    => $verified_user['email'],
+					'username' => $verified_user['username'],
 				],
 			];
 
-			// Build the JWT.
-			$jwt = $base64_header . "." . $base64_payload . '.' . $base64_signature;
-
 			return [
 				'status' => 'success',
-				'jwt'    => $jwt,
+				'jwt'    => $this->build_jwt( $credentials ),
 			];
 		}
 
 		return [ 'status' => 'failed' ];
 	}
 
-    /**
-     * Construct a HS256-encrypted JWT for SSO authentication.
-     *
-     * @param array $credentials The user to be authenticated.
-     * @return string The constructed JWT.
-     */
+	/**
+	 * Construct a HS256-encrypted JWT for SSO authentication.
+	 *
+	 * @param array $credentials The user to be authenticated.
+	 * @return string The constructed JWT.
+	 */
 	public function build_jwt( array $credentials ): string {
+		$options = get_option( 'irving_integrations' );
+
 		// Define the JWT header and payload.
 		$header     = json_encode( [ 'typ' => 'JWT', 'alg' => 'HS256' ] );
 		$payload    = json_encode( $credentials );
@@ -199,12 +180,12 @@ class Coral {
 		return $base64_header . "." . $base64_payload . '.' . $base64_signature;
 	}
 
-    /**
-     * Base64 URL encode a target data string.
-     *
-     * @param string $data The data to be encoded.
-     * @return string The encoded data.
-     */
+	/**
+	 * Base64 URL encode a target data string.
+	 *
+	 * @param string $data The data to be encoded.
+	 * @return string The encoded data.
+	 */
 	public function base64url_encode( string $data ): string {
 		return rtrim( strtr( base64_encode( $data ), '+/', '-_' ), '=' );
 	}
