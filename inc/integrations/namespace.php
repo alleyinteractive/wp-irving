@@ -21,6 +21,7 @@ function bootstrap() {
 function load_integrations_manager() {
 	// Instantiate the integrations manager.
 	$manager = new \WP_Irving\Integrations\Integrations_Manager();
+	$manager->setup();
 
 	// Register integrations.
 	auto_register_integrations();
@@ -32,6 +33,7 @@ function load_integrations_manager() {
 function auto_register_integrations() {
 	$integrations = [
 		'archiveless'             => __NAMESPACE__ . '\Archiveless',
+		'coral'                   => __NAMESPACE__ . '\Coral',
 		'google_analytics'        => __NAMESPACE__ . '\Google_Analytics',
 		'google_amp'              => __NAMESPACE__ . '\Google_AMP',
 		'new_relic'               => __NAMESPACE__ . '\New_Relic',
