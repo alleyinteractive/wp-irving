@@ -39,9 +39,6 @@ class Coral {
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
 
-		// Filter the updated option values prior to submission.
-		add_filter( 'pre_update_option_irving_integrations', [ $this, 'group_and_format_options_for_storage' ] );
-
 		$sso_secret = $this->options[ $this->option_key ]['sso_secret'] ?? false;
 
 		if ( ! empty( $sso_secret ) ){
@@ -81,29 +78,6 @@ class Coral {
 		?>
 			<input type="text" name="irving_integrations[<?php echo esc_attr( 'coral_sso_secret' ); ?>]" value="<?php echo esc_attr( $sso_secret ); ?>" />
 		<?php
-	}
-
-	/**
-	 * Loop through the updated options, group them by their integration's key,
-	 * and remove any prefix set by the option's input.
-	 *
-	 * @param array $options The updated options.
-	 * @return array The formatted options.
-	 */
-	public function group_and_format_options_for_storage( array $options ): array {
-		$formatted_options = [];
-
-		foreach ( $options as $key => $val ) {
-			// Build the config array for Coral.
-			if ( strpos( $key, 'coral_' ) !== false) {
-				$formatted_options[ $this->option_key ][ str_replace( 'coral_', '', $key ) ] = $val;
-			}
-		}
-
-		// Make sure this option's values are not passed to the endpoint.
-		$formatted_options[ $this->option_key ]['private'] = true;
-
-		return $formatted_options;
 	}
 
 	/**
@@ -160,8 +134,6 @@ class Coral {
 	 * @return string The constructed JWT.
 	 */
 	public function build_jwt( array $credentials ): string {
-		$options = get_option( 'irving_integrations' );
-
 		// Define the JWT header and payload.
 		$header     = json_encode( [ 'typ' => 'JWT', 'alg' => 'HS256' ] );
 		$payload    = json_encode( $credentials );

@@ -24,8 +24,12 @@ class Integrations_Manager {
 	public function setup() {
 		// Register admin page.
 		add_action( 'admin_menu', [ $this, 'register_admin' ] );
+
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
+
+		// Filter the updated option values prior to submission.
+		add_filter( 'pre_update_option_irving_integrations', [ $this, 'group_and_format_options_for_storage' ] );
 	}
 
 	/**
@@ -37,10 +41,35 @@ class Integrations_Manager {
 		// Register the section.
 		add_settings_section(
 			'irving_integrations_settings',
-			__( 'Add keys for integrations to be passed to the front-end.', 'wp-irving' ),
+			__( 'Add keys for integrations.', 'wp-irving' ),
 			'',
 			'wp_irving_integrations'
 		);
+	}
+
+	/**
+	 * Loop through the updated options, group them by their integration's key,
+	 * and remove any prefix set by the option's input.
+	 *
+	 * @param array $options The updated options.
+	 * @return array The formatted options.
+	 */
+	public function group_and_format_options_for_storage( array $options ): array {
+		$formatted_options = [];
+
+		foreach ( $options as $key => $val ) {
+			// Build the config array for GA.
+			if ( strpos( $key, 'ga_' ) !== false ) {
+				$formatted_options['google_analytics'][ str_replace( 'ga_', '', $key ) ] = $val;
+			}
+			// Build the config array for Coral.
+			if ( strpos( $key, 'coral_' ) !== false) {
+				$formatted_options['coral'][ str_replace( 'coral_', '', $key ) ] = $val;
+				$formatted_options['coral']['private'] = true;
+			}
+		}
+
+		return $formatted_options;
 	}
 
 	/**
