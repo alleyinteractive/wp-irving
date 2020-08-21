@@ -22,10 +22,11 @@ class Components_Registry_Endpoint extends Endpoint {
 			self::get_namespace(),
 			'/registered-components/',
 			[
-				'methods'  => \WP_REST_Server::READABLE,
-				'callback' => function() {
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => function() {
 					return \WP_Irving\get_registry()->get_registered_components();
 				},
+				'permission_callback' => '__return_true',
 			]
 		);
 	}
