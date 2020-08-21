@@ -61,11 +61,19 @@ class Coral {
 	 * Register settings fields for display.
 	 */
 	public function register_settings_fields() {
-		// Register a new field for the Coral integration.
+		// Register new fields for the Coral integration.
 		add_settings_field(
-			'wp_irving_ga_tracking_id',
+			'wp_irving_coral_sso_secret',
 			esc_html__( 'Coral SSO Secret', 'wp-irving' ),
 			[ $this, 'render_coral_sso_secret_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+        );
+
+		add_settings_field(
+			'wp_irving_coral_pico_sso_enabled',
+			esc_html__( 'Enable Coral SSO with Pico', 'wp-irving' ),
+			[ $this, 'render_pico_sso_enabled_checkbox' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
 		);
@@ -79,7 +87,19 @@ class Coral {
 		$sso_secret = $this->options[ $this->option_key ]['sso_secret'] ?? '';
 
 		?>
-			<input type="text" name="irving_integrations[<?php echo esc_attr( 'sso_secret' ); ?>]" value="<?php echo esc_attr( $sso_secret ); ?>" />
+			<input type="text" name="irving_integrations[<?php echo esc_attr( 'coral_sso_secret' ); ?>]" value="<?php echo esc_attr( $sso_secret ); ?>" />
+		<?php
+    }
+
+    /**
+	 * Render an checkbox that will register the Pico verification endpoint.
+	 */
+	public function render_pico_sso_enabled_checkbox() {
+		// Check to see if Pico SSO is enabled in the option.
+		$sso_enabled = $this->options[ $this->option_key ]['pico_sso_enabled'] ?? false;
+
+		?>
+			<input type="checkbox" name="irving_integrations[<?php echo esc_attr( 'coral_pico_sso_enabled' ); ?>]" value="<?php echo esc_attr( $sso_enabled ); ?>" />
 		<?php
 	}
 
@@ -95,10 +115,13 @@ class Coral {
 
 		foreach ( $options as $key => $val ) {
 			// Build the config array for Coral.
-			if ( strpos( $key, 'ga_' ) !== false ) {
-				$formatted_options[ $this->option_key ][ str_replace( 'ga_', '', $key ) ] = $val;
+			if ( strpos( $key, 'coral_' ) !== false) {
+				$formatted_options[ $this->option_key ][ str_replace( 'coral_', '', $key ) ] = $val;
 			}
-		}
+        }
+
+        // Make sure this option's values are not passed to the endpoint.
+        $formatted_options[ $this->option_key ]['private'] = true;
 
 		return $formatted_options;
     }
