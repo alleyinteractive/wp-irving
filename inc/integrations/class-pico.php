@@ -69,10 +69,6 @@ class Pico {
 		// If the user isn't verified, return false, which will cause a failure
 		// response to be returned on the front-end and the appropriate behavior
 		// will be triggered.
-		return [
-			'id'       => '628bdc61-6616-4add-bfec-dd79156715d4', // The ID should come from the Pico verification payload.
-			'email'    => $user,
-			'username' => explode( '@', $user )[0], // The username should come from the Pico verification payload.
-		];
+		return $user;
 	}
 }

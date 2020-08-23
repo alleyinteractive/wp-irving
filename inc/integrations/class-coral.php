@@ -98,33 +98,37 @@ class Coral {
 	 * @param \WP_REST_Request $request The request object.
 	 */
 	public function process_endpoint_request( \WP_REST_Request $request ) {
-		// Allow access from the frontend.
-		header( 'Access-Control-Allow-Origin: ' . home_url() );
+		$user = sanatize_text_field( $request->get_param( 'user' ) );
 
-		$user = $request->get_param( 'user' );
+		$user_obj = [
+			'id'       => '628bdc61-6616-4add-bfec-dd79156715d4', // The ID should come from the Pico verification payload.
+			'email'    => $user,
+			'username' => explode( '@', $user )[0], // The username should come from the Pico verification payload.
+		];
 
 		// Verify the user's credentials.
-		$verified_user = apply_filters( 'wp_irving_verify_coral_user', $user );
+		$verified_user = apply_filters( 'wp_irving_verify_coral_user', $user_obj );
 
-		if ( ! empty( $verified_user ) ) {
-			$credentials = [
-				'jti'  => uniqid(),
-				'exp'  => time() + (90 * 86400), // JWT will expire in 90 days.
-				'iat'  => time(),
-				'user' => [
-					'id'       => $verified_user['id'],
-					'email'    => $verified_user['email'],
-					'username' => $verified_user['username'],
-				],
-			];
-
-			return [
-				'status' => 'success',
-				'jwt'    => $this->build_jwt( $credentials ),
-			];
+		// Bail early if the verified user doesn't exist.
+		if ( empty ( $verified_user ) ) {
+			return [ 'status' => 'failed' ];
 		}
 
-		return [ 'status' => 'failed' ];
+		$credentials = [
+			'jti'  => uniqid(),
+			'exp'  => time() + (90 * DAY_IN_SECONDS), // JWT will expire in 90 days.
+			'iat'  => time(),
+			'user' => [
+				'id'       => $verified_user['id'],
+				'email'    => $verified_user['email'],
+				'username' => $verified_user['username'],
+			],
+		];
+
+		return [
+			'status' => 'success',
+			'jwt'    => $this->build_jwt( $credentials ),
+		];
 	}
 
 	/**

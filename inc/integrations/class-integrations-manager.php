@@ -58,14 +58,16 @@ class Integrations_Manager {
 		$formatted_options = [];
 
 		foreach ( $options as $key => $val ) {
-			// Build the config array for GA.
-			if ( strpos( $key, 'ga_' ) !== false ) {
-				$formatted_options['google_analytics'][ str_replace( 'ga_', '', $key ) ] = $val;
-			}
-			// Build the config array for Coral.
-			if ( strpos( $key, 'coral_' ) !== false) {
-				$formatted_options['coral'][ str_replace( 'coral_', '', $key ) ] = $val;
-				$formatted_options['coral']['private'] = true;
+			switch ( $key ) {
+				case strpos( $key, 'ga_' ) !== false:
+					// Build the config array for GA.
+					$formatted_options['google_analytics'][ str_replace( 'ga_', '', $key ) ] = $val;
+				case strpos( $key, 'coral_' ) !== false:
+					// Build the config array for Coral.
+					$formatted_options['coral'][ str_replace( 'coral_', '', $key ) ] = $val;
+					$formatted_options['coral']['private'] = true;
+				default:
+					$formatted_options[ $key ] = $val;
 			}
 		}
 
