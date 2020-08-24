@@ -44,6 +44,34 @@ class Integrations_Manager {
 	}
 
 	/**
+	 * Loop through the updated options, group them by their integration's key,
+	 * and remove any prefix set by the option's input.
+	 *
+	 * @param array $options The updated options.
+	 * @return array The formatted options.
+	 */
+	public function group_and_format_options_for_storage( array $options ): array {
+		$formatted_options = [];
+
+		foreach ( $options as $key => $val ) {
+			switch ( $key ) {
+				// Build the config array for GA.
+				case strpos( $key, 'ga_' ) !== false:
+					$formatted_options['google_analytics'][ str_replace( 'ga_', '', $key ) ] = $val;
+					break;
+				// Build the contig array for GTM.
+				case strpos( $key, 'gtm_' ) !== false:
+					$formatted_options['google_tag_manager'][ str_replace( 'gtm_', '', $key ) ] = $val;
+					break;
+				default:
+					$formatted_options[ $key ] = $val;
+			}
+		}
+
+		return $formatted_options;
+	}
+
+	/**
 	 * Render the admin page in the settings submenu.
 	 */
 	public function register_admin() {
