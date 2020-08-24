@@ -1433,6 +1433,8 @@ class Test_Components extends WP_UnitTestCase {
 	 * @group coral
 	 */
 	public function test_component_coral_comment_counts() {
+		// Mock integration to Coral.
+		update_option( 'irving_integrations', [ 'coral_url' => 'https://example.coral.test' ] );
 
 		$expected = $this->get_expected_component(
 			'irving/coral-comment-count',
@@ -1449,8 +1451,7 @@ class Test_Components extends WP_UnitTestCase {
 			'irving/coral-comment-count',
 			[
 				'config' => [
-					'embed_URL' => 'https://example.coral.test',
-					'post_id'   => self::$post_id,
+					'post_id' => self::$post_id,
 				],
 			]
 		);
