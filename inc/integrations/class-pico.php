@@ -34,6 +34,8 @@ class Pico {
 			// Wrap content with `<div id="pico"></div>`.
 			add_filter( 'the_content', [ 'Pico_Widget', 'filter_content' ] );
 		}
+
+		add_filter( 'wp_irving_verify_coral_user', [ $this, 'verify_pico_user_for_sso' ] );
 	}
 
 	/**
@@ -58,5 +60,22 @@ class Pico {
 		$options['pico']['page_info']['taxonomies'] = (object) ( $options['pico']['page_info']['taxonomies'] ?? [] );
 
 		return $options;
+	}
+
+	/**
+	 * Validate a Pico user's credentials and return the required credentials
+	 * to build a JWT.
+	 *
+	 * @param array $user The initial user object.
+	 * @return array Updated user object.
+	 */
+	public function verify_pico_user_for_sso( array $user ): array {
+		// TODO: Dispatch a verification request to the Pico API. If the user
+		// is verified, return the constructed user with an ID, email, and
+		// username.
+		// If the user isn't verified, return false, which will cause a failure
+		// response to be returned on the front-end and the appropriate behavior
+		// will be triggered.
+		return $user;
 	}
 }
