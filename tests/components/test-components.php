@@ -1433,11 +1433,11 @@ class Test_Components extends WP_UnitTestCase {
 	 * @group coral
 	 */
 	public function test_component_coral_comment_counts() {
+
 		$expected = $this->get_expected_component(
 			'irving/coral-comment-count',
 			[
 				'config' => [
-					'embedUrl'   => 'https://example.coral.test',
 					'articleUrl' => get_the_permalink( self::$post_id ),
 					'noText'     => false,
 				],
