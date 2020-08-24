@@ -83,3 +83,24 @@ function load_integrations( array $integrations ) {
 		}
 	}
 }
+
+/**
+ * Get option values for an integration.
+ *
+ * @param string $integration The integration slug.
+ * @param string $option      Optional. The option key to return. If empty,
+ *                            all options for that integration will be returned
+ *                            as an array.
+ * @return mixed Option value or an array of values.
+ */
+function get_option( string $integration, string $option = '' ) {
+	$options = \get_option( 'irving_integrations' );
+
+	// When no option is passed, return all options for the integration.
+	if ( empty( $option ) ) {
+		return $options[ $integration ] ?? [];
+	}
+
+	// Return the specific option.
+	return $options[ $integration ][ $option ] ?? false;
+}
