@@ -46,8 +46,9 @@ class Form_Endpoint extends Endpoint {
 				self::get_namespace(),
 				'/form/' . $endpoint['slug'],
 				[
-					'methods'  => \WP_REST_Server::CREATABLE,
-					'callback' => $endpoint['callback'],
+					'methods'             => \WP_REST_Server::CREATABLE,
+					'callback'            => $endpoint['callback'],
+					'permission_callback' => '__return_true',
 				]
 			);
 		}
