@@ -1439,7 +1439,7 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'config' => [
 					'articleUrl' => get_the_permalink( self::$post_id ),
-					'embedUrl' => 'https://example.coral.test',
+					'embedUrl'   => 'https://example.coral.test',
 					'noText'     => false,
 				],
 			]
