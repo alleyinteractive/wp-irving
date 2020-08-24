@@ -33,6 +33,7 @@ function load_integrations_manager() {
 function auto_register_integrations() {
 	$integrations = [
 		'archiveless'             => __NAMESPACE__ . '\Archiveless',
+		'coral'                   => __NAMESPACE__ . '\Coral',
 		'google_analytics'        => __NAMESPACE__ . '\Google_Analytics',
 		'google_amp'              => __NAMESPACE__ . '\Google_AMP',
 		'jetpack'                 => __NAMESPACE__ . '\Jetpack',
