@@ -36,9 +36,11 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-cache-endpoint.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-coral.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-analytics.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-jetpack.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-google-tag-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-jwt-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
