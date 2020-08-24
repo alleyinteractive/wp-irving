@@ -66,7 +66,7 @@ class Integrations_Manager {
 				// Build the contig array for GTM.
 				case strpos( $key, 'gtm_' ) !== false:
 					$formatted_options['google_tag_manager'][ str_replace( 'gtm_', '', $key ) ] = $val;
-		 			break;
+					break;
 				// Build the config array for Coral.
 				case strpos( $key, 'coral_' ) !== false:
 					$formatted_options['coral'][ str_replace( 'coral_', '', $key ) ] = $val;
