@@ -38,9 +38,6 @@ class Google_Analytics {
 
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
-
-		// Filter the updated option values prior to submission.
-		add_filter( 'pre_update_option_irving_integrations', [ $this, 'group_and_format_options_for_storage' ] );
 	}
 
 	/**
@@ -67,25 +64,5 @@ class Google_Analytics {
 		?>
 			<input type="text" name="irving_integrations[<?php echo esc_attr( 'ga_tracking_id' ); ?>]" value="<?php echo esc_attr( $ga_key ); ?>" />
 		<?php
-	}
-
-	/**
-	 * Loop through the updated options, group them by their integration's key,
-	 * and remove any prefix set by the option's input.
-	 *
-	 * @param array $options The updated options.
-	 * @return array The formatted options.
-	 */
-	public function group_and_format_options_for_storage( array $options ): array {
-		$formatted_options = [];
-
-		foreach ( $options as $key => $val ) {
-			// Build the config array for Google Analytics.
-			if ( strpos( $key, 'ga_' ) !== false ) {
-				$formatted_options[ $this->option_key ][ str_replace( 'ga_', '', $key ) ] = $val;
-			}
-		}
-
-		return $formatted_options;
 	}
 }
