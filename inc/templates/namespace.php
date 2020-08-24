@@ -571,7 +571,7 @@ function setup_integrations( array $data, WP_Query $query, string $context ): ar
 		$options,
 		function( $option ) {
 			// Don't pass private options in the endpoint response.
-			if ( ! empty ( $option['private'] ) ) {
+			if ( ! empty( $option['private'] ) ) {
 				return;
 			}
 

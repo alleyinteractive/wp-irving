@@ -62,6 +62,13 @@ class Pico {
 		return $options;
 	}
 
+	/**
+	 * Validate a Pico user's credentials and return the required credentials
+	 * to build a JWT.
+	 *
+	 * @param array $user The initial user object.
+	 * @return array Updated user object.
+	 */
 	public function verify_pico_user_for_sso( array $user ): array {
 		// TODO: Dispatch a verification request to the Pico API. If the user
 		// is verified, return the constructed user with an ID, email, and

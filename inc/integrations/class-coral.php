@@ -41,7 +41,7 @@ class Coral {
 
 		$sso_secret = $this->options[ $this->option_key ]['sso_secret'] ?? false;
 
-		if ( ! empty( $sso_secret ) ){
+		if ( ! empty( $sso_secret ) ) {
 			// Expose data to the endpoint.
 			add_filter(
 				'wp_irving_data_endpoints',
@@ -113,13 +113,13 @@ class Coral {
 		$verified_user = apply_filters( 'wp_irving_verify_coral_user', $user_obj );
 
 		// Bail early if the verified user doesn't exist.
-		if ( empty ( $verified_user ) ) {
+		if ( empty( $verified_user ) ) {
 			return [ 'status' => 'failed' ];
 		}
 
 		$credentials = [
 			'jti'  => uniqid(),
-			'exp'  => time() + (90 * DAY_IN_SECONDS), // JWT will expire in 90 days.
+			'exp'  => time() + ( 90 * DAY_IN_SECONDS ), // JWT will expire in 90 days.
 			'iat'  => time(),
 			'user' => [
 				'id'       => $verified_user['id'],
@@ -142,9 +142,14 @@ class Coral {
 	 */
 	public function build_jwt( array $credentials ): string {
 		// Define the JWT header and payload.
-		$header     = json_encode( [ 'typ' => 'JWT', 'alg' => 'HS256' ] );
-		$payload    = json_encode( $credentials );
-		$secret     = $this->options[ $this->option_key ]['sso_secret'];
+		$header  = wp_json_encode(
+			[
+				'typ' => 'JWT',
+				'alg' => 'HS256'
+			]
+		);
+		$payload = wp_json_encode( $credentials );
+		$secret  = $this->options[ $this->option_key ]['sso_secret'];
 
 		// Base64 URL encode the header and payload.
 		$base64_header  = $this->base64url_encode( $header );
@@ -156,7 +161,7 @@ class Coral {
 		$base64_signature = $this->base64url_encode( $signature );
 
 		// Return the built JWT.
-		return $base64_header . "." . $base64_payload . '.' . $base64_signature;
+		return $base64_header . '.' . $base64_payload . '.' . $base64_signature;
 	}
 
 	/**
