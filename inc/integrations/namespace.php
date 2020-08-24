@@ -93,7 +93,7 @@ function load_integrations( array $integrations ) {
  *                            as an array.
  * @return mixed Option value or an array of values.
  */
-function get_option( string $integration, string $option = '' ) {
+function get_option_value( string $integration, string $option = '' ) {
 	$options = \get_option( 'irving_integrations' );
 
 	// When no option is passed, return all options for the integration.

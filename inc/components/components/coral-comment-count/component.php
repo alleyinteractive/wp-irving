@@ -26,7 +26,7 @@ register_component_from_config(
 			return array_merge(
 				$config,
 				[
-					'embed_URL'   => Integrations\get_option( 'coral', 'url' ),
+					'embed_URL'   => untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) ),
 					'article_URL' => get_the_permalink( $config['post_id'] ),
 				]
 			);
