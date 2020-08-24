@@ -60,12 +60,32 @@ class Coral {
 	public function register_settings_fields() {
 		// Register new fields for the Coral integration.
 		add_settings_field(
+			'wp_irving_coral_url',
+			esc_html__( 'Coral URL', 'wp-irving' ),
+			[ $this, 'render_coral_url_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
+
+		add_settings_field(
 			'wp_irving_coral_sso_secret',
 			esc_html__( 'Coral SSO Secret', 'wp-irving' ),
 			[ $this, 'render_coral_sso_secret_input' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
 		);
+	}
+
+	/**
+	 * Render an input for the Coral URL.
+	 */
+	public function render_coral_url_input() {
+		// Check to see if there is an existing SSO secret in the option.
+		$coral_url = $this->options[ $this->option_key ]['url'] ?? '';
+
+		?>
+			<input type="text" name="irving_integrations[<?php echo esc_attr( 'coral_url' ); ?>]" value="<?php echo esc_attr( $coral_url ); ?>" />
+		<?php
 	}
 
 	/**

@@ -1,0 +1,26 @@
+{
+    "name": "irving/coral-comment-count",
+    "description": "",
+    "config": {
+        "article_URL": {
+          "default": "",
+          "type": "string"
+        },
+        "embed_URL": {
+          "default": "",
+          "type": "string"
+        },
+        "no_text": {
+          "default": false,
+          "type": "bool"
+        },
+        "post_id": {
+          "default": 0,
+          "type": "int",
+          "hidden": true
+        }
+    },
+    "use_context": {
+      "irving/post_id": "post_id"
+    }
+}
