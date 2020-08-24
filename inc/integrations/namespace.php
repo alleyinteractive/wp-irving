@@ -21,6 +21,7 @@ function bootstrap() {
 function load_integrations_manager() {
 	// Instantiate the integrations manager.
 	$manager = new \WP_Irving\Integrations\Integrations_Manager();
+	$manager->setup();
 
 	// Register integrations.
 	auto_register_integrations();

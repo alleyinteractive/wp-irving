@@ -26,6 +26,8 @@ class Integrations_Manager {
 		add_action( 'admin_menu', [ $this, 'register_admin' ] );
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
+		// Filter the updated option values prior to submission.
+		add_filter( 'pre_update_option_irving_integrations', [ $this, 'group_and_format_options_for_storage' ] );
 	}
 
 	/**
