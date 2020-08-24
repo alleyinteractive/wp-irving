@@ -36,6 +36,7 @@ function auto_register_integrations() {
 		'coral'                   => __NAMESPACE__ . '\Coral',
 		'google_analytics'        => __NAMESPACE__ . '\Google_Analytics',
 		'google_amp'              => __NAMESPACE__ . '\Google_AMP',
+		'jetpack'                 => __NAMESPACE__ . '\Jetpack',
 		'new_relic'               => __NAMESPACE__ . '\New_Relic',
 		'pantheon'                => __NAMESPACE__ . '\Pantheon',
 		'safe_redirect_manager'   => __NAMESPACE__ . '\Safe_Redirect_Manager',

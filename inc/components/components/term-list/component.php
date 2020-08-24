@@ -1,15 +1,16 @@
 <?php
 /**
- * Post lists.
+ * Term list.
  *
- * Iterate through a WP_Query's posts.
+ * List of terms.
  *
  * @package WP_Irving
  */
 
 namespace WP_Irving\Components;
 
-use WP_Query;
+use WP_Term;
+use WP_Term_Query;
 
 /**
  * Register the component and callback.
@@ -18,23 +19,13 @@ register_component_from_config(
 	__DIR__ . '/component',
 	[
 		'config_callback'   => function ( array $config ): array {
-			global $wp_query;
-			$query = $wp_query;
 
-			$query_args = $config['query_args'] ?? [];
-
-			if ( ! empty( $query_args ) ) {
-
-				if ( wp_validate_boolean( $query_args['exclude'] ?? false ) ) {
-					$query_args['post__not_in'] = post_list_get_and_add_used_post_ids();
-				}
-
-				// Create a new `WP_Query` object for the data provider/consumers.
-				$query = new WP_Query( $query_args );
+			// Support provider context.
+			if ( isset( $config['object_ids'] ) ) {
+				$config['query_args']['object_ids'] = $config['object_ids'];
 			}
 
-			$config['wp_query'] = $query;
-
+			$config['wp_term_query'] = new WP_Term_Query( $config['query_args'] );
 			return $config;
 		},
 		'children_callback' => function ( array $children, array $config ): array {
@@ -50,32 +41,27 @@ register_component_from_config(
 				]
 			);
 
-			$query = $config['wp_query'];
+			$wp_term_query = $config['wp_term_query'];
 
-			// Bail early if no posts found.
-			if ( ! $query->have_posts() ) {
+			// Bail early if no terms found.
+			if ( empty( $wp_term_query->terms ?? [] ) ) {
 				return $templates['no_results'];
 			}
-
-			$post_ids = wp_list_pluck( $query->posts, 'ID' );
-
-			// Add the current $post_ids to the list of used ids.
-			post_list_get_and_add_used_post_ids( $post_ids );
 
 			// Ensure single items are wrapped in an array.
 			$item = ( isset( $templates['item'][0] ) ) ? $templates['item'] : [ $templates['item'] ];
 
 			$children = array_map(
-				function ( $post_id ) use ( $item ) {
+				function ( $term_id ) use ( $item ) {
 					return [
-						'name'     => 'irving/post-provider',
+						'name'     => 'irving/term-provider',
 						'config'   => [
-							'post_id' => $post_id,
+							'term_id' => $term_id,
 						],
-						'children' => $item,
+						'children' => array_filter( $item ),
 					];
 				},
-				$post_ids
+				wp_list_pluck( $wp_term_query->terms, 'term_id' )
 			);
 
 			// Inject interstitals.
@@ -129,25 +115,3 @@ register_component_from_config(
 		},
 	]
 );
-
-/**
- * Keep track of used post IDs to de-duplicate with `post__not_in`.
- *
- * @param array $post_ids_to_add Array of post ids to flag as used.
- * @return array
- */
-function post_list_get_and_add_used_post_ids( array $post_ids_to_add = [] ): array {
-	static $used_post_ids;
-
-	// Initialize values.
-	if ( is_null( $used_post_ids ) ) {
-		$used_post_ids = [];
-	}
-
-	// Merge additional values.
-	if ( ! empty( $post_ids_to_add ) ) {
-		$used_post_ids = array_unique( array_merge( $used_post_ids, $post_ids_to_add ) );
-	}
-
-	return $used_post_ids;
-}

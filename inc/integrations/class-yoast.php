@@ -9,7 +9,6 @@ namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
 use WP_Irving\Components;
-use WP_Irving\Component;
 
 /**
  * Yoast.
@@ -56,7 +55,7 @@ class Yoast {
 
 		// If the content exists, add it to the configuration array.
 		if ( ! empty( $content ) ) {
-			$config[] = [ 'yoast_schema' => [ 'content' => $content ] ];
+			$config['yoast_schema'] = [ 'content' => $content ];
 		}
 
 		return $config;
