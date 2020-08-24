@@ -145,7 +145,7 @@ class Coral {
 		$header  = wp_json_encode(
 			[
 				'typ' => 'JWT',
-				'alg' => 'HS256'
+				'alg' => 'HS256',
 			]
 		);
 		$payload = wp_json_encode( $credentials );

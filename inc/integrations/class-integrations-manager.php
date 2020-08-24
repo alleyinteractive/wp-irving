@@ -59,13 +59,17 @@ class Integrations_Manager {
 
 		foreach ( $options as $key => $val ) {
 			switch ( $key ) {
-				case strpos( $key, 'ga_' ) !== false: // Build the config array for GA.
+				// Build the config array for GA.
+				case strpos( $key, 'ga_' ) !== false:
 					$formatted_options['google_analytics'][ str_replace( 'ga_', '', $key ) ] = $val;
-				case strpos( $key, 'coral_' ) !== false: // Build the config array for Coral.
+					break;
+				// Build the config array for Coral.
+				case strpos( $key, 'coral_' ) !== false:
 					$formatted_options['coral'][ str_replace( 'coral_', '', $key ) ] = $val;
 					// Set the options to private. This will prevent them from being passed through
 					// the components JSON endpoint.
 					$formatted_options['coral']['private'] = true;
+					break;
 				default:
 					$formatted_options[ $key ] = $val;
 			}
