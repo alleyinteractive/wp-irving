@@ -98,9 +98,9 @@ function get_option( string $integration, string $option = '' ) {
 
 	// When no option is passed, return all options for the integration.
 	if ( empty( $option ) ) {
-		return $options[$integration] ?? [];
+		return $options[ $integration ] ?? [];
 	}
 
 	// Return the specific option.
-	return $options[$integration][$option] ?? false;
+	return $options[ $integration ][ $option ] ?? false;
 }

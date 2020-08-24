@@ -1450,7 +1450,7 @@ class Test_Components extends WP_UnitTestCase {
 				'config' => [
 					'embed_URL' => 'https://example.coral.test',
 					'post_id'   => self::$post_id,
-				]
+				],
 			]
 		);
 
