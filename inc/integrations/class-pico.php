@@ -62,7 +62,7 @@ class Pico {
 		return $options;
 	}
 
-	public function verify_pico_user_for_sso( string $user ): array {
+	public function verify_pico_user_for_sso( array $user ): array {
 		// TODO: Dispatch a verification request to the Pico API. If the user
 		// is verified, return the constructed user with an ID, email, and
 		// username.

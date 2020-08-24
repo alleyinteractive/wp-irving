@@ -98,7 +98,10 @@ class Coral {
 	 * @param \WP_REST_Request $request The request object.
 	 */
 	public function process_endpoint_request( \WP_REST_Request $request ) {
-		$user = sanatize_text_field( $request->get_param( 'user' ) );
+		// Allow access from the frontend.
+		header( 'Access-Control-Allow-Origin: ' . home_url() );
+
+		$user = sanitize_text_field( $request->get_param( 'user' ) );
 
 		$user_obj = [
 			'id'       => '628bdc61-6616-4add-bfec-dd79156715d4', // The ID should come from the Pico verification payload.
