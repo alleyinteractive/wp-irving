@@ -19,5 +19,31 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 == Changelog ==
 
+= 0.3.0 =
+* Fix: Cache clearing redirect
+* Fix: Page title in the head component
+* Fix: Menu URL
+* Add: Integrations Manager
+* Fix: Add permissions callbacks to REST API endpoints for WP 5.5
+* Add: Yoast schema set through integrations manager
+* Fix: Duplicates in post list component.
+* Add: Pico integration
+* Add: Coral component
+* Add: Post meta component
+* Fix: Yoast integration data formatting
+* Add: Interstitial support to the post-list component
+* Add: Term helper components
+* Add: Set base URL automatically in query-pagination component on term archive pages
+* Add: Jetpack site stats integration
+* Add: Google Tag Manager integration
+* Add: Back-end for handling SSO between Pico and Coral
+* Add: Coral comment count component
+* Fix: Byline component improvements
+
+= 0.2.0 =
+This update includes major improvements to the way developers can build layouts for Irving sites using WordPress.
+
+[See release notes](https://github.com/alleyinteractive/wp-irving/releases/tag/0.2.0)
+
 = 0.1.0 =
 First stable release of the WP-Irving plugin.
