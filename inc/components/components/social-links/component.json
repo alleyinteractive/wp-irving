@@ -1,0 +1,10 @@
+{
+  "name": "irving/social-links",
+  "description": "Display a series of social media icons with links.",
+  "config": {
+    "platforms": {
+      "type": "array",
+      "default": []
+    }
+  }
+}
