@@ -39,6 +39,7 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 * Add: Back-end for handling SSO between Pico and Coral
 * Add: Coral comment count component
 * Fix: Byline component improvements
+* Add: Social links component
 
 = 0.2.0 =
 This update includes major improvements to the way developers can build layouts for Irving sites using WordPress.
