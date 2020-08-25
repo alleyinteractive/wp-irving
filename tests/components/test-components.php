@@ -1427,6 +1427,39 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/coral-comment-counts component.
+	 *
+	 * @group core-components
+	 * @group coral
+	 */
+	public function test_component_coral_comment_counts() {
+		// Mock integration to Coral.
+		update_option( 'irving_integrations', [ 'coral_url' => 'https://example.coral.test' ] );
+
+		$expected = $this->get_expected_component(
+			'irving/coral-comment-count',
+			[
+				'config' => [
+					'articleUrl' => get_the_permalink( self::$post_id ),
+					'embedUrl'   => 'https://example.coral.test',
+					'noText'     => false,
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/coral-comment-count',
+			[
+				'config' => [
+					'post_id' => self::$post_id,
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Helper for creating expected output for components.
 	 *
 	 * Returns default values so you don't have to write as much boilerplate.

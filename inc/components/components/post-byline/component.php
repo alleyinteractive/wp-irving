@@ -28,24 +28,37 @@ register_component_from_config(
 			}
 
 			// Get the post author, and add a link to their author archive.
-			$author_id = get_post_field( 'post_author', $post_id );
+			$author_id   = get_post_field( 'post_author', $post_id );
+			$author_link = get_author_posts_url( $author_id );
 
-			$children[] = new Component(
-				'irving/link',
-				[
-					'config'   => [
-						'href' => get_author_posts_url( $author_id ),
-					],
-					'children' => [
-						[
-							'name'   => 'irving/text',
-							'config' => [
-								'content' => get_the_author_meta( 'display_name', $author_id ),
+			if ( ! empty( $author_link ) ) {
+				$children[] = new Component(
+					'irving/link',
+					[
+						'config'   => [
+							'href' => get_author_posts_url( $author_id ),
+						],
+						'children' => [
+							[
+								'name'   => 'irving/text',
+								'config' => [
+									'content' => get_the_author_meta( 'display_name', $author_id ),
+								],
 							],
 						],
-					],
-				]
-			);
+					]
+				);
+			} else {
+				$children[] = new Component(
+					'irving/text',
+					[
+						'config' => [
+							'content' => get_the_author_meta( 'display_name', $author_id ),
+						],
+					]
+				);
+			}
+
 
 			return $children;
 		},
