@@ -1427,6 +1427,29 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/coral
+	 *
+	 * @group coral
+	 */
+	public function test_component_coral() {
+		// Mock integration to Coral.
+		update_option( 'irving_integrations', [ 'coral_url' => 'https://example.coral.test' ] );
+
+		$expected = $this->get_expected_component(
+			'irving/coral',
+			[
+				'config' => [
+					'embedUrl' => 'https://example.coral.test',
+				],
+			]
+		);
+
+		$component = new Component( 'irving/coral' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Test irving/coral-comment-counts component.
 	 *
 	 * @group core-components

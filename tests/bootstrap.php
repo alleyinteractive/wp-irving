@@ -46,7 +46,7 @@ function _manually_load_plugin() {
 
 	// Autoload plugins if they are present.
 	foreach ( $plugins as $plugin ) {
-		$path = dirname( __DIR__, 2 ) . "/${plugin}/${plugin}.php";
+		$path = dirname( __DIR__, 3 ) . "/plugins/${plugin}/${plugin}.php";
 
 		if ( file_exists( $path ) ) {
 			require_once $path;
