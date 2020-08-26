@@ -7,6 +7,7 @@
 
 namespace WP_Irving;
 
+use SRM_Redirect;
 use WP_UnitTestCase;
 
 /**
@@ -55,7 +56,7 @@ class Safe_Redirect_Manager_Tests extends WP_UnitTestCase {
 			return;
 		}
 
-		$this->object = \SRM_Redirect::factory();
+		$this->object = SRM_Redirect::factory();
 	}
 
 	/**
