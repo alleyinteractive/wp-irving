@@ -7,6 +7,7 @@
 
 namespace WP_Irving\Integrations;
 
+use SRM_Redirect;
 use WP_Irving\Singleton;
 
 /**
@@ -18,7 +19,7 @@ class Safe_Redirect_Manager {
 	/**
 	 * Reference to Safe Redirect Manager SRM_Redirect singleton instance.
 	 *
-	 * @var array
+	 * @var SRM_Redirect
 	 */
 	private $srm;
 
@@ -34,14 +35,14 @@ class Safe_Redirect_Manager {
 	 */
 	public function setup() {
 		// Ensure Safe Redirect Manager exists and is enabled.
-		if ( ! class_exists( '\SRM_Redirect' ) || ! method_exists( '\SRM_Redirect', 'match_redirect' ) ) {
+		if ( ! is_callable( [ 'SRM_Redirect', 'match_redirect' ] ) ) {
 			return;
 		}
 
-		$this->srm = \SRM_Redirect::factory();
+		$this->srm = SRM_Redirect::factory();
 
 		// Remove redirect actions from SRM.
-		remove_action( 'parse_request', [ $this->srm, 'maybe_redirect' ], 0 );
+ 		remove_action( 'parse_request', [ $this->srm, 'maybe_redirect' ], 0 );
 		remove_action( 'template_redirect', [ $this->srm, 'maybe_redirect' ], 0 );
 
 		// Re-use SRM's filter to redirect only on 404s.
