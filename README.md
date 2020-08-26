@@ -1,4 +1,8 @@
 # WP Irving #
+**Contributors:** [alleyinteractive](https://profiles.wordpress.org/alleyinteractive/)  
+**Tags:** irving, headless  
+**License:** GPLv2 or later  
+**License URI:** https://www.gnu.org/licenses/gpl-2.0.html  
 
 WP Irving contains everything needed to power an Irving headless app with WordPress.
 
@@ -14,6 +18,29 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
 ## Changelog ##
+
+### 0.3.0 ###
+* Fix: Cache clearing redirect
+* Fix: Page title in the head component
+* Fix: Menu URL
+* Add: Integrations Manager
+* Fix: Add permissions callbacks to REST API endpoints for WP 5.5
+* Add: Yoast schema set through integrations manager
+* Fix: Duplicates in post list component.
+* Add: Pico integration
+* Add: Coral component
+* Add: Post meta component
+* Fix: Yoast integration data formatting
+* Add: Interstitial support to the post-list component
+* Add: Term helper components
+* Add: Set base URL automatically in query-pagination component on term archive pages
+* Add: Jetpack site stats integration
+* Add: Google Tag Manager integration
+* Add: Back-end for handling SSO between Pico and Coral
+* Add: Coral comment count component
+* Fix: Byline component improvements
+* Add: Social links component
+* Fix: Safe Redirect Manager integration
 
 ### 0.2.0 ###
 This update includes major improvements to the way developers can build layouts for Irving sites using WordPress.
