@@ -42,7 +42,7 @@ class Safe_Redirect_Manager {
 		$this->srm = SRM_Redirect::factory();
 
 		// Remove redirect actions from SRM.
- 		remove_action( 'parse_request', [ $this->srm, 'maybe_redirect' ], 0 );
+		remove_action( 'parse_request', [ $this->srm, 'maybe_redirect' ], 0 );
 		remove_action( 'template_redirect', [ $this->srm, 'maybe_redirect' ], 0 );
 
 		// Re-use SRM's filter to redirect only on 404s.
