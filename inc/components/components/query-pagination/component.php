@@ -53,8 +53,15 @@ function get_base_url( $wp_query ) {
 	// Default to '/' for the base URL.
 	$base_url = '/';
 
+	// Term archives.
 	if ( $wp_query->is_archive() && $wp_query->get_queried_object() instanceof \WP_Term ) {
 		$url = get_term_link( (int) $wp_query->get_queried_object_id() );
+		return wp_parse_url( $url, PHP_URL_PATH );
+	}
+
+	// Post type archives.
+	if ( $wp_query->is_post_type_archive() && $wp_query->get_queried_object() instanceof \WP_Post_Type ) {
+		$url = get_post_type_archive_link( $wp_query->get_queried_object()->name ?? '' );
 		return wp_parse_url( $url, PHP_URL_PATH );
 	}
 
