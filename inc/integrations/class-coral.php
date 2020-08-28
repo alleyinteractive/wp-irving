@@ -123,10 +123,11 @@ class Coral {
 
 		$user = sanitize_text_field( $request->get_param( 'user' ) );
 
+		// Build a base user object for verifiection.
 		$user_obj = [
-			'id'       => '628bdc61-6616-4add-bfec-dd79156715d4', // The ID should come from the Pico verification payload.
+			'id'       => 'asdf',
 			'email'    => $user,
-			'username' => explode( '@', $user )[0], // The username should come from the Pico verification payload.
+			'username' => '',
 		];
 
 		// Verify the user's credentials.
@@ -135,6 +136,23 @@ class Coral {
 		// Bail early if the verified user doesn't exist.
 		if ( empty( $verified_user ) ) {
 			return [ 'status' => 'failed' ];
+		}
+
+		// If the user has been verified to contain a unique ID but does not yet have a
+		// username, check the database to see if the user exists. If so, continue, if not
+		// return a response that will dispatch an action summoning UI that requires the
+		// user to enter a username.
+		if ( !empty( $verified_user['id'] ) && empty( $verified_user['username'] ) ) {
+			// check to see if the user exists.
+			$username = '';
+
+			// Bail early if no user exists;
+			if ( empty ( $username ) ) {
+				return [
+					'status'           => 'success',
+					'require_username' => true,
+				];
+			}
 		}
 
 		$credentials = [
@@ -148,10 +166,10 @@ class Coral {
 			],
 		];
 
-		return [
-			'status' => 'success',
-			'jwt'    => $this->build_jwt( $credentials ),
-		];
+		// return [
+		// 	'status' => 'success',
+		// 	'jwt'    => $this->build_jwt( $credentials ),
+		// ];
 	}
 
 	/**
