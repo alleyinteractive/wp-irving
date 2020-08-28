@@ -47,9 +47,6 @@ class Pico {
 	public function inject_pico( array $options ): array {
 		// Get and validate the publisher id.
 		$publisher_id = Pico_Setup::get_publisher_id();
-		$keys              = Pico_Setup::get_publisher_id(true);
-		$pico_publisher_id = $keys['publisher_id'];
-		$pico_api_key      = $keys['api_key'];
 		if ( empty( $publisher_id ) ) {
 			return $options;
 		}
