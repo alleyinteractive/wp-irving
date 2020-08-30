@@ -8,6 +8,7 @@
 namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
+use WP_Irving\Integrations;
 use Pico_Setup;
 use Pico_Widget;
 
@@ -34,6 +35,9 @@ class Pico {
 			// Wrap content with `<div id="pico"></div>`.
 			add_filter( 'the_content', [ 'Pico_Widget', 'filter_content' ] );
 		}
+
+		// Register settings fields for integrations.
+		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
 
 		add_filter( 'wp_irving_verify_coral_user', [ $this, 'verify_pico_user_for_sso' ] );
 	}
@@ -63,6 +67,52 @@ class Pico {
 	}
 
 	/**
+	 * Register settings fields for display.
+	 */
+	public function register_settings_fields() {
+		// Register new fields for the Coral integration.
+		add_settings_field(
+			'wp_irving_pico_sso_id',
+			esc_html__( 'Pico SSO ID', 'wp-irving' ),
+			[ $this, 'render_pico_sso_id_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
+
+		add_settings_field(
+			'wp_irving_pico_sso_key',
+			esc_html__( 'Pico SSO Key', 'wp-irving' ),
+			[ $this, 'render_pico_sso_key_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
+	}
+
+	/**
+	 * Render an input for the Pico SSO ID.
+	 */
+	public function render_pico_sso_id_input() {
+		// Check to see if there is an existing SSO secret in the option.
+		$sso_id = Integrations\get_option_value( 'pico', 'sso_id' ) ?? '';
+
+		?>
+			<input type="text" name="irving_integrations[<?php echo esc_attr( 'pico_sso_id' ); ?>]" value="<?php echo esc_attr( $sso_id ); ?>" />
+		<?php
+	}
+
+	/**
+	 * Render an input for the Pico SSO Key.
+	 */
+	public function render_pico_sso_key_input() {
+		// Check to see if there is an existing SSO secret in the option.
+		$sso_key = Integrations\get_option_value( 'pico', 'sso_key' ) ?? '';
+
+		?>
+			<input type="text" name="irving_integrations[<?php echo esc_attr( 'pico_sso_key' ); ?>]" value="<?php echo esc_attr( $sso_key ); ?>" />
+		<?php
+	}
+
+	/**
 	 * Validate a Pico user's credentials and return the required credentials
 	 * to build a JWT.
 	 *
@@ -71,8 +121,13 @@ class Pico {
 	 */
 	public function verify_pico_user_for_sso( array $user ) {
 		$keys              = Pico_Setup::get_publisher_id(true);
-		$pico_publisher_id = $keys['publisher_id'];
-		$pico_api_key      = $keys['api_key'];
+		$pico_publisher_id = Integrations\get_option_value( 'pico', 'sso_id' ) ?? '';
+		$pico_api_key      = Integrations\get_option_value( 'pico', 'sso_key' ) ?? '';
+
+		// Bail early if either of the option values are not set.
+		if ( empty( $pico_api_key ) || empty( $pico_publisher_id ) ) {
+			return false;
+		}
 
 		// Dispatch a verification request to the Pico API. If the user
 		// is verified, return the constructed user with an ID, email, and
