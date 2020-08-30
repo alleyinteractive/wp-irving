@@ -23,6 +23,10 @@
       ],
       "type": "array"
     },
+    "platform_share_links": {
+      "default": [],
+      "type": "array"
+    },
     "post_id": {
       "default": 0,
       "type": "int"
