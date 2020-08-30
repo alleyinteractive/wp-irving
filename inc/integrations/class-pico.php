@@ -69,7 +69,7 @@ class Pico {
 	 * @param array $user The initial user object.
 	 * @return array Updated user object.
 	 */
-	public function verify_pico_user_for_sso( array $user ): array {
+	public function verify_pico_user_for_sso( array $user ) {
 		$keys              = Pico_Setup::get_publisher_id(true);
 		$pico_publisher_id = $keys['publisher_id'];
 		$pico_api_key      = $keys['api_key'];
@@ -77,34 +77,39 @@ class Pico {
 		// Dispatch a verification request to the Pico API. If the user
 		// is verified, return the constructed user with an ID, email, and
 		// username.
-		// $response = wp_remote_post(
-		// 	'https://api.staging.pico.tools/users/verify',
-		// 	[
-		// 		'method'  => 'POST',
-		// 		'body'    => wp_json_encode(
-		// 			[
-		// 				'email' => $user['email'],
-		// 			]
-		// 		),
-		// 		'headers' => [
-		// 			'Content-Type'  => 'application/json',
-		// 			'Authorization' => 'Basic ' . base64_encode( $pico_publisher_id . ':' . $pico_api_key )
-		// 		]
-		// 	]
-		// );
+		$response = wp_remote_post(
+			'https://api.pico.tools/users/verify',
+			[
+				'method'  => 'POST',
+				'body'    => wp_json_encode(
+					[
+						'email' => $user['email'],
+						'id'    => $user['id'],
+					]
+				),
+				'headers' => [
+					'Content-Type'  => 'application/json',
+					'Authorization' => 'Basic ' . base64_encode( $pico_publisher_id . ':' . $pico_api_key )
+				]
+			]
+		);
 
-		// if ( isset( $response['code'] ) && $response['code'] === 200 ) {
-		// 	$response_body = json_decode( $response['body'] );
+		$response_code = $response['response']['code'];
 
-		// 	// Update the user's ID value.
-		// 	$user['id'] = $response_body['user']['id'];
+		if ( ! empty( $response_code ) && $response_code === 200 ) {
+			$response_body = json_decode( $response['body'] );
 
-		// 	return $user;
-		// }
-		// // If the user isn't verified, return false, which will cause a failure
-		// // response to be returned on the front-end and the appropriate behavior
-		// // will be triggered.
-		// return false;
-		return $user;
+			// Update the user's ID value.
+			if ( empty( $user['id'] ) ) {
+				$user['id'] = $response_body->user->id;
+			}
+
+			return $user;
+		}
+
+		// If the user isn't verified, return false, which will cause a failure
+		// response to be returned on the front-end and the appropriate behavior
+		// will be triggered.
+		return false;
 	}
 }

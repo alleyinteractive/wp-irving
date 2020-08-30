@@ -121,12 +121,13 @@ class Coral {
 		// Allow access from the frontend.
 		header( 'Access-Control-Allow-Origin: ' . home_url() );
 
-		$user = sanitize_text_field( $request->get_param( 'user' ) );
+		$user_email  = sanitize_text_field( $request->get_param( 'user' ) );
+		$user_id     = sanitize_text_field( $request->get_param( 'id' ) );
 
 		// Build a base user object for verifiection.
 		$user_obj = [
-			'id'       => 'asdf',
-			'email'    => $user,
+			'id'       => $user_id,
+			'email'    => $user_email,
 			'username' => '',
 		];
 
