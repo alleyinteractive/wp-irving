@@ -350,6 +350,7 @@ class Test_Components extends WP_UnitTestCase {
 					'objectFit'      => 'cover',
 					'src'            => $image_attr[0],
 					'srcset'         => wp_get_attachment_image_srcset( $id, 'full' ),
+					'sizes'          => wp_get_attachment_image_sizes( $id, 'full' ),
 					'showMeta'       => true,
 					'style'          => [],
 					'queryArgs'      => [],
