@@ -289,7 +289,7 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test the image component
+	 * Test the image component with defaults.
 	 *
 	 * @group image
 	 */
@@ -326,7 +326,7 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test the image component
+	 * Test the image component when passing an attachment ID.
 	 *
 	 * @group image
 	 */
