@@ -332,7 +332,7 @@ class Test_Components extends WP_UnitTestCase {
 	 */
 	public function test_component_image_from_attachment_id() {
 		// Make an image using test data from the WP Unit Test suite.
-		$filename = DIR_TESTDATA . '/images/test-image-large.png';
+		$filename = dirname( __DIR__, ) . '/data/images/test-image-large.png';
 		$id       = self::factory()->attachment->create_upload_object( $filename );
 
 		$image_attr = wp_get_attachment_image_src( $id, 'full' );
