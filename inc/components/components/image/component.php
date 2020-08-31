@@ -30,6 +30,7 @@ register_component_from_config(
 				$config['width']  = $atts[1];
 				$config['height'] = $atts[2];
 				$config['alt']    = $config['alt'] ?? (string) get_post_meta( $config['id'], '_wp_attachment_image_alt', true );
+				$config['sizes']  = wp_get_attachment_image_sizes( $config['id'], $config['size'] );
 				$config['srcset'] = wp_get_attachment_image_srcset( $config['id'], $config['size'] );
 			}
 
