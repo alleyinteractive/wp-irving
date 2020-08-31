@@ -1,4 +1,11 @@
 {
     "name": "irving/head",
-    "description": "HTML <head> management."
+    "description": "HTML <head> management.",
+    "config": {
+      "context": {
+        "default": "page",
+        "description": "Context of the WP Irving component endpoint.",
+        "type": "string"
+      }
+    }
 }

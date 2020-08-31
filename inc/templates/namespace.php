@@ -19,6 +19,7 @@ use WP_REST_Request;
 function bootstrap() {
 	add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 6 );
 	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_favicon', 10, 3 );
+	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_block_library_styles', 10, 3 );
 }
 
 /**
@@ -504,7 +505,7 @@ function setup_head(
 				'irving/head',
 				[
 					'config' => [
-						'context' => 'defaults',
+						'context' => 'site',
 					],
 				]
 			)
@@ -640,4 +641,39 @@ function inject_favicon( array $children, array $config, string $name ): array {
 		$children,
 		Components\html_to_components( get_favicon_markup(), [ 'link', 'meta' ] )
 	);
+}
+
+/**
+ * Inject the block-library styles into the <head> component.
+ *
+ * @param array  $children Children for this component.
+ * @param array  $config   Config for this component.
+ * @param string $name     Name of this component.
+ * @return array
+ */
+function inject_block_library_styles( array $children, array $config, string $name ): array {
+	// Ony run this action on the `irving/head` in a `defaults` context.
+	if (
+		'irving/head' !== $name
+		|| 'site' !== ( $config['context'] ?? 'page' )
+	) {
+		return $children;
+	}
+
+	// Inject the block library styles.
+	// @todo Only do this if Gutenberg is enabled.
+	$children[] = new Components\Component(
+		'link',
+		[
+			'config' => [
+				'href'  => 'https://jfc.alley.test/defector/wp-includes/css/dist/block-library/style.min.css?ver=5.5',
+				'id'    => 'wp-block-library-css',
+				'media' => 'all',
+				'rel'   => 'stylesheet',
+				'type'  => 'text/css',
+			],
+		]
+	);
+
+	return $children;
 }
