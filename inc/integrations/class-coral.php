@@ -300,6 +300,7 @@ class Coral {
 	 * @return string The username, or a blank string if none is set.
 	 */
 	private function get_username( $id ) : string {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		global $wpdb;
 
 		$username = $wpdb->get_var(
@@ -329,6 +330,7 @@ class Coral {
 	 * @return int The post ID, or 0 if none is found.
 	 */
 	private function get_username_post_id( $id ) : int {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		global $wpdb;
 
 		$post_id = $wpdb->get_var(
@@ -358,6 +360,7 @@ class Coral {
 	 * @return bool Whether the name is already in use (true) or not (false).
 	 */
 	private function username_exists( $username ) : int {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		global $wpdb;
 
 		if ( ! $username || '' === $username ) {
