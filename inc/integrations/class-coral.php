@@ -206,10 +206,10 @@ class Coral {
 	 * @return array|\WP_REST_Response
 	 */
 	public function process_set_username_endpoint_request( \WP_REST_Request $request ) {
-		$params    = $request->get_json_params();
-		$id        = sanitize_text_field( $params['id'] );
-		$username  = sanitize_text_field( $params['username'] );
-		$hash      = sanitize_text_field( $params['hash'] );
+		$params   = $request->get_json_params();
+		$id       = sanitize_text_field( $params['id'] );
+		$username = sanitize_text_field( $params['username'] );
+		$hash     = sanitize_text_field( $params['hash'] );
 
 		// The security check is performed in this function.
 		$status = $this->set_username( $id, $username, $hash );
