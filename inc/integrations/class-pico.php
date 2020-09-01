@@ -145,7 +145,10 @@ class Pico {
 			return false;
 		}
 
-		return $response;
+		return [
+			'id'    => $response['id'],
+			'email' => $response['user']['email'],
+		];
 	}
 
 	/**

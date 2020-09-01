@@ -164,7 +164,7 @@ class Coral {
 			empty( $verified_data ) ||
 			! $verified_data ||
 			empty( $verified_data['id'] ) ||
-			empty( $verified_data['user']['email'] )
+			empty( $verified_data['email'] )
 		) {
 			return [ 'status' => 'failed' ];
 		}
@@ -179,7 +179,7 @@ class Coral {
 				'iat'  => time(),
 				'user' => [
 					'id'       => $verified_data['id'],
-					'email'    => $verified_data['user']['email'],
+					'email'    => $verified_data['email'],
 					'username' => $username,
 				],
 			];
@@ -195,7 +195,7 @@ class Coral {
 		return [
 			'status'            => 'success',
 			'require_username'  => true,
-			'username_set_hash' => $this->create_username_set_hash( $verified_data['id'], $verified_data['user']['email'] ),
+			'username_set_hash' => $this->create_username_set_hash( $verified_data['id'], $verified_data['email'] ),
 		];
 	}
 
