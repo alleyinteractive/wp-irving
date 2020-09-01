@@ -302,19 +302,21 @@ class Coral {
 	private function get_username( $id ) : string {
 		global $wpdb;
 
-		$username = $wpdb->get_var( $wpdb->prepare( 
-			"SELECT post_excerpt 
-				FROM {$wpdb->posts} 
-			WHERE 
-				post_title=%s AND
-				post_type=%s AND
-				post_status='publish'
-			LIMIT 1 ",
-			[
-				$id,
-				$this->post_type,
-			]
-		) );
+		$username = $wpdb->get_var(
+			$wpdb->prepare( 
+				"SELECT post_excerpt 
+					FROM {$wpdb->posts} 
+				WHERE 
+					post_title=%s AND
+					post_type=%s AND
+					post_status='publish'
+				LIMIT 1 ",
+				[
+					$id,
+					$this->post_type,
+				]
+			)
+		);
 
 		return $username ?? '';
 	}
@@ -329,19 +331,21 @@ class Coral {
 	private function get_username_post_id( $id ) : int {
 		global $wpdb;
 
-		$post_id = $wpdb->get_var( $wpdb->prepare( 
-			"SELECT ID 
-				FROM {$wpdb->posts} 
-			WHERE 
-				post_title=%s AND
-				post_type=%s AND
-				post_status='publish'
-			LIMIT 1 ",
-			[
-				$id,
-				$this->post_type,
-			]
-		) );
+		$post_id = $wpdb->get_var(
+			$wpdb->prepare( 
+				"SELECT ID 
+					FROM {$wpdb->posts} 
+				WHERE 
+					post_title=%s AND
+					post_type=%s AND
+					post_status='publish'
+				LIMIT 1 ",
+				[
+					$id,
+					$this->post_type,
+				]
+			)
+		);
 
 		return $post_id ?? 0;
 	}
@@ -360,19 +364,21 @@ class Coral {
 			return false;
 		}
 
-		$post_id = $wpdb->get_var( $wpdb->prepare( 
-			"SELECT ID 
-				FROM {$wpdb->posts} 
-			WHERE 
-				post_excerpt=%s AND
-				post_type=%s AND
-				post_status='publish'
-			LIMIT 1 ",
-			[
-				$username,
-				$this->post_type,
-			]
-		) ) ?? 0;
+		$post_id = $wpdb->get_var(
+			$wpdb->prepare( 
+				"SELECT ID 
+					FROM {$wpdb->posts} 
+				WHERE 
+					post_excerpt=%s AND
+					post_type=%s AND
+					post_status='publish'
+				LIMIT 1 ",
+				[
+					$username,
+					$this->post_type,
+				]
+			)
+		) ?? 0;
 
 		return ( 0 < $post_id );
 	}
