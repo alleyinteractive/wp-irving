@@ -119,7 +119,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 				'irving/head',
 				[
 					'config' => [
-						'context' => 'defaults',
+						'context' => 'site',
 					],
 				]
 			),
@@ -178,14 +178,14 @@ class Test_Head_Management extends WP_UnitTestCase {
 					'irving/head',
 					[
 						'config'   => [
-							'context' => 'defaults',
+							'context' => 'site',
 						],
 						'children' => [
 							new Component(
 								'meta',
 								[
 									'config' => [
-										'context' => 'defaults',
+										'context' => 'site',
 									],
 								]
 							),

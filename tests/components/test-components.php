@@ -367,6 +367,8 @@ class Test_Components extends WP_UnitTestCase {
 				'html'         => true,
 				'oembed'       => true,
 				'postId'       => $this->get_post_id(),
+				'style'        => [],
+				'tag'          => 'div',
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			],

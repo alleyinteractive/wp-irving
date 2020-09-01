@@ -3,6 +3,28 @@
   "_alias": "irving/text",
   "category": "Post",
   "description": "Get the post content.",
+  "config": {
+    "content": {
+      "default": "",
+      "type": "string"
+    },
+    "html": {
+      "default": true,
+      "type": "bool"
+    },
+    "oembed": {
+      "default": true,
+      "type": "bool"
+    },
+    "style": {
+      "default": [],
+      "type": "array"
+    },
+    "tag": {
+      "default": "div",
+      "type": "string"
+    }
+  },
   "use_context": {
     "irving/post_id": "post_id"
   }
