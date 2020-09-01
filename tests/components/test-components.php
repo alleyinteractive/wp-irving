@@ -33,7 +33,14 @@ class Test_Components extends WP_UnitTestCase {
 	public static $attachment_id;
 
 	/**
-	 * Test post
+	 * WP Unit Test Factory.
+	 *
+	 * @var WP_UnitTest_Factory $factory Factory instance.
+	 */
+	public static $factory;
+
+	/**
+	 * Test post.
 	 *
 	 * @var int Post ID.
 	 */
@@ -282,6 +289,88 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test the image component with defaults.
+	 *
+	 * @group image
+	 */
+	public function test_component_image() {
+		$expected = $this->get_expected_component(
+			'irving/image',
+			[
+				'config' => [
+					'alt'            => 'Test alt',
+					'allowUpscaling' => false,
+					'caption'        => 'Test caption',
+					'loading'        => 'lazy',
+					'objectFit'      => 'cover',
+					'src'            => 'https://alley.co/test.jpg',
+					'showMeta'       => true,
+					'style'          => [],
+					'queryArgs'      => [],
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/image',
+			[
+				'config' => [
+					'alt'     => 'Test alt',
+					'caption' => 'Test caption',
+					'src'     => 'https://alley.co/test.jpg',
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test the image component when passing an attachment ID.
+	 *
+	 * @group image
+	 */
+	public function test_component_image_from_attachment_id() {
+		// Make an image using test data from the WP Unit Test suite.
+		$filename = dirname( __DIR__, ) . '/data/images/test-image-large.png';
+		$id       = self::factory()->attachment->create_upload_object( $filename );
+
+		$image_attr = wp_get_attachment_image_src( $id, 'full' );
+
+		$expected = $this->get_expected_component(
+			'irving/image',
+			[
+				'config' => [
+					'alt'            => '',
+					'allowUpscaling' => false,
+					'caption'        => '',
+					'height'         => $image_attr[2],
+					'width'          => $image_attr[1],
+					'loading'        => 'lazy',
+					'objectFit'      => 'cover',
+					'src'            => $image_attr[0],
+					'srcset'         => wp_get_attachment_image_srcset( $id, 'full' ),
+					'sizes'          => wp_get_attachment_image_sizes( $id, 'full' ),
+					'showMeta'       => true,
+					'style'          => [],
+					'queryArgs'      => [],
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/image',
+			[
+				'config' => [
+					'id' => $id,
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
 	 * Test irving/post-byline component.
 	 *
 	 * @group core-components
@@ -367,6 +456,8 @@ class Test_Components extends WP_UnitTestCase {
 				'html'         => true,
 				'oembed'       => true,
 				'postId'       => $this->get_post_id(),
+				'style'        => [],
+				'tag'          => 'div',
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			],
@@ -536,6 +627,7 @@ class Test_Components extends WP_UnitTestCase {
 										'_alias'   => 'irving/fragment',
 										'config'   => [
 											'postId' => $this->get_post_id(),
+											'index'  => 0,
 										],
 										'children' => [
 											$this->get_expected_component( 'example/item' ),
@@ -725,9 +817,9 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/social-sharing',
 				'config' => [
-					'description' => $this->get_post_excerpt(),
-					'imageUrl'    => $this->get_attachment_url(),
-					'platforms'   => [
+					'description'        => $this->get_post_excerpt(),
+					'imageUrl'           => $this->get_attachment_url(),
+					'platforms'          => [
 						'email',
 						'facebook',
 						'linkedin',
@@ -736,9 +828,10 @@ class Test_Components extends WP_UnitTestCase {
 						'twitter',
 						'whatsapp',
 					],
-					'postId'      => $this->get_post_id(),
-					'title'       => get_the_title( $this->get_post_id() ),
-					'url'         => get_the_permalink( $this->get_post_id() ),
+					'platformShareLinks' => [],
+					'postId'             => $this->get_post_id(),
+					'title'              => get_the_title( $this->get_post_id() ),
+					'url'                => get_the_permalink( $this->get_post_id() ),
 				],
 			]
 		);

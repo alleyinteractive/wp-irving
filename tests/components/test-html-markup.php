@@ -127,6 +127,26 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 				'<a> markup not parsed correctly.',
 			],
 			[
+				// Test a <script> element.
+				'<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://irving.alley.test/#website","url":"https://irving.alley.test/","name":"Irving Development","description":"Just another WordPress site","potentialAction":[{"@type":"SearchAction","target":"https://irving.alley.test/?s={search_term_string}","query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"CollectionPage","@id":"https://irving.alley.test/#webpage","url":"https://irving.alley.test/","name":"Irving Development - Just another WordPress site","isPartOf":{"@id":"https://irving.alley.test/#website"},"description":"Just another WordPress site","inLanguage":"en-US"}]}</script>',
+				[ 'script' ],
+				[
+					new Component(
+						'script',
+						[
+							'config'   => [
+								'type'  => 'application/ld+json',
+								'class' => 'yoast-schema-graph',
+							],
+							'children' => [
+								'{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://irving.alley.test/#website","url":"https://irving.alley.test/","name":"Irving Development","description":"Just another WordPress site","potentialAction":[{"@type":"SearchAction","target":"https://irving.alley.test/?s={search_term_string}","query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"CollectionPage","@id":"https://irving.alley.test/#webpage","url":"https://irving.alley.test/","name":"Irving Development - Just another WordPress site","isPartOf":{"@id":"https://irving.alley.test/#website"},"description":"Just another WordPress site","inLanguage":"en-US"}]}',
+							],
+						]
+					),
+				],
+				'<a> markup not parsed correctly.',
+			],
+			[
 				// Test a search for <link> when none exist.
 				'<meta name="description" content="Hello World" />',
 				[ 'link' ],
@@ -163,7 +183,7 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 			[
 				// Test multiple tags.
 				$this->example_markup,
-				[ 'title', 'meta', 'link' ],
+				[ 'title', 'meta', 'link', 'script' ],
 				[
 					new Component(
 						'title',
@@ -215,6 +235,18 @@ class Test_HTML_Markup extends WP_UnitTestCase {
 							'config' => [
 								'href' => 'https://irving.alley.test/',
 								'rel'  => 'canonical',
+							],
+						]
+					),
+					new Component(
+						'script',
+						[
+							'config'   => [
+								'type'  => 'application/ld+json',
+								'class' => 'yoast-schema-graph',
+							],
+							'children' => [
+								'{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://irving.alley.test/#website","url":"https://irving.alley.test/","name":"Irving Development","description":"Just another WordPress site","potentialAction":[{"@type":"SearchAction","target":"https://irving.alley.test/?s={search_term_string}","query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"CollectionPage","@id":"https://irving.alley.test/#webpage","url":"https://irving.alley.test/","name":"Irving Development - Just another WordPress site","isPartOf":{"@id":"https://irving.alley.test/#website"},"description":"Just another WordPress site","inLanguage":"en-US"}]}',
 							],
 						]
 					),
