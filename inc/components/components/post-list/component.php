@@ -41,12 +41,13 @@ register_component_from_config(
 			$templates = wp_parse_args(
 				$config['templates'],
 				[
-					'after'         => [],
-					'before'        => [],
-					'interstitials' => [],
-					'item'          => [],
-					'no_results'    => [ __( 'No results found.', 'wp-irving' ) ],
-					'wrapper'       => [],
+					'after'          => [],
+					'before'         => [],
+					'interstitials'  => [],
+					'item'           => [],
+					'item_overrides' => [],
+					'no_results'     => [ __( 'No results found.', 'wp-irving' ) ],
+					'wrapper'        => [],
 				]
 			);
 
@@ -62,15 +63,24 @@ register_component_from_config(
 			// Add the current $post_ids to the list of used ids.
 			post_list_get_and_add_used_post_ids( $post_ids );
 
-			// Ensure single items are wrapped in an array.
-			$item = ( isset( $templates['item'][0] ) ) ? $templates['item'] : [ $templates['item'] ];
+
+			// Track index.
+			$index = 0;
 
 			$children = array_map(
-				function ( $post_id ) use ( $item ) {
+				function ( $post_id ) use ( $templates, &$index ) {
+
+					// Decide which item to use.
+					$item = $templates['item_overrides'][ $index ] ?? $templates['item'];
+
+					// Ensure single items are wrapped in an array.
+					$item = ( isset( $item[0] ) ) ? $item : [ $item ];
+
 					return [
 						'name'     => 'irving/post-provider',
 						'config'   => [
 							'post_id' => $post_id,
+							'index'   => $index++,
 						],
 						'children' => $item,
 					];
