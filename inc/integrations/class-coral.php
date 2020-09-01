@@ -151,9 +151,6 @@ class Coral {
 	 * @param \WP_REST_Request $request The request object.
 	 */
 	public function process_validate_endpoint_request( \WP_REST_Request $request ) {
-		// Allow access from the frontend.
-		header( 'Access-Control-Allow-Origin: ' . home_url() );
-
 		$user_obj = [
 			'id'    => sanitize_text_field( $request->get_param( 'id' ) ),
 			'email' => sanitize_text_field( $request->get_param( 'email' ) ),
@@ -162,13 +159,18 @@ class Coral {
 		// Verify the user's credentials.
 		$verified_data = apply_filters( 'wp_irving_verify_coral_user', $user_obj );
 
-		// Bail early if the verified user doesn't exist.
-		if ( empty( $verified_data ) || ! $verified_data ) {
+		// Bail early if the verified user isn't confirmed by the verification filter.
+		if (
+			empty( $verified_data ) ||
+			! $verified_data ||
+			empty( $verified_data['id'] ) ||
+			empty( $verified_data['user']['email'] )
+		) {
 			return [ 'status' => 'failed' ];
 		}
 
 		// Check for existing username, since the verification call returned 200 OK.
-		$username = $this->get_username( $verified_data['user']['email'] );
+		$username = $this->get_username( $verified_data['id'] );
 
 		if ( '' !== $username ) {
 			$credentials = [
@@ -204,21 +206,18 @@ class Coral {
 	 * @return array|\WP_REST_Response
 	 */
 	public function process_set_username_endpoint_request( \WP_REST_Request $request ) {
-		// Allow access from the frontend.
-		header( 'Access-Control-Allow-Origin: ' . home_url() );
-
 		$params    = $request->get_json_params();
-		$email     = sanitize_text_field( $params['email'] );
+		$id        = sanitize_text_field( $params['id'] );
 		$username  = sanitize_text_field( $params['username'] );
 		$hash      = sanitize_text_field( $params['hash'] );
 
 		// The security check is performed in this function.
-		$status = $this->set_username( $email, $username, $hash );
+		$status = $this->set_username( $id, $username, $hash );
 
 		if ( $status ) {
 			return [
 				'status'   => 'success',
-				'email'    => $email,
+				'id'       => $id,
 				'username' => $username,
 			];
 		}
@@ -238,9 +237,6 @@ class Coral {
 	 * @return array
 	 */
 	public function process_username_availability_request( \WP_REST_Request $request ) {
-		// Allow access from the frontend.
-		header( 'Access-Control-Allow-Origin: ' . home_url() );
-
 		$username = sanitize_text_field( $request->get_param( 'username' ) );
 
 		if ( ! $username || '' === $username ) {
@@ -299,12 +295,12 @@ class Coral {
 
 	/**
 	 * Retrieve a username record. These functions use the post_title column
-	 * for the email address and the post_excerpt column for the username.
+	 * for the user's SSO provider ID, and the post_excerpt column for the username.
 	 *
-	 * @param string $email    The email address of the user.
+	 * @param string $id The SSO ID of the user.
 	 * @return string The username, or a blank string if none is set.
 	 */
-	private function get_username( $email ) : string {
+	private function get_username( $id ) : string {
 		global $wpdb;
 
 		$username = $wpdb->get_var( $wpdb->prepare( 
@@ -316,7 +312,7 @@ class Coral {
 				post_status='publish'
 			LIMIT 1 ",
 			[
-				$email,
+				$id,
 				$this->post_type,
 			]
 		) );
@@ -326,12 +322,12 @@ class Coral {
 
 	/**
 	 * Retrieve a username record's post ID. These functions use the post_title column
-	 * for the email address and the post_excerpt column for the username.
+	 * for the user's SSO provider ID, and the post_excerpt column for the username.
 	 *
-	 * @param string $email    The email address of the user.
+	 * @param string $id The SSO ID of the user.
 	 * @return int The post ID, or 0 if none is found.
 	 */
-	private function get_username_post_id( $email ) : int {
+	private function get_username_post_id( $id ) : int {
 		global $wpdb;
 
 		$post_id = $wpdb->get_var( $wpdb->prepare( 
@@ -343,7 +339,7 @@ class Coral {
 				post_status='publish'
 			LIMIT 1 ",
 			[
-				$email,
+				$id,
 				$this->post_type,
 			]
 		) );
@@ -353,7 +349,7 @@ class Coral {
 
 	/**
 	 * Check if a username is available. These functions use the post_title column
-	 * for the email address and the post_excerpt column for the username.
+	 * for the user's SSO provider ID, and the post_excerpt column for the username.
 	 *
 	 * @param string $username The username to check.
 	 * @return bool Whether the name is already in use (true) or not (false).
@@ -384,15 +380,15 @@ class Coral {
 
 	/**
 	 * Create or update a username record. These functions use the post_title column
-	 * for the email address and the post_excerpt column for the username.
+	 * for the user's SSO provider ID, and the post_excerpt column for the username.
 	 *
-	 * @param string $email    The email address of the user.
+	 * @param string $id       The SSO ID of the user.
 	 * @param string $username The associated username.
 	 * @param string $hash     The security hash verifying the request.
 	 * @return bool Whether the create/update operation succeeded.
 	 */
-	private function set_username( $email, $username, $hash ) : bool {
-		$key         = 'username_set_hash_' . md5( $email );
+	private function set_username( $id, $username, $hash ) : bool {
+		$key         = 'username_set_hash_' . md5( $id );
 		$stored_hash = get_transient( $key );
 
 		// Stop if the hash doesn't exist, wasn't passed, or doesn't match the one on file. 
@@ -406,14 +402,14 @@ class Coral {
 		}
 
 		$args = [
-			'post_title'   => $email,
+			'post_title'   => $id,
 			'post_excerpt' => $username,
 			'post_body'    => '',
 			'post_type'    => $this->post_type,
 			'post_status'  => 'publish',
 		];
 
-		$post_id = $this->get_username_post_id( $email );
+		$post_id = $this->get_username_post_id( $id );
 		
 		if ( 0 < $post_id ) {
 			$args['ID'] = $post_id;
@@ -427,7 +423,7 @@ class Coral {
 	/**
 	 * Create a one-time use hash key for username setting.
 	 *
-	 * @param string $id    The Pico uuid for this user. Adds uniqueness to the hash.
+	 * @param string $id    The SSO ID for this user.
 	 * @param string $email The email for which the hash is valid.
 	 * @return string The hash.
 	 */
@@ -442,7 +438,7 @@ class Coral {
 			]
 		);
 		$hash    = hash( 'sha256', $message );
-		$key     = 'username_set_hash_' . md5( $email );
+		$key     = 'username_set_hash_' . md5( $id );
 
 		set_transient( $key, $hash, 3600 );
 
