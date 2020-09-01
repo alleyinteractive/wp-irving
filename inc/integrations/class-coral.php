@@ -20,7 +20,7 @@ class Coral {
 	 *
 	 * @var string
 	 */
-	private $post_type = 'coral-user';
+	private $post_type = 'wp-irving-coral-user';
 
 	/**
 	 * The option key for the integration.
@@ -45,6 +45,9 @@ class Coral {
 
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
+
+		// Register a hidden post type for username records.
+		add_action( 'init', [ $this, 'register_post_type'] );
 
 		$sso_secret = $this->options[ $this->option_key ]['sso_secret'] ?? false;
 
@@ -78,6 +81,20 @@ class Coral {
 			[ $this, 'render_coral_sso_secret_input' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
+		);
+	}
+
+	/**
+	 * Register a post type for internal username record storage.
+	 */
+	public function register_post_type() {
+		register_post_type(
+			$this->post_type,
+			[
+				'public'       => false,
+				'show_in_rest' => false,
+				'supports'     => [ 'title', 'excerpt' ],
+			]
 		);
 	}
 
@@ -166,8 +183,9 @@ class Coral {
 			];
 
 			return [
-				'status' => 'success',
-				'jwt'    => $this->build_jwt( $credentials ),
+				'status'           => 'success',
+				'require_username' => false,
+				'jwt'              => $this->build_jwt( $credentials ),
 			];
 		}
 
