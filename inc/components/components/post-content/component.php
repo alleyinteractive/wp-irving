@@ -31,11 +31,7 @@ register_component_from_config(
 			 *
 			 * @see https://github.com/WordPress/gutenberg/blob/30cd85aebe14eee995e3162f09d31f4d4786f101/packages/block-library/src/post-content/index.php#L23
 			 */
-			$content = apply_filters( 'the_content', str_replace( ']]>', ']]&gt;', get_the_content( null, false, $post_id ) ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-
-			$config['content'] = $content;
-			$config['html']    = true;
-			$config['oembed']  = true;
+			$config['content'] = apply_filters( 'the_content', str_replace( ']]>', ']]&gt;', get_the_content( null, false, $post_id ) ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 			return $config;
 		},
