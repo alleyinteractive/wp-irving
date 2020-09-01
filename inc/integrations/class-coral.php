@@ -300,10 +300,9 @@ class Coral {
 	 * @return string The username, or a blank string if none is set.
 	 */
 	private function get_username( $id ) : string {
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		global $wpdb;
 
-		$username = $wpdb->get_var(
+		$username = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare( 
 				"SELECT post_excerpt 
 					FROM {$wpdb->posts} 
@@ -330,10 +329,9 @@ class Coral {
 	 * @return int The post ID, or 0 if none is found.
 	 */
 	private function get_username_post_id( $id ) : int {
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		global $wpdb;
 
-		$post_id = $wpdb->get_var(
+		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare( 
 				"SELECT ID 
 					FROM {$wpdb->posts} 
@@ -360,14 +358,13 @@ class Coral {
 	 * @return bool Whether the name is already in use (true) or not (false).
 	 */
 	private function username_exists( $username ) : int {
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		global $wpdb;
 
 		if ( ! $username || '' === $username ) {
 			return false;
 		}
 
-		$post_id = $wpdb->get_var(
+		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare( 
 				"SELECT ID 
 					FROM {$wpdb->posts} 
