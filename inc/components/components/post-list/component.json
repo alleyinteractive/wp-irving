@@ -13,6 +13,7 @@
       "type": "array"
     },
     "post_ids_to_skip": {
+      "hidden": true,
       "default": [],
       "type": "array"
     },
