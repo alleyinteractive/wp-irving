@@ -63,7 +63,6 @@ register_component_from_config(
 			// Add the current $post_ids to the list of used ids.
 			post_list_get_and_add_used_post_ids( $post_ids );
 
-
 			// Track index.
 			$index = 0;
 

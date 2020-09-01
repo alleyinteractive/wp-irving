@@ -536,6 +536,7 @@ class Test_Components extends WP_UnitTestCase {
 										'_alias'   => 'irving/fragment',
 										'config'   => [
 											'postId' => $this->get_post_id(),
+											'index'  => 0,
 										],
 										'children' => [
 											$this->get_expected_component( 'example/item' ),
