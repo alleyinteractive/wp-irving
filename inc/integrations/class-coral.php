@@ -355,8 +355,8 @@ class Coral {
 	 * Check if a username is available. These functions use the post_title column
 	 * for the email address and the post_excerpt column for the username.
 	 *
-	 * @param string $email    The email address of the user.
-	 * @return int The post ID, or 0 if none is found.
+	 * @param string $username The username to check.
+	 * @return bool Whether the name is already in use (true) or not (false).
 	 */
 	private function username_exists( $username ) : int {
 		global $wpdb;
