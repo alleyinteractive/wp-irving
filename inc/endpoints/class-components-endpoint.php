@@ -345,11 +345,11 @@ class Components_Endpoint extends Endpoint {
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
-		if ( '/' === $this->path && ! $wp_query->is_search() ) {
+		if ( '/' === $this->path && ! $wp_query->is_search() && ! $wp_query->is_preview() ) {
 			$wp_query->is_home = true;
 		}
 
-		if ( empty( $wp_query->posts ) && ! $wp_query->is_search() && ! $wp_query->is_home() ) {
+		if ( empty( $wp_query->posts ) && ! $wp_query->is_search() && ! $wp_query->is_home() && ! $wp_query->is_preview() ) {
 			$wp_query->set_404();
 		}
 

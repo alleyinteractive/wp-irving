@@ -19,6 +19,8 @@ use WP_REST_Request;
 function bootstrap() {
 	add_filter( 'wp_irving_components_route', __NAMESPACE__ . '\\load_template', 10, 6 );
 	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_favicon', 10, 3 );
+	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_custom_css', 10, 3 );
+	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_block_library_styles', 10, 3 );
 }
 
 /**
@@ -504,7 +506,7 @@ function setup_head(
 				'irving/head',
 				[
 					'config' => [
-						'context' => 'defaults',
+						'context' => 'site',
 					],
 				]
 			)
@@ -640,4 +642,89 @@ function inject_favicon( array $children, array $config, string $name ): array {
 		$children,
 		Components\html_to_components( get_favicon_markup(), [ 'link', 'meta' ] )
 	);
+}
+
+/**
+ * Inject the custom css styles into the <head> component.
+ *
+ * @param array  $children Children for this component.
+ * @param array  $config   Config for this component.
+ * @param string $name     Name of this component.
+ * @return array
+ */
+function inject_custom_css( array $children, array $config, string $name ): array {
+	// Ony run this action on the `irving/head` in a `page` context.
+	if (
+		'irving/head' !== $name
+		|| 'page' !== ( $config['context'] ?? 'page' )
+	) {
+		return $children;
+	}
+
+	// Check for existence of custom css.
+	$custom_css = wp_get_custom_css();
+	if ( empty( $custom_css ) ) {
+		return $children;
+	}
+
+	// Inject the custom css.
+	$children[] = new Components\Component(
+		'style',
+		[
+			'config'   => [
+				'id'   => 'wp-custom-css',
+				'type' => 'text/css',
+			],
+			'children' => [
+				wp_get_custom_css(),
+			],
+		]
+	);
+
+	return $children;
+}
+
+/**
+ * Inject the block-library styles into the <head> component.
+ *
+ * @param array  $children Children for this component.
+ * @param array  $config   Config for this component.
+ * @param string $name     Name of this component.
+ * @return array
+ */
+function inject_block_library_styles( array $children, array $config, string $name ): array {
+	// Ony run this action on the `irving/head` in a `page` context.
+	if (
+		'irving/head' !== $name
+		|| 'page' !== ( $config['context'] ?? 'page' )
+	) {
+		return $children;
+	}
+
+	// Ensure the block library is enqueued.
+	global $wp_styles;
+	if ( ! isset( $wp_styles->registered['wp-block-library'] ) ) {
+		return $children;
+	}
+
+	// Inject the block library styles.
+	$children[] = new Components\Component(
+		'link',
+		[
+			'config' => [
+				'href'  => sprintf(
+					'%1$s%2$s?ver=%3$s',
+					$wp_styles->base_url,
+					$wp_styles->registered['wp-block-library']->src,
+					$wp_styles->default_version
+				),
+				'id'    => 'wp-block-library-css',
+				'media' => 'all',
+				'rel'   => 'stylesheet',
+				'type'  => 'text/css',
+			],
+		]
+	);
+
+	return $children;
 }

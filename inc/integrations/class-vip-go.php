@@ -24,17 +24,16 @@ class VIP_Go {
 			return;
 		}
 
-		add_filter( 'wpcom_vip_cache_purge_urls', [ $this, 'wpcom_vip_cache_purge_urls' ], 10, 2 );
+		add_filter( 'wpcom_vip_cache_purge_urls', [ $this, 'wpcom_vip_cache_purge_urls' ] );
 	}
 
 	/**
 	 * Add to the list of URLs to purge when a post is modified.
 	 *
 	 * @param array $purge_urls URLs to purge.
-	 * @param int   $post_id    The ID of the post triggering the purge.
 	 * @return array
 	 */
-	public function wpcom_vip_cache_purge_urls( $purge_urls, $post_id ) {
+	public function wpcom_vip_cache_purge_urls( $purge_urls ) {
 
 		$new_urls = [];
 

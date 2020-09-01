@@ -77,6 +77,8 @@ class Integrations_Manager {
 				// Build the config array for Pico.
 				case strpos( $key, 'pico_' ) !== false:
 					$formatted_options['pico'][ str_replace( 'pico_', '', $key ) ] = $val;
+					// Set the options to private. This will prevent them from being passed through
+					// the components JSON endpoint.
 					$formatted_options['pico']['private'] = true;
 					break;
 				default:

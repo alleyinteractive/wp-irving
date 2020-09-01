@@ -16,6 +16,13 @@ class Coral {
 	use Singleton;
 
 	/**
+	 * Post type for username records,
+	 *
+	 * @var string
+	 */
+	private $post_type = 'wp-irving-coral-user';
+
+	/**
 	 * The option key for the integration.
 	 *
 	 * @var string
@@ -39,6 +46,9 @@ class Coral {
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
 
+		// Register a hidden post type for username records.
+		add_action( 'init', [ $this, 'register_post_type' ] );
+
 		$sso_secret = $this->options[ $this->option_key ]['sso_secret'] ?? false;
 
 		if ( ! empty( $sso_secret ) ) {
@@ -46,9 +56,7 @@ class Coral {
 			add_filter(
 				'wp_irving_data_endpoints',
 				function ( $endpoints ) {
-					$endpoints[] = $this->get_endpoint_settings();
-
-					return $endpoints;
+					return array_merge( $endpoints, $this->get_endpoint_settings() );
 				}
 			);
 		}
@@ -73,6 +81,20 @@ class Coral {
 			[ $this, 'render_coral_sso_secret_input' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
+		);
+	}
+
+	/**
+	 * Register a post type for internal username record storage.
+	 */
+	public function register_post_type() {
+		register_post_type(
+			$this->post_type,
+			[
+				'public'       => false,
+				'show_in_rest' => false,
+				'supports'     => [ 'title', 'excerpt' ],
+			]
 		);
 	}
 
@@ -107,8 +129,19 @@ class Coral {
 	 */
 	public function get_endpoint_settings(): array {
 		return [
-			'slug'     => 'validate_sso_user',
-			'callback' => [ $this, 'process_endpoint_request' ],
+			[
+				'slug'     => 'validate_sso_user',
+				'callback' => [ $this, 'process_validate_endpoint_request' ],
+			],
+			[
+				'slug'     => 'set_sso_username',
+				'methods'  => \WP_REST_Server::CREATABLE,
+				'callback' => [ $this, 'process_set_username_endpoint_request' ],
+			],
+			[
+				'slug'     => 'check_sso_username_availability',
+				'callback' => [ $this, 'process_username_availability_request' ],
+			],
 		];
 	}
 
@@ -117,60 +150,105 @@ class Coral {
 	 *
 	 * @param \WP_REST_Request $request The request object.
 	 */
-	public function process_endpoint_request( \WP_REST_Request $request ) {
-		// Allow access from the frontend.
-		header( 'Access-Control-Allow-Origin: ' . home_url() );
-
-		$user_email  = sanitize_text_field( $request->get_param( 'user' ) );
-		$user_id     = sanitize_text_field( $request->get_param( 'id' ) );
-
-		// Build a base user object for verifiection.
+	public function process_validate_endpoint_request( \WP_REST_Request $request ) {
 		$user_obj = [
-			'id'       => $user_id,
-			'email'    => $user_email,
-			'username' => '',
+			'id'    => sanitize_text_field( $request->get_param( 'id' ) ),
+			'email' => sanitize_text_field( $request->get_param( 'email' ) ),
 		];
 
 		// Verify the user's credentials.
-		$verified_user = apply_filters( 'wp_irving_verify_coral_user', $user_obj );
+		$verified_data = apply_filters( 'wp_irving_verify_coral_user', $user_obj );
 
-		// Bail early if the verified user doesn't exist.
-		if ( empty( $verified_user ) ) {
+		// Bail early if the verified user isn't confirmed by the verification filter.
+		if (
+			empty( $verified_data ) ||
+			empty( $verified_data['id'] ) ||
+			empty( $verified_data['email'] )
+		) {
 			return [ 'status' => 'failed' ];
 		}
 
-		// If the user has been verified to contain a unique ID but does not yet have a
-		// username, check the database to see if the user exists. If so, continue, if not
-		// return a response that will dispatch an action summoning UI that requires the
-		// user to enter a username.
-		if ( !empty( $verified_user['id'] ) && empty( $verified_user['username'] ) ) {
-			// check to see if the user exists.
-			$username = '';
+		// Check for existing username, since the verification call returned 200 OK.
+		$username = $this->get_username( $verified_data['id'] );
 
-			// Bail early if no user exists;
-			if ( empty ( $username ) ) {
-				return [
-					'status'           => 'success',
-					'require_username' => true,
-				];
-			}
+		if ( '' !== $username ) {
+			$credentials = [
+				'jti'  => uniqid(),
+				'exp'  => time() + ( 90 * DAY_IN_SECONDS ), // JWT will expire in 90 days.
+				'iat'  => time(),
+				'user' => [
+					'id'       => $verified_data['id'],
+					'email'    => $verified_data['email'],
+					'username' => $username,
+				],
+			];
+
+			return [
+				'status'           => 'success',
+				'require_username' => false,
+				'jwt'              => $this->build_jwt( $credentials ),
+			];
 		}
 
-		$credentials = [
-			'jti'  => uniqid(),
-			'exp'  => time() + ( 90 * DAY_IN_SECONDS ), // JWT will expire in 90 days.
-			'iat'  => time(),
-			'user' => [
-				'id'       => $verified_user['id'],
-				'email'    => $verified_user['email'],
-				'username' => $verified_user['username'],
-			],
+		// If username is not set then return the hash scheme.
+		return [
+			'status'            => 'success',
+			'require_username'  => true,
+			'username_set_hash' => $this->create_username_set_hash( $verified_data['id'], $verified_data['email'] ),
 		];
+	}
 
-		// return [
-		// 	'status' => 'success',
-		// 	'jwt'    => $this->build_jwt( $credentials ),
-		// ];
+	/**
+	 * Accept requests to set a username for a given email address.
+	 *
+	 * @param \WP_REST_Request $request The request object.
+	 * @return array|\WP_REST_Response
+	 */
+	public function process_set_username_endpoint_request( \WP_REST_Request $request ) {
+		$params   = $request->get_json_params();
+		$id       = sanitize_text_field( $params['id'] );
+		$username = sanitize_text_field( $params['username'] );
+		$hash     = sanitize_text_field( $params['hash'] );
+
+		// The security check is performed in this function.
+		$status = $this->set_username( $id, $username, $hash );
+
+		if ( $status ) {
+			return [
+				'status'   => 'success',
+				'id'       => $id,
+				'username' => $username,
+			];
+		}
+
+		return new \WP_REST_Response(
+			[
+				'status' => 'unauthorized',
+			],
+			403
+		);
+	}
+
+	/**
+	 * Handle username availability checks.
+	 *
+	 * @param \WP_REST_Request $request The request object.
+	 * @return array
+	 */
+	public function process_username_availability_request( \WP_REST_Request $request ) {
+		$username = sanitize_text_field( $request->get_param( 'username' ) );
+
+		if ( ! $username || '' === $username ) {
+			return [
+				'username'  => '',
+				'available' => false,
+			];
+		}
+
+		return [
+			'username'  => $username,
+			'available' => ! $this->username_exists( $username ),
+		];
 	}
 
 	/**
@@ -211,5 +289,163 @@ class Coral {
 	 */
 	public function base64url_encode( string $data ): string {
 		return rtrim( strtr( base64_encode( $data ), '+/', '-_' ), '=' );
+	}
+
+	/**
+	 * Retrieve a username record. These functions use the post_title column
+	 * for the user's SSO provider ID, and the post_excerpt column for the username.
+	 *
+	 * @param string $id The SSO ID of the user.
+	 * @return string The username, or a blank string if none is set.
+	 */
+	private function get_username( $id ) : string {
+		global $wpdb;
+
+		$username = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare( 
+				"SELECT post_excerpt 
+					FROM {$wpdb->posts} 
+				WHERE 
+					post_title=%s AND
+					post_type=%s AND
+					post_status='publish'
+				LIMIT 1 ",
+				[
+					$id,
+					$this->post_type,
+				]
+			)
+		);
+
+		return $username ?? '';
+	}
+
+	/**
+	 * Retrieve a username record's post ID. These functions use the post_title column
+	 * for the user's SSO provider ID, and the post_excerpt column for the username.
+	 *
+	 * @param string $id The SSO ID of the user.
+	 * @return int The post ID, or 0 if none is found.
+	 */
+	private function get_username_post_id( $id ) : int {
+		global $wpdb;
+
+		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare( 
+				"SELECT ID 
+					FROM {$wpdb->posts} 
+				WHERE 
+					post_title=%s AND
+					post_type=%s AND
+					post_status='publish'
+				LIMIT 1 ",
+				[
+					$id,
+					$this->post_type,
+				]
+			)
+		);
+
+		return $post_id ?? 0;
+	}
+
+	/**
+	 * Check if a username is available. These functions use the post_title column
+	 * for the user's SSO provider ID, and the post_excerpt column for the username.
+	 *
+	 * @param string $username The username to check.
+	 * @return bool Whether the name is already in use (true) or not (false).
+	 */
+	private function username_exists( $username ) : int {
+		global $wpdb;
+
+		if ( ! $username || '' === $username ) {
+			return false;
+		}
+
+		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->prepare( 
+				"SELECT ID 
+					FROM {$wpdb->posts} 
+				WHERE 
+					post_excerpt=%s AND
+					post_type=%s AND
+					post_status='publish'
+				LIMIT 1 ",
+				[
+					$username,
+					$this->post_type,
+				]
+			)
+		) ?? 0;
+
+		return ( 0 < $post_id );
+	}
+
+	/**
+	 * Create or update a username record. These functions use the post_title column
+	 * for the user's SSO provider ID, and the post_excerpt column for the username.
+	 *
+	 * @param string $id       The SSO ID of the user.
+	 * @param string $username The associated username.
+	 * @param string $hash     The security hash verifying the request.
+	 * @return bool Whether the create/update operation succeeded.
+	 */
+	private function set_username( $id, $username, $hash ) : bool {
+		$key         = 'username_set_hash_' . md5( $id );
+		$stored_hash = get_transient( $key );
+
+		// Stop if the hash doesn't exist, wasn't passed, or doesn't match the one on file. 
+		if ( ! $stored_hash || ! $hash || $hash !== $stored_hash ) {
+			return false;
+		}
+
+		// Stop if the username is already taken by someone else.
+		if ( $this->username_exists( $username ) ) {
+			return false;
+		}
+
+		$args = [
+			'post_title'   => $id,
+			'post_excerpt' => $username,
+			'post_body'    => '',
+			'post_type'    => $this->post_type,
+			'post_status'  => 'publish',
+		];
+
+		$post_id = $this->get_username_post_id( $id );
+		
+		if ( 0 < $post_id ) {
+			$args['ID'] = $post_id;
+		}
+
+		$post = wp_insert_post( $args );
+
+		return ( ! is_wp_error( $post ) );
+	}
+
+	/**
+	 * Create a one-time use hash key for username setting.
+	 *
+	 * @param string $id    The SSO ID for this user.
+	 * @param string $email The email for which the hash is valid.
+	 * @return string The hash.
+	 */
+	private function create_username_set_hash( $id, $email ) : string {
+		$message = implode(
+			':',
+			[
+				$id,
+				$email,
+				strval( microtime() ),
+				strval( random_int( 0, 32768 ) ),
+			]
+		);
+		$hash    = hash( 'sha256', $message );
+		$key     = 'username_set_hash_' . md5( $id );
+
+		set_transient( $key, $hash, 3600 );
+
+		return $hash;
 	}
 }
