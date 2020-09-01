@@ -25,6 +25,8 @@ matrix:
       env: WP_TRAVISCI=phpcs
     - php: 7.4
       env: WP_VERSION=trunk
+  allow_failures:
+    - env: WP_VERSION=trunk
 
 before_script:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
