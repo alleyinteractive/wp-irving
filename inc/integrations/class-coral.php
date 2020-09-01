@@ -16,6 +16,13 @@ class Coral {
 	use Singleton;
 
 	/**
+	 * Post type for username records,
+	 *
+	 * @var string
+	 */
+	private $post_type = 'coral-user';
+
+	/**
 	 * The option key for the integration.
 	 *
 	 * @var string
@@ -46,9 +53,7 @@ class Coral {
 			add_filter(
 				'wp_irving_data_endpoints',
 				function ( $endpoints ) {
-					$endpoints[] = $this->get_endpoint_settings();
-
-					return $endpoints;
+					return array_merge( $endpoints, $this->get_endpoint_settings() );
 				}
 			);
 		}
@@ -107,8 +112,19 @@ class Coral {
 	 */
 	public function get_endpoint_settings(): array {
 		return [
-			'slug'     => 'validate_sso_user',
-			'callback' => [ $this, 'process_endpoint_request' ],
+			[
+				'slug'     => 'validate_sso_user',
+				'callback' => [ $this, 'process_validate_endpoint_request' ],
+			],
+			[
+				'slug'     => 'set_sso_username',
+				'methods'  => \WP_REST_Server::CREATABLE,
+				'callback' => [ $this, 'process_set_username_endpoint_request' ],
+			],
+			[
+				'slug'     => 'check_sso_username_availability',
+				'callback' => [ $this, 'process_username_availability_request' ],
+			],
 		];
 	}
 
@@ -117,40 +133,108 @@ class Coral {
 	 *
 	 * @param \WP_REST_Request $request The request object.
 	 */
-	public function process_endpoint_request( \WP_REST_Request $request ) {
+	public function process_validate_endpoint_request( \WP_REST_Request $request ) {
 		// Allow access from the frontend.
 		header( 'Access-Control-Allow-Origin: ' . home_url() );
 
-		$user = sanitize_text_field( $request->get_param( 'user' ) );
-
 		$user_obj = [
-			'id'       => '628bdc61-6616-4add-bfec-dd79156715d4', // The ID should come from the Pico verification payload.
-			'email'    => $user,
-			'username' => explode( '@', $user )[0], // The username should come from the Pico verification payload.
+			'id'    => sanitize_text_field( $request->get_param( 'id' ) ),
+			'email' => sanitize_text_field( $request->get_param( 'email' ) ),
 		];
 
 		// Verify the user's credentials.
-		$verified_user = apply_filters( 'wp_irving_verify_coral_user', $user_obj );
+		$verified_data = apply_filters( 'wp_irving_verify_coral_user', $user_obj );
 
 		// Bail early if the verified user doesn't exist.
-		if ( empty( $verified_user ) ) {
+		if ( empty( $verified_data ) || ! $verified_data ) {
 			return [ 'status' => 'failed' ];
 		}
 
-		$credentials = [
-			'jti'  => uniqid(),
-			'exp'  => time() + ( 90 * DAY_IN_SECONDS ), // JWT will expire in 90 days.
-			'iat'  => time(),
-			'user' => [
-				'id'       => $verified_user['id'],
-				'email'    => $verified_user['email'],
-				'username' => $verified_user['username'],
-			],
+		// Check for existing username, since the verification call returned 200 OK.
+		$username = $this->get_username( $verified_data['user']['email'] );
+
+		if ( '' !== $username ) {
+			$credentials = [
+				'jti'  => uniqid(),
+				'exp'  => time() + ( 90 * DAY_IN_SECONDS ), // JWT will expire in 90 days.
+				'iat'  => time(),
+				'user' => [
+					'id'       => $verified_data['id'],
+					'email'    => $verified_data['user']['email'],
+					'username' => $username,
+				],
+			];
+
+			return [
+				'status' => 'success',
+				'jwt'    => $this->build_jwt( $credentials ),
+			];
+		}
+
+		// If username is not set then,
+		return [
+			'status'            => 'success',
+			'require_username'  => true,
+			'username_set_hash' => $this->create_username_set_hash( $verified_data['id'], $verified_data['user']['email'] ),
 		];
+	}
+
+	/**
+	 * Accept requests to set a username for a given email address.
+	 *
+	 * @param \WP_REST_Request $request The request object.
+	 * @return array|\WP_REST_Response
+	 */
+	public function process_set_username_endpoint_request( \WP_REST_Request $request ) {
+		// Allow access from the frontend.
+		header( 'Access-Control-Allow-Origin: ' . home_url() );
+
+		$params    = $request->get_json_params();
+		$email     = sanitize_text_field( $params['email'] );
+		$username  = sanitize_text_field( $params['username'] );
+		$hash      = sanitize_text_field( $params['hash'] );
+
+		// The security check is performed in this function.
+		$status = $this->set_username( $email, $username, $hash );
+
+		if ( $status ) {
+			return [
+				'status'   => 'success',
+				'email'    => $email,
+				'username' => $username,
+			];
+		}
+
+		return new \WP_REST_Response(
+			[
+				'status' => 'unauthorized',
+			],
+			403
+		);
+	}
+
+	/**
+	 * Handle username availability checks.
+	 *
+	 * @param \WP_REST_Request $request The request object.
+	 * @return array
+	 */
+	public function process_username_availability_request( \WP_REST_Request $request ) {
+		// Allow access from the frontend.
+		header( 'Access-Control-Allow-Origin: ' . home_url() );
+
+		$username = sanitize_text_field( $request->get_param( 'username' ) );
+
+		if ( ! $username || '' === $username ) {
+			return [
+				'username'  => '',
+				'available' => false,
+			];
+		}
 
 		return [
-			'status' => 'success',
-			'jwt'    => $this->build_jwt( $credentials ),
+			'username'  => $username,
+			'available' => ! $this->username_exists( $username ),
 		];
 	}
 
@@ -192,5 +276,158 @@ class Coral {
 	 */
 	public function base64url_encode( string $data ): string {
 		return rtrim( strtr( base64_encode( $data ), '+/', '-_' ), '=' );
+	}
+
+
+	/**
+	 * Retrieve a username record. These functions use the post_title column
+	 * for the email address and the post_excerpt column for the username.
+	 *
+	 * @param string $email    The email address of the user.
+	 * @return string The username, or a blank string if none is set.
+	 */
+	private function get_username( $email ) : string {
+		global $wpdb;
+
+		$username = $wpdb->get_var( $wpdb->prepare( 
+			"SELECT post_excerpt 
+				FROM {$wpdb->posts} 
+			WHERE 
+				post_title=%s AND
+				post_type=%s AND
+				post_status='publish'
+			LIMIT 1 ",
+			[
+				$email,
+				$this->post_type,
+			]
+		) );
+
+		return $username ?? '';
+	}
+
+	/**
+	 * Retrieve a username record's post ID. These functions use the post_title column
+	 * for the email address and the post_excerpt column for the username.
+	 *
+	 * @param string $email    The email address of the user.
+	 * @return int The post ID, or 0 if none is found.
+	 */
+	private function get_username_post_id( $email ) : int {
+		global $wpdb;
+
+		$post_id = $wpdb->get_var( $wpdb->prepare( 
+			"SELECT ID 
+				FROM {$wpdb->posts} 
+			WHERE 
+				post_title=%s AND
+				post_type=%s AND
+				post_status='publish'
+			LIMIT 1 ",
+			[
+				$email,
+				$this->post_type,
+			]
+		) );
+
+		return $post_id ?? 0;
+	}
+
+	/**
+	 * Check if a username is available. These functions use the post_title column
+	 * for the email address and the post_excerpt column for the username.
+	 *
+	 * @param string $email    The email address of the user.
+	 * @return int The post ID, or 0 if none is found.
+	 */
+	private function username_exists( $username ) : int {
+		global $wpdb;
+
+		if ( ! $username || '' === $username ) {
+			return false;
+		}
+
+		$post_id = $wpdb->get_var( $wpdb->prepare( 
+			"SELECT ID 
+				FROM {$wpdb->posts} 
+			WHERE 
+				post_excerpt=%s AND
+				post_type=%s AND
+				post_status='publish'
+			LIMIT 1 ",
+			[
+				$username,
+				$this->post_type,
+			]
+		) ) ?? 0;
+
+		return ( 0 < $post_id );
+	}
+
+	/**
+	 * Create or update a username record. These functions use the post_title column
+	 * for the email address and the post_excerpt column for the username.
+	 *
+	 * @param string $email    The email address of the user.
+	 * @param string $username The associated username.
+	 * @param string $hash     The security hash verifying the request.
+	 * @return bool Whether the create/update operation succeeded.
+	 */
+	private function set_username( $email, $username, $hash ) : bool {
+		$key         = 'username_set_hash_' . md5( $email );
+		$stored_hash = get_transient( $key );
+
+		// Stop if the hash doesn't exist, wasn't passed, or doesn't match the one on file. 
+		if ( ! $stored_hash || ! $hash || $hash !== $stored_hash ) {
+			return false;
+		}
+
+		// Stop if the username is already taken by someone else.
+		if ( $this->username_exists( $username ) ) {
+			return false;
+		}
+
+		$args = [
+			'post_title'   => $email,
+			'post_excerpt' => $username,
+			'post_body'    => '',
+			'post_type'    => $this->post_type,
+			'post_status'  => 'publish',
+		];
+
+		$post_id = $this->get_username_post_id( $email );
+		
+		if ( 0 < $post_id ) {
+			$args['ID'] = $post_id;
+		}
+
+		$post = wp_insert_post( $args );
+
+		return ( ! is_wp_error( $post ) );
+	}
+
+	/**
+	 * Create a one-time use hash key for username setting.
+	 *
+	 * @param string $id    The Pico uuid for this user. Adds uniqueness to the hash.
+	 * @param string $email The email for which the hash is valid.
+	 * @return string The hash.
+	 */
+	private function create_username_set_hash( $id, $email ) : string {
+		$message = implode(
+			':',
+			[
+				$id,
+				$email,
+				strval( microtime() ),
+				strval( random_int( 0, 32768 ) ),
+			]
+		);
+		$hash    = hash( 'sha256', $message );
+		$key     = 'username_set_hash_' . md5( $email );
+
+		set_transient( $key, $hash, 3600 );
+
+		return $hash;
 	}
 }
