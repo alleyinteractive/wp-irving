@@ -162,7 +162,6 @@ class Coral {
 		// Bail early if the verified user isn't confirmed by the verification filter.
 		if (
 			empty( $verified_data ) ||
-			! $verified_data ||
 			empty( $verified_data['id'] ) ||
 			empty( $verified_data['email'] )
 		) {
