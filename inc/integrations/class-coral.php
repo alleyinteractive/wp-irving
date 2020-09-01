@@ -292,7 +292,6 @@ class Coral {
 		return rtrim( strtr( base64_encode( $data ), '+/', '-_' ), '=' );
 	}
 
-
 	/**
 	 * Retrieve a username record. These functions use the post_title column
 	 * for the user's SSO provider ID, and the post_excerpt column for the username.
