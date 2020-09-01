@@ -63,6 +63,11 @@ register_component_from_config(
 			// Add the current $post_ids to the list of used ids.
 			post_list_get_and_add_used_post_ids( $post_ids );
 
+			$post_ids_to_skip = (array) ( $config['post_ids_to_skip'] ?? [] );
+			$post_ids         = array_values( array_diff( $post_ids, $post_ids_to_skip ) );
+
+			// print_r($post_ids); die();
+
 			$children = array_map(
 				function ( $post_id, $index ) use ( $templates ) {
 
@@ -84,6 +89,8 @@ register_component_from_config(
 				$post_ids,
 				array_keys( $post_ids )
 			);
+
+			// print_r($children); die();
 
 			// Inject interstitals.
 			if ( ! empty( $templates['interstitials'] ) ) {
