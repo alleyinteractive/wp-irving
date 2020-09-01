@@ -162,7 +162,7 @@ class Pico {
 	 */
 	private function verification_request( $path, $payload, $credentials ) : array {
 		$http_args = [
-			'body'    => json_encode( $payload ),
+			'body'    => wp_json_encode( $payload ),
 			'headers' => [
 				'Content-Type'  => 'application/json; charset=' . get_option( 'blog_charset' ),
 				'Accept'        => 'application/json',
@@ -170,7 +170,7 @@ class Pico {
 			],
 		];
 
-		$request_url = Pico_Setup::get_api_endpoint() . "/" . $path;
+		$request_url = Pico_Setup::get_api_endpoint() . '/' . $path;
 		$response    = wp_remote_post( $request_url, $http_args );
 		$raw_body    = wp_remote_retrieve_body( $response );
 
