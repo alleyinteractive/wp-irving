@@ -393,7 +393,8 @@ class Coral {
 	 */
 	private function set_username( $id, $username, $hash ) : bool {
 		$key         = 'username_set_hash_' . md5( $id );
-		$stored_hash = get_transient( $key );
+		// $stored_hash = get_transient( $key );
+		$stored_hash = false;
 
 		// Stop if the hash doesn't exist, wasn't passed, or doesn't match the one on file. 
 		if ( ! $stored_hash || ! $hash || $hash !== $stored_hash ) {
@@ -444,7 +445,7 @@ class Coral {
 		$hash    = hash( 'sha256', $message );
 		$key     = 'username_set_hash_' . md5( $id );
 
-		set_transient( $key, $hash, 3600 );
+		// set_transient( $key, $hash, 3600 );
 
 		return $hash;
 	}

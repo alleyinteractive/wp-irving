@@ -65,6 +65,20 @@ class Pico {
 		add_filter( 'wp_irving_verify_coral_user', [ $this, 'verify_pico_user_for_sso' ] );
 	}
 
+	/**	
+	 * Register settings fields for display.	
+	 */	
+	public function register_settings_fields() {	
+		// Register new fields for the Coral integration.	
+		add_settings_field(	
+			'wp_irving_pico_auth_key',	
+			esc_html__( 'Pico API Basic Auth Key', 'wp-irving' ),	
+			[ $this, 'render_pico_auth_key_input' ],	
+			'wp_irving_integrations',	
+			'irving_integrations_settings'	
+		);	
+	}
+
 	/**
 	 * Render an input for the Pico Basic Auth Key.
 	 */
@@ -99,30 +113,6 @@ class Pico {
 		$options['pico']['page_info']['taxonomies'] = (object) ( $options['pico']['page_info']['taxonomies'] ?? [] );
 
 		return $options;
-	}
-
-	/**
-	 * Render an input for the Pico SSO ID.
-	 */
-	public function render_pico_sso_id_input() {
-		// Check to see if there is an existing SSO secret in the option.
-		$sso_id = Integrations\get_option_value( 'pico', 'sso_id' ) ?? '';
-
-		?>
-			<input type="text" name="irving_integrations[<?php echo esc_attr( 'pico_sso_id' ); ?>]" value="<?php echo esc_attr( $sso_id ); ?>" />
-		<?php
-	}
-
-	/**
-	 * Render an input for the Pico SSO Key.
-	 */
-	public function render_pico_sso_key_input() {
-		// Check to see if there is an existing SSO secret in the option.
-		$sso_key = Integrations\get_option_value( 'pico', 'sso_key' ) ?? '';
-
-		?>
-			<input type="text" name="irving_integrations[<?php echo esc_attr( 'pico_sso_key' ); ?>]" value="<?php echo esc_attr( $sso_key ); ?>" />
-		<?php
 	}
 
 	/**
