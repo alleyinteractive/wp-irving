@@ -64,10 +64,10 @@ register_component_from_config(
 			post_list_get_and_add_used_post_ids( $post_ids );
 
 			// Track index.
-			$index = 0;
+			// $index = 0;
 
 			$children = array_map(
-				function ( $post_id ) use ( $templates, &$index ) {
+				function ( $post_id, $index ) use ( $templates ) {
 
 					// Decide which item to use.
 					$item = $templates['item_overrides'][ $index ] ?? $templates['item'];
@@ -84,7 +84,8 @@ register_component_from_config(
 						'children' => $item,
 					];
 				},
-				$post_ids
+				$post_ids,
+				array_keys( $post_ids )
 			);
 
 			// Inject interstitals.
