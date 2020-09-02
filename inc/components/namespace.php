@@ -223,3 +223,28 @@ function html_to_components( string $markup, array $tags ): array {
 
 	return $components;
 }
+
+/**
+ * Helper to get image attributes for a component.
+ *
+ * @param int    $attachment_id An attachment ID.
+ * @param string $size          Optional. The intermediate image size to use. Default 'full'.
+ * @return array An array of image configuration attributes.
+ */
+function get_image_component_attributes( int $attachment_id, string $size = 'full' ): array {
+	// Bail early if this isn't an attachment.
+	if ( ! wp_attachment_is_image( $attachment_id ) ) {
+		return [];
+	}
+
+	$atts = wp_get_attachment_image_src( $attachment_id, $size );
+
+	return [
+		'src'    => $atts[0],
+		'width'  => $atts[1],
+		'height' => $atts[2],
+		'alt'    => $config['alt'] ?? (string) get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
+		'sizes'  => wp_get_attachment_image_sizes( $attachment_id, $size ),
+		'srcset' => wp_get_attachment_image_srcset( $attachment_id, $size ),
+	];
+}

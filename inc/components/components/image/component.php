@@ -24,14 +24,14 @@ register_component_from_config(
 
 			// Hydrate data from an ID.
 			if ( isset( $config['id'] ) ) {
-				$atts = wp_get_attachment_image_src( $config['id'], $config['size'] );
+				$image_atts = get_image_component_attributes( $config['id'], $config['size'] );
 
-				$config['src']    = $atts[0];
-				$config['width']  = $atts[1];
-				$config['height'] = $atts[2];
-				$config['alt']    = $config['alt'] ?? (string) get_post_meta( $config['id'], '_wp_attachment_image_alt', true );
-				$config['sizes']  = wp_get_attachment_image_sizes( $config['id'], $config['size'] );
-				$config['srcset'] = wp_get_attachment_image_srcset( $config['id'], $config['size'] );
+				// Override empty or unset config values with WP data.
+				foreach ( $image_atts as $key => $value ) {
+					if ( ! isset( $config[ $key ] ) || empty( $config[ $key ] ) ) {
+						$config[ $key ] = $value;
+					}
+				}
 			}
 
 			return $config;
