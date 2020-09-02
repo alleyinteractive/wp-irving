@@ -65,18 +65,18 @@ class Pico {
 		add_filter( 'wp_irving_verify_coral_user', [ $this, 'verify_pico_user_for_sso' ] );
 	}
 
-	/**	
-	 * Register settings fields for display.	
-	 */	
-	public function register_settings_fields() {	
-		// Register new fields for the Coral integration.	
-		add_settings_field(	
-			'wp_irving_pico_auth_key',	
-			esc_html__( 'Pico API Basic Auth Key', 'wp-irving' ),	
-			[ $this, 'render_pico_auth_key_input' ],	
-			'wp_irving_integrations',	
-			'irving_integrations_settings'	
-		);	
+	/**
+	 * Register settings fields for display.
+	 */
+	public function register_settings_fields() {
+		// Register new fields for the Coral integration.
+		add_settings_field(
+			'wp_irving_pico_auth_key',
+			esc_html__( 'Pico API Basic Auth Key', 'wp-irving' ),
+			[ $this, 'render_pico_auth_key_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
 	}
 
 	/**
