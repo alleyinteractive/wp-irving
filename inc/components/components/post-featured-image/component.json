@@ -59,7 +59,7 @@
       "type": "string"
     },
     "srcset": {
-      "description":"A source list string for delivering responsive images.",
+      "description": "A source list string for delivering responsive images.",
       "type": "string"
     },
     "style": {
