@@ -123,36 +123,6 @@ class Pico {
 	 * @return array|bool Updated user object or false if verification fails.
 	 */
 	public function verify_pico_user_for_sso( array $user ) {
-		$response = wp_remote_post(
-			'https://api.pico.tools/users/verify',
-			[
-				'method'  => 'POST',
-				'body'    => wp_json_encode(
-					[
-						'email' => $user['email'],
-						'id'    => $user['id'],
-					]
-				),
-				'headers' => [
-					'Content-Type'  => 'application/json',
-					'Authorization' => 'Basic ' . base64_encode( $pico_publisher_id . ':' . $pico_api_key )
-				]
-			]
-		);
-
-		$response_code = $response['response']['code'];
-
-		if ( ! empty( $response_code ) && $response_code === 200 ) {
-			$response_body = json_decode( $response['body'] );
-
-			// Update the user's ID value.
-			if ( empty( $user['id'] ) ) {
-				$user['id'] = $response_body->user->id;
-			}
-
-			return $user;
-		}
-
 		// If the user isn't verified, return false, which will cause a failure
 		// response to be returned on the front-end and the appropriate behavior
 		// will be triggered.
