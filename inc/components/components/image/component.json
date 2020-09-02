@@ -48,6 +48,10 @@
       "description": "Display meta.",
       "type": "bool"
     },
+    "sizes": {
+      "description": "An image sizes attribute string.",
+      "type": "string"
+    },
     "size": {
       "default": "full",
       "description": "A WordPress image size to use. Default 'full'.",
