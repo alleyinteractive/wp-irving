@@ -7,6 +7,7 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\Components\Component;
 use WP_Irving\Singleton;
 
 /**
@@ -30,7 +31,7 @@ class Google_Tag_Manager {
 	private $options;
 
 	/**
-	 * Setup the singleton. Validate JWT is installed, and setup hooks.
+	 * Setup the singleton.
 	 */
 	public function setup() {
 		// Retrieve any existing integrations options.
@@ -38,6 +39,46 @@ class Google_Tag_Manager {
 
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
+
+		if ( ! is_admin() ) {
+			add_filter( 'wp_irving_component_children', [ $this, 'inject_gtm_tags_into_head_children' ], 10, 3 );
+		}
+	}
+
+	/**
+	 * Parse GTM's head markup, inject into the Head component.
+	 *
+	 * @param array  $children Children for this component.
+	 * @param array  $config   Config for this component.
+	 * @param string $name     Name of this component.
+	 * @return array
+	 */
+	public function inject_gtm_tags_into_head_children( array $children, array $config, string $name ): array {
+		global $wp;
+		$queried_object = get_queried_object();
+		if ( is_singular() ) {
+			$title = $queried_object->post_title;
+		} else {
+			$title = 'title';
+		}
+
+		// Ony run this action on the `irving/head` in a `page` context.
+		if (
+			'irving/head' !== $name
+			|| 'page' !== ( $config['context'] ?? 'page' )
+		) {
+			return $children;
+		}
+
+
+		return array_merge(
+			$children,
+			[
+				new Component(
+					'irving/pageView',
+				),
+			]
+		);
 	}
 
 	/**
