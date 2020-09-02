@@ -5,10 +5,6 @@
         "embed_URL": {
           "default": "",
           "type": "string"
-        },
-        "sso_tiers": {
-          "default": [],
-          "type": "array"
         }
     }
 }

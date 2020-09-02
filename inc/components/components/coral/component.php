@@ -22,7 +22,6 @@ register_component_from_config(
 				$config,
 				[
 					'embed_URL' => untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) ),
-					'sso_tiers' => $config['sso_tiers'] || [],
 				]
 			);
 		},
