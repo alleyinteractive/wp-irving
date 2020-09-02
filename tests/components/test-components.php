@@ -77,7 +77,7 @@ class Test_Components extends WP_UnitTestCase {
 	 * @return string attachment URL.
 	 */
 	public function get_attachment_url() {
-		return wp_get_attachment_image_url( $this->get_attachment_id() );
+		return wp_get_attachment_image_url( $this->get_attachment_id(), 'original' );
 	}
 
 	/**
