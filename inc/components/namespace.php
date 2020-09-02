@@ -232,18 +232,19 @@ function html_to_components( string $markup, array $tags ): array {
  * @return array An array of image configuration attributes.
  */
 function get_image_component_attributes( int $attachment_id, string $size = 'full' ): array {
-	// Bail early if this isn't an attachment.
-	if ( ! wp_attachment_is_image( $attachment_id ) ) {
-		return [];
-	}
 
 	$atts = wp_get_attachment_image_src( $attachment_id, $size );
+
+	// Bail early if this isn't an attachment.
+	if ( ! $atts ) {
+		return [];
+	}
 
 	return [
 		'src'    => $atts[0],
 		'width'  => $atts[1],
 		'height' => $atts[2],
-		'alt'    => $config['alt'] ?? (string) get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
+		'alt'    => get_post_meta( $attachment_id, '_wp_attachment_image_alt', true ),
 		'sizes'  => wp_get_attachment_image_sizes( $attachment_id, $size ),
 		'srcset' => wp_get_attachment_image_srcset( $attachment_id, $size ),
 	];
