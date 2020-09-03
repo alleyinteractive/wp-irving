@@ -71,7 +71,7 @@ class Google_Tag_Manager {
 		 *
 		 * @param array $data_layer The data layer arguments for GTM.
 		 */
-		$data_layer = apply_filters( 'wp-irving-gtm-data-layer', $data_layer );
+		$data_layer = apply_filters( 'wp_irving_gtm_data_layer', $data_layer );
 
 		$children[] = new Component(
 			'script',
