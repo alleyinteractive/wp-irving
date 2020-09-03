@@ -54,14 +54,6 @@ class Google_Tag_Manager {
 	 * @return array
 	 */
 	public function inject_gtm_tags_into_head_children( array $children, array $config, string $name ): array {
-		global $wp;
-		$queried_object = get_queried_object();
-		if ( is_singular() ) {
-			$title = $queried_object->post_title;
-		} else {
-			$title = 'title';
-		}
-
 		// Ony run this action on the `irving/head` in a `page` context.
 		if (
 			'irving/head' !== $name
@@ -70,15 +62,31 @@ class Google_Tag_Manager {
 			return $children;
 		}
 
+		$data_layer = [
+			'event' => 'irving.page',
+		];
 
-		return array_merge(
-			$children,
+		/**
+		 * Filters the data layer provided to GTM for each page.
+		 *
+		 * @param array $data_layer The data layer arguments for GTM.
+		 */
+		$data_layer = apply_filters( 'wp-irving-gtm-data-layer', $data_layer );
+
+		$children[] = new Component(
+			'script',
 			[
-				new Component(
-					'irving/pageView',
-				),
+				'config'   => [
+					'id'   => 'gtm-irving-page',
+					'type' => 'text/javascript',
+				],
+				'children' => [
+					'window.dataLayer.push(' . wp_json_encode( $data_layer ) . ');',
+				],
 			]
 		);
+
+		return $children;
 	}
 
 	/**
