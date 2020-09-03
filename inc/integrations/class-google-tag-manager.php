@@ -7,6 +7,7 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\Components\Component;
 use WP_Irving\Singleton;
 
 /**
@@ -30,7 +31,7 @@ class Google_Tag_Manager {
 	private $options;
 
 	/**
-	 * Setup the singleton. Validate JWT is installed, and setup hooks.
+	 * Setup the singleton.
 	 */
 	public function setup() {
 		// Retrieve any existing integrations options.
@@ -38,6 +39,54 @@ class Google_Tag_Manager {
 
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
+
+		if ( ! is_admin() ) {
+			add_filter( 'wp_irving_component_children', [ $this, 'inject_gtm_tags_into_head_children' ], 10, 3 );
+		}
+	}
+
+	/**
+	 * Parse GTM's head markup, inject into the Head component.
+	 *
+	 * @param array  $children Children for this component.
+	 * @param array  $config   Config for this component.
+	 * @param string $name     Name of this component.
+	 * @return array
+	 */
+	public function inject_gtm_tags_into_head_children( array $children, array $config, string $name ): array {
+		// Ony run this action on the `irving/head` in a `page` context.
+		if (
+			'irving/head' !== $name
+			|| 'page' !== ( $config['context'] ?? 'page' )
+		) {
+			return $children;
+		}
+
+		$data_layer = [
+			'event' => 'irving.page',
+		];
+
+		/**
+		 * Filters the data layer provided to GTM for each page.
+		 *
+		 * @param array $data_layer The data layer arguments for GTM.
+		 */
+		$data_layer = apply_filters( 'wp-irving-gtm-data-layer', $data_layer );
+
+		$children[] = new Component(
+			'script',
+			[
+				'config'   => [
+					'id'   => 'gtm-irving-page',
+					'type' => 'text/javascript',
+				],
+				'children' => [
+					'window.dataLayer.push(' . wp_json_encode( $data_layer ) . ');',
+				],
+			]
+		);
+
+		return $children;
 	}
 
 	/**
@@ -62,7 +111,7 @@ class Google_Tag_Manager {
 		$gtm_key = $this->options[ $this->option_key ]['container_id'] ?? '';
 
 		?>
-			<input type="text" name="irving_integrations[<?php echo esc_attr( 'gtm_container_id' ); ?>]" value="<?php echo esc_attr( $gtm_key ); ?>" />
+		<input type="text" name="irving_integrations[<?php echo esc_attr( 'gtm_container_id' ); ?>]" value="<?php echo esc_attr( $gtm_key ); ?>" />
 		<?php
 	}
 }

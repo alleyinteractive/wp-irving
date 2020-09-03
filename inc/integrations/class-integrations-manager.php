@@ -63,7 +63,7 @@ class Integrations_Manager {
 				case strpos( $key, 'ga_' ) !== false:
 					$formatted_options['google_analytics'][ str_replace( 'ga_', '', $key ) ] = $val;
 					break;
-				// Build the contig array for GTM.
+				// Build the config array for GTM.
 				case strpos( $key, 'gtm_' ) !== false:
 					$formatted_options['google_tag_manager'][ str_replace( 'gtm_', '', $key ) ] = $val;
 					break;
