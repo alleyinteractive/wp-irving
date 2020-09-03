@@ -111,7 +111,7 @@ class Google_Tag_Manager {
 		$gtm_key = $this->options[ $this->option_key ]['container_id'] ?? '';
 
 		?>
-		<input type="text" name="irving_integrations[<?php echo esc_attr( 'gtm_container_id' ); ?>]" value="<?php echo esc_attr( $gtm_key ); ?>" />
+			<input type="text" name="irving_integrations[<?php echo esc_attr( 'gtm_container_id' ); ?>]" value="<?php echo esc_attr( $gtm_key ); ?>" />
 		<?php
 	}
 }
