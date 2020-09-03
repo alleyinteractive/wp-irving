@@ -134,7 +134,7 @@ class Pico {
 
 		$tiers = Integrations\get_option_value( 'pico', 'tiers' );
 
-		if ( !empty( $tiers ) ) {
+		if ( ! empty( $tiers ) ) {
 			$options['pico']['tiers'] = explode( ',', $tiers );
 		}
 
