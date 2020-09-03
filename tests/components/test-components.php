@@ -77,9 +77,7 @@ class Test_Components extends WP_UnitTestCase {
 	 * @return string attachment URL.
 	 */
 	public function get_attachment_url() {
-		$uploads_dir = wp_get_upload_dir();
-
-		return trailingslashit( $uploads_dir['url'] ) . 'test-image.jpg';
+		return wp_get_attachment_image_url( $this->get_attachment_id(), 'original' );
 	}
 
 	/**
@@ -159,14 +157,16 @@ class Test_Components extends WP_UnitTestCase {
 	 * @param WP_UnitTest_Factory $factory Factory instance.
 	 */
 	public static function wpSetupBeforeClass( $factory ) {
-		// Test image.
-		self::$attachment_id = $factory->attachment->create_object(
-			'test-image.jpg',
-			null,
+		// Path to a test image.
+		$filename = dirname( __DIR__, ) . '/data/images/test-image-large.png';
+		// Create attachment.
+		self::$attachment_id = $factory->attachment->create_upload_object( $filename );
+
+		// Set post data.
+		wp_update_post(
 			[
-				'post_mime_type' => 'image/jpeg',
-				'post_type'      => 'attachment',
-				'post_excerpt'   => 'Test caption text.',
+				'ID'           => self::$attachment_id,
+				'post_excerpt' => 'Test caption text.',
 			]
 		);
 
@@ -291,7 +291,7 @@ class Test_Components extends WP_UnitTestCase {
 	/**
 	 * Test the image component with defaults.
 	 *
-	 * @group image
+	 * @group images
 	 */
 	public function test_component_image() {
 		$expected = $this->get_expected_component(
@@ -328,12 +328,10 @@ class Test_Components extends WP_UnitTestCase {
 	/**
 	 * Test the image component when passing an attachment ID.
 	 *
-	 * @group image
+	 * @group images
 	 */
 	public function test_component_image_from_attachment_id() {
-		// Make an image using test data from the WP Unit Test suite.
-		$filename = dirname( __DIR__, ) . '/data/images/test-image-large.png';
-		$id       = self::factory()->attachment->create_upload_object( $filename );
+		$id = $this->get_attachment_id();
 
 		$image_attr = wp_get_attachment_image_src( $id, 'full' );
 
@@ -341,7 +339,7 @@ class Test_Components extends WP_UnitTestCase {
 			'irving/image',
 			[
 				'config' => [
-					'alt'            => '',
+					'alt'            => 'Test alt text.',
 					'allowUpscaling' => false,
 					'caption'        => '',
 					'height'         => $image_attr[2],
@@ -500,21 +498,34 @@ class Test_Components extends WP_UnitTestCase {
 	 * Test irving/post-featured-image component.
 	 *
 	 * @group core-components
+	 * @group images
 	 */
 	public function test_component_post_featured_image() {
 		$this->go_to( '?p=' . $this->get_post_id() );
+
+		$image_attr = wp_get_attachment_image_src( $this->get_attachment_id(), 'full' );
 
 		$expected = [
 			'name'     => 'irving/post-featured-image',
 			'_alias'   => 'irving/image',
 			'config'   => (object) [
-				'alt'          => 'Test alt text.',
-				'caption'      => 'Test caption text.',
-				'credit'       => 'Test credit text.',
-				'src'          => $this->get_attachment_url(),
-				'postId'       => $this->get_post_id(),
-				'themeName'    => 'default',
-				'themeOptions' => [ 'default' ],
+				'alt'            => 'Test alt text.',
+				'allowUpscaling' => false,
+				'caption'        => 'Test caption text.',
+				'credit'         => 'Test credit text.',
+				'height'         => $image_attr[2],
+				'loading'        => 'lazy',
+				'src'            => $image_attr[0],
+				'objectFit'      => 'cover',
+				'postId'         => $this->get_post_id(),
+				'themeName'      => 'default',
+				'themeOptions'   => [ 'default' ],
+				'width'          => $image_attr[1],
+				'srcset'         => wp_get_attachment_image_srcset( $this->get_attachment_id(), 'full' ),
+				'sizes'          => wp_get_attachment_image_sizes( $this->get_attachment_id(), 'full' ),
+				'showMeta'       => true,
+				'style'          => [],
+				'queryArgs'      => [],
 			],
 			'children' => [],
 		];
@@ -528,9 +539,12 @@ class Test_Components extends WP_UnitTestCase {
 	 * Test irving/post-featured-media component.
 	 *
 	 * @group core-components
+	 * @group images
 	 */
 	public function test_component_post_featured_media() {
 		$this->go_to( '?p=' . $this->get_post_id() );
+
+		$image_attr = wp_get_attachment_image_src( $this->get_attachment_id(), 'full' );
 
 		$expected = [
 			'name'     => 'irving/post-featured-media',
@@ -548,13 +562,23 @@ class Test_Components extends WP_UnitTestCase {
 					'name'     => 'irving/post-featured-image',
 					'_alias'   => 'irving/image',
 					'config'   => (object) [
-						'alt'          => 'Test alt text.',
-						'caption'      => 'Test caption text.',
-						'credit'       => 'Test credit text.',
-						'src'          => $this->get_attachment_url(),
-						'postId'       => $this->get_post_id(),
-						'themeName'    => 'default',
-						'themeOptions' => [ 'default' ],
+						'alt'            => 'Test alt text.',
+						'allowUpscaling' => false,
+						'caption'        => 'Test caption text.',
+						'credit'         => 'Test credit text.',
+						'height'         => $image_attr[2],
+						'loading'        => 'lazy',
+						'src'            => $image_attr[0],
+						'objectFit'      => 'cover',
+						'postId'         => $this->get_post_id(),
+						'themeName'      => 'default',
+						'themeOptions'   => [ 'default' ],
+						'width'          => $image_attr[1],
+						'srcset'         => wp_get_attachment_image_srcset( $this->get_attachment_id(), 'full' ),
+						'sizes'          => wp_get_attachment_image_sizes( $this->get_attachment_id(), 'full' ),
+						'showMeta'       => true,
+						'style'          => [],
+						'queryArgs'      => [],
 					],
 					'children' => [],
 				],

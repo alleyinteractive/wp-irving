@@ -28,15 +28,20 @@ register_component_from_config(
 
 			$thumbnail_id = get_post_thumbnail_id( $post_id );
 
-			return array_merge(
-				$config,
-				[
-					'alt'     => get_image_alt( $thumbnail_id ),
-					'caption' => wp_get_attachment_caption( $thumbnail_id ),
-					'credit'  => get_post_meta( $thumbnail_id, 'credit', true ),
-					'src'     => get_the_post_thumbnail_url( $post_id ),
-				]
-			);
+			$config['caption'] = wp_get_attachment_caption( $thumbnail_id );
+			$config['credit']  = get_post_meta( $thumbnail_id, 'credit', true );
+
+			$image_atts = get_image_component_attributes( $thumbnail_id, $config['size'] );
+
+			// Override empty or unset config values with WP data.
+			foreach ( $image_atts as $key => $value ) {
+				if ( ! isset( $config[ $key ] ) || empty( $config[ $key ] ) ) {
+					$config[ $key ] = $value;
+				}
+			}
+
+
+			return $config;
 		},
 	]
 );
