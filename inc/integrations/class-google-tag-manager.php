@@ -81,6 +81,7 @@ class Google_Tag_Manager {
 					'type' => 'text/javascript',
 				],
 				'children' => [
+					'window.dataLayer = window.dataLayer ?? [];',
 					'window.dataLayer.push(' . wp_json_encode( $data_layer ) . ');',
 				],
 			]
