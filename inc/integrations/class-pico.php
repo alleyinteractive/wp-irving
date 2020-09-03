@@ -123,9 +123,6 @@ class Pico {
 	 * @return array|bool Updated user object or false if verification fails.
 	 */
 	public function verify_pico_user_for_sso( array $user ) {
-		// TODO: Dispatch a verification request to the Pico API. If the user
-		// is verified, return the constructed user with an ID, email, and
-		// username.
 		// If the user isn't verified, return false, which will cause a failure
 		// response to be returned on the front-end and the appropriate behavior
 		// will be triggered.
