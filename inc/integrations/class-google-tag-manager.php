@@ -38,6 +38,9 @@ class Google_Tag_Manager {
 
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
+
+		// Filter the integrations manager to include our Pico props.
+		add_filter( 'wp_irving_integrations_option', [ $this, 'get_data_layer' ] );
 	}
 
 	/**
@@ -64,5 +67,25 @@ class Google_Tag_Manager {
 		?>
 			<input type="text" name="irving_integrations[<?php echo esc_attr( 'gtm_container_id' ); ?>]" value="<?php echo esc_attr( $gtm_key ); ?>" />
 		<?php
+	}
+
+	/**
+	 * Get data layer info for a page load.
+	 *
+	 * @param array $options Array of integration options.
+	 * @return array An array of options.
+	 */
+	public function get_data_layer( $options ) {
+
+		$data_layer = apply_filters(
+			'wp_irving_gtm_data',
+			[
+				'title' => wp_title( null, false ),
+			]
+		);
+
+		$options[ $this->option_key] ['data_layer'] = (object) $data_layer;
+
+		return $options;
 	}
 }
