@@ -278,15 +278,17 @@ class Coral {
 			];
 		}
 
+		// Retrieve any set banned values for Coral usernames from the Integrations options table.
 		$banned_values = Integrations\get_option_value( 'coral', 'banned_names' );
 
 		if ( ! empty( $banned_values ) ) {
-			$banned_values_arr = explode( ',', $banned_names );
+			// Turn the value string into an array.
+			$banned_values_arr = explode( ',', $banned_values );
 
-			foreach ( $banned_names_arr as $banned_value ) {
-				if ( strpos( $test_str, $banned_value ) !== false ) {
+			foreach ( $banned_values_arr as $banned_value ) {
+				// If the username contains a banned value, return a failure response.
+				if ( strpos( $username, $banned_value ) !== false ) {
 					return [
-						'username'     => $username,
 						'banned'       => true,
 						'banned_value' => $banned_value,
 					];
