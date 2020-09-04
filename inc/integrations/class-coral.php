@@ -181,9 +181,12 @@ class Coral {
 	 * @param \WP_REST_Request $request The request object.
 	 */
 	public function process_validate_endpoint_request( \WP_REST_Request $request ) {
+		// Allow access from the frontend.
+		header( 'Access-Control-Allow-Origin: ' . home_url() );
+
 		$user_obj = [
 			'id'    => sanitize_text_field( $request->get_param( 'id' ) ),
-			'email' => sanitize_text_field( $request->get_param( 'email' ) ),
+			'email' => sanitize_text_field( $request->get_param( 'user' ) ),
 		];
 
 		// Verify the user's credentials.
@@ -235,10 +238,10 @@ class Coral {
 	 * @return array|\WP_REST_Response
 	 */
 	public function process_set_username_endpoint_request( \WP_REST_Request $request ) {
-		$params   = $request->get_json_params();
-		$id       = sanitize_text_field( $params['id'] );
-		$username = sanitize_text_field( $params['username'] );
-		$hash     = sanitize_text_field( $params['hash'] );
+		$params   = json_decode( $request->get_body() );
+		$id       = sanitize_text_field( $params->id );
+		$username = sanitize_text_field( $params->username );
+		$hash     = sanitize_text_field( $params->hash );
 
 		// The security check is performed in this function.
 		$status = $this->set_username( $id, $username, $hash );
