@@ -82,7 +82,7 @@ class Pico {
 		// Register new fields for the Coral integration.
 		add_settings_field(
 			'wp_irving_pico_tiers',
-			esc_html__( 'Pico/Coral Whitelisted SSO Tiers', 'wp-irving' ),
+			esc_html__( 'Allowed Pico/Coral SSO Tiers', 'wp-irving' ),
 			[ $this, 'render_pico_tiers_input' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
