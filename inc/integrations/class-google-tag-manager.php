@@ -30,7 +30,7 @@ class Google_Tag_Manager {
 	private $options;
 
 	/**
-	 * Setup the singleton. Validate JWT is installed, and setup hooks.
+	 * Setup the singleton.
 	 */
 	public function setup() {
 		// Retrieve any existing integrations options.
@@ -39,7 +39,7 @@ class Google_Tag_Manager {
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
 
-		// Filter the integrations manager to include our Pico props.
+		// Filter the integrations manager to include a data layer for GTM.
 		add_filter( 'wp_irving_integrations_option', [ $this, 'get_data_layer' ] );
 	}
 
@@ -76,11 +76,10 @@ class Google_Tag_Manager {
 	 * @return array An array of options.
 	 */
 	public function get_data_layer( $options ) {
-
 		$data_layer = apply_filters(
 			'wp_irving_gtm_data',
 			[
-				'title' => wp_title( null, false ),
+				'event' => 'irving.page',
 			]
 		);
 
