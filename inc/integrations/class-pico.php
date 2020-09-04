@@ -82,7 +82,7 @@ class Pico {
 		// Register new fields for the Coral integration.
 		add_settings_field(
 			'wp_irving_pico_tiers',
-			esc_html__( 'Pico/Coral Whitelisted SSO Tiers', 'wp-irving' ),
+			esc_html__( 'Allowed Pico/Coral SSO Tiers', 'wp-irving' ),
 			[ $this, 'render_pico_tiers_input' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
@@ -109,7 +109,10 @@ class Pico {
 		$tiers = $this->options[ $this->option_key ]['tiers'] ?? '';
 
 		?>
-			<input type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]" value="<?php echo esc_attr( $tiers ); ?>" />
+			<input id="pico_tiers" type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]" value="<?php echo esc_attr( $tiers ); ?>" />
+			<label for="pico_tiers">
+				<em>Tiers should be input as comma-separated values (e.g. Reader,Subscriber)</em>
+			</label>
 		<?php
 	}
 
