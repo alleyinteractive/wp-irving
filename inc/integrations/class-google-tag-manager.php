@@ -88,7 +88,7 @@ class Google_Tag_Manager {
 			]
 		);
 
-		$options[ $this->option_key] ['data_layer'] = (object) $data_layer;
+		$options[ $this->option_key ] ['data_layer'] = (object) $data_layer;
 
 		return $options;
 	}
