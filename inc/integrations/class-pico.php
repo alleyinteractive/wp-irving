@@ -8,6 +8,7 @@
 namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
+use WP_Irving\Integrations;
 use Pico_Menu;
 use Pico_Setup;
 use Pico_Widget;
@@ -77,6 +78,15 @@ class Pico {
 			'wp_irving_integrations',
 			'irving_integrations_settings'
 		);
+
+		// Register new fields for the Coral integration.
+		add_settings_field(
+			'wp_irving_pico_tiers',
+			esc_html__( 'Allowed Pico/Coral SSO Tiers', 'wp-irving' ),
+			[ $this, 'render_pico_tiers_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
 	}
 
 	/**
@@ -90,6 +100,22 @@ class Pico {
 			<input type="text" name="irving_integrations[<?php echo esc_attr( 'pico_auth_key' ); ?>]" value="<?php echo esc_attr( $pico_auth_key ); ?>" />
 		<?php
 	}
+
+	/**
+	 * Render an input for the Pico Whitelisted SSO Tiers.
+	 */
+	public function render_pico_tiers_input() {
+		// Check to see if there are existing tiers in the option.
+		$tiers = $this->options[ $this->option_key ]['tiers'] ?? '';
+
+		?>
+			<input id="pico_tiers" type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]" value="<?php echo esc_attr( $tiers ); ?>" />
+			<label for="pico_tiers">
+				<em><?php echo esc_html__( 'Tiers should be input as comma-separated values (e.g. Reader,Subscriber)', 'wp-irving' ); ?></em>
+			</label>
+		<?php
+	}
+
 
 	/**
 	 * Inject Pico props into the integrations manager option.
@@ -108,6 +134,12 @@ class Pico {
 			'publisher_id' => Pico_Setup::get_publisher_id(),
 			'page_info'    => Pico_Widget::get_current_view_info(),
 		];
+
+		$tiers = Integrations\get_option_value( 'pico', 'tiers' );
+
+		if ( ! empty( $tiers ) ) {
+			$options['pico']['tiers'] = explode( ',', $tiers );
+		}
 
 		// Taxonomies always need to be an object.
 		$options['pico']['page_info']['taxonomies'] = (object) ( $options['pico']['page_info']['taxonomies'] ?? [] );
