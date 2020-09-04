@@ -76,6 +76,11 @@ class Google_Tag_Manager {
 	 * @return array An array of options.
 	 */
 	public function get_data_layer( $options ) {
+		/**
+		 * Filters the data layer provided to GTM for each page.
+		 *
+		 * @param array $data_layer The data layer arguments for GTM.
+		 */
 		$data_layer = apply_filters(
 			'wp_irving_gtm_data',
 			[
