@@ -8,6 +8,7 @@
 namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
+use WP_Irving\Integrations;
 
 /**
  * Class to integrate Coral with Irving.
@@ -82,6 +83,14 @@ class Coral {
 			'wp_irving_integrations',
 			'irving_integrations_settings'
 		);
+
+		add_settings_field(
+			'wp_irving_coral_banned_names',
+			esc_html__( 'Coral Banned Username Values', 'wp-irving' ),
+			[ $this, 'render_coral_banned_usernames_textarea' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
 	}
 
 	/**
@@ -121,6 +130,27 @@ class Coral {
 			<input type="text" name="irving_integrations[<?php echo esc_attr( 'coral_sso_secret' ); ?>]" value="<?php echo esc_attr( $sso_secret ); ?>" />
 		<?php
 	}
+
+	/**
+	 * Render an textare for strings banned from being included in Coral usernames.
+	 */
+	public function render_coral_banned_usernames_textarea() {
+		// Check to see if there are existing banned usernames in the option.
+		$banned_names = $this->options[ $this->option_key ]['banned_names'] ?? '';
+
+		?>
+			<textarea id="coral_banned_names" rows="10" cols="50" type="text" name="irving_integrations[<?php echo esc_attr( 'coral_banned_names' ); ?>]"><?php echo esc_attr( $banned_names ); ?></textarea>
+			<label for="coral_banned_names">
+				<p>
+					<em><?php echo esc_html__( 'Values banned from being included in usernames should be input as comma-separated values.', 'wp-irving' ); ?></em>
+				</p>
+				<p>
+					<em><?php echo esc_html__( '(e.g. BannedStringOne,AnotherBannedString)', 'wp-irving' ); ?></em>
+				</p>
+			</label>
+		<?php
+	}
+
 
 	/**
 	 * Get the endpoint settings.
@@ -243,6 +273,22 @@ class Coral {
 				'username'  => '',
 				'available' => false,
 			];
+		}
+
+		$banned_values = Integrations\get_option_value( 'coral', 'banned_names' );
+
+		if ( ! empty( $banned_values ) ) {
+			$banned_values_arr = explode( ',', $banned_names );
+
+			foreach ( $banned_names_arr as $banned_value ) {
+				if ( strpos( $test_str, $banned_value ) !== false ) {
+					return [
+						'username'     => $username,
+						'banned'       => true,
+						'banned_value' => $banned_value,
+					];
+				}
+			}
 		}
 
 		return [
