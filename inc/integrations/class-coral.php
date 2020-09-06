@@ -287,7 +287,7 @@ class Coral {
 
 			foreach ( $banned_values_arr as $banned_value ) {
 				// If the username contains a banned value, return a failure response.
-				if ( strpos( $username, $banned_value ) !== false ) {
+				if ( false !== strpos( $username, $banned_value ) ) {
 					return [
 						'banned'       => true,
 						'banned_value' => $banned_value,
