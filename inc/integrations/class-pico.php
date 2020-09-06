@@ -111,7 +111,9 @@ class Pico {
 		?>
 			<input id="pico_tiers" type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]" value="<?php echo esc_attr( $tiers ); ?>" />
 			<label for="pico_tiers">
-				<em><?php echo esc_html__( 'Tiers should be input as comma-separated values (e.g. Reader,Subscriber)', 'wp-irving' ); ?></em>
+				<p>
+					<em><?php echo esc_html__( 'Tiers should be input as comma-separated values (e.g. Reader,Subscriber)', 'wp-irving' ); ?></em>
+				</p>
 			</label>
 		<?php
 	}
