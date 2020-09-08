@@ -8,6 +8,7 @@
 namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
+use WP_Query;
 
 /**
  * Class to integrate Google Tag Manager with Irving.
@@ -30,7 +31,7 @@ class Google_Tag_Manager {
 	private $options;
 
 	/**
-	 * Setup the singleton. Validate JWT is installed, and setup hooks.
+	 * Setup the singleton.
 	 */
 	public function setup() {
 		// Retrieve any existing integrations options.
@@ -38,6 +39,11 @@ class Google_Tag_Manager {
 
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
+
+		// Filter the integrations manager to include a data layer for GTM.
+		if ( ! is_admin() ) {
+			add_filter( 'wp_irving_integrations_option', [ $this, 'get_data_layer' ], 10, 4 );
+		}
 	}
 
 	/**
@@ -64,5 +70,35 @@ class Google_Tag_Manager {
 		?>
 			<input type="text" name="irving_integrations[<?php echo esc_attr( 'gtm_container_id' ); ?>]" value="<?php echo esc_attr( $gtm_key ); ?>" />
 		<?php
+	}
+
+	/**
+	 * Get data layer info for a page load.
+	 *
+	 * @param array    $options Array of integration options.
+	 * @param WP_Query $query   The current WP_Query object.
+	 * @param string   $context The context for this request.
+	 * @param string   $path    The path for this request.
+	 * @return array An array of options.
+	 */
+	public function get_data_layer( array $options, WP_Query $query, string $context, string $path ): array {
+		/**
+		 * Filters the data layer provided to GTM for each page.
+		 *
+		 * @param array $data_layer The data layer arguments for GTM.
+		 */
+		$data_layer = apply_filters(
+			'wp_irving_gtm_data',
+			[
+				'irving' => [
+					'title' => wp_title( null, false ),
+					'url'   => home_url( $path ),
+				],
+			]
+		);
+
+		$options[ $this->option_key ] ['data_layer'] = (object) $data_layer;
+
+		return $options;
 	}
 }
