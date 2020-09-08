@@ -8,6 +8,7 @@
 namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
+use WP_Query;
 
 /**
  * Class to integrate Google Tag Manager with Irving.
@@ -41,7 +42,7 @@ class Google_Tag_Manager {
 
 		// Filter the integrations manager to include a data layer for GTM.
 		if ( ! is_admin() ) {
-			add_filter( 'wp_irving_integrations_option', [ $this, 'get_data_layer' ] );
+			add_filter( 'wp_irving_integrations_option', [ $this, 'get_data_layer' ], 10, 4 );
 		}
 	}
 
@@ -74,10 +75,13 @@ class Google_Tag_Manager {
 	/**
 	 * Get data layer info for a page load.
 	 *
-	 * @param array $options Array of integration options.
+	 * @param array    $options Array of integration options.
+	 * @param WP_Query $query   The current WP_Query object.
+	 * @param string   $context The context for this request.
+	 * @param string   $path    The path for this request.
 	 * @return array An array of options.
 	 */
-	public function get_data_layer( $options ) {
+	public function get_data_layer( array $options, WP_Query $query, string $context, string $path ): array {
 		/**
 		 * Filters the data layer provided to GTM for each page.
 		 *
@@ -87,7 +91,7 @@ class Google_Tag_Manager {
 			'wp_irving_gtm_data',
 			[
 				'title' => wp_title( null, false ),
-				'url'   => get_permalink() ?: home_url(),
+				'url'   => home_url( $path ),
 			]
 		);
 
