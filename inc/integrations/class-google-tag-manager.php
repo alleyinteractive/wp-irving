@@ -90,8 +90,10 @@ class Google_Tag_Manager {
 		$data_layer = apply_filters(
 			'wp_irving_gtm_data',
 			[
-				'title' => wp_title( null, false ),
-				'url'   => home_url( $path ),
+				'irving' => [
+					'title' => wp_title( null, false ),
+					'url'   => home_url( $path ),
+				],
 			]
 		);
 
