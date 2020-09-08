@@ -40,7 +40,9 @@ class Google_Tag_Manager {
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
 
 		// Filter the integrations manager to include a data layer for GTM.
-		add_filter( 'wp_irving_integrations_option', [ $this, 'get_data_layer' ] );
+		if ( ! is_admin() ) {
+			add_filter( 'wp_irving_integrations_option', [ $this, 'get_data_layer' ] );
+		}
 	}
 
 	/**
@@ -84,7 +86,8 @@ class Google_Tag_Manager {
 		$data_layer = apply_filters(
 			'wp_irving_gtm_data',
 			[
-				'event' => 'irving.page',
+				'title' => wp_title( null, false ),
+				'url'   => get_permalink() ?: home_url(),
 			]
 		);
 
