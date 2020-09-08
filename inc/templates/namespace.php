@@ -560,7 +560,7 @@ function setup_integrations( array $data, WP_Query $query, string $context, stri
 	 * by declaring this explicitly, we can make it more clear to developers
 	 * how to modify the value correctly.
 	 *
-	 * @param array $options Array of integration options.
+	 * @param array    $options Array of integration options.
 	 * @param WP_Query $query   The current WP_Query object.
 	 * @param string   $context The context for this request.
 	 * @param string   $path    The path for this request.
