@@ -766,7 +766,7 @@ class Test_Components extends WP_UnitTestCase {
 				'_alias' => 'irving/link',
 				'config' => [
 					'href'     => get_the_permalink( $this->get_post_id() ),
-					'fragment' => ''
+					'fragment' => '',
 					'rel'      => '',
 					'style'    => [],
 					'target'   => '',
