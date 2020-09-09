@@ -394,6 +394,7 @@ class Test_Components extends WP_UnitTestCase {
 					'_alias'   => '',
 					'config'   => (object) [
 						'href'         => get_author_posts_url( $this->get_author_id() ),
+						'fragment'     => '',
 						'rel'          => '',
 						'style'        => [],
 						'target'       => '',
@@ -764,11 +765,12 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/link',
 				'config' => [
-					'href'   => get_the_permalink( $this->get_post_id() ),
-					'rel'    => '',
-					'style'  => [],
-					'target' => '',
-					'postId' => $this->get_post_id(),
+					'href'     => get_the_permalink( $this->get_post_id() ),
+					'fragment' => '',
+					'rel'      => '',
+					'style'    => [],
+					'target'   => '',
+					'postId'   => $this->get_post_id(),
 				],
 			]
 		);
