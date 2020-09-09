@@ -157,7 +157,7 @@ function wp_head() {
 	</script>
 	<?php
 }
-add_action( 'wp_head', __NAMESPACE__ . '\wp_head' );
+// add_action( 'wp_head', __NAMESPACE__ . '\wp_head' );
 
 /**
  * Add `Irving` admin bar nodes. Provides shortcut links for the API, settings,

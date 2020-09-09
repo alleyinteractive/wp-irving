@@ -1,0 +1,12 @@
+{
+    "name": "irving/admin-bar",
+    "_alias": "irving/container",
+    "description": "WordPress admin bar.",
+    "config": {
+      "context": {
+        "default": "page",
+        "description": "Context of the WP Irving component endpoint.",
+        "type": "string"
+      }
+    }
+}

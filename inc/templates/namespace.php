@@ -21,6 +21,7 @@ function bootstrap() {
 	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_favicon', 10, 3 );
 	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_custom_css', 10, 3 );
 	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_block_library_styles', 10, 3 );
+	// add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_admin_bar', 10, 3 );
 }
 
 /**
@@ -62,10 +63,13 @@ function load_template(
 	}
 
 	// Automatically setup an admin bar component.
-	$data = \WP_Irving\setup_admin_bar( $data, $query, $context, $path, $request, $endpoint );
+	// $data = \WP_Irving\setup_admin_bar( $data, $query, $context, $path, $request, $endpoint );
 
 	// Automatically setup the <Head> component.
 	$data = setup_head( $data, $query, $context, $path, $request );
+
+	// Automatically setup the admin bar component.
+	$data = setup_admin_bar( $data, $query, $context, $path, $request );
 
 	// Automatically setup any active integrations.
 	$data = setup_integrations( $data, $query, $context, $path, $request );
@@ -727,4 +731,91 @@ function inject_block_library_styles( array $children, array $config, string $na
 	);
 
 	return $children;
+}
+
+/**
+ * Manage the <head> by automatically inserting an `irving/head` component.
+ *
+ * @param array     $data    Data object to be hydrated by templates.
+ * @param \WP_Query $query   The current WP_Query object.
+ * @param string    $context The context for this request.
+ * @return array The updated endpoint data.
+ */
+function setup_admin_bar(
+	array $data,
+	\WP_Query $query,
+	string $context
+): array {
+
+	if ( ! apply_filters( 'wp_irving_setup_admin_bar', true ) ) {
+		return $data;
+	}
+
+	// Unshift a `irving/admin-bar` component to the top of the `defaults` array.
+	if ( 'site' === $context ) {
+		array_unshift(
+			$data['defaults'],
+			new Component(
+				'irving/admin-bar',
+				[
+					'config' => [
+						'context' => 'site',
+						'style' => [
+							'background' => 'teal',
+							'height'     => '32px',
+						]
+					],
+				]
+			)
+		);
+	}
+
+	// Unshift a `irving/admin-bar` component to the top of the `page` array.
+	array_unshift(
+		$data['page'],
+		new Component(
+			'irving/admin-bar',
+			[
+				'config' => [
+					'context' => 'page',
+					'style' => [
+						'background' => 'teal',
+						'height'     => '32px',
+					]
+				],
+			]
+		)
+	);
+
+	// $data['']
+
+	// echo (); die();
+
+	// $markup = Components\html_to_components( get_admin_bar_markup(), [ 'div', 'script' ] );
+
+	// print_r($markup); die();
+
+	return $data;
+}
+
+
+/**
+ * Capture the markup output by WordPress for the favicon.
+ *
+ * @return string
+ */
+// function get_admin_bar_markup(): string {
+// 	add_filter( 'show_admin_bar', '__return_true' );
+
+// 	ob_start();
+// 	_wp_admin_bar_init();
+// 	wp_admin_bar_render();
+// 	return trim( ob_get_clean() );
+// }
+
+
+function get_admin_bar_markup() {
+
+return "<div id=\"wpadminbar\" class=\"nojq nojs\">\n\t\t\t\t\t\t\t<a class=\"screen-reader-shortcut\" href=\"#wp-toolbar\" tabindex=\"1\">Skip to toolbar</a>\n\t\t\t\t\t\t<div class=\"quicklinks\" id=\"wp-toolbar\" role=\"navigation\" aria-label=\"Toolbar\">\n\t\t\t\t<ul id='wp-admin-bar-root-default' class=\"ab-top-menu\"><li id='wp-admin-bar-wp-logo' class=\"menupop\"><a class='ab-item' aria-haspopup=\"true\" href='https://jfc.alley.test/wp-admin/user/about.php'><span class=\"ab-icon\"></span><span class=\"screen-reader-text\">About WordPress</span></a><div class=\"ab-sub-wrapper\"><ul id='wp-admin-bar-wp-logo-default' class=\"ab-submenu\"><li id='wp-admin-bar-about'><a class='ab-item' href='https://jfc.alley.test/wp-admin/user/about.php'>About WordPress</a></li></ul><ul id='wp-admin-bar-wp-logo-external' class=\"ab-sub-secondary ab-submenu\"><li id='wp-admin-bar-wporg'><a class='ab-item' href='https://wordpress.org/'>WordPress.org</a></li><li id='wp-admin-bar-documentation'><a class='ab-item' href='https://codex.wordpress.org/'>Documentation</a></li><li id='wp-admin-bar-support-forums'><a class='ab-item' href='https://wordpress.org/support/'>Support</a></li><li id='wp-admin-bar-feedback'><a class='ab-item' href='https://wordpress.org/support/forum/requests-and-feedback'>Feedback</a></li></ul></div></li></ul><ul id='wp-admin-bar-top-secondary' class=\"ab-top-secondary ab-top-menu\"><li id='wp-admin-bar-search' class=\"admin-bar-search\"><div class=\"ab-item ab-empty-item\" tabindex=\"-1\"><form action=\"https://irving.alley.test/\" method=\"get\" id=\"adminbarsearch\"><input class=\"adminbar-input\" name=\"s\" id=\"adminbar-search\" type=\"text\" value=\"\" maxlength=\"150\" /><label for=\"adminbar-search\" class=\"screen-reader-text\">Search</label><input type=\"submit\" class=\"adminbar-button\" value=\"Search\"/></form></div></li></ul>\t\t\t</div>\n\t\t\t\t\t</div>";
+
 }
