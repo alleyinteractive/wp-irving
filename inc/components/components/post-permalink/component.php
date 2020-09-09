@@ -32,6 +32,10 @@ register_component_from_config(
 				return $config;
 			}
 
+			if ( ! empty( $config['fragment'] ) ) {
+				$permalink .= '#' . $config['fragment'];
+			}
+
 			return array_merge(
 				$config,
 				[
