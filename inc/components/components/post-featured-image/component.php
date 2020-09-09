@@ -36,7 +36,7 @@ register_component_from_config(
 			if ( is_null( $thumbnail_id ) && $config['use_theme_fallback'] ) {
 
 				// Get and validate the fallback attachment id.
-				$fallback_thumbnail_id = apply_filters( 'wp_irving_fallback_attachment_id', get_theme_mod( 'wp_irving-fallback_image' ) );
+				$fallback_thumbnail_id = apply_filters( 'wp_irving_fallback_attachment_id', get_theme_mod( 'wp_irving-fallback_attachment_id' ) );
 				if ( wp_attachment_is_image( $fallback_thumbnail_id ) ) {
 					$thumbnail_id = $fallback_thumbnail_id;
 				}
