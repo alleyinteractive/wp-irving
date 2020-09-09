@@ -34,10 +34,11 @@ function add_theme_fallback_attachment( WP_Customize_Manager $wp_customize ) {
 			$wp_customize,
 			'wp_irving_fallback_attachment_id',
 			[
-				'label'    => __( 'Fallback Image', 'wp-irving' ),
-				'section'  => 'title_tagline',
-				'settings' => 'wp_irving-fallback_attachment_id',
-				'priority' => 80,
+				'label'     => __( 'Fallback Image', 'wp-irving' ),
+				'mime_type' => 'image',
+				'priority'  => 80,
+				'section'   => 'title_tagline',
+				'settings'  => 'wp_irving-fallback_attachment_id',
 			]
 		)
 	);
