@@ -8,6 +8,7 @@
 namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
+use WP_Irving\Integrations;
 
 /**
  * Class to integrate Coral with Irving.
@@ -82,6 +83,14 @@ class Coral {
 			'wp_irving_integrations',
 			'irving_integrations_settings'
 		);
+
+		add_settings_field(
+			'wp_irving_coral_banned_names',
+			esc_html__( 'Coral Banned Username Values', 'wp-irving' ),
+			[ $this, 'render_coral_banned_usernames_textarea' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
 	}
 
 	/**
@@ -123,6 +132,27 @@ class Coral {
 	}
 
 	/**
+	 * Render an textare for strings banned from being included in Coral usernames.
+	 */
+	public function render_coral_banned_usernames_textarea() {
+		// Check to see if there are existing banned usernames in the option.
+		$banned_names = $this->options[ $this->option_key ]['banned_names'] ?? '';
+
+		?>
+			<textarea id="coral_banned_names" rows="10" cols="50" type="text" name="irving_integrations[<?php echo esc_attr( 'coral_banned_names' ); ?>]"><?php echo esc_attr( $banned_names ); ?></textarea>
+			<label for="coral_banned_names">
+				<p>
+					<em><?php echo esc_html__( 'Values banned from being included in usernames should be input as comma-separated values.', 'wp-irving' ); ?></em>
+				</p>
+				<p>
+					<em><?php echo esc_html__( '(e.g. BannedStringOne,AnotherBannedString)', 'wp-irving' ); ?></em>
+				</p>
+			</label>
+		<?php
+	}
+
+
+	/**
 	 * Get the endpoint settings.
 	 *
 	 * @return array Endpoint settings.
@@ -151,9 +181,12 @@ class Coral {
 	 * @param \WP_REST_Request $request The request object.
 	 */
 	public function process_validate_endpoint_request( \WP_REST_Request $request ) {
+		// Allow access from the frontend.
+		header( 'Access-Control-Allow-Origin: ' . home_url() );
+
 		$user_obj = [
 			'id'    => sanitize_text_field( $request->get_param( 'id' ) ),
-			'email' => sanitize_text_field( $request->get_param( 'email' ) ),
+			'email' => sanitize_text_field( $request->get_param( 'user' ) ),
 		];
 
 		// Verify the user's credentials.
@@ -205,10 +238,10 @@ class Coral {
 	 * @return array|\WP_REST_Response
 	 */
 	public function process_set_username_endpoint_request( \WP_REST_Request $request ) {
-		$params   = $request->get_json_params();
-		$id       = sanitize_text_field( $params['id'] );
-		$username = sanitize_text_field( $params['username'] );
-		$hash     = sanitize_text_field( $params['hash'] );
+		$params   = json_decode( $request->get_body() );
+		$id       = sanitize_text_field( $params->id );
+		$username = sanitize_text_field( $params->username );
+		$hash     = sanitize_text_field( $params->hash );
 
 		// The security check is performed in this function.
 		$status = $this->set_username( $id, $username, $hash );
@@ -243,6 +276,24 @@ class Coral {
 				'username'  => '',
 				'available' => false,
 			];
+		}
+
+		// Retrieve any set banned values for Coral usernames from the Integrations options table.
+		$banned_values = Integrations\get_option_value( 'coral', 'banned_names' );
+
+		if ( ! empty( $banned_values ) ) {
+			// Turn the value string into an array.
+			$banned_values_arr = explode( ',', $banned_values );
+
+			foreach ( $banned_values_arr as $banned_value ) {
+				// If the username contains a banned value, return a failure response.
+				if ( false !== strpos( $username, $banned_value ) ) {
+					return [
+						'banned'       => true,
+						'banned_value' => $banned_value,
+					];
+				}
+			}
 		}
 
 		return [
