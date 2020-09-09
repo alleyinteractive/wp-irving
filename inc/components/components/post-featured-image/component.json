@@ -29,6 +29,11 @@
       "description": "Optional. URL for the image source if \"src\" is not set.",
       "type": "string"
     },
+    "use_theme_fallback": {
+      "default": false,
+      "description": "Optional. Use the customizer fallback image when no featured image is set.",
+      "type": "bool"
+    },
     "loading": {
       "default": "lazy",
       "description": "Lazy loading setting. Either \"eager\" or \"lazy\".",
