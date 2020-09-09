@@ -26,12 +26,24 @@ register_component_from_config(
 				return $config;
 			}
 
-			// Determine the image to use.
+			// Attempt to get the featured image.
+			$thumbnail_id = null;
 			if ( has_post_thumbnail( $post_id ) ) {
 				$thumbnail_id = get_post_thumbnail_id( $post_id );
-			} elseif ( $config['use_theme_fallback'] && wp_attachment_is_image( get_theme_mod( 'wp_irving-fallback_image' ) ) ) {
-				$thumbnail_id = get_theme_mod( 'wp_irving-fallback_image' );
-			} else {
+			}
+
+			// Use the theme fallback.
+			if ( is_null( $thumbnail_id ) && $config['use_theme_fallback'] ) {
+
+				// Get and validate the fallback attachment id.
+				$fallback_thumbnail_id = apply_filters( 'wp_irving_fallback_attachment_id', get_theme_mod( 'wp_irving-fallback_image' ) );
+				if ( wp_attachment_is_image( $fallback_thumbnail_id ) ) {
+					$thumbnail_id = $fallback_thumbnail_id;
+				}
+			}
+
+			// No valid image found.
+			if ( is_null( $thumbnail_id ) ) {
 				return $config;
 			}
 
