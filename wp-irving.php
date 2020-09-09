@@ -54,20 +54,17 @@ require_once WP_IRVING_PATH . '/inc/integrations/namespace.php';
 
 // Replicating WP Core functionality.
 require_once WP_IRVING_PATH . '/inc/class-admin.php';
-require_once WP_IRVING_PATH . '/inc/class-previews.php';
 require_once WP_IRVING_PATH . '/inc/class-cache.php';
+require_once WP_IRVING_PATH . '/inc/class-previews.php';
+require_once WP_IRVING_PATH . '/inc/customizer.php';
+require_once WP_IRVING_PATH . '/inc/redirects.php';
+require_once WP_IRVING_PATH . '/inc/rewrites.php';
 
 // Component registry.
 require_once WP_IRVING_PATH . '/inc/components/class-context-store.php';
 require_once WP_IRVING_PATH . '/inc/components/class-registry.php';
 require_once WP_IRVING_PATH . '/inc/components/class-component.php';
 require_once WP_IRVING_PATH . '/inc/components/namespace.php';
-
-// Redirects.
-require_once WP_IRVING_PATH . '/inc/redirects.php';
-
-// Rewrite rules.
-require_once WP_IRVING_PATH . '/inc/rewrites.php';
 
 // Template loading.
 require_once WP_IRVING_PATH . '/inc/templates/admin-bar.php';

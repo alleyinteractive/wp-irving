@@ -12,6 +12,11 @@
       "hidden": true,
       "type": "array"
     },
+    "post_ids_to_skip": {
+      "hidden": true,
+      "default": [],
+      "type": "array"
+    },
     "wp_query": {
       "hidden": true,
       "type": "object"

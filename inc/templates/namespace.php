@@ -535,9 +535,10 @@ function setup_head(
  * @param array    $data    Data object to be hydrated by templates.
  * @param WP_Query $query   The current WP_Query object.
  * @param string   $context The context for this request.
+ * @param string   $path    The path for this request.
  * @return array The updated endpoint data.
  */
-function setup_integrations( array $data, WP_Query $query, string $context ): array {
+function setup_integrations( array $data, WP_Query $query, string $context, string $path ): array {
 	// Inject the integrations manager into the defaults key.
 	if ( 'site' === $context ) {
 		array_push(
@@ -552,16 +553,21 @@ function setup_integrations( array $data, WP_Query $query, string $context ): ar
 	$options = (array) get_option( 'irving_integrations' );
 
 	/**
-	 * Modify the value stored in the `irving_integraionts` option before it's
+	 * Modify the value stored in the `irving_integrations` option before it's
 	 * used.
 	 *
 	 * This is essentially an alias for the `option_{$option}` filter, but
 	 * by declaring this explicitly, we can make it more clear to developers
 	 * how to modify the value correctly.
 	 *
-	 * @var array
+	 * @param array    $options Array of integration options.
+	 * @param WP_Query $query   The current WP_Query object.
+	 * @param string   $context The context for this request.
+	 * @param string   $path    The path for this request.
 	 */
-	$options = array_filter( apply_filters( 'wp_irving_integrations_option', $options ) );
+	$options = array_filter(
+		apply_filters( 'wp_irving_integrations_option', $options, $query, $context, $path )
+	);
 
 	// Bail early if no options are present.
 	if ( empty( $options ) ) {
