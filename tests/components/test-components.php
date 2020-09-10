@@ -845,9 +845,9 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/social-sharing',
 				'config' => [
-					'description'        => $this->get_post_excerpt(),
-					'imageUrl'           => $this->get_attachment_url(),
-					'platforms'          => [
+					'description'  => $this->get_post_excerpt(),
+					'imageUrl'     => $this->get_attachment_url(),
+					'platforms'    => [
 						'email',
 						'facebook',
 						'linkedin',
@@ -856,10 +856,10 @@ class Test_Components extends WP_UnitTestCase {
 						'twitter',
 						'whatsapp',
 					],
-					'platformShareLinks' => [],
-					'postId'             => $this->get_post_id(),
-					'title'              => get_the_title( $this->get_post_id() ),
-					'url'                => get_the_permalink( $this->get_post_id() ),
+					'platformData' => [],
+					'postId'       => $this->get_post_id(),
+					'title'        => get_the_title( $this->get_post_id() ),
+					'url'          => get_the_permalink( $this->get_post_id() ),
 				],
 			]
 		);
