@@ -4,9 +4,25 @@
   "category": "Archive",
   "description": "Get the archive title.",
   "config": {
+    "content": {
+      "default": "",
+      "type": "string"
+    },
     "html": {
-      "default": true,
+      "default": false,
       "type": "bool"
+    },
+    "oembed": {
+      "default": false,
+      "type": "bool"
+    },
+    "style": {
+      "default": [],
+      "type": "array"
+    },
+    "tag": {
+      "default": "span",
+      "type": "string"
     }
   }
 }

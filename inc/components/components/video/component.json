@@ -7,9 +7,17 @@
       "default": "16:9",
       "type": "string"
     },
+    "html": {
+      "default": false,
+      "type": "bool"
+    },
     "oembed": {
       "default": true,
       "type": "bool"
+    },
+    "style": {
+      "default": [],
+      "type": "array"
     },
     "tag": {
       "default": "div",
