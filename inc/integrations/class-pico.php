@@ -64,6 +64,17 @@ class Pico {
 		}
 
 		add_filter( 'wp_irving_verify_coral_user', [ $this, 'verify_pico_user_for_sso' ] );
+
+		// Use staging API urls.
+		if ( get_option( 'irving_integrations' )['pico']['use_staging'] ?? false ) {
+			if ( ! defined( 'PP_API_ENDPOINT' ) ) {
+				define( 'PP_API_ENDPOINT', 'https://api.staging.pico.tools' );
+			}
+
+			if ( ! defined( 'PP_WIDGET_ENDPOINT' ) ) {
+				define( 'PP_WIDGET_ENDPOINT', 'https://widget.staging.pico.tools' );
+			}
+		}
 	}
 
 	/**
@@ -84,6 +95,15 @@ class Pico {
 			'wp_irving_pico_tiers',
 			esc_html__( 'Allowed Pico/Coral SSO Tiers', 'wp-irving' ),
 			[ $this, 'render_pico_tiers_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
+
+		// Register new fields for the Coral integration.
+		add_settings_field(
+			'wp_irving_pico_use_staging_urls',
+			esc_html__( 'Use Pico\'s staging API?', 'wp-irving' ),
+			[ $this, 'render_pico_use_staging_input' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
 		);
@@ -118,6 +138,17 @@ class Pico {
 		<?php
 	}
 
+	/**
+	 * Render a checkbox which enables the staging API urls.
+	 */
+	public function render_pico_use_staging_input() {
+		$use_staging = wp_validate_boolean( $this->options[ $this->option_key ]['use_staging'] ?? false );
+		$is_checked  = $use_staging ? 'checked' : '';
+
+		?>
+			<input type="checkbox" name="irving_integrations[<?php echo esc_attr( 'pico_use_staging' ); ?>]" value="true" <?php echo esc_attr( $is_checked ); ?> />
+		<?php
+	}
 
 	/**
 	 * Inject Pico props into the integrations manager option.
