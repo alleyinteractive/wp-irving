@@ -23,7 +23,7 @@
       ],
       "type": "array"
     },
-    "platform_share_links": {
+    "platform_data": {
       "default": [],
       "type": "array"
     },

@@ -19,6 +19,29 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 == Changelog ==
 
+= 0.4.0 =
+
+* Update social share component. #259
+* Add fragment property to post permalink component config. #258
+* Add support for a fallback image in the customizer. #257
+* Add initial data layer to GTM integrations. #255
+* Add banned usernames field for Coral. #256
+* Add allowed tiers input for Pico/Coral SSO to Irving Integrations settings page. #254
+* Allow user to set custom username through Pico/Coral integration. #241
+* Add image performance enhancements in irving/post-featured-image. #251
+* Add `post_ids_to_skip` config to the `irving/post-list` component. #250
+* Implement local WP username storage for Coral users. #249
+* Support item overrides in irving/post-list components. #247
+* Hydrate WordPress data for images. #244
+* Improvements to <head> management, and block library support. #246
+* Ensure post previews do not use the homepage template. #248
+* Enqueue block library styles. #243
+* Add share links config to social sharing component. #242
+* Remove unnecessary second param for VIP cache purge filter. #240
+* Add support to the pagination component for post type archives. #239
+* Define component for Coral to be included in template JSON. #222
+* Allow use_context in templates. #223
+
 = 0.3.0 =
 * Fix: Cache clearing redirect
 * Fix: Page title in the head component
