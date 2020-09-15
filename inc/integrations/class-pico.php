@@ -68,11 +68,11 @@ class Pico {
 		// Use staging API urls.
 		if ( get_option( 'irving_integrations' )['pico']['use_staging'] ?? false ) {
 			if ( ! defined( 'PP_API_ENDPOINT' ) ) {
-				define( 'PP_API_ENDPOINT', 'https://api.staging.pico.tools' );
+				define( 'PP_API_ENDPOINT', 'https://api.staging.pico.tools' ); // phpcs:ignore
 			}
 
 			if ( ! defined( 'PP_WIDGET_ENDPOINT' ) ) {
-				define( 'PP_WIDGET_ENDPOINT', 'https://widget.staging.pico.tools' );
+				define( 'PP_WIDGET_ENDPOINT', 'https://widget.staging.pico.tools' ); // phpcs:ignore
 			}
 		}
 	}
