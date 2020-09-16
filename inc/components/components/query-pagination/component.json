@@ -26,10 +26,6 @@
       "default": 5,
       "type": "number"
     },
-    "style": {
-      "default": [],
-      "type": "object"
-    },
     "total_pages": {
       "default": 1,
       "type": "int"

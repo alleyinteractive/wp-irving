@@ -11,10 +11,6 @@
       "default": "",
       "type": "string"
     },
-    "style": {
-      "default": [],
-      "type": "array"
-    },
     "target": {
       "default": "",
       "type": "string"

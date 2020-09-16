@@ -27,10 +27,6 @@
       "default": false,
       "type": "bool"
     },
-    "style": {
-      "default": [],
-      "type": "array"
-    },
     "tag": {
       "default": "span",
       "type": "string"

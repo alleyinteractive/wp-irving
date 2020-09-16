@@ -21,10 +21,6 @@
       "description": "Vertically align the contents of the cell. Default is false.",
       "type": "string"
     },
-    "style": {
-      "default": [],
-      "type": "array"
-    },
     "top": {
       "description": "The grid-row-start CSS property. Not provided by default.",
       "type": "string"
