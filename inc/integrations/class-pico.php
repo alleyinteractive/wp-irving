@@ -166,6 +166,7 @@ class Pico {
 		$options['pico'] = [
 			'publisher_id' => Pico_Setup::get_publisher_id(),
 			'page_info'    => Pico_Widget::get_current_view_info(),
+			'widget_url'   => Pico_Setup::get_widget_endpoint(),
 		];
 
 		$tiers = Integrations\get_option_value( 'pico', 'tiers' );
