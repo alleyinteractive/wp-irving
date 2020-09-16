@@ -993,6 +993,13 @@ class Component implements JsonSerializable {
 	 */
 	public function to_array(): array {
 
+		// Ensure `class_name` config always exists, and serialize to a string.
+		$class_name = implode( ' ', (array) ( $this->get_config( 'class_name' ) ?? [] ) );
+		$this->set_config_value( 'class_name', $class_name );
+
+		// Ensure `style` config always exists.
+		$this->set_config_value( 'style', $this->get_config( 'style' ) ?? [] );
+
 		// Add the theme name to the config as Irving core expects.
 		$this->set_config_value( 'theme_name', self::camel_case( $this->get_theme() ) );
 		$this->set_config_value( 'theme_options', array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) );
