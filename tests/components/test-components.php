@@ -522,7 +522,7 @@ class Test_Components extends WP_UnitTestCase {
 				'alt'              => 'Test alt text.',
 				'allowUpscaling'   => false,
 				'caption'          => 'Test caption text.',
-				'className'    => '',
+				'className'        => '',
 				'credit'           => 'Test credit text.',
 				'height'           => $image_attr[2],
 				'loading'          => 'lazy',
