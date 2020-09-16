@@ -277,6 +277,8 @@ class Test_Components extends WP_UnitTestCase {
 				// The format of the archive title changed in WP version 5.5.
 				'content'      => version_compare( get_bloginfo( 'version' ), '5.4.99', '>' ) ? 'Category: <span>Uncategorized</span>' : 'Category: Uncategorized',
 				'html'         => true,
+				'className'    => '',
+				'style'        => [],
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			],
@@ -385,6 +387,8 @@ class Test_Components extends WP_UnitTestCase {
 				'lastDelimiter'   => ', and ',
 				'preText'         => 'By ',
 				'postId'          => $this->get_post_id(),
+				'className'       => '',
+				'style'           => [],
 				'themeName'       => 'default',
 				'themeOptions'    => [ 'default' ],
 			],
@@ -396,6 +400,7 @@ class Test_Components extends WP_UnitTestCase {
 						'href'         => get_author_posts_url( $this->get_author_id() ),
 						'fragment'     => '',
 						'rel'          => '',
+						'className'    => '',
 						'style'        => [],
 						'target'       => '',
 						'themeName'    => 'default',
@@ -410,6 +415,7 @@ class Test_Components extends WP_UnitTestCase {
 								'tag'          => 'span',
 								'html'         => false,
 								'oembed'       => false,
+								'className'    => '',
 								'style'        => [],
 								'themeName'    => 'default',
 								'themeOptions' => [
@@ -455,6 +461,7 @@ class Test_Components extends WP_UnitTestCase {
 				'html'         => true,
 				'oembed'       => true,
 				'postId'       => $this->get_post_id(),
+				'className'    => '',
 				'style'        => [],
 				'tag'          => 'div',
 				'themeName'    => 'default',
@@ -484,6 +491,8 @@ class Test_Components extends WP_UnitTestCase {
 				'content'      => $this->get_post_excerpt(),
 				'html'         => true,
 				'postId'       => $this->get_post_id(),
+				'className'    => '',
+				'style'        => [],
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			],
@@ -513,6 +522,7 @@ class Test_Components extends WP_UnitTestCase {
 				'alt'              => 'Test alt text.',
 				'allowUpscaling'   => false,
 				'caption'          => 'Test caption text.',
+				'className'    => '',
 				'credit'           => 'Test credit text.',
 				'height'           => $image_attr[2],
 				'loading'          => 'lazy',
@@ -555,6 +565,7 @@ class Test_Components extends WP_UnitTestCase {
 				'postId'       => $this->get_post_id(),
 				'aspectRatio'  => '',
 				'objectFit'    => 'cover',
+				'className'    => '',
 				'style'        => [],
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
@@ -567,6 +578,7 @@ class Test_Components extends WP_UnitTestCase {
 						'alt'              => 'Test alt text.',
 						'allowUpscaling'   => false,
 						'caption'          => 'Test caption text.',
+						'className'        => '',
 						'credit'           => 'Test credit text.',
 						'height'           => $image_attr[2],
 						'loading'          => 'lazy',
@@ -768,7 +780,6 @@ class Test_Components extends WP_UnitTestCase {
 					'href'     => get_the_permalink( $this->get_post_id() ),
 					'fragment' => '',
 					'rel'      => '',
-					'style'    => [],
 					'target'   => '',
 					'postId'   => $this->get_post_id(),
 				],
@@ -1017,7 +1028,6 @@ class Test_Components extends WP_UnitTestCase {
 					'baseUrl'            => '/',
 					'searchTerm'         => 'Irving',
 					'searchTermQueryArg' => 's',
-					'style'              => [],
 				],
 			]
 		);
@@ -1128,7 +1138,6 @@ class Test_Components extends WP_UnitTestCase {
 						'content' => get_bloginfo( $show ),
 						'oembed'  => false,
 						'show'    => $show,
-						'style'   => [],
 						'tag'     => 'span',
 					],
 				]
@@ -1394,7 +1403,6 @@ class Test_Components extends WP_UnitTestCase {
 				'config' => [
 					'href'   => get_term_link( (int) $this->get_term_id() ),
 					'rel'    => '',
-					'style'  => [],
 					'target' => '',
 					'termId' => $this->get_term_id(),
 				],
@@ -1629,6 +1637,8 @@ class Test_Components extends WP_UnitTestCase {
 		$component['config'] = (object) wp_parse_args(
 			$args['config'] ?? null,
 			[
+				'className'    => '',
+				'style'        => [],
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			]
