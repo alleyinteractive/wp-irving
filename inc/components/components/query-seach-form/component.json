@@ -15,10 +15,6 @@
       "default": "s",
       "type": "string"
     },
-    "style": {
-      "default": [],
-      "type": "array"
-    },
     "wp_query": {
       "hidden": true,
       "type": "object"

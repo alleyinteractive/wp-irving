@@ -16,10 +16,6 @@
       "default": "name",
       "type": "string"
     },
-    "style": {
-      "default": [],
-      "type": "array"
-    },
     "tag": {
       "default": "span",
       "type": "string"

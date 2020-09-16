@@ -67,10 +67,6 @@
       "description": "A source list string for delivering responsive images.",
       "type": "string"
     },
-    "style": {
-      "default": [],
-      "type": "array"
-    },
     "query_args": {
       "description": "A set of query args to add to the URL string of the src.",
       "default": [],

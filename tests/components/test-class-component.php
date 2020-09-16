@@ -508,6 +508,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/basic',
 					'_alias'   => '',
 					'config'   => (object) [
+						'className'    => '',
+						'style'        => [],
 						'themeName'    => 'default',
 						'themeOptions' => [ 'default' ],
 					],
@@ -530,6 +532,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'_alias'   => '',
 					'config'   => (object) [
 						'foo'          => 'bar',
+						'className'    => '',
+						'style'        => [],
 						'themeName'    => 'default',
 						'themeOptions' => [ 'default' ],
 					],
@@ -544,6 +548,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/alias',
 					'_alias'   => 'test/component',
 					'config'   => (object) [
+						'className'    => '',
+						'style'        => [],
 						'themeName'    => 'default',
 						'themeOptions' => [ 'default' ],
 					],
@@ -559,6 +565,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'_alias'   => '',
 					'config'   => (object) [
 						'testDefault'  => 'default',
+						'className'    => '',
+						'style'        => [],
 						'themeName'    => 'default',
 						'themeOptions' => [ 'default' ],
 					],
@@ -573,6 +581,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/theme-options',
 					'_alias'   => '',
 					'config'   => (object) [
+						'className'    => '',
+						'style'        => [],
 						'themeName'    => 'default',
 						'themeOptions' => [ 'primary', 'secondary' ],
 					],
@@ -596,6 +606,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 				'name'     => 'test/basic',
 				'_alias'   => '',
 				'config'   => (object) [
+					'className'    => '',
+					'style'        => [],
 					'test'         => true,
 					'themeName'    => 'default',
 					'themeOptions' => [
@@ -618,6 +630,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 				'name'     => 'test/basic',
 				'_alias'   => '',
 				'config'   => (object) [
+					'className'    => '',
+					'style'        => [],
 					'themeName'    => 'default',
 					'themeOptions' => [
 						'default',

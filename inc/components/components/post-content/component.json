@@ -16,10 +16,6 @@
       "default": true,
       "type": "bool"
     },
-    "style": {
-      "default": [],
-      "type": "array"
-    },
     "tag": {
       "default": "div",
       "type": "string"
