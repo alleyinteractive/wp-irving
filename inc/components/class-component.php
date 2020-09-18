@@ -921,12 +921,20 @@ class Component implements JsonSerializable {
 		// Loop through each key.
 		foreach ( $array as $key => $value ) {
 
-			if ( is_array( $value ) ) {
-				$value = self::camel_case_keys( $value );
+			// If it's an array, and its inner keys should be camel cased, recurse a level deeper.
+			if (
+				is_array( $value )
+				&& false !== ( $this->get_schema()[ $key ]['camel_case_inner_keys'] ?? true )
+			) {
+					$value = self::camel_case_keys( $value );
 			}
 
-			// Camel case the key.
-			$new_key = self::camel_case( $key );
+			// Camel case the key unless the schema explicitly states otherwise.
+			if ( false !== ( $this->get_schema()[ $key ]['camel_case_config_key'] ?? true ) ) {
+				$new_key = self::camel_case( $key );
+			} else {
+				$new_key = $key;
+			}
 
 			$camel_case_array[ $new_key ] = $value;
 		}
