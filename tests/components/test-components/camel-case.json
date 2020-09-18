@@ -1,0 +1,31 @@
+{
+  "name": "test/camel-case",
+  "config": {
+    "test-camel-case-config-key-true": {
+      "default": "",
+      "type": "string",
+      "camel_case_config_key": true
+    },
+    "test-camel-case-config-key-false": {
+      "default": "",
+      "type": "string",
+      "camel_case_config_key": false
+    },
+    "test-camel-case-inner-keys-true": {
+      "default": {
+        "key-one": "",
+        "key_two": ""
+      },
+      "type": "array",
+      "camel_case_inner_keys": true
+    },
+    "test-camel-case-inner-keys-false": {
+      "default": {
+        "key-one": "",
+        "key_two": ""
+      },
+      "type": "array",
+      "camel_case_inner_keys": false
+    }
+  }
+}

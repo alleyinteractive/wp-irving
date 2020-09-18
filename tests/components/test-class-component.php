@@ -590,6 +590,32 @@ class Test_Class_Component extends WP_UnitTestCase {
 				],
 				'Could not verify registered theme options.',
 			],
+			// Camel casing.
+			[
+				[ 'test/camel-case' ],
+				[
+					'name'     => 'test/camel-case',
+					'_alias'   => '',
+					'config'   => (object) [
+						'testCamelCaseConfigKeyTrue'       => '',
+						'test-camel-case-config-key-false' => '',
+						'testCamelCaseInnerKeysTrue'       => (object) [
+							'keyOne' => '',
+							'keyTwo' => '',
+						],
+						'testCamelCaseInnerKeysFalse'      => (object) [
+							'key-one' => '',
+							'key_two' => '',
+						],
+						'className'                        => '',
+						'style'                            => [],
+						'themeName'                        => 'default',
+						'themeOptions'                     => [ 'default' ],
+					],
+					'children' => [],
+				],
+				'Could not verify camel casing options worked.',
+			],
 		];
 	}
 
