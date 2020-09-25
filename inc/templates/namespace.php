@@ -436,7 +436,7 @@ function hydrate_template( array $data ): array {
 		// First, handle template part matching.
 		if (
 			isset( $component['name'] ) &&
-			0 === strpos( $component['name'], 'template-part/' )
+			0 === strpos( $component['name'], 'template-parts/' )
 		) {
 			$template_data = hydrate_template_parts( $component );
 
