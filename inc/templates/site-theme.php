@@ -21,7 +21,7 @@ use WP_Irving\Components\Component;
 function setup_site_theme_provider( array $data ): array {
 
 	// Disable site theme via filter.
-	if ( ! apply_filters( 'wp_irving_setup_site_theme', true ) ) {
+	if ( ! apply_filters( 'wp_irving_enable_site_theme', true ) ) {
 		return $data;
 	}
 
@@ -57,7 +57,7 @@ function get_site_theme( $selector = '', $default = null ) {
 	 *
 	 * @var array
 	 */
-	$theme = apply_filters( 'wp_irving_setup_site_theme', get_site_theme_from_json_files() );
+	$theme = apply_filters( 'wp_irving_setup_site_theme', (array) get_site_theme_from_json_files() );
 
 	// Get the entire theme.
 	if ( empty( $selector ) ) {
@@ -90,7 +90,7 @@ function get_site_theme( $selector = '', $default = null ) {
  *
  * @return bool|array Site theme array, or false if something went wrong.
  */
-function get_site_theme_from_json_files() {
+function get_site_theme_from_json_files(): array {
 
 	$theme = [];
 
