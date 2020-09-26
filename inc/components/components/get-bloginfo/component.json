@@ -1,0 +1,16 @@
+{
+  "name": "irving/get-bloginfo",
+  "_alias": "irving/fragment",
+  "description": "Provide context for the get_bloginfo() function.",
+  "config": {
+    "key": {
+      "default": "",
+      "description": "The $show argument for bloginfo(). See WordPress docs for all options.",
+      "type": "string"
+    },
+    "value": {}
+  },
+  "provides_context": {
+    "irving/bloginfo": "value"
+  }
+}
