@@ -21,7 +21,7 @@ use WP_Irving\Components\Component;
 function setup_site_theme_provider( array $data ): array {
 
 	// Disable site theme via filter.
-	if ( ! apply_filters( 'wp_irving_setup_site_theme', true ) ) {
+	if ( ! apply_filters( 'wp_irving_enable_site_theme', true ) ) {
 		return $data;
 	}
 

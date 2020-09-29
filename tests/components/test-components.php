@@ -1099,11 +1099,11 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test irving/site-info component.
+	 * Test irving/get-bloginfo component.
 	 *
 	 * @group core-components
 	 */
-	public function test_component_site_info() {
+	public function test_component_get_bloginfo() {
 
 		$show_types = [
 			'',
@@ -1131,23 +1131,21 @@ class Test_Components extends WP_UnitTestCase {
 
 		foreach ( $show_types as $show ) {
 			$expected = $this->get_expected_component(
-				'irving/site-info',
+				'irving/get-bloginfo',
 				[
-					'_alias' => 'irving/text',
+					'_alias' => 'irving/fragment',
 					'config' => [
-						'content' => get_bloginfo( $show ),
-						'oembed'  => false,
-						'show'    => $show,
-						'tag'     => 'span',
+						'key'   => $show,
+						'value' => get_bloginfo( $show ),
 					],
 				]
 			);
 
 			$component = new Component(
-				'irving/site-info',
+				'irving/get-bloginfo',
 				[
 					'config' => [
-						'show' => $show,
+						'key' => $show,
 					],
 				],
 			);

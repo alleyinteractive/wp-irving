@@ -13,6 +13,7 @@ namespace WP_Irving\Components;
 function bootstrap() {
 	add_filter( 'init', __NAMESPACE__ . '\auto_register_components' );
 }
+
 /**
  * Get an instance of the registry class.
  *
