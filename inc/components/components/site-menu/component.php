@@ -34,7 +34,7 @@ register_component_from_config(
 				return $config;
 			}
 
-			$config['menu_name'] = $menu_object->name ?? $config['menu_name'];
+			$config['menu_name'] = html_entity_decode( $menu_object->name ?? $config['menu_name'] );
 
 			return $config;
 		},
