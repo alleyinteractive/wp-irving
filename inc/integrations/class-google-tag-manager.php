@@ -92,7 +92,7 @@ class Google_Tag_Manager {
 			[
 				'irving' => [
 					'title' => wp_title( null, false ),
-					'url'   => home_url( $path ),
+					'url'   => home_url( esc_url( $path ) ),
 				],
 			]
 		);
