@@ -19,6 +19,10 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 == Changelog ==
 
+= 0.4.1 =
+
+* Fix possible XSS issue with the GTM integration. #269
+
 = 0.4.0 =
 
 * Update social share component. #259
