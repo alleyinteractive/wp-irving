@@ -34,6 +34,15 @@ class Test_Site_Theme extends WP_UnitTestCase {
 				'dark'  => '#DDDDDD',
 			],
 		],
+		'nested' => [
+			'first'  => 'colors.white',
+			'second' => [
+				'value' => 'colors.white',
+			],
+			'third'  => [
+				'value' => 'nested.second.value',
+			],
+		],
 	];
 
 	/**
@@ -138,6 +147,24 @@ class Test_Site_Theme extends WP_UnitTestCase {
 				'Hello World',
 				'Hello World',
 				'`Hello World` not returned as default for selector that does not exist.',
+			],
+			[
+				'nested.first',
+				null,
+				'#FFFFFF',
+				'`#FFFFFF` not returned as one level nested lookup.',
+			],
+			[
+				'nested.second.value',
+				null,
+				'#FFFFFF',
+				'`#FFFFFF` not returned as two levels nested lookup.',
+			],
+			[
+				'nested.third.value',
+				null,
+				'#FFFFFF',
+				'`#FFFFFF` not returned as double nested lookup.',
 			],
 		];
 	}

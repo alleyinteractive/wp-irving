@@ -81,6 +81,14 @@ function get_site_theme( $selector = '', $default = null ) {
 		$value = &$value[ $segment ];
 	}
 
+	// Support recursively getting a single value.
+	if ( is_string( $value ) ) {
+		do {
+			$default = $value;
+			$value   = get_site_theme( $value, $default );
+		} while ( $default !== $value );
+	}
+
 	// Return the value found at the final selector segment.
 	return $value;
 }
