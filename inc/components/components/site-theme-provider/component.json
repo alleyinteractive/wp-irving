@@ -1,5 +1,5 @@
 {
-  "name": "irving/provide-site-theme",
+  "name": "irving/site-theme-provider",
   "_alias": "irving/fragment",
   "description": "Provide context from the Site Theme.",
   "config": {
