@@ -54,6 +54,34 @@ class Test_Components extends WP_UnitTestCase {
 	public static $term_id;
 
 	/**
+	 * Example theme.
+	 *
+	 * @var array
+	 */
+	public $site_theme = [
+		'colors' => [
+			'black' => '#000000',
+			'white' => '#FFFFFF',
+		],
+		'brand'  => [
+			'primary' => [
+				'light' => '#FFFFFF',
+				'main'  => '#EEEEEE',
+				'dark'  => '#DDDDDD',
+			],
+		],
+		'nested' => [
+			'first'  => 'colors.white',
+			'second' => [
+				'value' => 'colors.white',
+			],
+			'third'  => [
+				'value' => 'nested.second.value',
+			],
+		],
+	];
+
+	/**
 	 * Helper to get the author ID.
 	 *
 	 * @return int Author ID.
@@ -208,6 +236,22 @@ class Test_Components extends WP_UnitTestCase {
 
 		// Disable date organized uploads.
 		add_filter( 'upload_dir', 'WP_Irving\Test_Helpers::upload_dir_no_subdir' );
+
+		// Setup the site theme for testing.
+		add_filter(
+			'wp_irving_setup_site_theme',
+			function( $theme ) {
+				return $this->site_theme;
+			}
+		);
+
+		// Hook up template part path filters.
+		add_filter(
+			'wp_irving_template_part_path',
+			function () {
+				return dirname( __FILE__ ) . '/test-components';
+			}
+		);
 	}
 
 	/**
@@ -972,6 +1016,59 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test irving/provide-site-theme component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_provide_site_theme() {
+		$expected = $this->get_expected_component(
+			'irving/provide-site-theme',
+			[
+				'_alias' => 'irving/fragment',
+				'config' => [
+					'selector' => 'nested.first',
+					'value'    => '#FFFFFF',
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/provide-site-theme',
+			[
+				'config' => [
+					'selector' => 'nested.first',
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+
+		$expected_using_default = $this->get_expected_component(
+			'irving/provide-site-theme',
+			[
+				'_alias' => 'irving/fragment',
+				'config' => [
+					'default'  => '#000000',
+					'selector' => 'does.not.exist',
+					'value'    => '#000000',
+				],
+			]
+		);
+
+		$component_using_default = new Component(
+			'irving/provide-site-theme',
+			[
+				'config' => [
+					'default'  => '#000000',
+					'selector' => 'does.not.exist',
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected_using_default, $component_using_default );
+	}
+
+	/**
 	 * Test irving/query-pagination component.
 	 *
 	 * @group core-components
@@ -1382,6 +1479,37 @@ class Test_Components extends WP_UnitTestCase {
 		);
 
 		$component = new Component( 'irving/term-name' );
+
+		$this->assertComponentEquals( $expected, $component );
+	}
+
+	/**
+	 * Test irving/template-part component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_template_part() {
+		$expected = $this->get_expected_component(
+			'irving/template-part',
+			[
+				'_alias' => 'irving/fragment',
+				'config' => [
+					'slug' => 'basic',
+				],
+				'children' => [
+					$this->get_expected_component( 'test/basic' ),
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/template-part',
+			[
+				'config' => [
+					'slug' => 'basic',
+				],
+			]
+		);
 
 		$this->assertComponentEquals( $expected, $component );
 	}

@@ -1,0 +1,20 @@
+{
+  "name": "irving/provide-site-theme",
+  "_alias": "irving/fragment",
+  "description": "Provide context from the Site Theme.",
+  "config": {
+    "selector": {
+      "default": "",
+      "description": "The $selector argument for get_site_theme().",
+      "type": "string"
+    },
+    "default": {
+      "default": null,
+      "description": "The $default argument for get_site_theme()."
+    },
+    "value": {}
+  },
+  "provides_context": {
+    "irving/site-theme": "value"
+  }
+}
