@@ -1016,13 +1016,13 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test irving/provide-site-theme component.
+	 * Test irving/site-theme-provider component.
 	 *
 	 * @group core-components
 	 */
 	public function test_component_provide_site_theme() {
 		$expected = $this->get_expected_component(
-			'irving/provide-site-theme',
+			'irving/site-theme-provider',
 			[
 				'_alias' => 'irving/fragment',
 				'config' => [
@@ -1033,7 +1033,7 @@ class Test_Components extends WP_UnitTestCase {
 		);
 
 		$component = new Component(
-			'irving/provide-site-theme',
+			'irving/site-theme-provider',
 			[
 				'config' => [
 					'selector' => 'nested.first',
@@ -1044,7 +1044,7 @@ class Test_Components extends WP_UnitTestCase {
 		$this->assertComponentEquals( $expected, $component );
 
 		$expected_using_default = $this->get_expected_component(
-			'irving/provide-site-theme',
+			'irving/site-theme-provider',
 			[
 				'_alias' => 'irving/fragment',
 				'config' => [
@@ -1056,7 +1056,7 @@ class Test_Components extends WP_UnitTestCase {
 		);
 
 		$component_using_default = new Component(
-			'irving/provide-site-theme',
+			'irving/site-theme-provider',
 			[
 				'config' => [
 					'default'  => '#000000',
