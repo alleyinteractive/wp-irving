@@ -1,7 +1,7 @@
 {
   "name": "irving/template-part",
   "_alias": "irving/fragment",
-  "description": "Conditionally load a template part.",
+  "description": "Load a template part.",
   "config": {
     "slug": {
       "default": "",

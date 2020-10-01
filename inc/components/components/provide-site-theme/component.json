@@ -3,14 +3,14 @@
   "_alias": "irving/fragment",
   "description": "Provide context from the Site Theme.",
   "config": {
-    "selector": {
-      "default": "",
-      "description": "The $selector argument for get_site_theme().",
-      "type": "string"
-    },
     "default": {
       "default": null,
-      "description": "The $default argument for get_site_theme()."
+      "description": "The default argument for get_site_theme()."
+    },
+    "selector": {
+      "default": "",
+      "description": "The selector argument for get_site_theme().",
+      "type": "string"
     },
     "value": {}
   },

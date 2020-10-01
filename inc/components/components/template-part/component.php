@@ -2,7 +2,7 @@
 /**
  * Template part loader.
  *
- * Conditionally render a template part.
+ * Load a template part.
  *
  * @package WP_Irving
  */
