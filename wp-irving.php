@@ -57,6 +57,7 @@ require_once WP_IRVING_PATH . '/inc/class-admin.php';
 require_once WP_IRVING_PATH . '/inc/class-cache.php';
 require_once WP_IRVING_PATH . '/inc/class-previews.php';
 require_once WP_IRVING_PATH . '/inc/customizer.php';
+require_once WP_IRVING_PATH . '/inc/namespace.php';
 require_once WP_IRVING_PATH . '/inc/redirects.php';
 require_once WP_IRVING_PATH . '/inc/rewrites.php';
 
