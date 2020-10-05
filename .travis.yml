@@ -1,6 +1,12 @@
-sudo: false
-dist: trusty
+# Xenial image has PHP versions 5.6,7.1,7.2 pre-installed
+dist: xenial
 
+# Xenial does not start mysql by default
+services:
+  - mysql
+
+# Declare project language.
+# @link http://about.travis-ci.org/docs/user/languages/php/
 language: php
 
 notifications:
@@ -17,7 +23,7 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-matrix:
+jobs:
   include:
     - php: 7.3
       env: WP_VERSION=latest
