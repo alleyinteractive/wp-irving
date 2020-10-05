@@ -17,7 +17,7 @@ cache:
   directories:
     - $HOME/.composer/cache
 
-matrix:
+jobs:
   include:
     - php: 7.3
       env: WP_VERSION=latest
