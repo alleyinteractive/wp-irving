@@ -349,7 +349,7 @@ class Components_Endpoint extends Endpoint {
 		// This ensures we always parse the query so is_home and other flags
 		// get properly set before we handle template.
 		if ( empty( $query ) ) {
-			$wp_query->parse_query();
+			$wp_query->query( $query );
 		}
 
 		/**
