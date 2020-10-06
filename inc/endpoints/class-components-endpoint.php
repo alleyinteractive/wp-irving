@@ -17,6 +17,14 @@ use WP_REST_Request;
 class Components_Endpoint extends Endpoint {
 
 	/**
+	 * Flag for determining when the main WP_Query in the Component Endpoint is
+	 * being created. Irving equivelent to is_main_query().
+	 *
+	 * @var boolean
+	 */
+	public static $is_main_irving_query = false;
+
+	/**
 	 * Path being queried.
 	 *
 	 * @var string
@@ -141,7 +149,9 @@ class Components_Endpoint extends Endpoint {
 			ARRAY_FILTER_USE_KEY
 		);
 
+		self::$is_main_irving_query = true;
 		$this->query = $this->build_query();
+		self::$is_main_irving_query = false;
 
 		// Force trailing slashes on paths.
 		$this->force_trailing_slashes();
@@ -349,6 +359,7 @@ class Components_Endpoint extends Endpoint {
 		// This ensures we always parse the query so is_home and other flags
 		// get properly set before we handle template.
 		if ( empty( $query ) ) {
+			$wp_query->query( $query );
 			$wp_query->parse_query();
 		}
 
