@@ -33,6 +33,14 @@
     "wp_query": {
       "hidden": true,
       "type": "object"
+    },
+    "gtm_category": {
+      "default": "Navigation",
+      "type": "string"
+    },
+    "gtm_action": {
+      "default": "Pagination",
+      "type": "string"
     }
   },
   "use_context": {
