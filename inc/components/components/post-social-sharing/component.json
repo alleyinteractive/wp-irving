@@ -38,6 +38,14 @@
     "url": {
       "default": "",
       "type": "string"
+    },
+    "gtm_category": {
+      "default": "Engagement",
+      "type": "string"
+    },
+    "gtm_action": {
+      "default": "Share",
+      "type": "string"
     }
   },
   "use_context": {

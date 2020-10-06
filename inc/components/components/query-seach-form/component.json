@@ -18,6 +18,14 @@
     "wp_query": {
       "hidden": true,
       "type": "object"
+    },
+    "gtm_action": {
+      "default": "Search",
+      "type": "string"
+    },
+    "gtm_category": {
+      "default": "Navigation",
+      "type": "string"
     }
   },
   "use_context": {
