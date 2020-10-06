@@ -27,6 +27,9 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-endpoint.php';
 // Base traits.
 require_once WP_IRVING_PATH . '/inc/trait-singleton.php';
 
+// Static assets.
+require_once WP_IRVING_PATH . '/inc/assets.php';
+
 // API.
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-endpoint.php';
 require_once WP_IRVING_PATH . '/inc/endpoints/class-components-registry-endpoint.php';
