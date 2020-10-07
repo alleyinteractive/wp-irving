@@ -16,17 +16,16 @@
       "default": "",
       "type": "string"
     },
-    "gtm_category": {
-      "default": "Navigation",
-      "type": "string"
-    },
-    "gtm_action": {
-      "default": "Homepage",
-      "type": "string"
-    },
-    "gtm_label": {
-      "default": "Logo",
-      "type": "string"
+    "analytics": {
+      "default": {
+        "click": {
+          "action": "Homepage",
+          "category": "Navigation",
+          "label": "Logo"
+        }
+      },
+      "description": "Analytics Data",
+      "type": "object"
     }
   }
 }

@@ -19,13 +19,15 @@
       "hidden": true,
       "type": "object"
     },
-    "gtm_action": {
-      "default": "Search",
-      "type": "string"
-    },
-    "gtm_category": {
-      "default": "Navigation",
-      "type": "string"
+    "analytics": {
+      "default": {
+        "search": {
+          "action":  "Search",
+          "category": "Navigation"
+        }
+      },
+      "description": "Analytics Data",
+      "type": "object"
     }
   },
   "use_context": {

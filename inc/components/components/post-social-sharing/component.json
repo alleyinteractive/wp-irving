@@ -39,13 +39,15 @@
       "default": "",
       "type": "string"
     },
-    "gtm_category": {
-      "default": "Engagement",
-      "type": "string"
-    },
-    "gtm_action": {
-      "default": "Share",
-      "type": "string"
+    "analytics": {
+      "default": {
+        "share": {
+          "action": "Share",
+          "category": "Engagement"
+        },
+      "description": "Analytics Data",
+      "type": "object"
+      }
     }
   },
   "use_context": {
