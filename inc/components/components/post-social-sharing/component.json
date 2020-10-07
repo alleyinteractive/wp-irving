@@ -42,12 +42,12 @@
     "analytics": {
       "default": {
         "share": {
-          "action": "Share",
-          "category": "Engagement"
-        },
+          "category": "Engagement",
+          "action": "Share"
+        }
+      },
       "description": "Analytics Data",
-      "type": "object"
-      }
+      "type": "array"
     }
   },
   "use_context": {

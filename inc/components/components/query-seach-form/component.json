@@ -27,7 +27,7 @@
         }
       },
       "description": "Analytics Data",
-      "type": "object"
+      "type": "array"
     }
   },
   "use_context": {
