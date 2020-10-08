@@ -13,6 +13,7 @@
           "category": "Engagement"
         }
       },
+      "description": "Analytics Data",
       "type": "array"
     }
   }
