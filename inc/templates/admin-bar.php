@@ -42,7 +42,7 @@ function setup_admin_bar(
 	if ( 'site' === $context ) {
 		array_unshift(
 			$data['defaults'],
-			new Component( 'irving/admin-bar' )
+			new Component( 'irving/wp-admin-bar' )
 		);
 	}
 
@@ -55,7 +55,7 @@ function setup_admin_bar(
 	array_unshift(
 		$data['page'],
 		new Component(
-			'irving/admin-bar',
+			'irving/wp-admin-bar',
 			[
 				'config' => [
 					'iframe_src' => add_query_arg(
