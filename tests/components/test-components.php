@@ -858,7 +858,7 @@ class Test_Components extends WP_UnitTestCase {
 				'config' => [
 					'analytics'   => [
 						'share' => [
-							'action'   => 'Follow',
+							'action'   => 'Share',
 							'category' => 'Engagement',
 						],
 					],
@@ -1190,6 +1190,7 @@ class Test_Components extends WP_UnitTestCase {
 						'click' => [
 							'action'   => 'Homepage',
 							'category' => 'Navigation',
+							'label'    => 'Logo',
 						],
 					],
 					'href'         => '/',
