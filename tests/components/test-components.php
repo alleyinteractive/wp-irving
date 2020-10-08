@@ -856,7 +856,7 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/social-sharing',
 				'config' => [
-					'analytics'   => [
+					'analytics'    => [
 						'share' => [
 							'action'   => 'Share',
 							'category' => 'Engagement',
