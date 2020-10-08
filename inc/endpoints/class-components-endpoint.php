@@ -219,7 +219,7 @@ class Components_Endpoint extends Endpoint {
 	 * @return \WP_Query Resulting query.
 	 */
 	public function build_query() {
-		global $wp_rewrite, $wp_the_query;
+		global $wp_rewrite;
 
 		// Query to execute.
 		$query = '';
@@ -345,12 +345,11 @@ class Components_Endpoint extends Endpoint {
 		// Execute query.
 		$wp_query = new \WP_Query( $query );
 
-		if ( '/' === $this->path && ! $wp_query->is_search() && ! $wp_query->is_preview() ) {
-			$wp_query->is_home = true;
-		}
-
-		if ( empty( $wp_query->posts ) && ! $wp_query->is_search() && ! $wp_query->is_home() && ! $wp_query->is_preview() ) {
-			$wp_query->set_404();
+		// WP_Query returns an unparsed object if the query args are empty.
+		// This ensures we always parse the query so is_home and other flags
+		// get properly set before we handle template.
+		if ( empty( $query ) ) {
+			$wp_query->query( $query );
 		}
 
 		/**
@@ -364,10 +363,18 @@ class Components_Endpoint extends Endpoint {
 		 */
 		$wp_query = apply_filters( 'wp_irving_components_wp_query', $wp_query, $this->path, $this->custom_params, $this->params );
 
-		// Map to main query and set up globals.
-		// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited, WordPress.WP.GlobalVariablesOverride.OverrideProhibited
-		$wp_the_query = $wp_query;
-		$this->register_globals();
+		// Map the global wp_the_query and wp_query values to our WP_Query object.
+		// Using the $GLOBALS object directly here since we've already defined $wp_query.
+		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited
+		global $wp_the_query;
+		$GLOBALS['wp_the_query'] = $wp_query;
+		$GLOBALS['wp_query']     = $wp_query;
+		// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
+
+		// Set up $wp object properties ususally handled in WP::main().
+		global $wp;
+		$wp->handle_404();
+		$wp->register_globals();
 
 		return $wp_query;
 	}
@@ -387,39 +394,6 @@ class Components_Endpoint extends Endpoint {
 		 * @param WP_REST_Request $request The request sent to the API.
 		 */
 		return apply_filters( 'wp_irving_components_route_permissions_check', true, $request );
-	}
-
-	/**
-	 * Set up the WordPress Globals. Mimic Core setup.
-	 *
-	 * @see https://github.com/WordPress/WordPress/blob/master/wp-includes/class-wp.php#L580
-	 */
-	public function register_globals() {
-		// phpcs:disable WordPress.WP.GlobalVariablesOverride.Prohibited, WordPress.WP.GlobalVariablesOverride.OverrideProhibited
-		global $wp_the_query, $wp_query;
-		$wp_query = $wp_the_query;
-
-		// Extract updated query vars back into global namespace.
-		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-		foreach ( (array) $wp_the_query->query_vars as $key => $value ) {
-			$GLOBALS[ $key ] = $value;
-		}
-
-		$GLOBALS['query_string'] = $this->query_string;
-		$GLOBALS['posts']        = & $wp_the_query->posts;
-		$GLOBALS['post']         = isset( $wp_the_query->post ) ? $wp_the_query->post : null;
-		$GLOBALS['request']      = $this->path;
-
-		if ( $wp_the_query->is_single() || $wp_the_query->is_page() ) {
-			$GLOBALS['more']   = 1;
-			$GLOBALS['single'] = 1;
-		}
-
-		if ( $wp_the_query->is_author() && isset( $wp_the_query->post ) ) {
-			$GLOBALS['authordata'] = get_userdata( $wp_the_query->post->post_author );
-		}
-		// phpcs:enable WordPress.WP.GlobalVariablesOverride.Prohibited
-		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 	}
 
 	/**

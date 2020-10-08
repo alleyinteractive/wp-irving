@@ -21,6 +21,7 @@ function bootstrap() {
 	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_favicon', 10, 3 );
 	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_custom_css', 10, 3 );
 	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_block_library_styles', 10, 3 );
+	add_action( 'wp_irving_component_children', __NAMESPACE__ . '\\inject_body_classes', 10, 3 );
 }
 
 /**
@@ -728,6 +729,36 @@ function inject_block_library_styles( array $children, array $config, string $na
 				'media' => 'all',
 				'rel'   => 'stylesheet',
 				'type'  => 'text/css',
+			],
+		]
+	);
+
+	return $children;
+}
+
+/**
+ * Inject the <body /> classes into the <head> component.
+ *
+ * @param array  $children Children for this component.
+ * @param array  $config   Config for this component.
+ * @param string $name     Name of this component.
+ * @return array
+ */
+function inject_body_classes( array $children, array $config, string $name ): array {
+	// Ony run this action on the `irving/head` in a `page` context.
+	if (
+		'irving/head' !== $name
+		|| 'page' !== ( $config['context'] ?? 'page' )
+	) {
+		return $children;
+	}
+
+	// Inject the body classes.
+	$children[] = new Components\Component(
+		'body',
+		[
+			'config' => [
+				'class_name' => get_body_class(),
 			],
 		]
 	);
