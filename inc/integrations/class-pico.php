@@ -197,6 +197,13 @@ class Pico {
 			$options['pico']['tiers'] = explode( ',', $tiers );
 		}
 
+		/**
+		 * Filter Pico options for the integrations manager.
+		 *
+		 * @param array Pico options.
+		 */
+		$options['pico'] = apply_filters( 'wp_irving_pico_options', $options['pico'] );
+
 		// Taxonomies always need to be an object.
 		$options['pico']['page_info']['taxonomies'] = (object) ( $options['pico']['page_info']['taxonomies'] ?? [] );
 
