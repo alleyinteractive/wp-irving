@@ -6,7 +6,7 @@ The following steps should be followed to publish a release of the WP Irving plu
 2. Update version numbers:
     * Plugin header
     * `WP_IRVING_VERSION` constant
-    * package.json
+    * composer.json
 3. Update changelog in readme.txt and run `npm run readme` to convert the txt file to a markdown file.
 4. Open a PR from the release branch back to `master`.
 5. Create a release candidate:
