@@ -4,6 +4,10 @@
  *
  * Load a template part.
  *
+ * Irving implementation of get_template_part().
+ *
+ * @see https://developer.wordpress.org/reference/functions/get_template_part/
+ *
  * @package WP_Irving
  */
 

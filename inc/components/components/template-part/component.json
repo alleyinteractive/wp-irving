@@ -16,7 +16,7 @@
     },
     "templates": {
       "default": [],
-      "description": "List of slugs used to lookup a template part.",
+      "description": "List of possible template file names used to lookup a template part.",
       "hidden": true,
       "type": "array"
     }
