@@ -1,0 +1,24 @@
+
+{
+  "name": "irving/template-part",
+  "_alias": "irving/fragment",
+  "description": "Load a template part.",
+  "config": {
+    "name": {
+      "default": "",
+      "description": "The name used to locate the template part.",
+      "type": "string"
+    },
+    "slug": {
+      "default": "",
+      "description": "The slug used to locate the template part.",
+      "type": "string"
+    },
+    "templates": {
+      "default": [],
+      "description": "List of slugs used to lookup a template part.",
+      "hidden": true,
+      "type": "array"
+    }
+  }
+}
