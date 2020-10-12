@@ -208,6 +208,14 @@ class Test_Components extends WP_UnitTestCase {
 
 		// Disable date organized uploads.
 		add_filter( 'upload_dir', 'WP_Irving\Test_Helpers::upload_dir_no_subdir' );
+
+		// Hook up template part path filters.
+		add_filter(
+			'wp_irving_template_part_path',
+			function () {
+				return dirname( __FILE__ ) . '/test-components';
+			}
+		);
 	}
 
 	/**
@@ -1308,6 +1316,64 @@ class Test_Components extends WP_UnitTestCase {
 
 		$this->assertComponentEquals( $expected, $component );
 
+	}
+
+	/**
+	 * Test irving/template-part component.
+	 *
+	 * @group core-components
+	 */
+	public function test_component_template_part() {
+		$expected = $this->get_expected_component(
+			'irving/template-part',
+			[
+				'_alias'   => 'irving/fragment',
+				'config'   => [
+					'name' => '',
+					'slug' => 'basic',
+				],
+				'children' => [
+					$this->get_expected_component( 'test/basic' ),
+				],
+			]
+		);
+
+		$component = new Component(
+			'irving/template-part',
+			[
+				'config' => [
+					'slug' => 'basic',
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected, $component );
+
+		$expected_with_name = $this->get_expected_component(
+			'irving/template-part',
+			[
+				'_alias'   => 'irving/fragment',
+				'config'   => [
+					'name' => 'default',
+					'slug' => 'basic',
+				],
+				'children' => [
+					$this->get_expected_component( 'test/basic-default' ),
+				],
+			]
+		);
+
+		$component_with_name = new Component(
+			'irving/template-part',
+			[
+				'config' => [
+					'name' => 'default',
+					'slug' => 'basic',
+				],
+			]
+		);
+
+		$this->assertComponentEquals( $expected_with_name, $component_with_name );
 	}
 
 	/**
