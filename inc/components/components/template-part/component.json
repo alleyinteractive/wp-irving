@@ -6,12 +6,12 @@
   "config": {
     "name": {
       "default": "",
-      "description": "The name used to locate the template part.",
+      "description": "The name of the specialized template.",
       "type": "string"
     },
     "slug": {
       "default": "",
-      "description": "The slug used to locate the template part.",
+      "description": "The slug name for the generic template.",
       "type": "string"
     },
     "templates": {
