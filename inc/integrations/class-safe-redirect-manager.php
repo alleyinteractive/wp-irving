@@ -46,19 +46,16 @@ class Safe_Redirect_Manager {
 		remove_action( 'template_redirect', [ $this->srm, 'maybe_redirect' ], 0 );
 
 		// Re-use SRM's filter to redirect only on 404s.
-		add_filter( 'wp_irving_components_route', [ $this, 'get_srm_redirect' ], 5, 5 );
+		add_filter( 'wp_irving_components_redirect', [ $this, 'get_srm_redirect' ], 5, 2 );
 	}
 
 	/**
 	 * Find any matching redirect for requested path and include in response data.
 	 *
-	 * @param array             $data     WP Irving response data.
-	 * @param \WP_Query         $query    WP_Query object corresponding to this request.
-	 * @param string            $context  Request context (site or page).
-	 * @param string            $path     Request path parameter.
-	 * @param \WP_REST_Response $request  REST request.
+	 * @param array            $data     WP Irving response data.
+	 * @param \WP_REST_Request $request  REST request.
 	 */
-	public function get_srm_redirect( $data, $query, $context, $path, $request ): array {
+	public function get_srm_redirect( $data, $request ): array {
 		// Store request path.
 		$this->params = $request->get_params();
 

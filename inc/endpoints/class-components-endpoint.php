@@ -128,6 +128,25 @@ class Components_Endpoint extends Endpoint {
 			array_flip( $wp->public_query_vars )
 		);
 
+		/**
+		 * Offer redirector integrations an opportunity to act here to bypass
+		 * rendering an irrelevant page.
+		 *
+		 * @param array $redirect An assocative array with redirectTo (url) and redirectStatus (HTTP code, e.g. 301 or 302).
+		 */
+		$redirect = apply_filters(
+			'wp_irving_components_redirect',
+			[
+				'redirectTo'     => '',
+				'redirectStatus' => 302,
+			],
+			$request
+		);
+
+		if ( '' !== $redirect['redirectTo'] && 0 < $redirect['redirectStatus'] ) {
+			return new \WP_REST_Response( $redirect );
+		}
+
 		// Parse path and context.
 		$this->parse_path( $this->params['path'] ?? '' );
 		$this->context = $this->params['context'] ?? '';
