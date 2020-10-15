@@ -19,6 +19,10 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 ## Changelog ##
 
+### 0.5.1 ###
+
+* Update: Change coding standard to Alley Interactive
+
 ### 0.5.0 ###
 
 * Limit Pico paywall to posts by default #279
