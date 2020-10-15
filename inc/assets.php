@@ -18,6 +18,12 @@ function enqueue_editor() {
 		'1.0.0',
 		true
 	);
-}
+
+	wp_localize_script(
+		'wp-irving-block-styles',
+		'irvingSiteTheme',
+		\WP_Irving\Templates\get_site_theme()
+	);
+};
 
 add_action( 'enqueue_block_editor_assets', __NAMESPACE__ . '\enqueue_editor' );
