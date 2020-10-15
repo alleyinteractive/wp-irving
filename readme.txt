@@ -19,6 +19,27 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 == Changelog ==
 
+= 0.5.1 =
+
+* Update: Change coding standard to Alley Interactive
+
+= 0.5.0 =
+
+* Limit Pico paywall to posts by default #279
+* Changes related to new @irvingjs/wordpress package #278
+* Ensure `pre_get_posts` fires for empty queries #277
+* Add support for body classes #273
+* Fix setting global WordPress properties #267
+* Update Travis config #275
+* Add support for nested site theme values #270
+* GTM: Escape the site path in the data layer #269
+* Add HTML encoding to menu name #268
+* Refactor site-info component #266
+* Add options for camel casing keys #265
+* Pico: Add support for using the staging widget URL #263
+* Add `class_name` and style as default configs #262
+* Add checkbox for Pico staging URLs #261
+
 = 0.4.0 =
 
 * Update social share component. #259

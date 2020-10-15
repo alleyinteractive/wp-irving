@@ -22,29 +22,25 @@ class WPCOM_Legacy_Redirector {
 	 * Constructor for class.
 	 */
 	public function setup() {
-
 		// Ensure WPCOM Legacy Redirector exists and is enabled.
 		if (
-			! class_exists( 'Legacy_Redirector' ) ||
-			! method_exists( 'Legacy_Redirector', 'get_redirect_uri' )
+			! class_exists( '\WPCOM_Legacy_Redirector' ) ||
+			! method_exists( '\WPCOM_Legacy_Redirector', 'get_redirect_uri' )
 		) {
 			return;
 		}
 
 		// Handle Irving redirects.
-		add_filter( 'wp_irving_components_route', [ $this, 'handle_redirect' ], 5, 5 );
+		add_filter( 'wp_irving_components_redirect', [ $this, 'handle_redirect' ], 5, 2 );
 	}
 
 	/**
 	 * Find any matching redirect for requested path and include in response data.
 	 *
-	 * @param array             $data    WP Irving response data.
-	 * @param \WP_Query         $query   WP_Query object corresponding to this request.
-	 * @param string            $context Request context (site or page).
-	 * @param string            $path    Request path parameter.
-	 * @param \WP_REST_Response $request REST request.
+	 * @param array            $data    WP Irving response data.
+	 * @param \WP_REST_Request $request REST request.
 	 */
-	public function handle_redirect( $data, $query, $context, $path, $request ) : array {
+	public function handle_redirect( $data, $request ) : array {
 		$params = $request->get_params();
 
 		if ( empty( $params['path'] ) ) {

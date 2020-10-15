@@ -7,6 +7,7 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\Components;
 use WP_Irving\Singleton;
 
 /**
@@ -27,6 +28,9 @@ class Google_AMP {
 
 		// Hook into template redirect to render AMP template.
 		add_action( 'template_redirect', [ $this, 'amp_template_redirect' ], 9 );
+
+		// Automatically add the correct <link ref="amphtml">.
+		add_action( 'wp_irving_component_children', [ $this, 'inject_link_to_amp' ], 10, 3 );
 	}
 
 	/**
@@ -38,5 +42,43 @@ class Google_AMP {
 		if ( is_amp_endpoint() ) {
 			amp_render();
 		}
+	}
+
+	/**
+	 * Capture the markup output by the AMP plugin for the amphtml <link>.
+	 *
+	 * @return string
+	 */
+	public function get_amphtml_link_markup(): string {
+		if ( ! function_exists( 'amp_add_amphtml_link' ) ) {
+			return '';
+		};
+
+		ob_start();
+		amp_add_amphtml_link();
+		return trim( ob_get_clean() );
+	}
+
+	/**
+	 * Inject the <link ref="amphtml" /> tag into the <head> component.
+	 *
+	 * @param array  $children Children for this component.
+	 * @param array  $config   Config for this component.
+	 * @param string $name     Name of this component.
+	 * @return array
+	 */
+	public function inject_link_to_amp( array $children, array $config, string $name ): array {
+		// Ony run this action on the `irving/head` in a `page` context.
+		if (
+			'irving/head' !== $name
+			|| 'page' !== ( $config['context'] ?? 'page' )
+		) {
+			return $children;
+		}
+
+		return array_merge(
+			$children,
+			Components\html_to_components( $this->get_amphtml_link_markup(), [ 'link' ] )
+		);
 	}
 }

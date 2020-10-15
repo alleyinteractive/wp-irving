@@ -59,8 +59,8 @@ class Pico {
 			// Filter the integrations manager to include our Pico props.
 			add_filter( 'wp_irving_integrations_option', [ $this, 'inject_pico' ] );
 
-			// Wrap content with `<div id="pico"></div>`.
-			add_filter( 'the_content', [ 'Pico_Widget', 'filter_content' ] );
+			// Possibly wrap content with `<div id="pico"></div>`.
+			add_filter( 'the_content', __CLASS__ . '::filter_content' );
 		}
 
 		add_filter( 'wp_irving_verify_coral_user', [ $this, 'verify_pico_user_for_sso' ] );
@@ -75,6 +75,28 @@ class Pico {
 				define( 'PP_WIDGET_ENDPOINT', 'https://widget.staging.pico.tools' ); // phpcs:ignore
 			}
 		}
+	}
+
+	/**
+	 * Possibly filter the content for the Pico paywall.
+	 *
+	 * @param string $content Post content.
+	 * @return string
+	 */
+	public static function filter_content( string $content ): string {
+		/**
+		 * Post types which enable the paywall.
+		 *
+		 * @param array $paywall_post_types Post types.
+		 */
+		$paywall_post_types = apply_filters( 'wp_irving_pico_paywall_post_types', [ 'post' ] );
+
+		if ( ! in_array( get_post_type(), $paywall_post_types, true ) ) {
+			return $content;
+		}
+
+		// Wrap content with `<div id="pico"></div>`.
+		return '<div id="pico">' . $content . '</div>';
 	}
 
 	/**
@@ -174,6 +196,13 @@ class Pico {
 		if ( ! empty( $tiers ) ) {
 			$options['pico']['tiers'] = explode( ',', $tiers );
 		}
+
+		/**
+		 * Filter Pico options for the integrations manager.
+		 *
+		 * @param array Pico options.
+		 */
+		$options['pico'] = apply_filters( 'wp_irving_pico_options', $options['pico'] );
 
 		// Taxonomies always need to be an object.
 		$options['pico']['page_info']['taxonomies'] = (object) ( $options['pico']['page_info']['taxonomies'] ?? [] );
