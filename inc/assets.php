@@ -28,7 +28,7 @@ function enqueue_editor() {
 			],
 		]
 	);
-	$site_theme_array = $site_theme_provider->to_array();
+	$site_theme_array    = $site_theme_provider->to_array();
 
 	wp_localize_script(
 		'wp-irving-block-styles',
