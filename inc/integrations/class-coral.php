@@ -68,6 +68,8 @@ class Coral {
 				}
 			);
 		}
+
+		add_action( "save_post_{$this->post_type}", [ $this, 'delete_cached_values' ], 10, 2 );
 	}
 
 	/**
@@ -523,10 +525,6 @@ class Coral {
 
 		$post = wp_insert_post( $args );
 
-		// Delete stored data for this SSO ID/username.
-		wp_cache_delete( "get_username_{$id}", $this->cache_group );
-		wp_cache_delete( "username_exists_{$username}", $this->cache_group );
-
 		return ( ! is_wp_error( $post ) );
 	}
 
@@ -553,5 +551,20 @@ class Coral {
 		set_transient( $key, $hash, 3600 );
 
 		return $hash;
+	}
+
+	/**
+	 * Delete the cached values when a username post is updated. These
+	 * functions use the post_title column for the user's SSO provider ID, and
+	 * the post_excerpt column for the username.
+	 *
+	 * @param int      $post_ID Post ID.
+	 * @param \WP_Post $post    Post object.
+	 */
+	public function delete_cached_values( $post_id, $post ) {
+		$id       = $post->post_title;
+		$username = $post->post_excerpt;
+		wp_cache_delete( "get_username_{$id}", $this->cache_group );
+		wp_cache_delete( "username_exists_{$username}", $this->cache_group );
 	}
 }
