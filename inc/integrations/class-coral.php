@@ -352,6 +352,13 @@ class Coral {
 	private function get_username( $id ) : string {
 		global $wpdb;
 
+		$key             = "get_username_{$id}";
+		$stored_username = get_transient( $key );
+
+		if ( ! empty( $stored_username ) ) {
+			return $stored_username;
+		}
+
 		$username = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare( 
 				"SELECT post_excerpt 
@@ -368,6 +375,12 @@ class Coral {
 			)
 		);
 
+		// Store the username in a transient.
+		// The transient is deleted when the username is updated.
+		if ( ! empty( $username ) ) {
+			set_transient( $key, $username );
+		}
+
 		return $username ?? '';
 	}
 
@@ -380,6 +393,13 @@ class Coral {
 	 */
 	private function get_username_post_id( $id ) : int {
 		global $wpdb;
+
+		$key            = "get_username_post_id_{$id}";
+		$stored_post_id = get_transient( $key );
+
+		if ( ! empty( $stored_post_id ) ) {
+			return $stored_post_id;
+		}
 
 		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare( 
@@ -396,6 +416,12 @@ class Coral {
 				]
 			)
 		);
+
+		// Store the post ID in a transient.
+		// This can be set forever since the SSO ID to post ID relationship will never change.
+		if ( ! empty( $post_id ) ) {
+			set_transient( $key, $post_id );
+		}
 
 		return $post_id ?? 0;
 	}
@@ -414,6 +440,13 @@ class Coral {
 			return false;
 		}
 
+		$key                    = "username_exists_{$username}";
+		$stored_username_exists = get_transient( $key );
+
+		if ( false !== $stored_username_exists ) {
+			return wp_validate_boolean( $stored_username_exists );
+		}
+
 		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare( 
 				"SELECT ID 
@@ -429,6 +462,10 @@ class Coral {
 				]
 			)
 		) ?? 0;
+
+		// Store the ID for the username in a transient.
+		// The transient is deleted when the username is added/updated.
+		set_transient( $key, $post_id );
 
 		return ( 0 < $post_id );
 	}
@@ -471,6 +508,10 @@ class Coral {
 		}
 
 		$post = wp_insert_post( $args );
+
+		// Delete stored data for this SSO ID/username.
+		delete_transient( "get_username_{$id}" );
+		delete_transient( "username_exists_{$username}" );
 
 		return ( ! is_wp_error( $post ) );
 	}
