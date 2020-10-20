@@ -376,8 +376,10 @@ class Coral {
 			)
 		);
 
-		// Store the username in a transient.
-		// The transient is deleted when the username is updated.
+		/**
+		 * Store the username in a transient.
+		 * The transient is deleted when the username is updated.
+		 */
 		if ( ! empty( $username ) ) {
 			set_transient( $key, $username );
 		}
@@ -418,8 +420,10 @@ class Coral {
 			)
 		);
 
-		// Store the post ID in a transient.
-		// This can be set forever since the SSO ID to post ID relationship will never change.
+		/**
+		 * Store the post ID in a transient.
+		 * This can be set forever since the SSO ID to post ID relationship will never change.
+		 */
 		if ( ! empty( $post_id ) ) {
 			set_transient( $key, $post_id );
 		}
@@ -464,8 +468,10 @@ class Coral {
 			)
 		) ?? 0;
 
-		// Store the ID for the username in a transient.
-		// The transient is deleted when the username is added/updated.
+		/**
+		 * Store the ID for the username in a transient.
+		 * The transient is deleted when the username is added/updated.
+		 */
 		set_transient( $key, $post_id );
 
 		return ( 0 < $post_id );
