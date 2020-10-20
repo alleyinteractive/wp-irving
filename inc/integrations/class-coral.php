@@ -558,7 +558,7 @@ class Coral {
 	 * functions use the post_title column for the user's SSO provider ID, and
 	 * the post_excerpt column for the username.
 	 *
-	 * @param int      $post_ID Post ID.
+	 * @param int      $post_id Post ID.
 	 * @param \WP_Post $post    Post object.
 	 */
 	public function delete_cached_values( $post_id, $post ) {
