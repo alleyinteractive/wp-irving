@@ -38,6 +38,13 @@ class Coral {
 	private $options;
 
 	/**
+	 * Cache group.
+	 *
+	 * @var string
+	 */
+	private $cache_group = 'wp-irving-coral';
+
+	/**
 	 * Setup the singleton. Validate JWT is installed, and setup hooks.
 	 */
 	public function setup() {
@@ -61,6 +68,8 @@ class Coral {
 				}
 			);
 		}
+
+		add_action( "save_post_{$this->post_type}", [ $this, 'delete_cached_values' ], 10, 2 );
 	}
 
 	/**
@@ -151,7 +160,6 @@ class Coral {
 		<?php
 	}
 
-
 	/**
 	 * Get the endpoint settings.
 	 *
@@ -183,6 +191,8 @@ class Coral {
 	public function process_validate_endpoint_request( \WP_REST_Request $request ) {
 		// Allow access from the frontend.
 		header( 'Access-Control-Allow-Origin: ' . home_url() );
+		// Do not cache the endpoint.
+		header( 'Cache-Control: no-cache, must-revalidate, max-age=0' );
 
 		$user_obj = [
 			'id'    => sanitize_text_field( $request->get_param( 'id' ) ),
@@ -349,24 +359,39 @@ class Coral {
 	 * @param string $id The SSO ID of the user.
 	 * @return string The username, or a blank string if none is set.
 	 */
-	private function get_username( $id ) : string {
+	private function get_username( $id ): string {
 		global $wpdb;
 
+		$key             = "get_username_{$id}";
+		$stored_username = wp_cache_get( $key, $this->cache_group );
+
+		if ( ! empty( $stored_username ) ) {
+			return $stored_username;
+		}
+
 		$username = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( 
-				"SELECT post_excerpt 
-					FROM {$wpdb->posts} 
-				WHERE 
+			$wpdb->prepare(
+				"SELECT post_excerpt
+					FROM {$wpdb->posts}
+				WHERE
 					post_title=%s AND
 					post_type=%s AND
 					post_status='publish'
-				LIMIT 1 ",
+				LIMIT 1",
 				[
 					$id,
 					$this->post_type,
 				]
 			)
 		);
+
+		/**
+		 * Cache the username.
+		 * The cached value is deleted when the username is updated.
+		 */
+		if ( ! empty( $username ) ) {
+			wp_cache_set( $key, $username, $this->cache_group );
+		}
 
 		return $username ?? '';
 	}
@@ -378,24 +403,39 @@ class Coral {
 	 * @param string $id The SSO ID of the user.
 	 * @return int The post ID, or 0 if none is found.
 	 */
-	private function get_username_post_id( $id ) : int {
+	private function get_username_post_id( $id ): int {
 		global $wpdb;
 
+		$key            = "get_username_post_id_{$id}";
+		$stored_post_id = wp_cache_get( $key, $this->cache_group );
+
+		if ( ! empty( $stored_post_id ) ) {
+			return $stored_post_id;
+		}
+
 		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( 
-				"SELECT ID 
-					FROM {$wpdb->posts} 
-				WHERE 
+			$wpdb->prepare(
+				"SELECT ID
+					FROM {$wpdb->posts}
+				WHERE
 					post_title=%s AND
 					post_type=%s AND
 					post_status='publish'
-				LIMIT 1 ",
+				LIMIT 1",
 				[
 					$id,
 					$this->post_type,
 				]
 			)
 		);
+
+		/**
+		 * Cache the post ID.
+		 * This can be set forever since the SSO ID to post ID relationship will never change.
+		 */
+		if ( ! empty( $post_id ) ) {
+			wp_cache_set( $key, $post_id, $this->cache_group );
+		}
 
 		return $post_id ?? 0;
 	}
@@ -407,28 +447,41 @@ class Coral {
 	 * @param string $username The username to check.
 	 * @return bool Whether the name is already in use (true) or not (false).
 	 */
-	private function username_exists( $username ) : int {
+	private function username_exists( $username ): int {
 		global $wpdb;
 
 		if ( ! $username || '' === $username ) {
 			return false;
 		}
 
+		$key                    = "username_exists_{$username}";
+		$stored_username_exists = wp_cache_get( $key, $this->cache_group );
+
+		if ( false !== $stored_username_exists ) {
+			return wp_validate_boolean( $stored_username_exists );
+		}
+
 		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( 
-				"SELECT ID 
-					FROM {$wpdb->posts} 
-				WHERE 
+			$wpdb->prepare(
+				"SELECT ID
+					FROM {$wpdb->posts}
+				WHERE
 					post_excerpt=%s AND
 					post_type=%s AND
 					post_status='publish'
-				LIMIT 1 ",
+				LIMIT 1",
 				[
 					$username,
 					$this->post_type,
 				]
 			)
 		) ?? 0;
+
+		/**
+		 * Cache the ID for the username.
+		 * The cached value is deleted when the username is added/updated.
+		 */
+		wp_cache_set( $key, $post_id, $this->cache_group );
 
 		return ( 0 < $post_id );
 	}
@@ -442,11 +495,11 @@ class Coral {
 	 * @param string $hash     The security hash verifying the request.
 	 * @return bool Whether the create/update operation succeeded.
 	 */
-	private function set_username( $id, $username, $hash ) : bool {
+	private function set_username( $id, $username, $hash ): bool {
 		$key         = 'username_set_hash_' . md5( $id );
 		$stored_hash = get_transient( $key );
 
-		// Stop if the hash doesn't exist, wasn't passed, or doesn't match the one on file. 
+		// Stop if the hash doesn't exist, wasn't passed, or doesn't match the one on file.
 		if ( ! $stored_hash || ! $hash || $hash !== $stored_hash ) {
 			return false;
 		}
@@ -482,7 +535,7 @@ class Coral {
 	 * @param string $email The email for which the hash is valid.
 	 * @return string The hash.
 	 */
-	private function create_username_set_hash( $id, $email ) : string {
+	private function create_username_set_hash( $id, $email ): string {
 		$message = implode(
 			':',
 			[
@@ -498,5 +551,20 @@ class Coral {
 		set_transient( $key, $hash, 3600 );
 
 		return $hash;
+	}
+
+	/**
+	 * Delete the cached values when a username post is updated. These
+	 * functions use the post_title column for the user's SSO provider ID, and
+	 * the post_excerpt column for the username.
+	 *
+	 * @param int      $post_id Post ID.
+	 * @param \WP_Post $post    Post object.
+	 */
+	public function delete_cached_values( $post_id, $post ) {
+		$id       = $post->post_title;
+		$username = $post->post_excerpt;
+		wp_cache_delete( "get_username_{$id}", $this->cache_group );
+		wp_cache_delete( "username_exists_{$username}", $this->cache_group );
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 /**
- * WP Irving integration for VIP Go.
+ * WP Irving integration for Pantheon.
  *
  * @package WP_Irving;
  */
