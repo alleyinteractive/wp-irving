@@ -38,6 +38,13 @@ class Coral {
 	private $options;
 
 	/**
+	 * Cache group.
+	 *
+	 * @var string
+	 */
+	private $cache_group = 'wp-irving-coral';
+
+	/**
 	 * Setup the singleton. Validate JWT is installed, and setup hooks.
 	 */
 	public function setup() {
@@ -354,7 +361,7 @@ class Coral {
 		global $wpdb;
 
 		$key             = "get_username_{$id}";
-		$stored_username = get_transient( $key );
+		$stored_username = wp_cache_get( $key, $this->cache_group );
 
 		if ( ! empty( $stored_username ) ) {
 			return $stored_username;
@@ -377,11 +384,11 @@ class Coral {
 		);
 
 		/**
-		 * Store the username in a transient.
-		 * The transient is deleted when the username is updated.
+		 * Cache the username.
+		 * The cached value is deleted when the username is updated.
 		 */
 		if ( ! empty( $username ) ) {
-			set_transient( $key, $username );
+			wp_cache_set( $key, $username, $this->cache_group );
 		}
 
 		return $username ?? '';
@@ -398,7 +405,7 @@ class Coral {
 		global $wpdb;
 
 		$key            = "get_username_post_id_{$id}";
-		$stored_post_id = get_transient( $key );
+		$stored_post_id = wp_cache_get( $key, $this->cache_group );
 
 		if ( ! empty( $stored_post_id ) ) {
 			return $stored_post_id;
@@ -421,11 +428,11 @@ class Coral {
 		);
 
 		/**
-		 * Store the post ID in a transient.
+		 * Cache the post ID.
 		 * This can be set forever since the SSO ID to post ID relationship will never change.
 		 */
 		if ( ! empty( $post_id ) ) {
-			set_transient( $key, $post_id );
+			wp_cache_set( $key, $post_id, $this->cache_group );
 		}
 
 		return $post_id ?? 0;
@@ -446,7 +453,7 @@ class Coral {
 		}
 
 		$key                    = "username_exists_{$username}";
-		$stored_username_exists = get_transient( $key );
+		$stored_username_exists = wp_cache_get( $key, $this->cache_group );
 
 		if ( false !== $stored_username_exists ) {
 			return wp_validate_boolean( $stored_username_exists );
@@ -469,10 +476,10 @@ class Coral {
 		) ?? 0;
 
 		/**
-		 * Store the ID for the username in a transient.
-		 * The transient is deleted when the username is added/updated.
+		 * Cache the ID for the username.
+		 * The cached value is deleted when the username is added/updated.
 		 */
-		set_transient( $key, $post_id );
+		wp_cache_set( $key, $post_id, $this->cache_group );
 
 		return ( 0 < $post_id );
 	}
@@ -517,8 +524,8 @@ class Coral {
 		$post = wp_insert_post( $args );
 
 		// Delete stored data for this SSO ID/username.
-		delete_transient( "get_username_{$id}" );
-		delete_transient( "username_exists_{$username}" );
+		wp_cache_delete( "get_username_{$id}", $this->cache_group );
+		wp_cache_delete( "username_exists_{$username}", $this->cache_group );
 
 		return ( ! is_wp_error( $post ) );
 	}
