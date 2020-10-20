@@ -61,6 +61,9 @@ class Coral {
 				}
 			);
 		}
+
+		// Exclude validate_sso_user endpoint from caching on VIP Go.
+		add_filter( 'wpcom_vip_rest_read_response_ttl', [ $this, 'validate_sso_user_endpoint_ttl' ], 10, 4 );
 	}
 
 	/**
@@ -539,5 +542,21 @@ class Coral {
 		set_transient( $key, $hash, 3600 );
 
 		return $hash;
+	}
+
+	/**
+	 * Remove caching on the validate_sso_user endpoint for VIP Go.
+	 *
+	 * @param int               $ttl         The TTL value to use.
+	 * @param \WP_REST_Response $response    The outbound REST API response object.
+	 * @param \WP_REST_Server   $rest_server The REST API server object.
+	 * @param \WP_REST_Request  $request     The incoming REST API request object.
+	 * @return int
+	 */
+	function validate_sso_user_endpoint_ttl( $ttl, $response, $rest_server, $request ) {
+		if ( '/irving/v1/data/validate_sso_user' === $request->get_route() ) {
+			return 0;
+		}
+		return $ttl;
 	}
 }
