@@ -349,7 +349,7 @@ class Coral {
 	 * @param string $id The SSO ID of the user.
 	 * @return string The username, or a blank string if none is set.
 	 */
-	private function get_username( $id ) : string {
+	private function get_username( $id ): string {
 		global $wpdb;
 
 		$key             = "get_username_{$id}";
@@ -360,14 +360,14 @@ class Coral {
 		}
 
 		$username = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( 
-				"SELECT post_excerpt 
-					FROM {$wpdb->posts} 
-				WHERE 
+			$wpdb->prepare(
+				"SELECT post_excerpt
+					FROM {$wpdb->posts}
+				WHERE
 					post_title=%s AND
 					post_type=%s AND
 					post_status='publish'
-				LIMIT 1 ",
+				LIMIT 1",
 				[
 					$id,
 					$this->post_type,
@@ -391,7 +391,7 @@ class Coral {
 	 * @param string $id The SSO ID of the user.
 	 * @return int The post ID, or 0 if none is found.
 	 */
-	private function get_username_post_id( $id ) : int {
+	private function get_username_post_id( $id ): int {
 		global $wpdb;
 
 		$key            = "get_username_post_id_{$id}";
@@ -402,14 +402,14 @@ class Coral {
 		}
 
 		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( 
-				"SELECT ID 
-					FROM {$wpdb->posts} 
-				WHERE 
+			$wpdb->prepare(
+				"SELECT ID
+					FROM {$wpdb->posts}
+				WHERE
 					post_title=%s AND
 					post_type=%s AND
 					post_status='publish'
-				LIMIT 1 ",
+				LIMIT 1",
 				[
 					$id,
 					$this->post_type,
@@ -433,7 +433,7 @@ class Coral {
 	 * @param string $username The username to check.
 	 * @return bool Whether the name is already in use (true) or not (false).
 	 */
-	private function username_exists( $username ) : int {
+	private function username_exists( $username ): int {
 		global $wpdb;
 
 		if ( ! $username || '' === $username ) {
@@ -448,14 +448,14 @@ class Coral {
 		}
 
 		$post_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prepare( 
-				"SELECT ID 
-					FROM {$wpdb->posts} 
-				WHERE 
+			$wpdb->prepare(
+				"SELECT ID
+					FROM {$wpdb->posts}
+				WHERE
 					post_excerpt=%s AND
 					post_type=%s AND
 					post_status='publish'
-				LIMIT 1 ",
+				LIMIT 1",
 				[
 					$username,
 					$this->post_type,
@@ -479,11 +479,11 @@ class Coral {
 	 * @param string $hash     The security hash verifying the request.
 	 * @return bool Whether the create/update operation succeeded.
 	 */
-	private function set_username( $id, $username, $hash ) : bool {
+	private function set_username( $id, $username, $hash ): bool {
 		$key         = 'username_set_hash_' . md5( $id );
 		$stored_hash = get_transient( $key );
 
-		// Stop if the hash doesn't exist, wasn't passed, or doesn't match the one on file. 
+		// Stop if the hash doesn't exist, wasn't passed, or doesn't match the one on file.
 		if ( ! $stored_hash || ! $hash || $hash !== $stored_hash ) {
 			return false;
 		}
@@ -523,7 +523,7 @@ class Coral {
 	 * @param string $email The email for which the hash is valid.
 	 * @return string The hash.
 	 */
-	private function create_username_set_hash( $id, $email ) : string {
+	private function create_username_set_hash( $id, $email ): string {
 		$message = implode(
 			':',
 			[
