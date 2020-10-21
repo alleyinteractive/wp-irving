@@ -128,6 +128,11 @@ class Components_Endpoint extends Endpoint {
 			array_flip( $wp->public_query_vars )
 		);
 
+		if ( empty( $this->params['path'] ) ) {
+			$this->path           = '/';
+			$this->params['path'] = '/';
+		}
+
 		/**
 		 * Offer redirector integrations an opportunity to act here to bypass
 		 * rendering an irrelevant page.
@@ -140,7 +145,7 @@ class Components_Endpoint extends Endpoint {
 				'redirectTo'     => '',
 				'redirectStatus' => 302,
 			],
-			$request
+			$this->params
 		);
 
 		if ( '' !== $redirect['redirectTo'] && 0 < $redirect['redirectStatus'] ) {
