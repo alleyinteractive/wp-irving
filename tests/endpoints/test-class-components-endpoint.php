@@ -22,13 +22,14 @@ class Test_Class_Components_Endpoint extends WP_UnitTestCase {
     /**
      * Create an instance of WP_REST_Request with an empty path.
      *
-     * @param array $params Endpoint parameters.
+     * @param string $context Request context.
+     * @param string $path    Requested path.
      * @return WP_REST_REQUEST
      */
     public function create_rest_request( $context = 'page', $path = null ): WP_REST_REQUEST {
         $params = [
-          'context' => '?context=' . $context,
-          'path'    => $path ? '&path=' . $path : '',
+        	'context' => '?context=' . $context,
+        	'path'    => $path ? '&path=' . $path : '',
         ];
 
         // Build full url and do a POST request.
