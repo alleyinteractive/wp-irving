@@ -16,7 +16,7 @@ notifications:
 
 branches:
   only:
-    - master
+    - main
     - production
 
 cache:
