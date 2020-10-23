@@ -3,7 +3,7 @@
 	<description>PHP_CodeSniffer standard for WP Irving.</description>
 
     <!-- Include Alley Rules -->
-    <rule ref="alley-coding-standards" />
+    <rule ref="Alley-Interactive" />
 
     <!-- Project customizations go here -->
 
