@@ -37,8 +37,8 @@ class WPCOM_Legacy_Redirector {
 	/**
 	 * Find any matching redirect for requested path and include in response data.
 	 *
-	 * @param array $data   WP Irving redirect data.
-	 * @param array $params REST request.
+	 * @param array $data   An associative array with redirectTo (url) and redirectStatus (HTTP code, e.g. 301 or 302).
+	 * @param array $params WP REST Request parameters.
 	 * @return array Filtered WP Irving redirect data.
 	 */
 	public function handle_redirect( array $data, array $params ) : array {
