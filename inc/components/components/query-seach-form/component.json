@@ -18,6 +18,16 @@
     "wp_query": {
       "hidden": true,
       "type": "object"
+    },
+    "analytics": {
+      "default": {
+        "search": {
+          "action":  "Search",
+          "category": "Navigation"
+        }
+      },
+      "description": "Analytics Data",
+      "type": "array"
     }
   },
   "use_context": {

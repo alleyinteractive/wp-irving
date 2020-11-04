@@ -864,6 +864,12 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/social-sharing',
 				'config' => [
+					'analytics'    => [
+						'share' => [
+							'action'   => 'Share',
+							'category' => 'Engagement',
+						],
+					],
 					'description'  => $this->get_post_excerpt(),
 					'imageUrl'     => $this->get_attachment_url(),
 					'platforms'    => [
@@ -1004,6 +1010,12 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/pagination',
 				'config' => [
+					'analytics'           => [
+						'click' => [
+							'action'   => 'Pagination',
+							'category' => 'Navigation',
+						],
+					],
 					'currentPage'         => 2,
 					'totalPages'          => 3,
 					'baseUrl'             => "/category/{$category->slug}/",
@@ -1033,6 +1045,12 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/search-form',
 				'config' => [
+					'analytics'          => [
+						'search' => [
+							'action'   => 'Search',
+							'category' => 'Navigation',
+						],
+					],
 					'baseUrl'            => '/',
 					'searchTerm'         => 'Irving',
 					'searchTermQueryArg' => 's',
@@ -1176,6 +1194,13 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/logo',
 				'config' => [
+					'analytics'    => [
+						'click' => [
+							'action'   => 'Homepage',
+							'category' => 'Navigation',
+							'label'    => 'Logo',
+						],
+					],
 					'href'         => '/',
 					'logoImageUrl' => $this->get_attachment_url(),
 					'siteName'     => get_bloginfo( 'name' ),
