@@ -817,7 +817,18 @@ class Component implements JsonSerializable {
 
 			// Apply context values to config keys if set.
 			if ( null !== $store->get( $key ) ) {
-				$this->set_config_value( $config, $store->get( $key ) );
+				if ( is_array( $config ) ) {
+					// Handle destructuring object properties
+					// to specific config values first.
+					$obj = $store->get( $key );
+
+					foreach ( $config as $prop => $value ) {
+						$this->set_config_value( $value, $obj->$prop );
+					}
+				} else {
+					// Set simple string-based values.
+					$this->set_config_value( $config, $store->get( $key ) );
+				}
 			}
 		}
 
