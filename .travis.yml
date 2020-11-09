@@ -21,7 +21,7 @@ branches:
 
 cache:
   directories:
-    - $HOME/.composer/cache
+    - $HOME/.config/composer/cache
 
 # Git clone depth.
 git:
