@@ -1,29 +1,26 @@
-# Xenial image has PHP versions 5.6,7.1,7.2 pre-installed
-dist: xenial
+# Bionic image has PHP versions 7.1,7.2,7.3 pre-installed
+dist: bionic
 
 # Xenial does not start mysql by default
 services:
   - mysql
+  - memcached
 
 # Declare project language.
 # @link http://about.travis-ci.org/docs/user/languages/php/
 language: php
 
-notifications:
-  email:
-    on_success: never
-    on_failure: change
-
 branches:
   only:
     - main
-    - production
 
 cache:
   directories:
-    - $HOME/.composer/cache
+    - $HOME/.config/composer/cache
+    - ./vendor
 
 jobs:
+  fast_finish: true
   include:
     - php: 7.3
       env: WP_VERSION=latest
@@ -35,7 +32,7 @@ jobs:
     - env: WP_VERSION=trunk
 
 before_script:
-  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - export PATH="$HOME/.config/composer/vendor/bin:$PATH"
   - |
     if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
       phpenv config-rm xdebug.ini
@@ -45,7 +42,7 @@ before_script:
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
       bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-      composer global require "phpunit/phpunit=4.8.*|5.7.*"
+      composer global require "phpunit/phpunit=^7.5"
       composer install
     fi
   - |
@@ -70,3 +67,8 @@ script:
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
       composer run phpcs
     fi
+
+# Receive notifications for build results.
+# @link http://docs.travis-ci.com/user/notifications/#Email-notifications
+notifications:
+  email: false
