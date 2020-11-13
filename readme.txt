@@ -19,6 +19,8 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 == Changelog ==
 
+= 0.7.0 =
+
 = 0.6.0 =
 
 * Add irving/template-part component (#281)
