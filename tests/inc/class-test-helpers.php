@@ -22,7 +22,7 @@ class Test_Helpers {
 	 * @return WP_REST_Request
 	 */
 	public function create_rest_request( $path ) {
-		$base_url = 'http://' . WP_TESTS_DOMAIN . '/wp-json/irving/v1/components/';
+		$base_url = '/irving/v1/components';
 		$params   = [
 			'path' => $path,
 		];
@@ -42,10 +42,7 @@ class Test_Helpers {
 	 */
 	public function get_components_endpoint_response( $path ) {
 		$request  = $this->create_rest_request( $path );
-		$response = ( new REST_API\Components_Endpoint() )
-			->get_route_response( $request );
-
-		return $response;
+		return rest_do_request( $request );
 	}
 
 	/**

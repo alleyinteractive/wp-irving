@@ -22,14 +22,7 @@ class Test_Redirects extends WP_UnitTestCase {
 	 * @var \WP_Irving_Test_Helpers
 	 */
 	public static $helpers;
-
-	/**
-	 * Components endpoint instance.
-	 *
-	 * @var \REST_API\Components_Endpoint
-	 */
-	public static $components_endpoint;
-
+	
 	/**
 	 * Test post.
 	 *
@@ -42,7 +35,7 @@ class Test_Redirects extends WP_UnitTestCase {
 	 */
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		self::$helpers = new Test_REST_API_Helpers();
+		self::$helpers = new Test_Helpers();
 	}
 
 	/**
@@ -63,11 +56,6 @@ class Test_Redirects extends WP_UnitTestCase {
 	 * Test the ability to automatically redirect from old post slugs.
 	 */
 	public function test_handle_wp_old_slug_redirects() {
-
-		// When this response looks correct, the tests should pass too.
-		$response = self::$helpers->get_components_response( [ 'path' => '/hello-world/' ] );
-		print_r( $response );
-		die();
 
 		// Confirm that `/hello-world/` doesn't redirect.
 		$response = self::$helpers->get_components_endpoint_response( '/hello-world/' );
