@@ -6,7 +6,7 @@
  * Author URI:      https://alley.co
  * Text Domain:     wp-irving
  * Domain Path:     /languages
- * Version:         0.6.0-alpha
+ * Version:         0.7.0-alpha
  *
  * @package         WP_Irving
  */
@@ -15,7 +15,6 @@ namespace WP_Irving;
 
 define( 'WP_IRVING_PATH', dirname( __FILE__ ) );
 define( 'WP_IRVING_URL', plugin_dir_url( __FILE__ ) );
-define( 'WP_IRVING_VERSION', '0.6.0-alpha' );
 
 // Flush rewrite rules when the plugin is activated or deactivated.
 register_activation_hook( __FILE__, 'flush_rewrite_rules' );

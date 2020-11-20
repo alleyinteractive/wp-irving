@@ -15,6 +15,17 @@
     "site_name": {
       "default": "",
       "type": "string"
+    },
+    "analytics": {
+      "default": {
+        "click": {
+          "action": "Homepage",
+          "category": "Navigation",
+          "label": "Logo"
+        }
+      },
+      "description": "Analytics Data",
+      "type": "array"
     }
   }
 }

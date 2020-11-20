@@ -33,6 +33,16 @@
     "wp_query": {
       "hidden": true,
       "type": "object"
+    },
+    "analytics": {
+      "default": {
+        "click": {
+          "action": "Pagination",
+          "category": "Navigation"
+        }
+      },
+      "description": "Analytics Data",
+      "type": "array"
     }
   },
   "use_context": {

@@ -334,6 +334,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 			[
 				'test/foo' => 'bar',
 				'test/baz' => null,
+				'test/obj' => null,
 			],
 			$component->get_context(),
 			'Calculated context values not set.'
@@ -346,13 +347,12 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 * @dataProvider provide_context_config_data
 	 * @group context
 	 *
+	 * @param array $context  Test context values.
 	 * @param array $config   Test config values.
 	 * @param array $expected Expected value.
 	 */
-	public function test_context_values_set( $config, $expected ) {
-		get_context_store()->set(
-			[ 'test/foo' => 'bar' ]
-		);
+	public function test_context_values_set( array $context, array $config, array $expected ) {
+		get_context_store()->set( $context );
 
 		// 'test/use-context' is a registered type.
 		$component = new Component(
@@ -363,7 +363,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 		// Clean up.
 		get_context_store()->reset();
 
-		$this->assertSame(
+		$this->assertEquals(
 			$expected,
 			$component->get_config()
 		);
@@ -375,21 +375,42 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 * @return array[]
 	 */
 	public function provide_context_config_data() {
+		// Set up a generic object for setting context.
+		$obj = new stdClass();
+
+		$obj->test_prop = 'value';
+
 		return [
+			// String based context.
 			[
+				[ 'test/foo' => 'bar' ],
 				[],
 				[
 					'foo' => 'bar',
 					'baz' => 'default',
+					'obj' => 'default',
 				],
 			],
+			// Object based context.
 			[
+				[ 'test/obj' => $obj ],
+				[],
+				[
+					'foo' => 'default',
+					'baz' => 'default',
+					'obj' => 'value',
+				],
+			],
+			// Set context, but override via constructor.
+			[
+				[ 'test/foo' => 'bar' ],
 				[
 					'foo' => 'overridden',
 				],
 				[
 					'foo' => 'overridden',
 					'baz' => 'default',
+					'obj' => 'default',
 				],
 			],
 		];

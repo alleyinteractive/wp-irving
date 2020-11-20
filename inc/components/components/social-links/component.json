@@ -5,6 +5,16 @@
     "platforms": {
       "type": "array",
       "default": []
+    },
+    "analytics": {
+      "default": {
+        "click": {
+          "action": "Follow",
+          "category": "Engagement"
+        }
+      },
+      "description": "Analytics Data",
+      "type": "array"
     }
   }
 }
