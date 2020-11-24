@@ -489,6 +489,45 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test both methods for providing the component theme.
+	 */
+	public function test_set_component_theme() {
+		$expected = (object) [
+			'themeName'    => 'foo',
+			'themeOptions' => [
+				'default',
+			],
+			'bar'          => 'baz',
+			'className'    => '',
+			'style'        => [],
+		];
+
+		$legacy_component = new Component(
+			'example/test',
+			[
+				'theme'  => 'foo',
+				'config' => [
+					'bar' => 'baz',
+				],
+			]
+		);
+
+		$this->assertEquals( $expected, $legacy_component->to_array()['config'] );
+
+		$component = new Component(
+			'example/test',
+			[
+				'config' => [
+					'theme' => 'foo',
+					'bar'   => 'baz',
+				],
+			]
+		);
+
+		$this->assertEquals( $expected, $component->to_array()['config'] );
+	}
+
+	/**
 	 * Tests for the `jsonSerialize()` method, which only calls `to_array()`.
 	 *
 	 * @dataProvider get_components_to_serialize

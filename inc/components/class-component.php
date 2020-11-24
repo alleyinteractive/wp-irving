@@ -190,6 +190,11 @@ class Component implements JsonSerializable {
 			]
 		);
 
+		if ( ! empty( $args['config']['theme'] ) && 'irving/site-theme' !== $this->get_name() ) {
+			$args['theme'] = $args['config']['theme'];
+			unset( $args['config']['theme'] );
+		}
+
 		$this
 			->add_use_context( $args['use_context'] )
 			->apply_context()
