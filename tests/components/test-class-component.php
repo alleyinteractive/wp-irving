@@ -87,7 +87,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 
 		$this->assertSame( 'test/basic', $component->get_name(), 'Component name not set.' );
 		$this->assertSame( '', $component->get_alias(), 'Default alias not null.' );
-		$this->assertSame( [], $component->get_config(), 'Default config not empty.' );
+		$this->assertSame( [ 'theme' => 'default' ], $component->get_config(), 'Default config not empty.' );
 		$this->assertSame( [], $component->get_children(), 'Default children not empty.' );
 		$this->assertSame( 'default', $component->get_theme(), 'Default theme not set.' );
 		$this->assertSame( [ 'default' ], $component->get_theme_options(), 'Default theme options not set.' );
@@ -173,13 +173,21 @@ class Test_Class_Component extends WP_UnitTestCase {
 			// Empty config.
 			[
 				[],
-				[ 'test-default' => 'default' ],
+				[
+					'test-default' => 'default',
+					'theme'        => 'default',
+				],
 				'Default config values not set.',
 			],
 			// Override defaults.
 			[
-				[ 'test-default' => 'overridden' ],
-				[ 'test-default' => 'overridden' ],
+				[
+					'test-default' => 'overridden',
+				],
+				[
+					'test-default' => 'overridden',
+					'theme'        => 'default',
+				],
 				'Default config values not overridden.',
 			],
 			// Test type checking.
@@ -203,6 +211,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'test-object'  => $object,
 					'test-string'  => 'value',
 					'test-foo'     => 'value',
+					'theme'        => 'default',
 				],
 				'Setting a typed values not working.',
 			],
@@ -218,6 +227,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 				],
 				[
 					'test-default' => 'default',
+					'theme'        => 'default',
 				],
 				'Setting an incorrectly typed values not working.',
 			],
@@ -386,9 +396,10 @@ class Test_Class_Component extends WP_UnitTestCase {
 				[ 'test/foo' => 'bar' ],
 				[],
 				[
-					'foo' => 'bar',
-					'baz' => 'default',
-					'obj' => 'default',
+					'foo'   => 'bar',
+					'baz'   => 'default',
+					'obj'   => 'default',
+					'theme' => 'default',
 				],
 			],
 			// Object based context.
@@ -396,9 +407,10 @@ class Test_Class_Component extends WP_UnitTestCase {
 				[ 'test/obj' => $obj ],
 				[],
 				[
-					'foo' => 'default',
-					'baz' => 'default',
-					'obj' => 'value',
+					'foo'   => 'default',
+					'baz'   => 'default',
+					'obj'   => 'value',
+					'theme' => 'default',
 				],
 			],
 			// Set context, but override via constructor.
@@ -408,9 +420,10 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'foo' => 'overridden',
 				],
 				[
-					'foo' => 'overridden',
-					'baz' => 'default',
-					'obj' => 'default',
+					'foo'   => 'overridden',
+					'baz'   => 'default',
+					'obj'   => 'default',
+					'theme' => 'default',
 				],
 			],
 		];
@@ -454,8 +467,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 
 		$this->assertEquals(
 			[
-				'foo' => 'bar',
-				'baz' => 'qux',
+				'foo'   => 'bar',
+				'baz'   => 'qux',
+				'theme' => 'default',
 			],
 			$component->get_config()
 		);
@@ -486,6 +500,40 @@ class Test_Class_Component extends WP_UnitTestCase {
 			],
 			$component->get_children()
 		);
+	}
+
+	/**
+	 * Test both methods for providing the component theme.
+	 */
+	public function test_set_component_theme() {
+		$expected = [
+			'theme' => 'foo',
+			'bar'   => 'baz',
+		];
+
+		$legacy_component = new Component(
+			'example/test',
+			[
+				'theme'  => 'foo',
+				'config' => [
+					'bar' => 'baz',
+				],
+			]
+		);
+
+		$this->assertEquals( $expected, $legacy_component->get_config() );
+
+		$component = new Component(
+			'example/test',
+			[
+				'config' => [
+					'theme' => 'foo',
+					'bar'   => 'baz',
+				],
+			]
+		);
+
+		$this->assertEquals( $expected, $component->get_config() );
 	}
 
 	/**
