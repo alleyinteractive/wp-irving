@@ -478,6 +478,7 @@ class Test_Components extends WP_UnitTestCase {
 				'className'    => '',
 				'style'        => [],
 				'tag'          => 'div',
+				'theme'        => 'default',
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			],
