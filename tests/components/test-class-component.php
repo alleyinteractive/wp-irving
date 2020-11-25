@@ -507,8 +507,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 */
 	public function test_set_component_theme() {
 		$expected = [
-			'theme'     => 'foo',
-			'bar'       => 'baz',
+			'theme' => 'foo',
+			'bar'   => 'baz',
 		];
 
 		$legacy_component = new Component(
