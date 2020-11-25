@@ -361,6 +361,20 @@ class Component implements JsonSerializable {
 	}
 
 	/**
+	 * Unset a config property.
+	 *
+	 * @param string $key Config key name.
+	 * @return self
+	 */
+	private function unset_config_value( string $key ): self {
+		if ( ! empty( $this->config[ $key ] ) ) {
+			unset( $this->config[ $key ] );
+		}
+
+		return $this;
+	}
+
+	/**
 	 * Set schema for the component's config values.
 	 *
 	 * @param array $schema Config schema to set.
@@ -1026,6 +1040,9 @@ class Component implements JsonSerializable {
 		// Add the theme name to the config as Irving core expects.
 		$this->set_config_value( 'theme_name', self::camel_case( $this->get_theme() ) );
 		$this->set_config_value( 'theme_options', array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) );
+
+		// Remove the `theme` key to avoid confusion with `theme_name`.
+		$this->unset_config_value( 'theme' );
 
 		// Filter out hidden config values.
 		$config = $this->get_config();

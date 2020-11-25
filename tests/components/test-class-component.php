@@ -507,8 +507,8 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 */
 	public function test_set_component_theme() {
 		$expected = [
-			'theme' => 'foo',
-			'bar'   => 'baz',
+			'theme'     => 'foo',
+			'bar'       => 'baz',
 		];
 
 		$legacy_component = new Component(
@@ -577,7 +577,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/basic',
 					'_alias'   => '',
 					'config'   => (object) [
-						'theme'        => 'default',
 						'className'    => '',
 						'style'        => [],
 						'themeName'    => 'default',
@@ -602,7 +601,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'_alias'   => '',
 					'config'   => (object) [
 						'foo'          => 'bar',
-						'theme'        => 'default',
 						'className'    => '',
 						'style'        => [],
 						'themeName'    => 'default',
@@ -619,7 +617,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/alias',
 					'_alias'   => 'test/component',
 					'config'   => (object) [
-						'theme'        => 'default',
 						'className'    => '',
 						'style'        => [],
 						'themeName'    => 'default',
@@ -637,7 +634,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'_alias'   => '',
 					'config'   => (object) [
 						'testDefault'  => 'default',
-						'theme'        => 'default',
 						'className'    => '',
 						'style'        => [],
 						'themeName'    => 'default',
@@ -654,7 +650,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/theme-options',
 					'_alias'   => '',
 					'config'   => (object) [
-						'theme'        => 'default',
 						'className'    => '',
 						'style'        => [],
 						'themeName'    => 'default',
@@ -681,7 +676,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 							'key-one' => '',
 							'key_two' => '',
 						],
-						'theme'                            => 'default',
 						'className'                        => '',
 						'style'                            => [],
 						'themeName'                        => 'default',
@@ -710,7 +704,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'className'    => '',
 					'style'        => [],
 					'test'         => true,
-					'theme'        => 'default',
 					'themeName'    => 'default',
 					'themeOptions' => [
 						'default',
@@ -734,7 +727,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 				'config'   => (object) [
 					'className'    => '',
 					'style'        => [],
-					'theme'        => 'default',
 					'themeName'    => 'default',
 					'themeOptions' => [
 						'default',

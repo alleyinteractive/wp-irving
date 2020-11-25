@@ -287,7 +287,6 @@ class Test_Components extends WP_UnitTestCase {
 				'html'         => true,
 				'className'    => '',
 				'style'        => [],
-				'theme'        => 'default',
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			],
@@ -318,7 +317,6 @@ class Test_Components extends WP_UnitTestCase {
 					'showMeta'       => true,
 					'style'          => [],
 					'queryArgs'      => [],
-					'theme'          => 'default',
 				],
 			]
 		);
@@ -364,7 +362,6 @@ class Test_Components extends WP_UnitTestCase {
 					'showMeta'       => true,
 					'style'          => [],
 					'queryArgs'      => [],
-					'theme'          => 'default',
 				],
 			]
 		);
@@ -400,7 +397,6 @@ class Test_Components extends WP_UnitTestCase {
 				'postId'          => $this->get_post_id(),
 				'className'       => '',
 				'style'           => [],
-				'theme'           => 'default',
 				'themeName'       => 'default',
 				'themeOptions'    => [ 'default' ],
 			],
@@ -415,7 +411,6 @@ class Test_Components extends WP_UnitTestCase {
 						'className'    => '',
 						'style'        => [],
 						'target'       => '',
-						'theme'        => 'default',
 						'themeName'    => 'default',
 						'themeOptions' => [ 'default' ],
 					],
@@ -430,7 +425,6 @@ class Test_Components extends WP_UnitTestCase {
 								'oembed'       => false,
 								'className'    => '',
 								'style'        => [],
-								'theme'        => 'default',
 								'themeName'    => 'default',
 								'themeOptions' => [
 									'default',
@@ -478,7 +472,6 @@ class Test_Components extends WP_UnitTestCase {
 				'className'    => '',
 				'style'        => [],
 				'tag'          => 'div',
-				'theme'        => 'default',
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			],
@@ -508,7 +501,6 @@ class Test_Components extends WP_UnitTestCase {
 				'postId'       => $this->get_post_id(),
 				'className'    => '',
 				'style'        => [],
-				'theme'        => 'default',
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			],
@@ -545,7 +537,6 @@ class Test_Components extends WP_UnitTestCase {
 				'src'              => $image_attr[0],
 				'objectFit'        => 'cover',
 				'postId'           => $this->get_post_id(),
-				'theme'            => 'default',
 				'themeName'        => 'default',
 				'themeOptions'     => [ 'default' ],
 				'width'            => $image_attr[1],
@@ -584,7 +575,6 @@ class Test_Components extends WP_UnitTestCase {
 				'objectFit'    => 'cover',
 				'className'    => '',
 				'style'        => [],
-				'theme'        => 'default',
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			],
@@ -603,7 +593,6 @@ class Test_Components extends WP_UnitTestCase {
 						'src'              => $image_attr[0],
 						'objectFit'        => 'cover',
 						'postId'           => $this->get_post_id(),
-						'theme'            => 'default',
 						'themeName'        => 'default',
 						'themeOptions'     => [ 'default' ],
 						'width'            => $image_attr[1],
@@ -1739,7 +1728,6 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'className'    => '',
 				'style'        => [],
-				'theme'        => 'default',
 				'themeName'    => 'default',
 				'themeOptions' => [ 'default' ],
 			]
