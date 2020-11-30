@@ -17,6 +17,13 @@ class Parsely {
 	use Singleton;
 
 	/**
+	 * The option key for the integration.
+	 *
+	 * @var string
+	 */
+	private $option_key = 'parsely';
+
+	/**
 	 * Setup the integration.
 	 */
 	public function setup() {
@@ -26,8 +33,11 @@ class Parsely {
 		}
 
 		if ( ! is_admin() ) {
-			// Parse Parse.ly's head markup and inject it into the Head component.
+			// Parse Parse.ly's head JSON-LD markup and inject it into the Head component.
 			add_filter( 'wp_irving_component_children', [ $this, 'inject_parsely_tags_into_head_children' ], 10, 3 );
+
+			// Add Parse.ly's site ID to the props.
+			add_filter( 'wp_irving_integrations_option', [ $this, 'inject_parsely' ] );
 		}
 	}
 
@@ -63,5 +73,23 @@ class Parsely {
 		ob_start();
 		$parsely->insert_parsely_page();
 		return ob_get_clean();
+	}
+
+	/**
+	 * Inject Parse.ly props into the integrations manager option.
+	 *
+	 * @param array $options Integrations option array.
+	 * @return array Updated options.
+	 */
+	public function inject_parsely( array $options ): array {
+		$parsely_options = get_option( 'parsely' );
+		if ( empty( $parsely_options ) || empty( $parsely_options['apikey'] ) ) {
+			return $options;
+		}
+		// Get and validate the site.
+		$options[ $this->option_key ] = [
+			'site' => $parsely_options['apikey'],
+		];
+		return $options;
 	}
 }

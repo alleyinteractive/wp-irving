@@ -40,6 +40,7 @@ function auto_register_integrations() {
 		'google_tag_manager'      => __NAMESPACE__ . '\Google_Tag_Manager',
 		'new_relic'               => __NAMESPACE__ . '\New_Relic',
 		'pantheon'                => __NAMESPACE__ . '\Pantheon',
+		'parsely'                 => __NAMESPACE__ . '\Parsely',
 		'safe_redirect_manager'   => __NAMESPACE__ . '\Safe_Redirect_Manager',
 		'vip_go'                  => __NAMESPACE__ . '\VIP_Go',
 		'wpcom_legacy_redirector' => __NAMESPACE__ . '\WPCOM_Legacy_Redirector',
