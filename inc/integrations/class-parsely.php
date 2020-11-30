@@ -11,7 +11,7 @@ use WP_Irving\Components;
 use WP_Irving\Singleton;
 
 /**
- * Class to integrate Parsely with Irving.
+ * Class to integrate Parse.ly with Irving.
  */
 class Parsely {
 	use Singleton;
