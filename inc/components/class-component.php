@@ -1042,7 +1042,9 @@ class Component implements JsonSerializable {
 		$this->set_config_value( 'theme_options', array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) );
 
 		// Remove the `theme` key to avoid confusion with `theme_name`.
-		$this->unset_config_value( 'theme' );
+		if ( 'irving/site-theme' !== $this->get_name() ) {
+			$this->unset_config_value( 'theme' );
+		}
 
 		// Filter out hidden config values.
 		$config = $this->get_config();
