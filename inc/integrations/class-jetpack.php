@@ -54,7 +54,9 @@ class Jetpack {
 					'script',
 					[
 						'config' => [
-							'src' => 'https://stats.wp.com/e-' . gmdate( 'YW' ) . '.js',
+							'async' => 'async',
+							'defer' => 'defer',
+							'src'   => 'https://stats.wp.com/e-' . gmdate( 'YW' ) . '.js',
 						],
 					]
 				),
