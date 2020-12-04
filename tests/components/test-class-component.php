@@ -740,6 +740,61 @@ class Test_Class_Component extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Test camel casing disabled.
+	 *
+	 * @group camel-case
+	 */
+	public function test_disabling_camel_casing() {
+		// Disable camel casing during serialization.
+		add_filter( 'wp_irving_camel_case', '__return_false' );
+
+		$component = new Component(
+			'example/no-camels',
+			[
+				'config' => [
+					'under_score' => 'under_score',
+					'camelCase'   => 'camelCase',
+					'cabob-case'  => 'cabob-case',
+					'nested_case' => [
+						'under_score' => 'under_score',
+						'camelCase'   => 'camelCase',
+						'cabob-case'  => 'cabob-case',
+					],
+				],
+				'theme' => 'no_camels',
+			]
+		);
+
+		$expected = [
+			'name'     => 'example/no-camels',
+			'_alias'   => '',
+			'config'   => (object) [
+				'className'    => '',
+				'style'        => [],
+				'themeName'    => 'no_camels',
+				'themeOptions' => [
+					'default',
+				],
+				'under_score' => 'under_score',
+				'camelCase'   => 'camelCase',
+				'cabob-case'  => 'cabob-case',
+				'nested_case' => [
+					'under_score' => 'under_score',
+					'camelCase'   => 'camelCase',
+					'cabob-case'  => 'cabob-case',
+				],
+			],
+			'children' => [],
+		];
+
+		$this->assertEquals(
+			$expected,
+			$component->jsonSerialize(),
+		);
+
+	}
+
+	/**
 	 * Modify the config value of a component (as an array) using a filter.
 	 *
 	 * @param array $component Component (as an array).

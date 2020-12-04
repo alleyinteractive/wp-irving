@@ -955,12 +955,12 @@ class Component implements JsonSerializable {
 				is_array( $value )
 				&& false !== ( $this->get_schema()[ $key ]['camel_case_inner_keys'] ?? true )
 			) {
-					$value = self::camel_case_keys( $value );
+					$value = $this->camel_case_keys( $value );
 			}
 
 			// Camel case the key unless the schema explicitly states otherwise.
 			if ( false !== ( $this->get_schema()[ $key ]['camel_case_config_key'] ?? true ) ) {
-				$new_key = self::camel_case( $key );
+				$new_key = $this->camel_case( $key );
 			} else {
 				$new_key = $key;
 			}
@@ -1030,6 +1030,15 @@ class Component implements JsonSerializable {
 	 */
 	public function to_array(): array {
 
+		/**
+		 * Filter whether camel casing is enabled.
+		 *
+		 * @since 0.7.0
+         *
+		 * @param bool $do_camel_case Whether camel casing is enabled. Default true.
+		 */
+		$do_camel_case = apply_filters( 'wp_irving_camel_case', true );
+
 		// Ensure `class_name` config always exists, and serialize to a string.
 		$class_name = implode( ' ', (array) ( $this->get_config( 'class_name' ) ?? [] ) );
 		$this->set_config_value( 'class_name', $class_name );
@@ -1038,20 +1047,51 @@ class Component implements JsonSerializable {
 		$this->set_config_value( 'style', $this->get_config( 'style' ) ?? [] );
 
 		// Add the theme name to the config as Irving core expects.
-		$this->set_config_value( 'theme_name', self::camel_case( $this->get_theme() ) );
-		$this->set_config_value( 'theme_options', array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) );
+		$this->set_config_value(
+			'theme_name',
+			$do_camel_case ? $this->camel_case( $this->get_theme() ) : $this->get_theme()
+		);
+
+		$this->set_config_value(
+			'theme_options',
+			$do_camel_case ? array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) : $this->get_theme_options()
+		);
 
 		// Remove the `theme` key to avoid confusion with `theme_name`.
 		if ( 'irving/site-theme' !== $this->get_name() ) {
 			$this->unset_config_value( 'theme' );
 		}
 
-		// Filter out hidden config values.
 		$config = $this->get_config();
 
+		// Filter out hidden config values.
 		foreach ( $this->get_schema() as $key => $schema ) {
 			if ( $schema['hidden'] && isset( $config[ $key ] ) ) {
 				unset( $config[ $key ] );
+			}
+		}
+
+		// Handle camel casing of config keys.
+		if ( $do_camel_case ) {
+			// When camel casing is enabled, ensure all keys are camel cased.
+			$config = $this->camel_case_keys( $config );
+		} else {
+			/*
+			 * Even when disabled, some keys have to be camel cased,
+			 * so force those even when camel casing is disabled.
+			 */
+			$force_camel_keys = [
+				'class_name',
+				'theme_name',
+				'theme_options',
+			];
+
+			foreach( $config as $key => $value ) {
+				if ( in_array( $key, $force_camel_keys ) ) {
+					$new_key = $this->camel_case( $key );
+					$config[ $new_key ] = $value;
+					unset( $config[ $key ] );
+				}
 			}
 		}
 
@@ -1070,7 +1110,7 @@ class Component implements JsonSerializable {
 		return [
 			'name'     => $this->get_name(),
 			'_alias'   => $this->get_alias(),
-			'config'   => (object) $this->camel_case_keys( $config ),
+			'config'   => (object) $config,
 			'children' => $children,
 		];
 	}
