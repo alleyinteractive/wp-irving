@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="WP Starter Theme">
+<ruleset name="WP Irving">
 	<description>PHP_CodeSniffer standard for WP Irving.</description>
 
 	<!-- Attempt to read from a cache -->
