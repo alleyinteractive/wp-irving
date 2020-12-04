@@ -27,51 +27,46 @@ jobs:
   fast_finish: true
   include:
     - php: 7.3
-      env: WP_VERSION=latest
-    - php: 7.3
-      env: WP_TRAVISCI=phpcs
+      env: WP_VERSION=latest WP_TRAVISCI=phpcs
     - php: 7.4
-      env: WP_VERSION=trunk
+      env: WP_VERSION=trunk WP_TRAVISCI=phpcs
   allow_failures:
     - env: WP_VERSION=trunk
 
+before_install:
+  - bash bin/script-git-conflict-check.sh
+
 before_script:
+
+  - phpenv config-rm xdebug.ini || echo "Xdebug not available"
   - export PATH="$HOME/.config/composer/vendor/bin:$PATH"
   - |
-    if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
-      phpenv config-rm xdebug.ini
-    else
-      echo "xdebug.ini does not exist"
-    fi
-  - |
     if [[ ! -z "$WP_VERSION" ]] ; then
-      bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
-      composer global require "phpunit/phpunit=^7.5"
-      composer install
-    fi
-  - |
-    if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-      composer install
-    fi
-  - |
-    if [[ ! -z "$WP_VERSION" ]] ; then
+      # Install plugin dependencies.
       cd ../
       git clone https://github.com/10up/safe-redirect-manager.git
       git clone https://github.com/Automattic/WPCOM-Legacy-Redirector.git wpcom-legacy-redirector
       cd wp-irving
+
+      # Install PHPUnit.
+      composer global require "phpunit/phpunit=^7.5"
+
+      # Install WP Unit Tests.
+      bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
     fi
+  -  composer install
 
 script:
+  - |
+    if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
+      composer run phpcs
+    fi
   - |
     if [[ ! -z "$WP_VERSION" ]] ; then
       # For debugging.
       which phpunit
       phpunit
       WP_MULTISITE=1 phpunit
-    fi
-  - |
-    if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
-      composer run phpcs
     fi
 
 # Receive notifications for build results.
