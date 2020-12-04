@@ -7,7 +7,7 @@
     }
   ],
   "require-dev": {
-    "alleyinteractive/alley-coding-standards": "dev-master"
+    "alleyinteractive/alley-coding-standards": "dev-main"
   },
   "scripts": {
     "phpcs": "phpcs . -p",
