@@ -3,7 +3,7 @@
 	<description>PHP_CodeSniffer standard for WP Irving.</description>
 
 	<!-- Attempt to read from a cache -->
-	<arg name="cache" value=".phpcs-cache.json"/>
+	<arg name="cache" value=".cache/phpcs-cache.json"/>
 
 	<!-- Check up to 20 files simultaneously -->
 	<arg name="parallel" value="20"/>

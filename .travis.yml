@@ -17,7 +17,7 @@ branches:
 cache:
   directories:
     - $HOME/.config/composer/cache
-    - "./.phpcs-cache.json"
+    - .cache
 
 # Git clone depth.
 git:

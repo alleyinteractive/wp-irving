@@ -9,4 +9,4 @@ vendor/
 *.tar.gz
 *.zip
 .vscode
-.phpcs-cache.json
+.cache/*
