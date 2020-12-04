@@ -761,7 +761,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 						'cabob-case'  => 'cabob-case',
 					],
 				],
-				'theme' => 'no_camels',
+				'theme'  => 'no_camels',
 			]
 		);
 
@@ -775,10 +775,10 @@ class Test_Class_Component extends WP_UnitTestCase {
 				'themeOptions' => [
 					'default',
 				],
-				'under_score' => 'under_score',
-				'camelCase'   => 'camelCase',
-				'cabob-case'  => 'cabob-case',
-				'nested_case' => [
+				'under_score'  => 'under_score',
+				'camelCase'    => 'camelCase',
+				'cabob-case'   => 'cabob-case',
+				'nested_case'  => [
 					'under_score' => 'under_score',
 					'camelCase'   => 'camelCase',
 					'cabob-case'  => 'cabob-case',

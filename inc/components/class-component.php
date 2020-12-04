@@ -1034,7 +1034,7 @@ class Component implements JsonSerializable {
 		 * Filter whether camel casing is enabled.
 		 *
 		 * @since 0.7.0
-         *
+		 *
 		 * @param bool $do_camel_case Whether camel casing is enabled. Default true.
 		 */
 		$do_camel_case = apply_filters( 'wp_irving_camel_case', true );
@@ -1086,9 +1086,10 @@ class Component implements JsonSerializable {
 				'theme_options',
 			];
 
-			foreach( $config as $key => $value ) {
+			foreach ( $config as $key => $value ) {
 				if ( in_array( $key, $force_camel_keys ) ) {
 					$new_key = $this->camel_case( $key );
+
 					$config[ $new_key ] = $value;
 					unset( $config[ $key ] );
 				}
