@@ -17,6 +17,7 @@ branches:
 cache:
   directories:
     - $HOME/.config/composer/cache
+    - "./.phpcs-cache.json"
 
 # Git clone depth.
 git:
@@ -37,7 +38,6 @@ before_install:
   - bash bin/script-git-conflict-check.sh
 
 before_script:
-
   - phpenv config-rm xdebug.ini || echo "Xdebug not available"
   - export PATH="$HOME/.config/composer/vendor/bin:$PATH"
   - |
