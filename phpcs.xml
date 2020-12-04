@@ -2,6 +2,18 @@
 <ruleset name="WP Starter Theme">
 	<description>PHP_CodeSniffer standard for WP Irving.</description>
 
+	<!-- Attempt to read from a cache -->
+	<arg name="cache" value=".phpcs-cache.json"/>
+
+	<!-- Check up to 20 files simultaneously -->
+	<arg name="parallel" value="20"/>
+
+	<!-- Set the memory limit to 256M.
+		 For most standard PHP configurations, this means the memory limit will temporarily be raised.
+		 Ref: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Advanced-Usage#specifying-phpini-settings
+	-->
+	<ini name="memory_limit" value="256M"/>
+
     <!-- Include Alley Rules -->
     <rule ref="Alley-Interactive" />
 
