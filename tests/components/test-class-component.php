@@ -741,8 +741,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 
 	/**
 	 * Test camel casing disabled.
-	 *
-	 * @group camel-case
 	 */
 	public function test_disabling_camel_casing() {
 		// Disable camel casing during serialization.
