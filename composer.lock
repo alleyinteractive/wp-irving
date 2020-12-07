@@ -4,26 +4,27 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a0c756484cf8d02e1c3909082f462ffd",
+    "content-hash": "14abba186f87f1f3d64f0d5366887224",
     "packages": [],
     "packages-dev": [
         {
             "name": "alleyinteractive/alley-coding-standards",
-            "version": "dev-master",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/alleyinteractive/alley-coding-standards.git",
-                "reference": "40ac47bc2119934a767a3c0ef194c7943b07c658"
+                "reference": "d108ec4b531af98781a9294a01ca58c028870bd1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/alleyinteractive/alley-coding-standards/zipball/40ac47bc2119934a767a3c0ef194c7943b07c658",
-                "reference": "40ac47bc2119934a767a3c0ef194c7943b07c658",
+                "url": "https://api.github.com/repos/alleyinteractive/alley-coding-standards/zipball/d108ec4b531af98781a9294a01ca58c028870bd1",
+                "reference": "d108ec4b531af98781a9294a01ca58c028870bd1",
                 "shasum": ""
             },
             "require": {
                 "automattic/vipwpcs": "^2.1.0",
                 "dealerdirect/phpcodesniffer-composer-installer": "*",
+                "phpcompatibility/phpcompatibility-wp": "*",
                 "squizlabs/php_codesniffer": "^3.5.0",
                 "wp-coding-standards/wpcs": "^2.3.0"
             },
@@ -36,9 +37,9 @@
             "description": "PHPCS sniffs for Alley Interactive",
             "support": {
                 "issues": "https://github.com/alleyinteractive/alley-coding-standards/issues",
-                "source": "https://github.com/alleyinteractive/alley-coding-standards/tree/0.2.0"
+                "source": "https://github.com/alleyinteractive/alley-coding-standards/tree/main"
             },
-            "time": "2020-10-14T21:50:28+00:00"
+            "time": "2020-10-26T15:47:28+00:00"
         },
         {
             "name": "automattic/vipwpcs",
@@ -161,6 +162,178 @@
                 "source": "https://github.com/dealerdirect/phpcodesniffer-composer-installer"
             },
             "time": "2020-06-25T14:57:39+00:00"
+        },
+        {
+            "name": "phpcompatibility/php-compatibility",
+            "version": "9.3.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPCompatibility/PHPCompatibility.git",
+                "reference": "9fb324479acf6f39452e0655d2429cc0d3914243"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibility/zipball/9fb324479acf6f39452e0655d2429cc0d3914243",
+                "reference": "9fb324479acf6f39452e0655d2429cc0d3914243",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "squizlabs/php_codesniffer": "^2.3 || ^3.0.2"
+            },
+            "conflict": {
+                "squizlabs/php_codesniffer": "2.6.2"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.5 || ^5.0 || ^6.0 || ^7.0"
+            },
+            "suggest": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5 || This Composer plugin will sort out the PHPCS 'installed_paths' automatically.",
+                "roave/security-advisories": "dev-master || Helps prevent installing dependencies with known security issues."
+            },
+            "type": "phpcodesniffer-standard",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Wim Godden",
+                    "homepage": "https://github.com/wimg",
+                    "role": "lead"
+                },
+                {
+                    "name": "Juliette Reinders Folmer",
+                    "homepage": "https://github.com/jrfnl",
+                    "role": "lead"
+                },
+                {
+                    "name": "Contributors",
+                    "homepage": "https://github.com/PHPCompatibility/PHPCompatibility/graphs/contributors"
+                }
+            ],
+            "description": "A set of sniffs for PHP_CodeSniffer that checks for PHP cross-version compatibility.",
+            "homepage": "http://techblog.wimgodden.be/tag/codesniffer/",
+            "keywords": [
+                "compatibility",
+                "phpcs",
+                "standards"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPCompatibility/PHPCompatibility/issues",
+                "source": "https://github.com/PHPCompatibility/PHPCompatibility"
+            },
+            "time": "2019-12-27T09:44:58+00:00"
+        },
+        {
+            "name": "phpcompatibility/phpcompatibility-paragonie",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPCompatibility/PHPCompatibilityParagonie.git",
+                "reference": "b862bc32f7e860d0b164b199bd995e690b4b191c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibilityParagonie/zipball/b862bc32f7e860d0b164b199bd995e690b4b191c",
+                "reference": "b862bc32f7e860d0b164b199bd995e690b4b191c",
+                "shasum": ""
+            },
+            "require": {
+                "phpcompatibility/php-compatibility": "^9.0"
+            },
+            "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5",
+                "paragonie/random_compat": "dev-master",
+                "paragonie/sodium_compat": "dev-master"
+            },
+            "suggest": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5 || This Composer plugin will sort out the PHP_CodeSniffer 'installed_paths' automatically.",
+                "roave/security-advisories": "dev-master || Helps prevent installing dependencies with known security issues."
+            },
+            "type": "phpcodesniffer-standard",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Wim Godden",
+                    "role": "lead"
+                },
+                {
+                    "name": "Juliette Reinders Folmer",
+                    "role": "lead"
+                }
+            ],
+            "description": "A set of rulesets for PHP_CodeSniffer to check for PHP cross-version compatibility issues in projects, while accounting for polyfills provided by the Paragonie polyfill libraries.",
+            "homepage": "http://phpcompatibility.com/",
+            "keywords": [
+                "compatibility",
+                "paragonie",
+                "phpcs",
+                "polyfill",
+                "standards"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPCompatibility/PHPCompatibilityParagonie/issues",
+                "source": "https://github.com/PHPCompatibility/PHPCompatibilityParagonie"
+            },
+            "time": "2019-11-04T15:17:54+00:00"
+        },
+        {
+            "name": "phpcompatibility/phpcompatibility-wp",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/PHPCompatibility/PHPCompatibilityWP.git",
+                "reference": "41bef18ba688af638b7310666db28e1ea9158b2f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/PHPCompatibility/PHPCompatibilityWP/zipball/41bef18ba688af638b7310666db28e1ea9158b2f",
+                "reference": "41bef18ba688af638b7310666db28e1ea9158b2f",
+                "shasum": ""
+            },
+            "require": {
+                "phpcompatibility/php-compatibility": "^9.0",
+                "phpcompatibility/phpcompatibility-paragonie": "^1.0"
+            },
+            "require-dev": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5"
+            },
+            "suggest": {
+                "dealerdirect/phpcodesniffer-composer-installer": "^0.5 || This Composer plugin will sort out the PHP_CodeSniffer 'installed_paths' automatically.",
+                "roave/security-advisories": "dev-master || Helps prevent installing dependencies with known security issues."
+            },
+            "type": "phpcodesniffer-standard",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Wim Godden",
+                    "role": "lead"
+                },
+                {
+                    "name": "Juliette Reinders Folmer",
+                    "role": "lead"
+                }
+            ],
+            "description": "A ruleset for PHP_CodeSniffer to check for PHP cross-version compatibility issues in projects, while accounting for polyfills provided by WordPress.",
+            "homepage": "http://phpcompatibility.com/",
+            "keywords": [
+                "compatibility",
+                "phpcs",
+                "standards",
+                "wordpress"
+            ],
+            "support": {
+                "issues": "https://github.com/PHPCompatibility/PHPCompatibilityWP/issues",
+                "source": "https://github.com/PHPCompatibility/PHPCompatibilityWP"
+            },
+            "time": "2019-08-28T14:22:28+00:00"
         },
         {
             "name": "sirbrillig/phpcs-variable-analysis",

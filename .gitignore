@@ -9,3 +9,4 @@ vendor/
 *.tar.gz
 *.zip
 .vscode
+.cache/*
