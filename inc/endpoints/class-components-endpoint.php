@@ -280,8 +280,9 @@ class Components_Endpoint extends Endpoint {
 					// This is a verbose page match, let's check to be sure about it.
 					// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_page_by_path_get_page_by_path
 					$page = get_page_by_path( $matches[ $varmatch[1] ], OBJECT, $page_type );
-
 					if ( ! $page ) {
+						// If the page doesn't exist, re-assert it in the query to trigger a 404.
+						$query = "pagename=$trimmed_path";
 						continue;
 					}
 
