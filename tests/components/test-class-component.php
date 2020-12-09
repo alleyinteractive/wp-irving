@@ -183,10 +183,11 @@ class Test_Class_Component extends WP_UnitTestCase {
 			[
 				[
 					'test-default' => 'overridden',
+					'theme'        => 'overridden',
 				],
 				[
 					'test-default' => 'overridden',
-					'theme'        => 'default',
+					'theme'        => 'overridden',
 				],
 				'Default config values not overridden.',
 			],
@@ -473,6 +474,36 @@ class Test_Class_Component extends WP_UnitTestCase {
 			],
 			$component->get_config()
 		);
+	}
+
+	/**
+	 * Test overriding `theme` in a config callback.
+	 */
+	public function test_config_callback_for_theme() {
+		$name = 'example/component';
+
+		/*
+		 * Register component with callback.
+		 *
+		 * We're using a callback that uses the config in order
+		 * to ensure that the callback is passed an array.
+		 */
+		get_registry()->register_component(
+			$name,
+			[
+				'config_callback' => function ( array $config ) {
+					$config['theme'] = 'fred';
+					return $config;
+				},
+			]
+		);
+
+		$component = new Component( $name );
+
+		// Clean up.
+		get_registry()->unregister_component( $name );
+
+		$this->assertEquals( 'fred', $component->get_theme() );
 	}
 
 	/**
