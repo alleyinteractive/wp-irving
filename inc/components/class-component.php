@@ -199,7 +199,7 @@ class Component implements JsonSerializable {
 			->apply_context()
 			->set_config( $args['config'] )
 			->hydrate_config()
-			->set_theme( 'irving/site-theme' !== $this->get_name() ? $args['config']['theme'] : $args['theme'] )
+			->set_theme( 'irving/site-theme' !== $this->get_name() ? $this->get_config( 'theme' ) : $args['theme'] )
 			->set_children( $args['children'] );
 
 		return $this;
