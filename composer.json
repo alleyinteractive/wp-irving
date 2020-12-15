@@ -11,6 +11,7 @@
   },
   "scripts": {
     "phpcs": "phpcs . -p",
-    "phpcbf": "phpcbf ."
+    "phpcbf": "phpcbf .",
+    "changelog": "./bin/script-draft-changelog.sh"
   }
 }

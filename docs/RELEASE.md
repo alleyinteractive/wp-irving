@@ -4,7 +4,7 @@ The following steps should be followed to publish a release of the WP Irving plu
 
 1. If this is a major (X.0.0) or minor release (X.Y.0), Create release branch off of the `main` branch: `git checkout -b release/{X.Y}`. If this is a point release (X.Y.Z), check out the relevant release branch `git checkout release/{X.Y}` that already exists.
 2. Update version number in the plugin header
-3. Update changelog in readme.txt and run `npm run readme` to convert the txt file to a markdown file.
+3. Update changelog in readme.txt and run `npm run readme` to convert the txt file to a markdown file. To quickly draft a changelog, you can run `composer changelog` to get a list of merge commits since the last tag.
 4. Open a PR from the release branch back to `main`.
 5. Create a release candidate:
     * Draft a release from [the GitHub new release page](https://github.com/alleyinteractive/wp-irving/releases/new).
