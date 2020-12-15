@@ -21,6 +21,17 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 = 0.7.0 =
 
+* Add: CODEOWNERS file to the repo (#291)
+* Add: Implement redirect logic for old post slugs (#295)
+* Add: Support setting the theme in the component config object (#296)
+* Add: Backend functionality of new Parse.ly component  (#297)
+* Fix: Don't unset theme config for the site-theme component (#298)
+* Update: Make Jetpack script async and deferred (#299)
+* Add: Ability to disable camel casing via filter (#300)
+* Update: Optimize Travis-CI builds (#301)
+* Fix: Ensure nonexistent URLs return a 404 (#302)
+* Fix: Ability to override theme in a config callback (#303)
+
 = 0.6.0 =
 
 * Add irving/template-part component (#281)
