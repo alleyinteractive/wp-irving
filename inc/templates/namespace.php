@@ -62,6 +62,11 @@ function load_template(
 		}
 	}
 
+	// If empty, we can assume that no templates have been setup.
+	if ( empty( $data['defaults'] ) && empty( $data['page'] ) ) {
+		$data = setup_hello_world_notice( $data, $query, $context );
+	}
+
 	// Automatically setup an admin bar component.
 	$data = \WP_Irving\setup_admin_bar( $data, $query, $context, $path, $request, $endpoint );
 
@@ -764,4 +769,58 @@ function inject_body_classes( array $children, array $config, string $name ): ar
 	);
 
 	return $children;
+}
+
+/**
+ * Inject "Hello World" components into the endpoint response when no custom
+ * templating has been found.
+ *
+ * @param array    $data    Data object to be hydrated by templates.
+ * @param WP_Query $query   The current WP_Query object.
+ * @param string   $context The context for this request.
+ * @return array The updated endpoint data.
+ */
+function setup_hello_world_notice( array $data, WP_Query $query, string $context ): array {
+
+	$data['defaults'][] = new Components\Component(
+		'irving/container',
+		[
+			'config'   => [
+				'max_width' => 'sm',
+				'style'     => [
+					'background'  => '#EEEEEE',
+					'line-height' => '1.4',
+					'font-family' => 'helvetica',
+					'margin-top'  => '1rem',
+					'padding'     => '1rem',
+					'text-align'  => 'center',
+				],
+			],
+			'children' => [
+				new Components\Component(
+					'irving/text',
+					[
+						'theme'  => 'h2',
+						'config' => [
+							'content' => __( 'Welcome to Irving', 'wp-irving' ),
+							'tag'     => 'h2',
+						],
+					]
+				),
+				new Components\Component(
+					'irving/text',
+					[
+						'config' => [
+							'content' => __( 'You are seeing this message because your WordPress theme does not have any Irving templating.<br/><br/>Checkout the <a href="https://storybook.irvingjs.com?path=/docs/tutorial-introduction--page">Irving tutorial</a> for next steps towards your Irving site.', 'wp-irving' ),
+							'html'    => true,
+						],
+					]
+				),
+			],
+		]
+	);
+
+	$data['page'] = $data['defaults'];
+
+	return $data;
 }
