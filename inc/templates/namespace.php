@@ -811,7 +811,7 @@ function setup_hello_world_notice( array $data, WP_Query $query, string $context
 					'irving/text',
 					[
 						'config' => [
-							'content' => __( 'You are seeing this message because your WordPress theme does not have any Irving templating.<br/><br/>Checkout the <a href="https://storybook.irvingjs.com?path=/docs/tutorial-introduction--page">Irving tutorial</a> for next steps towards your Irving site.', 'wp-irving' ),
+							'content' => __( '<p style="padding-bottom: 10px;">You are seeing this message because your WordPress theme does not have any Irving templating.</p><p>Checkout the <a href="https://storybook.irvingjs.com?path=/docs/tutorial-introduction--page">Irving tutorial</a> for next steps towards your Irving site.</p>', 'wp-irving' ),
 							'html'    => true,
 						],
 					]
