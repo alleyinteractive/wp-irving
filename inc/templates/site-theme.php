@@ -50,7 +50,7 @@ function setup_site_theme_provider( array $data ): array {
  * @param mixed  $default  Default value if selector fails.
  * @return array|string
  */
-function get_site_theme( $selector = '', $default = null ) {
+function get_site_theme( string $selector = '', $default = null ) {
 
 	/**
 	 * Filter to modify the site theme.
@@ -86,7 +86,7 @@ function get_site_theme( $selector = '', $default = null ) {
 		do {
 			$default = $value;
 			$value   = get_site_theme( $value, $default );
-		} while ( $default !== $value );
+		} while ( $default !== $value & is_string( $value ) );
 	}
 
 	// Return the value found at the final selector segment.
