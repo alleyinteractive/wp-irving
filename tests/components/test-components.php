@@ -1240,7 +1240,7 @@ class Test_Components extends WP_UnitTestCase {
 				'menu-item-parent-id' => ( $key > 1 ) ? $menu_items[ $key - 1 ] : 0,
 			];
 
-			switch( $key ) {
+			switch ( $key ) {
 				case 0:
 				case 1:
 				default:
@@ -1248,15 +1248,15 @@ class Test_Components extends WP_UnitTestCase {
 					break;
 
 				case 2:
-					$menu_args['menu-item-parent-id'] = $menu_items[ 1 ];
+					$menu_args['menu-item-parent-id'] = $menu_items[1];
 					break;
 
 				case 3:
-					$menu_args['menu-item-parent-id'] = $menu_items[ 1 ];
+					$menu_args['menu-item-parent-id'] = $menu_items[1];
 					break;
 
 				case 4:
-					$menu_args['menu-item-parent-id'] = $menu_items[ 3 ];
+					$menu_args['menu-item-parent-id'] = $menu_items[3];
 					break;
 			}
 
@@ -1327,7 +1327,8 @@ class Test_Components extends WP_UnitTestCase {
 										],
 										'children' => [],
 									]
-								),$this->get_expected_component(
+								),
+								$this->get_expected_component(
 									'irving/menu-item',
 									[
 										'config'   => [
