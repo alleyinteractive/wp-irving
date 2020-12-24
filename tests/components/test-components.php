@@ -1221,7 +1221,7 @@ class Test_Components extends WP_UnitTestCase {
 	 */
 	public function test_component_site_menu() {
 		// Create some test pages.
-		$posts = $this->factory->post->create_many( 4, [ 'post_type' => 'page' ] );
+		$posts = $this->factory->post->create_many( 5, [ 'post_type' => 'page' ] );
 
 		// Create a test menu.
 		$menu_id = wp_create_nav_menu( 'test-menu' );
@@ -1239,6 +1239,26 @@ class Test_Components extends WP_UnitTestCase {
 				// Menus above the second in the array children of the previous item.
 				'menu-item-parent-id' => ( $key > 1 ) ? $menu_items[ $key - 1 ] : 0,
 			];
+
+			switch( $key ) {
+				case 0:
+				case 1:
+				default:
+					$menu_args['menu-item-parent-id'] = 0;
+					break;
+
+				case 2:
+					$menu_args['menu-item-parent-id'] = $menu_items[ 1 ];
+					break;
+
+				case 3:
+					$menu_args['menu-item-parent-id'] = $menu_items[ 1 ];
+					break;
+
+				case 4:
+					$menu_args['menu-item-parent-id'] = $menu_items[ 3 ];
+					break;
+			}
 
 			$menu_items[] = wp_update_nav_menu_item( $menu_id, 0, $menu_args );
 		}
@@ -1305,6 +1325,20 @@ class Test_Components extends WP_UnitTestCase {
 											'title'    => get_the_title( $menu_items[2] ),
 											'url'      => get_the_permalink( $posts[2] ),
 										],
+										'children' => [],
+									]
+								),$this->get_expected_component(
+									'irving/menu-item',
+									[
+										'config'   => [
+											'attributeTitle' => '',
+											'classes'  => [],
+											'id'       => $menu_items[3],
+											'parentId' => $menu_items[1],
+											'target'   => '',
+											'title'    => get_the_title( $menu_items[3] ),
+											'url'      => get_the_permalink( $posts[3] ),
+										],
 										'children' => [
 											$this->get_expected_component(
 												'irving/menu-item',
@@ -1312,11 +1346,11 @@ class Test_Components extends WP_UnitTestCase {
 													'config' => [
 														'attributeTitle' => '',
 														'classes'  => [],
-														'id'       => $menu_items[3],
-														'parentId' => $menu_items[2],
+														'id'       => $menu_items[4],
+														'parentId' => $menu_items[3],
 														'target'   => '',
-														'title'    => get_the_title( $menu_items[3] ),
-														'url'      => get_the_permalink( $posts[3] ),
+														'title'    => get_the_title( $menu_items[4] ),
+														'url'      => get_the_permalink( $posts[4] ),
 													],
 												]
 											),
