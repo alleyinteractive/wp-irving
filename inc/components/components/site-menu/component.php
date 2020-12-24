@@ -20,7 +20,7 @@ register_component_from_config(
 	[
 		'config_callback'   => function ( array $config ): array {
 
-			// Get menu ID for the selected location.
+			// Get menu ID (int) for the selected location.
 			$config['menu_id'] = get_nav_menu_locations()[ $config['location'] ] ?? 0;
 
 			if ( ! $config['menu_id'] ) {
@@ -34,7 +34,10 @@ register_component_from_config(
 				return $config;
 			}
 
-			$config['menu_name'] = html_entity_decode( $menu_object->name ?? $config['menu_name'] );
+			// Use the Menu Object name if not declared explicitly.
+			if ( empty( $config['menu_name'] ) && isset( $menu_object->name ) ) {
+				$config['menu_name'] = html_entity_decode( $menu_object->name );
+			}
 
 			return $config;
 		},
@@ -47,7 +50,12 @@ register_component_from_config(
 				return $children;
 			}
 
-			$menu_items = wp_get_nav_menu_items( $config['menu_name'] );
+			$menu_items = wp_get_nav_menu_items( $config['menu_id'] );
+
+			// Validate $menu_items is an array of items.
+			if ( ! is_array( $menu_items ) ) {
+				return $children;
+			}
 
 			/*
 			 * Sort the menu items into two groups: top level items, and a list

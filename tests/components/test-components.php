@@ -1376,6 +1376,38 @@ class Test_Components extends WP_UnitTestCase {
 
 		$this->assertComponentEquals( $expected, $component );
 
+		// Ensure the menu name defaults to the name set in WP.
+		$this->assertEquals(
+			(
+				new Component(
+					'irving/site-menu',
+					[
+						'config' => [
+							'location' => 'test-location',
+						],
+					]
+				)
+			)->get_config( 'menu_name' ),
+			'test-menu',
+			'The menu name is not defaulting to test-menu.'
+		);
+
+		// Ensure the menu name can be set explicitly.
+		$this->assertEquals(
+			(
+				new Component(
+					'irving/site-menu',
+					[
+						'config' => [
+							'location'  => 'test-location',
+							'menu_name' => 'About Us',
+						],
+					]
+				)
+			)->get_config( 'menu_name' ),
+			'About Us',
+			'The menu name was not explicitly set via config.'
+		);
 	}
 
 	/**
