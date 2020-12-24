@@ -105,7 +105,7 @@ function convert_menu_to_components( WP_Post $menu_item, &$children = [] ) {
 
 	if ( isset( $children[ $menu_item->ID ] ) ) {
 		foreach ( $children[ $menu_item->ID ] as $child ) {
-			$component->set_child( convert_menu_to_components( $child, $children ) );
+			$component->append_child( convert_menu_to_components( $child, $children ) );
 		}
 
 		// Remove children of this item once they're converted.
