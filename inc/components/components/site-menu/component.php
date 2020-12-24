@@ -52,6 +52,11 @@ register_component_from_config(
 
 			$menu_items = wp_get_nav_menu_items( $config['menu_id'] );
 
+			// Validate $menu_items is an array of items.
+			if ( ! is_array( $menu_items ) ) {
+				return $children;
+			}
+
 			/*
 			 * Sort the menu items into two groups: top level items, and a list
 			 * of sub-menu items organized by parent ID. Then we can recursively
