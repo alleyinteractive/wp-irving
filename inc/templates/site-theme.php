@@ -52,12 +52,19 @@ function setup_site_theme_provider( array $data ): array {
  */
 function get_site_theme( string $selector = '', $default = null ) {
 
-	/**
-	 * Filter to modify the site theme.
-	 *
-	 * @var array
-	 */
-	$theme = apply_filters( 'wp_irving_setup_site_theme', get_site_theme_from_json_files() );
+	// Get cached site theme value, if available.
+	$cache_key = 'wp_irving_site_theme';
+	$theme     = get_transient( $cache_key );
+	if ( false === $theme ) {
+		/**
+		 * Filter to modify the site theme.
+		 *
+		 * @var array
+		 */
+		$theme = apply_filters( 'wp_irving_setup_site_theme', get_site_theme_from_json_files() );
+		// Cache the value.
+		set_transient( $cache_key, $theme, 30 );
+	}
 
 	// Get the entire theme.
 	if ( empty( $selector ) ) {
