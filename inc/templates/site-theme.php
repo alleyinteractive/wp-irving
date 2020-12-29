@@ -54,7 +54,7 @@ function get_site_theme( string $selector = '', $default = null ) {
 
 	// Get cached site theme value, if available.
 	$cache_key = 'wp_irving_site_theme';
-	$theme     = get_transient( $cache_key );
+	$theme     = wp_cache_get( $cache_key );
 	if ( false === $theme ) {
 		/**
 		 * Filter to modify the site theme.
@@ -63,7 +63,7 @@ function get_site_theme( string $selector = '', $default = null ) {
 		 */
 		$theme = apply_filters( 'wp_irving_setup_site_theme', get_site_theme_from_json_files() );
 		// Cache the value.
-		set_transient( $cache_key, $theme, 30 );
+		wp_cache_set( $cache_key, $theme, '', 1 * MINUTE_IN_SECONDS );
 	}
 
 	// Get the entire theme.
