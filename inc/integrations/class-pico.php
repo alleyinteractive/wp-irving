@@ -72,7 +72,7 @@ class Pico {
 			}
 
 			if ( ! defined( 'PP_WIDGET_ENDPOINT' ) ) {
-				define( 'PP_WIDGET_ENDPOINT', 'https://widget.staging.pico.tools' ); // phpcs:ignore
+				define( 'PP_WIDGET_ENDPOINT', 'https://gadget.staging.pico.tools' ); // phpcs:ignore
 			}
 		}
 	}
