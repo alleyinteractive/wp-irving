@@ -883,7 +883,7 @@ class Test_Components extends WP_UnitTestCase {
 					],
 					'platformData' => [],
 					'postId'       => $this->get_post_id(),
-					'title'        => get_the_title( $this->get_post_id() ),
+					'title'        => 'It’s like this & that.',
 					'url'          => get_the_permalink( $this->get_post_id() ),
 				],
 			]
