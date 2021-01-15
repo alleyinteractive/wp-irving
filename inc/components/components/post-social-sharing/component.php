@@ -32,7 +32,7 @@ register_component_from_config(
 				[
 					'description' => apply_filters( 'the_excerpt', get_the_excerpt( $post ) ), // phpcs:ignore
 					'image_url'   => get_the_post_thumbnail_url( $post, 'full' ),
-					'title'       => get_the_title( $post ),
+					'title'       => html_entity_decode( get_the_title( $post ), ENT_QUOTES, get_bloginfo( 'charset' ) ),
 					'url'         => get_the_permalink( $post ),
 				]
 			);
