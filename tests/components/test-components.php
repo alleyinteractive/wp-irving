@@ -90,6 +90,20 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Helper to get the title.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string Title.
+	 */
+	public function get_title( int $post_id = 0 ): string {
+		if ( empty( $post_id ) ) {
+			$post_id = $this->get_post_id();
+		}
+
+		return html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, get_bloginfo( 'charset' ) );
+	}
+
+	/**
 	 * Helper to get the post content rendered.
 	 *
 	 * @param int $post_id Post ID.
@@ -883,7 +897,7 @@ class Test_Components extends WP_UnitTestCase {
 					],
 					'platformData' => [],
 					'postId'       => $this->get_post_id(),
-					'title'        => 'It’s like this & that.',
+					'title'        => $this->get_title(),
 					'url'          => get_the_permalink( $this->get_post_id() ),
 				],
 			]
