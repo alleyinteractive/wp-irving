@@ -18,7 +18,7 @@ register_component_from_config(
 	__DIR__ . '/component',
 	[
 		'config_callback' => function ( array $config ): array {
-			$config['value'] = get_bloginfo( $config['key'] );
+			$config['value'] = html_entity_decode( get_bloginfo( $config['key'] ), ENT_QUOTES, get_bloginfo( 'charset' ) );
 			return $config;
 		},
 	]

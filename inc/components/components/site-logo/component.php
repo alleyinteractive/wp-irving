@@ -18,7 +18,7 @@ register_component_from_config(
 		'config_callback' => function ( array $config ): array {
 
 			// Set the site name.
-			$config['site_name'] = get_bloginfo( 'name' );
+			$config['site_name'] = html_entity_decode( get_bloginfo( 'name' ), ENT_QUOTES, get_bloginfo( 'charset' ) );
 
 			// If we have a logo, pass along the url.
 			// @todo update this to use the image component.
