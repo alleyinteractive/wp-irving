@@ -19,6 +19,17 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 == Changelog ==
 
+= 0.8.0 =
+
+* Add: Display a Welcome to Irving message when template files do not exist (#305)
+* Fix: Ensure children site-menu items are appended, not overwritten (#306)
+* Fix: Update recursive site theme loop so non-string values are skipped (#309)
+* Fix: Update site-menu component to allow explicitly setting the menu name (#307)
+* Fix: Cache full site theme value to improve performance (#310)
+* Add: Add script for drafting changelogs (#304)
+* Update: Update Pico staging URL in our integration (#311)
+* Fix: Decode HTML entities for title in social sharing component (#312)
+
 = 0.7.0 =
 
 * Add: CODEOWNERS file to the repo (#291)
