@@ -1,15 +1,14 @@
-name: Testing Suite
+name: Unit tests
 
 on:
   push:
     branches:
       - main
   pull_request:
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
   tests:
+    name: PHPUnit
     runs-on: ubuntu-latest
 
     services:
@@ -25,15 +24,15 @@ jobs:
         ports:
           - 6379:6379
         options: --entrypoint redis-server
+
     continue-on-error: ${{ matrix.can_fail }}
+
     strategy:
       fail-fast: true
       matrix:
         php: [7.4]
         wp_version: ["latest"]
         can_fail: [false]
-
-    name: PHP ${{ matrix.php }} -- ${{ matrix.wp_version }}
     env:
       WP_DEVELOP_DIR: /tmp/wordpress
       WP_CORE_DIR: /tmp/wordpress
@@ -63,38 +62,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd
-          tools: composer:v2
-          coverage: none
-
       - name: Setup Memcached
         uses: niden/actions-memcached@v7
 
-      - name: Validate Composer
-        run: composer validate --strict
+      - name: Install WordPress tests
+        shell: bash
+        run: |
+          bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
 
-      - name: Install dependencies
-        uses: nick-invision/retry@v1
+      - name: Run PHPUnit
+        uses: php-actions/phpunit@v2
         with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer install
+          version: 7.5.0
 
-      - name: Install WordPress and Copy Project
-        shell: bash
-        run: |
-          bash bin/install-wp-tests.sh "$(pwd)/vendor/alleyinteractive/mantle-framework/src/mantle/framework/testing/wp-tests-config-sample.php" wordpress_unit_tests root "" 127.0.0.1 "$WP_VERSION"
-
-          # Go into the core directory and replace wp-content.
-          mkdir -p ${WP_CORE_DIR}/wp-content/plugins/create-mantle-package
-          cp -R . "${WP_CORE_DIR}/wp-content/plugins/create-mantle-package"
-
-      - name: Test Package
-        shell: bash
-        run: |
-          cd ${WP_CORE_DIR}/wp-content/plugins/create-mantle-package
-          composer run phpunit
