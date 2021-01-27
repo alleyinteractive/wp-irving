@@ -65,13 +65,25 @@ jobs:
       - name: Setup Memcached
         uses: niden/actions-memcached@v7
 
-      - name: Install WordPress tests
+      - name: Install PHPUnit
+        uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 5
+          max_attempts: 5
+          command: composer global require "phpunit/phpunit=^7.5"
+
+      - name: Install WordPress and Copy Project
         shell: bash
         run: |
-          bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+          bash bin/install-wp-tests.sh wordpress_unit_tests root '' 127.0.0.1 $WP_VERSION
+          # Go into the core directory and replace wp-content.
+          # mkdir -p ${WP_CORE_DIR}/wp-content/plugins/wp-irving
+          rm -rf ${WP_CORE_DIR}/wp-content/plugins/wp-irving
+          rsync -aWq --no-compress . ${WP_CORE_DIR}/wp-content/plugins/wp-irving
 
       - name: Run PHPUnit
-        uses: php-actions/phpunit@v2
-        with:
-          version: 7.5.0
-
+        shell: bash
+        run: |
+          cd ${WP_CORE_DIR}/wp-content/plugins/wp-irving
+          phpunit
+          WP_MULTISITE=1 phpunit
