@@ -62,6 +62,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-composer-
 
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd
+          tools: composer:v2
+          coverage: none
+
       - name: Setup Memcached
         uses: niden/actions-memcached@v7
 
