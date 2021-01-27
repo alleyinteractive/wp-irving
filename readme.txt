@@ -19,6 +19,10 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 == Changelog ==
 
+= 0.9.0 =
+
+[in development]
+
 = 0.8.0 =
 
 * Add: Display a Welcome to Irving message when template files do not exist (#305)
