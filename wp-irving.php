@@ -6,7 +6,7 @@
  * Author URI:      https://alley.co
  * Text Domain:     wp-irving
  * Domain Path:     /languages
- * Version:         0.8.0-alpha
+ * Version:         0.8.0
  *
  * @package         WP_Irving
  */
