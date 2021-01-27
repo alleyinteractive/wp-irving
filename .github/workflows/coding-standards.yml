@@ -5,20 +5,20 @@ on:
     branches:
       - main
   pull_request:
-  schedule:
-    - cron: '0 0 * * *'
 
 jobs:
-  tests:
+  phpcs:
+    name: PHP coding standards
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         php: [7.4]
-    name: PHP ${{ matrix.php }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Get Composer cache directory
         id: composer-cache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -32,20 +32,18 @@ jobs:
           key: ${{ matrix.php }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: |
             ${{ matrix.php }}-composer-
+
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, gd
           tools: composer:v2
           coverage: none
-      - name: Validate Composer
-        run: composer validate --strict
+
       - name: Install dependencies
-        uses: nick-invision/retry@v1
+        uses: ramsey/composer-install@v1
         with:
-          timeout_minutes: 5
-          max_attempts: 5
-          command: composer install
-      - name: Run phpcs
+          composer-options: "--no-progress --no-ansi --no-interaction"
+
+      - name: Run PHPCS
         run: composer run phpcs
