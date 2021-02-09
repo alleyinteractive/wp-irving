@@ -507,7 +507,7 @@ function setup_head(
 	$head_args = [
 		'config'   => [
 			'provider_key' => 'route',
-			'context'      => 'page',
+			'context'      => $context,
 		],
 		'children' => [],
 	];
