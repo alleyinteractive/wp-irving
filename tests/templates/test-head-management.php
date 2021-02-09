@@ -117,7 +117,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 			new Component(
 				'irving/head',
 				[
-					'config' => [
+					'config'   => [
 						'provider_key' => 'route',
 						'context'      => 'site',
 					],
@@ -142,7 +142,6 @@ class Test_Head_Management extends WP_UnitTestCase {
 
 		// Nothing should have happened.
 		$this->assertEquals( [], $component_endpoint_result['providers'], 'Defaults array was not empty.' );
-		// $this->assertEquals( [], $component_endpoint_result['page'], 'Page array was not empty.' );
 
 		// Re-enable functionality.
 		add_filter( 'wp_irving_setup_head', '__return_true' );
