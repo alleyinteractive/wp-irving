@@ -515,7 +515,7 @@ function setup_head(
 	// Merge any existing head provider into this one.
 	foreach ( $data['providers'] as $provider ) {
 		if ( 'irving/head' === $provider['name'] ) {
-			$head_args['config'] = array_merge( $head_args['config'], $provider['config'] );
+			$head_args['config']   = array_merge( $head_args['config'], $provider['config'] );
 			$head_args['children'] = array_merge( $head_args['children'], $provider['children'] );
 		}
 	}
