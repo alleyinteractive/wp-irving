@@ -129,7 +129,7 @@ function get_site_theme_from_json_files() {
 		function( $site_theme, $path ) {
 
 			// Get the site theme for this path.
-			$values = get_site_theme_from_path_to_json_files( $path );
+			$site_theme_for_path = get_site_theme_from_path_to_json_files( $path );
 
 			// Valid theme data.
 			if (
