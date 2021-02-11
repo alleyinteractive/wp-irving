@@ -53,7 +53,7 @@ function get_context_store(): Context_Store {
 	}
 
 	return $wp_irving_context;
-}s
+}
 
 /**
  * Auto load some components which will then get registered. Defaults to the
