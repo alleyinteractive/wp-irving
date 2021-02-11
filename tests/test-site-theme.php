@@ -196,10 +196,16 @@ class Test_Site_Theme extends WP_UnitTestCase {
 					'only_parent' => 'yes',
 					'only_child'  => 'yes',
 					'nested'      => [
-						'is_parent'   => 'no',
-						'is_child'    => 'yes',
-						'only_parent' => 'yes',
-						'only_child'  => 'yes',
+						'is_parent'     => 'no',
+						'is_child'      => 'yes',
+						'only_parent'   => 'yes',
+						'only_child'    => 'yes',
+						'double_nested' => [
+							'is_parent'   => 'no',
+							'is_child'    => 'yes',
+							'only_parent' => 'yes',
+							'only_child'  => 'yes',
+						],
 					],
 				],
 

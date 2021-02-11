@@ -89,7 +89,10 @@ class Registry {
 	 */
 	public function load_components( array $directories = [] ) {
 
-		foreach ( array_values( $directories ) as $path ) {
+		// Ensure we're not duplicating our efforts.
+		$directories = array_unique( array_values( $directories ) );
+
+		foreach ( $directories as $path ) {
 
 			if ( ! is_dir( $path ) ) {
 				continue;

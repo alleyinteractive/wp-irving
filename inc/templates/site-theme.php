@@ -110,17 +110,17 @@ function get_site_theme_from_json_files() {
 
 	// Default paths for parent and child themes, where the child theme takes precedence.
 	$default_paths = [
-		apply_filters( 'wp_irving_site_theme_json_directory_path', get_template_directory() . '/styles/' ), // Support parent themes.
-		apply_filters( 'wp_irving_site_theme_json_directory_path', get_stylesheet_directory() . '/styles/' ), // Support child themes.
+		get_template_directory() . '/site-theme/', // Support parent themes.
+		get_stylesheet_directory() . '/site-theme/', // Support child themes.
 	];
 
-	// Ensure unique paths (mainly for when it's not a child theme).
+	// Ensure unique paths (so that non-child themes don't run twice).
 	$default_paths = array_unique( $default_paths );
 
 	/**
-	 * Filter the paths to directories of JSON site theme files.
+	 * Filter the paths to directories containing site theme JSON files.
 	 *
-	 * @param array $default_paths Paths to files.
+	 * @param string[] $default_paths Paths to files.
 	 */
 	$paths = apply_filters( 'wp_irving_site_theme_json_directory_paths', $default_paths );
 
@@ -149,7 +149,7 @@ function get_site_theme_from_json_files() {
  * Loop through some directories importing components and registering them.
  *
  * @param string $path Path to files.
- * @return bool|array Site theme array, or false if something went wrong.
+ * @return array|bool Site theme array, or false if something went wrong.
  */
 function get_site_theme_from_path_to_json_files( string $path ) {
 
