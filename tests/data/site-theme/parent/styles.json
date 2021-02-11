@@ -1,0 +1,10 @@
+{
+  "is_parent": "yes",
+  "is_child": "no",
+  "only_parent": "yes",
+  "nested": {
+    "is_parent": "yes",
+    "is_child": "no",
+    "only_parent": "yes"
+  }
+}
