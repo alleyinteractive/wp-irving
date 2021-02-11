@@ -101,20 +101,59 @@ function get_site_theme( string $selector = '', $default = null ) {
 }
 
 /**
- * Loop through some directories importing components and registering them.
+ * Return a single site theme by traversing multiple directories of JSON files
+ * and recursively merging them.
  *
  * @return bool|array Site theme array, or false if something went wrong.
  */
 function get_site_theme_from_json_files() {
 
-	$theme = [];
+	// Default paths for parent and child themes, where the child theme takes precedence.
+	$default_paths = [
+		get_template_directory() . '/site-theme/', // Support parent themes.
+		get_stylesheet_directory() . '/site-theme/', // Support child themes.
+	];
 
-	$path = apply_filters( 'wp_irving_site_theme_json_directory_path', get_stylesheet_directory() . '/styles/' );
+	// Ensure unique paths (so that non-child themes don't run twice).
+	$default_paths = array_unique( $default_paths );
 
-	if ( ! is_dir( $path ) ) {
-		$path = apply_filters( 'wp_irving_site_theme_json_directory_path', get_template_directory() . '/styles/' );
-	}
+	/**
+	 * Filter the paths to directories containing site theme JSON files.
+	 *
+	 * @param string[] $default_paths Paths to files.
+	 */
+	$paths = apply_filters( 'wp_irving_site_theme_json_directory_paths', $default_paths );
 
+	return array_reduce(
+		$paths,
+		function( $site_theme, $path ) {
+
+			// Get the site theme for this path.
+			$site_theme_for_path = get_site_theme_from_path_to_json_files( $path );
+
+			// Valid theme data.
+			if (
+				is_array( $site_theme_for_path )
+				&& ! empty( $site_theme_for_path )
+			) {
+				$site_theme = array_replace_recursive( $site_theme, $site_theme_for_path );
+			}
+
+			return $site_theme;
+		},
+		[]
+	);
+}
+
+/**
+ * Loop through some directories importing components and registering them.
+ *
+ * @param string $path Path to files.
+ * @return array|bool Site theme array, or false if something went wrong.
+ */
+function get_site_theme_from_path_to_json_files( string $path ) {
+
+	// Validate the path.
 	if ( ! is_dir( $path ) ) {
 		return [];
 	}
