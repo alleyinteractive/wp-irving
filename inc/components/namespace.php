@@ -53,8 +53,7 @@ function get_context_store(): Context_Store {
 	}
 
 	return $wp_irving_context;
-}
-
+}s
 
 /**
  * Auto load some components which will then get registered. Defaults to the
@@ -70,8 +69,9 @@ function auto_register_components() {
 	$directories = apply_filters(
 		'wp_irving_component_registry_directories',
 		[
-			'wp_irving' => WP_IRVING_PATH . '/inc/components/components', // Load components from WP Irving.
-			'theme'     => get_stylesheet_directory() . '/components/', // Load components from the activated theme.
+			'wp_irving'     => WP_IRVING_PATH . '/inc/components/components', // Load components from WP Irving.
+			'current-theme' => get_stylesheet_directory() . '/components/', // Load components from the activated theme.
+			'parent-theme'  => get_template_directory() . '/components/', // Load components from any parent theme.
 		]
 	);
 
