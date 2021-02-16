@@ -1035,9 +1035,10 @@ class Component implements JsonSerializable {
 		 *
 		 * @since 0.7.0
 		 *
-		 * @param bool $do_camel_case Whether camel casing is enabled. Default true.
+		 * @param bool   $do_camel_case Whether camel casing is enabled. Default true.
+		 * @param string $name          The name of the component.
 		 */
-		$do_camel_case = apply_filters( 'wp_irving_camel_case', true );
+		$do_camel_case = apply_filters( 'wp_irving_camel_case', true, $this->name );
 
 		// Ensure `class_name` config always exists, and serialize to a string.
 		$class_name = implode( ' ', (array) ( $this->get_config( 'class_name' ) ?? [] ) );
