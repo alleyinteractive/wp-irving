@@ -105,39 +105,27 @@ class Test_Head_Management extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test that the <head> setup returns the correct component in both the
-	 * `defaults` and `page` component arrays.
+	 * Test that the <head> setup returns the correct component in the `providers` array.
 	 */
 	public function test_default_head() {
 
 		// Run `setup_head()` on empty/blank data.
 		$component_endpoint_result = $this->get_head_setup_result();
 
-		// `defaults` should have a <head> component.
+		// `providers` should have a <head> component.
 		$this->assertEquals(
 			new Component(
 				'irving/head',
 				[
-					'config' => [
-						'context' => 'site',
+					'config'   => [
+						'provider_key' => 'route',
+						'context'      => 'site',
 					],
+					'children' => [],
 				]
 			),
-			$component_endpoint_result['defaults'][0],
-			'First element in the `defaults` component array is not `irving/head`.'
-		);
-
-		$this->assertEquals(
-			new Component(
-				'irving/head',
-				[
-					'config' => [
-						'context' => 'page',
-					],
-				]
-			),
-			$component_endpoint_result['page'][0],
-			'First element in the `page` component array is not `irving/head`.'
+			$component_endpoint_result['providers'][0],
+			'First element in the `providers` component array is not `irving/head`.'
 		);
 	}
 
@@ -153,8 +141,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 		$component_endpoint_result = $this->get_head_setup_result();
 
 		// Nothing should have happened.
-		$this->assertEquals( [], $component_endpoint_result['defaults'], 'Defaults array was not empty.' );
-		$this->assertEquals( [], $component_endpoint_result['page'], 'Page array was not empty.' );
+		$this->assertEquals( [], $component_endpoint_result['providers'], 'Defaults array was not empty.' );
 
 		// Re-enable functionality.
 		add_filter( 'wp_irving_setup_head', '__return_true' );
@@ -178,7 +165,8 @@ class Test_Head_Management extends WP_UnitTestCase {
 					'irving/head',
 					[
 						'config'   => [
-							'context' => 'site',
+							'provider_key' => 'route',
+							'context'      => 'site',
 						],
 						'children' => [
 							new Component(
@@ -193,7 +181,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 					]
 				),
 			],
-			$component_endpoint_result['defaults'],
+			$component_endpoint_result['providers'],
 			'`defaults` component array did not have the filtered changes.'
 		);
 
@@ -204,7 +192,8 @@ class Test_Head_Management extends WP_UnitTestCase {
 					'irving/head',
 					[
 						'config'   => [
-							'context' => 'page',
+							'provider_key' => 'route',
+							'context'      => 'site',
 						],
 						'children' => [
 							new Component(
@@ -219,7 +208,7 @@ class Test_Head_Management extends WP_UnitTestCase {
 					]
 				),
 			],
-			$component_endpoint_result['page'],
+			$component_endpoint_result['providers'],
 			'`page` component array did not have the filtered changes.'
 		);
 	}
