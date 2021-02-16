@@ -44,6 +44,9 @@
       "description": "Object fit property.",
       "type": "string"
     },
+    "post_id": {
+      "type": "int"
+    },
     "show_meta": {
       "default": true,
       "description": "Display meta.",

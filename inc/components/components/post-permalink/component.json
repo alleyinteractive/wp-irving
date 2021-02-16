@@ -11,6 +11,9 @@
       "default": "",
       "type": "string"
     },
+    "post_id": {
+      "type": "int"
+    },
     "rel": {
       "default": "",
       "type": "string"

@@ -14,6 +14,9 @@
     "target": {
       "default": "",
       "type": "string"
+    },
+    "term_id": {
+      "type": "int"
     }
   },
   "use_context": {

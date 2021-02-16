@@ -16,6 +16,9 @@
       "default": true,
       "type": "bool"
     },
+    "post_id": {
+      "type": "int"
+    },
     "tag": {
       "default": "div",
       "type": "string"

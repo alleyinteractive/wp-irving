@@ -3,6 +3,11 @@
   "_alias": "irving/text",
   "category": "Term",
   "description": "Get the term name.",
+  "config": {
+    "term_id": {
+      "type": "int"
+    }
+  },
   "use_context": {
     "irving/term_id": "term_id"
   }

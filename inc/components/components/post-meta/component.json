@@ -6,6 +6,9 @@
     "key": {
       "type": "string"
     },
+    "post_id": {
+      "type": "int"
+    },
     "single": {
       "type": "boolean",
       "default": true
