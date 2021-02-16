@@ -15,7 +15,7 @@
     },
     "post_id": {
       "default": 0,
-      "type": "integer"
+      "type": "int"
     }
   },
   "use_context": {

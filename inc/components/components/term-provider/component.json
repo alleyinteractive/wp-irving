@@ -6,7 +6,7 @@
   "config": {
     "term_id": {
       "default": 0,
-      "type": "integer"
+      "type": "int"
     }
   },
   "provides_context": {
