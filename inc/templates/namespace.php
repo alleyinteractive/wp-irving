@@ -708,10 +708,7 @@ function inject_custom_css( array $children, array $config, string $name ): arra
  */
 function inject_block_library_styles( array $children, array $config, string $name ): array {
 	// Ony run this action on the `irving/head` in a `page` context.
-	if (
-		'irving/head' !== $name
-		|| 'page' !== ( $config['context'] ?? 'page' )
-	) {
+	if ( 'irving/head' !== $name ) {
 		return $children;
 	}
 
