@@ -643,7 +643,10 @@ function get_favicon_markup(): string {
 function inject_favicon( array $children, array $config, string $name ): array {
 
 	// Ony run this action on the `irving/head` in a `page` context.
-	if ( 'irving/head' !== $name ) {
+	if (
+		'irving/head' !== $name
+		|| 'page' !== ( $config['context'] ?? 'page' )
+	) {
 		return $children;
 	}
 
@@ -663,7 +666,10 @@ function inject_favicon( array $children, array $config, string $name ): array {
  */
 function inject_custom_css( array $children, array $config, string $name ): array {
 	// Ony run this action on the `irving/head` in a `page` context.
-	if ( 'irving/head' !== $name ) {
+	if (
+		'irving/head' !== $name
+		|| 'page' !== ( $config['context'] ?? 'page' )
+	) {
 		return $children;
 	}
 
@@ -700,7 +706,10 @@ function inject_custom_css( array $children, array $config, string $name ): arra
  */
 function inject_block_library_styles( array $children, array $config, string $name ): array {
 	// Ony run this action on the `irving/head` in a `page` context.
-	if ( 'irving/head' !== $name ) {
+	if (
+		'irving/head' !== $name
+		|| 'page' !== ( $config['context'] ?? 'page' )
+	) {
 		return $children;
 	}
 
@@ -742,7 +751,10 @@ function inject_block_library_styles( array $children, array $config, string $na
  */
 function inject_body_classes( array $children, array $config, string $name ): array {
 	// Ony run this action on the `irving/head` in a `page` context.
-	if ( 'irving/head' !== $name ) {
+	if (
+		'irving/head' !== $name
+		|| 'page' !== ( $config['context'] ?? 'page' )
+	) {
 		return $children;
 	}
 
