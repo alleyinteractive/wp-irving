@@ -504,34 +504,32 @@ function setup_head(
 		return $data;
 	}
 
-	$head_args = [
-		'config'   => [
-			'provider_key' => 'route',
-			'context'      => $context,
-		],
-		'children' => [],
-	];
-
-	// Merge any existing head provider into this one.
-	foreach ( $data['providers'] as $provider ) {
-		if ( 'irving/head' === $provider['name'] ) {
-			$head_args['config']   = array_merge( $head_args['config'], $provider['config'] );
-			$head_args['children'] = array_merge( $head_args['children'], $provider['children'] );
-		}
+	// Unshift a `irving/head` component to the top of the `defaults` array.
+	if ( 'site' === $context ) {
+		array_unshift(
+			$data['defaults'],
+			new Component(
+				'irving/head',
+				[
+					'config' => [
+						'context' => 'site',
+					],
+				]
+			)
+		);
 	}
-
-	// Remove old head component.
-	$data['providers'] = array_filter(
-		$data['providers'],
-		function ( $provider ) {
-			return 'irving/head' !== $provider['name'];
-		}
-	);
 
 	// Unshift a `irving/head` component to the top of the `page` array.
 	array_unshift(
-		$data['providers'],
-		new Component( 'irving/head', $head_args )
+		$data['page'],
+		new Component(
+			'irving/head',
+			[
+				'config' => [
+					'context' => 'page',
+				],
+			]
+		)
 	);
 
 	return $data;
