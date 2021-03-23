@@ -60,6 +60,16 @@ class New_Relic {
 				$params = $request->get_params();
 
 				foreach ( $params as $param => $content ) {
+
+					// Ensure $content is always a scalar.
+					if (
+						! is_scalar( $content )
+						|| is_array( $content )
+						|| is_object( $content )
+					) {
+						$content = wp_json_encode( $content );
+					}
+
 					\newrelic_add_custom_parameter( 'wp-api-' . $param, $content );
 				}
 
