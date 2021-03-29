@@ -93,10 +93,10 @@ class JWT_Auth {
 		}
 
 		// Get and/or create a token to store in the cookie.
-		$token_response = $this->get_or_create_token();
+		$app_pass = $this->get_or_create_application_password();
 
 		// Invalid response. This needs better error handing.
-		if ( empty( $token_response ) ) {
+		if ( empty( $app_pass ) ) {
 			return false;
 		}
 
@@ -104,7 +104,7 @@ class JWT_Auth {
 		// phpcs:ignore
 		setcookie(
 			self::COOKIE_NAME,
-			$token_response['access_token'] ?? '',
+			$app_pass,
 			time() + ( DAY_IN_SECONDS * 7 ) - MINUTE_IN_SECONDS, // Expire the cookie one minute before the token does.
 			'/',
 			$this->cookie_domain,
@@ -128,31 +128,28 @@ class JWT_Auth {
 		}
 
 		// Get token from cookie.
-		$token = $_COOKIE[ self::COOKIE_NAME ]; // phpcs:ignore
+		$app_pass = $_COOKIE[ self::COOKIE_NAME ]; // phpcs:ignore
 
-		// Run through the validation process.
-		$wp_rest_token = new \WP_REST_Token();
+		// // Decode the token.
+		// $jwt = $wp_rest_token->decode_token( $token );
+		// if ( is_wp_error( $jwt ) ) {
+		// 	$this->remove_cookie();
+		// 	return true;
+		// }
 
-		// Decode the token.
-		$jwt = $wp_rest_token->decode_token( $token );
-		if ( is_wp_error( $jwt ) ) {
-			$this->remove_cookie();
-			return true;
-		}
+		// // Determine if the token issuer is valid.
+		// $issuer_valid = $wp_rest_token->validate_issuer( $jwt->iss );
+		// if ( is_wp_error( $issuer_valid ) ) {
+		// 	$this->remove_cookie();
+		// 	return true;
+		// }
 
-		// Determine if the token issuer is valid.
-		$issuer_valid = $wp_rest_token->validate_issuer( $jwt->iss );
-		if ( is_wp_error( $issuer_valid ) ) {
-			$this->remove_cookie();
-			return true;
-		}
-
-		// Determine if the token user is valid.
-		$user_valid = $wp_rest_token->validate_user( $jwt );
-		if ( is_wp_error( $user_valid ) ) {
-			$this->remove_cookie();
-			return true;
-		}
+		// // Determine if the token user is valid.
+		// $user_valid = $wp_rest_token->validate_user( $jwt );
+		// if ( is_wp_error( $user_valid ) ) {
+		// 	$this->remove_cookie();
+		// 	return true;
+		// }
 
 		return false;
 	}
@@ -172,58 +169,34 @@ class JWT_Auth {
 	}
 
 	/**
-	 * Get or create a JSON Web Token.
+	 * Get or create an application password.
 	 *
-	 * @return array
+	 * @return string
 	 */
-	public function get_or_create_token() : array {
-
+	public function get_or_create_application_password() : string {
 		$user_id    = get_current_user_id();
-		$api_key    = $user_id . wp_generate_password( 24, false );
-		$api_secret = wp_generate_password( 32 );
-
-		/**
-		 * Here are saving the new keypairs. This information is important
-		 * in case the user wishes to remove the token validation via their user profile.
-		 */
-		$wp_rest_keypair = new \WP_REST_Key_Pair();
-		$keypairs        = $wp_rest_keypair->get_user_key_pairs( $user_id );
-
-		// Delete any existing keypairs.
-		foreach ( $keypairs as $index => $keypair ) {
-			if ( self::KEYPAIR_NAME === $keypair['name'] ) {
-				unset( $keypairs[ $index ] );
-			}
-		}
-
-		$keypairs[] = [
-			'name'       => self::KEYPAIR_NAME,
-			'api_key'    => $api_key,
-			'api_secret' => wp_hash( $api_secret ),
-			'created'    => time(),
-			'last_used'  => null,
-			'last_ip'    => null,
-		];
-
-		// Saving the new key.
-		$wp_rest_keypair->set_user_key_pairs( $user_id, $keypairs );
+		$app_name   = get_bloginfo( 'name' ) . ' Irving App, user ' . $user_id;
 
 		// Set the new request with the new key and secret.
-		$token_request = new \WP_REST_Request( \WP_REST_Server::CREATABLE, '/wp/v2/token' );
-		$token_request->set_query_params(
+		$app_pass_request = new \WP_REST_Request(
+			\WP_REST_Server::CREATABLE,
+			'/wp/v2/users/me/application-passwords'
+		);
+		$app_pass_request->set_query_params(
 			[
-				'api_key'    => $api_key,
-				'api_secret' => $api_secret,
+				'name'   => $app_name,
+				'app_id' => wp_generate_uuid4(),
 			]
 		);
 
 		// Let's get the token.
-		$token_request = rest_do_request( $token_request );
+		$result = rest_do_request( $app_pass_request );
+		$status = $result->status ?? 0;
 
-		if ( 200 === $token_request->status ?? 0 ) {
-			return $token_request->data;
+		if ( 201 === $status || 200 === $status && ! empty( $result->data ) ) {
+			return str_replace( ' ', '', $result->data['password'] );
 		}
 
-		return [];
+		return '';
 	}
 }
