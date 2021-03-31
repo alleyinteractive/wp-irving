@@ -106,17 +106,18 @@ class Auth {
 		setcookie(
 			self::TOKEN_COOKIE_NAME,
 			$this->get_formatted_token_cookie( $app_pass['password'] ),
-			time() + ( DAY_IN_SECONDS * 7 ) - MINUTE_IN_SECONDS, // Expire the cookie one minute before the token does.
+			time() + ( DAY_IN_SECONDS * 7 ),
 			'/',
 			$this->cookie_domain,
 			true,
 			false
 		);
 
+		// phpcs:ignore
 		setcookie(
 			self::APP_ID_COOKIE_NAME,
 			$app_pass['app_id'],
-			time() + ( DAY_IN_SECONDS * 7 ) - MINUTE_IN_SECONDS, // Expire the cookie one minute before the token does.
+			time() + ( DAY_IN_SECONDS * 7 ),
 			'/',
 			$this->cookie_domain,
 			true,
@@ -145,7 +146,7 @@ class Auth {
 	/**
 	 * If the user isn't logged in. but has an auth cookie, kill it.
 	 *
-	 * @todo what other checks do we need in here that would trigger removing the cookie?
+	 * @todo what other checks do we need in here that would trigger removing the cookie? Last used?
 	 * @return bool Was the cookie was removed successfully?
 	 */
 	public function possibly_remove_cookie(): bool {
@@ -166,13 +167,12 @@ class Auth {
 			$this->remove_cookie();
 		}
 
-		// phpcs:ignore
 		$matching_passwords = array_filter(
 			$passwords,
 			function ( $password ) {
 				return (
-					! empty( $_COOKIE[ self::APP_ID_COOKIE_NAME ] ) &&
-					$password['app_id'] == $_COOKIE[ self::APP_ID_COOKIE_NAME ]
+					! empty( $_COOKIE[ self::APP_ID_COOKIE_NAME ] ) && // phpcs:ignore
+					$password['app_id'] == $_COOKIE[ self::APP_ID_COOKIE_NAME ] // phpcs:ignore
 				);
 			}
 		);
@@ -198,6 +198,7 @@ class Auth {
 			$this->cookie_domain
 		);
 
+		// phpcs:ignore
 		setcookie(
 			self::APP_ID_COOKIE_NAME,
 			null,
