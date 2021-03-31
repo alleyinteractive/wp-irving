@@ -40,7 +40,7 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-analytics.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-jetpack.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-tag-manager.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-jwt-auth.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
