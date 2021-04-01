@@ -93,10 +93,10 @@ class Auth {
 
 		// Refresh application password if cookie has expired or has been removed.
 		$this->delete_all_application_passwords();
-		$app_pass = $this->create_application_password();
+		$app_pass_data = $this->create_application_password();
 
 		// Invalid response. This needs better error handing.
-		if ( empty( $app_pass ) ) {
+		if ( empty( $app_pass_data ) ) {
 			return false;
 		}
 
@@ -104,7 +104,7 @@ class Auth {
 		// phpcs:ignore
 		setcookie(
 			self::TOKEN_COOKIE_NAME,
-			$this->get_formatted_token_cookie( $app_pass['password'] ),
+			$this->get_formatted_token_cookie( $app_pass_data['password'] ),
 			time() + ( DAY_IN_SECONDS * 7 ),
 			'/',
 			$this->cookie_domain,
@@ -115,7 +115,7 @@ class Auth {
 		// phpcs:ignore
 		setcookie(
 			self::APP_ID_COOKIE_NAME,
-			$app_pass['app_id'],
+			$app_pass_data['app_id'],
 			time() + ( DAY_IN_SECONDS * 7 ),
 			'/',
 			$this->cookie_domain,
@@ -139,7 +139,7 @@ class Auth {
 			return '';
 		}
 
-		return base64_encode( $user->data->user_login . ':' . str_replace( ' ', '', $password ) );
+		return base64_encode( $user->data->user_login . ':' . $password );
 	}
 
 	/**
@@ -170,8 +170,8 @@ class Auth {
 			$passwords,
 			function ( $password ) {
 				return (
-					! empty( $_COOKIE[ self::APP_ID_COOKIE_NAME ] ) && // phpcs:ignore
-					$password['app_id'] == $_COOKIE[ self::APP_ID_COOKIE_NAME ] // phpcs:ignore
+					! empty( $_COOKIE[ self::APP_ID_COOKIE_NAME ] ) &&
+					$password['app_id'] == $_COOKIE[ self::APP_ID_COOKIE_NAME ]
 				);
 			}
 		);
@@ -223,29 +223,25 @@ class Auth {
 	 * @return array
 	 */
 	public function create_application_password() : array {
-		$user     = wp_get_current_user();
-		$app_name = get_bloginfo( 'name' ) . ' Irving App, user ' . $user->ID;
+		$user_id  = get_current_user_id();
+		$app_name = get_bloginfo( 'name' ) . ' Irving App, user ' . $user_id;
 
 		// Set the new request with the new key and secret.
-		$app_pass_request = new \WP_REST_Request(
-			\WP_REST_Server::CREATABLE,
-			'/wp/v2/users/me/application-passwords'
-		);
-		$app_pass_request->set_query_params(
+		$app_pass_data = \WP_Application_Passwords::create_new_application_password(
+			$user_id,
 			[
 				'name'   => $app_name,
 				'app_id' => wp_generate_uuid4(),
 			]
 		);
 
-		// Let's get the token.
-		$result = rest_do_request( $app_pass_request );
-		$status = $result->get_status() ?? 0;
-
-		if ( 201 === $status || 200 === $status && ! empty( $result->data ) ) {
-			return $result->data;
+		if ( is_wp_error( $app_pass_data ) || empty( $app_pass_data[0] ) || empty( $app_pass_data[1] ) ) {
+			return [];
 		}
 
-		return [];
+		return [
+			'password' => $app_pass_data[0],
+			'app_id'   => $app_pass_data[1]['app_id'] ?? '',
+		];
 	}
 }
