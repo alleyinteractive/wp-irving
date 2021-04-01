@@ -246,7 +246,7 @@ class Auth {
 
 		// Let's get the token.
 		$result = rest_do_request( $app_pass_request );
-		$status = $result->status ?? 0;
+		$status = $result->get_status() ?? 0;
 
 		if ( 201 === $status || 200 === $status && ! empty( $result->data ) ) {
 			return $result->data;
