@@ -143,7 +143,7 @@ class Auth {
 	}
 
 	/**
-	 * If the user isn't logged in. but has an auth cookie, kill it.
+	 * If the user isn't logged in, but has an auth cookie, kill it.
 	 *
 	 * @todo what other checks do we need in here that would trigger removing the cookie? Last used?
 	 * @return bool Was the cookie was removed successfully?
