@@ -30,7 +30,6 @@ class Auth {
 	 */
 	const APP_ID_COOKIE_NAME = 'authorizationAppID';
 
-
 	/**
 	 * Setup the singleton. Validate Application Passswords are availble, and setup hooks.
 	 */
