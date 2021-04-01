@@ -10,7 +10,7 @@
     "alleyinteractive/alley-coding-standards": "dev-main"
   },
   "scripts": {
-    "phpcs": "phpcs . -p",
+    "phpcs": "phpcs . -ps",
     "phpcbf": "phpcbf .",
     "changelog": "./bin/script-draft-changelog.sh"
   }

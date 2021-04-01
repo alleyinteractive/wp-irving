@@ -58,8 +58,8 @@ function auto_register_integrations() {
  */
 function auto_register_plugin_integrations() {
 	$integrations = [
-		'jwt_auth' => __NAMESPACE__ . '\JWT_Auth',
-		'pico'     => __NAMESPACE__ . '\Pico',
+		'auth' => __NAMESPACE__ . '\Auth',
+		'pico' => __NAMESPACE__ . '\Pico',
 	];
 
 	// Allow new integrations to be added via a filter.
