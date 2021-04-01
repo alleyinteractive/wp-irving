@@ -9,6 +9,8 @@ namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
 
+
+// phpcs:ignoreFile WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 /**
  * Singleton class for creating a cross-domain cookie with an application password
  * that Irving core can read and use for Component API authentication.
@@ -101,7 +103,6 @@ class Auth {
 		}
 
 		// Set a cross domain cookie using the application password.
-		// phpcs:ignore
 		setcookie(
 			self::TOKEN_COOKIE_NAME,
 			$this->get_formatted_token_cookie( $app_pass_data['password'] ),
@@ -112,7 +113,6 @@ class Auth {
 			false
 		);
 
-		// phpcs:ignore
 		setcookie(
 			self::APP_ID_COOKIE_NAME,
 			$app_pass_data['app_id'],
@@ -188,7 +188,6 @@ class Auth {
 	 * Set the expiration on the cookie to unset it.
 	 */
 	public function remove_cookie() {
-		// phpcs:ignore
 		setcookie(
 			self::TOKEN_COOKIE_NAME,
 			null,
@@ -197,7 +196,6 @@ class Auth {
 			$this->cookie_domain
 		);
 
-		// phpcs:ignore
 		setcookie(
 			self::APP_ID_COOKIE_NAME,
 			null,
