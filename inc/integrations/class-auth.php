@@ -213,14 +213,8 @@ class Auth {
 	 * @return void
 	 */
 	public function delete_all_application_passwords() {
-		// Set the new request with the new key and secret.
-		$app_pass_delete_request = new \WP_REST_Request(
-			\WP_REST_Server::DELETABLE,
-			'/wp/v2/users/me/application-passwords'
-		);
-
-		// Let's get the token.
-		rest_do_request( $app_pass_delete_request );
+		$user_id = get_current_user_id();
+		\WP_Application_Passwords::delete_all_application_passwords( $user_id );
 	}
 
 	/**
