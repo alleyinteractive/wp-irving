@@ -1,0 +1,11 @@
+{
+  "name": "irving/button",
+  "category": "Common",
+  "description": "Render a button.",
+  "config": {
+    "tag": {
+      "default": "button",
+      "type": "string"
+    }
+  }
+}
