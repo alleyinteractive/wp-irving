@@ -34,10 +34,11 @@ function auto_register_integrations() {
 	$integrations = [
 		'archiveless'             => __NAMESPACE__ . '\Archiveless',
 		'coral'                   => __NAMESPACE__ . '\Coral',
-		'google_analytics'        => __NAMESPACE__ . '\Google_Analytics',
+		'fb_instant_articles'     => __NAMESPACE__ . '\FB_Instant_Articles',
 		'google_amp'              => __NAMESPACE__ . '\Google_AMP',
-		'jetpack'                 => __NAMESPACE__ . '\Jetpack',
+		'google_analytics'        => __NAMESPACE__ . '\Google_Analytics',
 		'google_tag_manager'      => __NAMESPACE__ . '\Google_Tag_Manager',
+		'jetpack'                 => __NAMESPACE__ . '\Jetpack',
 		'new_relic'               => __NAMESPACE__ . '\New_Relic',
 		'pantheon'                => __NAMESPACE__ . '\Pantheon',
 		'parsely'                 => __NAMESPACE__ . '\Parsely',

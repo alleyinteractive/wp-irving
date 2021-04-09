@@ -35,21 +35,23 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-cache-endpoint.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-coral.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-fb-instant-articles.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-analytics.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-jetpack.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-tag-manager.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-auth.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-jetpack.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-jwt-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-parsely.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-pico.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/namespace.php';
 
 // Replicating WP Core functionality.
