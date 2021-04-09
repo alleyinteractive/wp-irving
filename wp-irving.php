@@ -43,7 +43,6 @@ require_once WP_IRVING_PATH . '/inc/integrations/class-google-analytics.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-tag-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-jetpack.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-jwt-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-parsely.php';
