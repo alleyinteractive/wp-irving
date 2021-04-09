@@ -22,10 +22,7 @@ class FB_Instant_Articles {
 	public function setup() {
 
 		// Ensure the plugin is activated.
-		if (
-			! is_plugin_active( 'fb-instant-articles/facebook-instant-articles.php' )
-			|| ! defined( 'IA_PLUGIN_VERSION' )
-		) {
+		if ( ! defined( 'IA_PLUGIN_VERSION' ) ) {
 			return;
 		}
 
