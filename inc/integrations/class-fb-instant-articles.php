@@ -46,7 +46,7 @@ class FB_Instant_Articles {
 			return $children;
 		}
 
-		// Ony run this action on the `irving/head` in a `site` context.
+		// Ony run this action on the `irving/head` in a `page` context.
 		if (
 			'irving/head' !== $name
 			|| 'page' !== ( $config['context'] ?? 'page' )
