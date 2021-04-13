@@ -44,17 +44,20 @@ class Auth {
 		// Set or unset the cookie upon init.
 		add_action( 'init', [ $this, 'handle_cookie' ] );
 
-		// Return the API result instead of an invalid token error. This
-		// ensures invalid tokens don't error out, and instead get the
-		// non-authenticated components API.
-		add_filter(
-			'rest_authentication_invalid_token',
-			function( $token, $result ) {
-				return $result;
-			},
-			10,
-			2
-		);
+		add_filter( 'rest_authentication_errors', [ $this, 'handle_authentication_errors' ], 99 );
+	}
+
+	/**
+	 * Short-circuit authentication errors and allow Irving to return unauthenticated components data.
+	 *
+	 * @param array $errors Authentication errors.
+	 */
+	public function handle_authentication_errors( $errors ) {
+		if ( strpos( $_SERVER['REQUEST_URI'], \WP_Irving\REST_API\Endpoint::get_namespace() ) ) {
+			return null;
+		}
+
+		return $errors;
 	}
 
 	/**
