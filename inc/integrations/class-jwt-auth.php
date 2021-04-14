@@ -200,7 +200,6 @@ class JWT_Auth {
 	 * @return array
 	 */
 	public function get_or_create_token() : array {
-
 		$user_id    = get_current_user_id();
 		$api_key    = $user_id . wp_generate_password( 24, false );
 		$api_secret = wp_generate_password( 32 );
