@@ -15,7 +15,7 @@ use WP_Irving\Singleton;
  * Singleton class for creating a cross-domain cookie with an application password
  * that Irving core can read and use for Component API authentication.
  */
-class Auth {
+class Application_Passwords_Auth {
 	use Singleton;
 
 	/**
@@ -23,7 +23,7 @@ class Auth {
 	 *
 	 * @var string
 	 */
-	const TOKEN_COOKIE_NAME = 'authorizationToken';
+	const TOKEN_COOKIE_NAME = 'authorizationBasicToken';
 
 	/**
 	 * Cookie name for app ID.
@@ -31,6 +31,13 @@ class Auth {
 	 * @var string
 	 */
 	const APP_ID_COOKIE_NAME = 'authorizationAppID';
+
+	/**
+	 * Cookie domain for authorization cookies.
+	 *
+	 * @var string
+	 */
+	public $cookie_domain = '';
 
 	/**
 	 * Setup the singleton. Validate Application Passswords are availble, and setup hooks.
@@ -80,6 +87,7 @@ class Auth {
 
 		$this->possibly_set_cookie();
 		$this->possibly_remove_cookie();
+		$this->possibly_remove_bearer_cookie();
 	}
 
 	/**
@@ -206,6 +214,21 @@ class Auth {
 			'/',
 			$this->cookie_domain
 		);
+	}
+
+	/**
+	 * Remove any lingering bearer token cookie.
+	 */
+	public function possibly_remove_bearer_cookie() {
+		if ( isset( $_COOKIE[ JWT_Auth::TOKEN_COOKIE_NAME ] ) ) {
+			setcookie(
+				JWT_Auth::TOKEN_COOKIE_NAME,
+				null,
+				-1,
+				'/',
+				$this->cookie_domain
+			);
+		}
 	}
 
 	/**

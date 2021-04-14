@@ -58,8 +58,12 @@ function auto_register_integrations() {
  * Auto load the plugin-based integrations.
  */
 function auto_register_plugin_integrations() {
+	$auth_class = defined( 'JWT_AUTH_VERSION' ) ?
+		__NAMESPACE__ . '\JWT_Auth' :
+		__NAMESPACE__ . '\Application_Passwords_Auth';
+
 	$integrations = [
-		'auth' => __NAMESPACE__ . '\Auth',
+		'auth' => $auth_class,
 		'pico' => __NAMESPACE__ . '\Pico',
 	];
 
