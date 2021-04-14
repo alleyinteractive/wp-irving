@@ -9,7 +9,6 @@ namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
 
-
 // phpcs:ignoreFile WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 /**
  * Singleton class for creating a cross-domain cookie with an application password

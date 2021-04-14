@@ -9,6 +9,8 @@ namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
 
+// phpcs:ignoreFile WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+// phpcs:ignoreFile WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
 /**
  * Singleton class for creating a cross-domain cookie with a JSON Web Token
  * that Irving core can read and use for Component API authentication.
@@ -96,7 +98,7 @@ class JWT_Auth {
 	public function possibly_set_cookie(): bool {
 
 		// We've already set the cookie.
-		if ( isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) { // phpcs:ignore
+		if ( isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) {
 			return false;
 		}
 
@@ -109,7 +111,6 @@ class JWT_Auth {
 		}
 
 		// Set a cross domain cookie using the JWT.
-		// phpcs:ignore
 		setcookie(
 			self::TOKEN_COOKIE_NAME,
 			$token_response['access_token'] ?? '',
@@ -131,12 +132,12 @@ class JWT_Auth {
 	public function possibly_remove_cookie(): bool {
 
 		// Only care if we have a cookie.
-		if ( ! isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) { // phpcs:ignore
+		if ( ! isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) {
 			return false;
 		}
 
 		// Get token from cookie.
-		$token = $_COOKIE[ self::TOKEN_COOKIE_NAME ]; // phpcs:ignore
+		$token = $_COOKIE[ self::TOKEN_COOKIE_NAME ];
 
 		// Run through the validation process.
 		$wp_rest_token = new \WP_REST_Token();
