@@ -48,6 +48,45 @@ function setup_admin_bar(
 
 	// Only show the admin bar if logged in.
 	if ( ! is_user_logged_in() ) {
+
+		$headers = getallheaders();
+
+		if ( ! isset( $headers['Authorization'] ) ) {
+			return $data;
+		}
+
+		array_unshift(
+			$data['page'],
+			new Component(
+				'irving/wp-admin-bar',
+				[
+					'children' => [
+						[
+							'name'     => 'irving/container',
+							'config'   => [
+								'style' => [
+									'text-align' => 'center',
+									'padding'    => '1rem',
+								],
+							],
+							'children' => [
+								[
+									'name'   => 'irving/text',
+									'config' => [
+										'content' => sprintf(
+											'Looks like your session has expired. <a href="%1$s">Click here to generate a new token</a>.',
+											admin_url()
+										),
+										'html'    => true,
+									],
+								],
+							],
+						],
+					],
+				]
+			)
+		);
+
 		return $data;
 	}
 
