@@ -84,7 +84,9 @@ function setup_admin_bar(
 									'name'   => 'irving/text',
 									'config' => [
 										'content' => sprintf(
-											'Looks like your session has expired. <a href="%1$s">Click here to generate a new token</a>.',
+											'%1$s<a href="%3$s">%2$s</a>',
+											esc_html__( 'Looks like your session has expired. ', 'wp-irving' ),
+											esc_html__( 'Click here to generate a new token.', 'wp-irving' ),
 											admin_url()
 										),
 										'html'    => true,
