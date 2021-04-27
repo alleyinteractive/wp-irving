@@ -49,7 +49,11 @@ function setup_admin_bar(
 	// Only show the admin bar if logged in.
 	if ( ! is_user_logged_in() ) {
 
-		$headers = getallheaders();
+		// Get and validate headers.
+		$headers = [];
+		if ( function_exists( 'getallheaders' ) ) {
+			$headers = getallheaders();
+		}
 
 		if ( ! isset( $headers['Authorization'] ) ) {
 			return $data;
