@@ -58,7 +58,11 @@ class Application_Passwords_Auth {
 		// Set or unset the cookie upon init.
 		add_action( 'init', [ $this, 'handle_cookie' ] );
 
+		// Ensure auth errors fail silently, as to not break the Irving frontend.
 		add_filter( 'rest_authentication_errors', [ $this, 'handle_authentication_errors' ], 99 );
+
+		// Add a shortcut to the Tools menu for refreshing the token.
+		add_action( 'admin_menu', [ $this, 'add_tools_link' ] );
 	}
 
 	/**
@@ -102,12 +106,25 @@ class Application_Passwords_Auth {
 	 * Reset all cookies and tokens if we have a reset flag.
 	 */
 	public function possibly_clear_all_auth() {
-		if ( ! isset( $_COOKIE[ self::RESET_TOKEN_FLAG_COOKIE_NAME ] ) ) { // phpcs:ignore
+		if (
+			! isset( $_COOKIE[ self::RESET_TOKEN_FLAG_COOKIE_NAME ] ) // phpcs:ignore
+			&& ! isset( $_GET['refresh-irving-token'] )
+		) {
 			return;
 		}
 
 		$this->remove_cookie();
 		$this->delete_all_application_passwords();
+
+		add_action(
+			'admin_notices',
+			function() {
+				printf(
+					'<div class="notice notice-success is-dismissible"><p>%1$s</p></div>',
+					esc_html__( 'Your login session has been renewed.' )
+				);
+			}
+		);
 	}
 
 	/**
@@ -295,5 +312,20 @@ class Application_Passwords_Auth {
 			'password' => $app_pass_data[0],
 			'app_id'   => $app_pass_data[1]['app_id'] ?? '',
 		];
+	}
+
+	/**
+	 * Add an admin bar shortcut to refresh the token.
+	 */
+	public function add_tools_link() {
+		add_submenu_page(
+			'tools.php',
+			__( 'Generate a new auth token', 'wp-admin-documentation' ),
+			__( 'Generate a new auth token', 'wp-admin-documentation' ),
+			'edit_posts',
+			add_query_arg( 'refresh-irving-token', true, admin_url() ),
+			null,
+			10
+		);
 	}
 }
