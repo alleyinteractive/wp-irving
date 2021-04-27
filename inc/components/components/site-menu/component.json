@@ -21,7 +21,7 @@
     },
     "menu_name": {
       "type": "string",
-      "default": "Default"
+      "default": ""
     }
   }
 }

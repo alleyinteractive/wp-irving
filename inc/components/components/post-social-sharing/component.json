@@ -38,6 +38,16 @@
     "url": {
       "default": "",
       "type": "string"
+    },
+    "analytics": {
+      "default": {
+        "share": {
+          "category": "Engagement",
+          "action": "Share"
+        }
+      },
+      "description": "Analytics Data",
+      "type": "array"
     }
   },
   "use_context": {

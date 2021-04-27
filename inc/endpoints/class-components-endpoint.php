@@ -128,11 +128,19 @@ class Components_Endpoint extends Endpoint {
 			array_flip( $wp->public_query_vars )
 		);
 
+		if ( empty( $this->params['path'] ) ) {
+			$this->path           = '/';
+			$this->params['path'] = '/';
+		}
+
 		/**
 		 * Offer redirector integrations an opportunity to act here to bypass
 		 * rendering an irrelevant page.
 		 *
-		 * @param array $redirect An assocative array with redirectTo (url) and redirectStatus (HTTP code, e.g. 301 or 302).
+		 * @param array $redirect An associative array with redirectTo (url)
+		 *                        and redirectStatus (HTTP code, e.g. 301 or
+		 *                        302).
+		 * @param array $params   WP REST Request parameters.
 		 */
 		$redirect = apply_filters(
 			'wp_irving_components_redirect',
@@ -140,7 +148,7 @@ class Components_Endpoint extends Endpoint {
 				'redirectTo'     => '',
 				'redirectStatus' => 302,
 			],
-			$request
+			$this->params
 		);
 
 		if ( '' !== $redirect['redirectTo'] && 0 < $redirect['redirectStatus'] ) {
@@ -272,8 +280,9 @@ class Components_Endpoint extends Endpoint {
 					// This is a verbose page match, let's check to be sure about it.
 					// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.get_page_by_path_get_page_by_path
 					$page = get_page_by_path( $matches[ $varmatch[1] ], OBJECT, $page_type );
-
 					if ( ! $page ) {
+						// If the page doesn't exist, re-assert it in the query to trigger a 404.
+						$query = "pagename=$trimmed_path";
 						continue;
 					}
 

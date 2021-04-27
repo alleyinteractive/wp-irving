@@ -34,12 +34,14 @@ function auto_register_integrations() {
 	$integrations = [
 		'archiveless'             => __NAMESPACE__ . '\Archiveless',
 		'coral'                   => __NAMESPACE__ . '\Coral',
-		'google_analytics'        => __NAMESPACE__ . '\Google_Analytics',
+		'fb_instant_articles'     => __NAMESPACE__ . '\FB_Instant_Articles',
 		'google_amp'              => __NAMESPACE__ . '\Google_AMP',
-		'jetpack'                 => __NAMESPACE__ . '\Jetpack',
+		'google_analytics'        => __NAMESPACE__ . '\Google_Analytics',
 		'google_tag_manager'      => __NAMESPACE__ . '\Google_Tag_Manager',
+		'jetpack'                 => __NAMESPACE__ . '\Jetpack',
 		'new_relic'               => __NAMESPACE__ . '\New_Relic',
 		'pantheon'                => __NAMESPACE__ . '\Pantheon',
+		'parsely'                 => __NAMESPACE__ . '\Parsely',
 		'safe_redirect_manager'   => __NAMESPACE__ . '\Safe_Redirect_Manager',
 		'vip_go'                  => __NAMESPACE__ . '\VIP_Go',
 		'wpcom_legacy_redirector' => __NAMESPACE__ . '\WPCOM_Legacy_Redirector',
@@ -56,9 +58,13 @@ function auto_register_integrations() {
  * Auto load the plugin-based integrations.
  */
 function auto_register_plugin_integrations() {
+	$auth_class = defined( 'JWT_AUTH_VERSION' ) ?
+		__NAMESPACE__ . '\JWT_Auth' :
+		__NAMESPACE__ . '\Application_Passwords_Auth';
+
 	$integrations = [
-		'jwt_auth' => __NAMESPACE__ . '\JWT_Auth',
-		'pico'     => __NAMESPACE__ . '\Pico',
+		'auth' => $auth_class,
+		'pico' => __NAMESPACE__ . '\Pico',
 	];
 
 	// Allow new integrations to be added via a filter.

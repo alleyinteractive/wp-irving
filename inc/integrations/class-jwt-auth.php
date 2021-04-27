@@ -9,6 +9,8 @@ namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
 
+// phpcs:ignoreFile WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
+// phpcs:ignoreFile WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
 /**
  * Singleton class for creating a cross-domain cookie with a JSON Web Token
  * that Irving core can read and use for Component API authentication.
@@ -21,7 +23,7 @@ class JWT_Auth {
 	 *
 	 * @var string
 	 */
-	const COOKIE_NAME = 'authorizationBearerToken';
+	const TOKEN_COOKIE_NAME = 'authorizationBearerToken';
 
 	/**
 	 * Name for the keypair.
@@ -29,6 +31,13 @@ class JWT_Auth {
 	 * @var string
 	 */
 	const KEYPAIR_NAME = 'wp-irving-jwt-auth';
+
+	/**
+	 * Cookie domain for authorization cookies.
+	 *
+	 * @var string
+	 */
+	public $cookie_domain = '';
 
 	/**
 	 * Setup the singleton. Validate JWT is installed, and setup hooks.
@@ -75,6 +84,7 @@ class JWT_Auth {
 
 		$this->possibly_set_cookie();
 		$this->possibly_remove_cookie();
+		$this->possibly_remove_basic_cookie();
 	}
 
 	/**
@@ -88,7 +98,7 @@ class JWT_Auth {
 	public function possibly_set_cookie(): bool {
 
 		// We've already set the cookie.
-		if ( isset( $_COOKIE[ self::COOKIE_NAME ] ) ) { // phpcs:ignore
+		if ( isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) {
 			return false;
 		}
 
@@ -101,9 +111,8 @@ class JWT_Auth {
 		}
 
 		// Set a cross domain cookie using the JWT.
-		// phpcs:ignore
 		setcookie(
-			self::COOKIE_NAME,
+			self::TOKEN_COOKIE_NAME,
 			$token_response['access_token'] ?? '',
 			time() + ( DAY_IN_SECONDS * 7 ) - MINUTE_IN_SECONDS, // Expire the cookie one minute before the token does.
 			'/',
@@ -123,12 +132,12 @@ class JWT_Auth {
 	public function possibly_remove_cookie(): bool {
 
 		// Only care if we have a cookie.
-		if ( ! isset( $_COOKIE[ self::COOKIE_NAME ] ) ) { // phpcs:ignore
+		if ( ! isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) {
 			return false;
 		}
 
 		// Get token from cookie.
-		$token = $_COOKIE[ self::COOKIE_NAME ]; // phpcs:ignore
+		$token = $_COOKIE[ self::TOKEN_COOKIE_NAME ];
 
 		// Run through the validation process.
 		$wp_rest_token = new \WP_REST_Token();
@@ -163,7 +172,7 @@ class JWT_Auth {
 	public function remove_cookie() {
 		// phpcs:ignore
 		setcookie(
-			self::COOKIE_NAME,
+			self::TOKEN_COOKIE_NAME,
 			null,
 			-1,
 			'/',
@@ -172,12 +181,26 @@ class JWT_Auth {
 	}
 
 	/**
+	 * Remove any lingering basic token cookie.
+	 */
+	public function possibly_remove_basic_cookie() {
+		if ( isset( $_COOKIE[ Application_Passwords_Auth::TOKEN_COOKIE_NAME ] ) ) {
+			setcookie(
+				Application_Passwords_Auth::TOKEN_COOKIE_NAME,
+				null,
+				-1,
+				'/',
+				$this->cookie_domain
+			);
+		}
+	}
+
+	/**
 	 * Get or create a JSON Web Token.
 	 *
 	 * @return array
 	 */
 	public function get_or_create_token() : array {
-
 		$user_id    = get_current_user_id();
 		$api_key    = $user_id . wp_generate_password( 24, false );
 		$api_secret = wp_generate_password( 32 );

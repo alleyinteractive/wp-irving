@@ -8,10 +8,17 @@
     "baz": {
       "default": "default",
       "type": "string"
+    },
+    "obj": {
+      "default": "default",
+      "type": "string"
     }
   },
   "use_context": {
     "test/foo": "foo",
-    "test/baz": "baz"
+    "test/baz": "baz",
+    "test/obj": {
+      "test_prop": "obj"
+    }
   }
 }

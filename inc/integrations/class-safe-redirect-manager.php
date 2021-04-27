@@ -52,12 +52,12 @@ class Safe_Redirect_Manager {
 	/**
 	 * Find any matching redirect for requested path and include in response data.
 	 *
-	 * @param array            $data     WP Irving response data.
-	 * @param \WP_REST_Request $request  REST request.
+	 * @param array $data   WP Irving response data.
+	 * @param array $params Request parameters.
 	 */
-	public function get_srm_redirect( $data, $request ): array {
+	public function get_srm_redirect( $data, $params ): array {
 		// Store request path.
-		$this->params = $request->get_params();
+		$this->params = $params;
 
 		// Filter the redirect value.
 		add_filter( 'srm_redirect_to', [ $this, 'set_srm_redirect_to' ] );

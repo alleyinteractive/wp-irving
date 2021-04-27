@@ -55,10 +55,10 @@ function get_context_store(): Context_Store {
 	return $wp_irving_context;
 }
 
-
 /**
- * Auto load some components which will then get registered. Defaults to the
- * theme directory and WP Irving plugin.
+ * Auto load some components which will then get registered.
+ *
+ * Defaults to parent and child theme directories, and the WP Irving plugin.
  */
 function auto_register_components() {
 
@@ -70,8 +70,9 @@ function auto_register_components() {
 	$directories = apply_filters(
 		'wp_irving_component_registry_directories',
 		[
-			'wp_irving' => WP_IRVING_PATH . '/inc/components/components', // Load components from WP Irving.
-			'theme'     => get_stylesheet_directory() . '/components/', // Load components from the activated theme.
+			'wp_irving'     => WP_IRVING_PATH . '/inc/components/components', // Load components from WP Irving.
+			'current_theme' => get_stylesheet_directory() . '/components/', // Load components from the activated theme.
+			'parent_theme'  => get_template_directory() . '/components/', // Load components from the parent theme.
 		]
 	);
 

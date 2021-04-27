@@ -90,6 +90,20 @@ class Test_Components extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Helper to get the title.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string Title.
+	 */
+	public function get_title( int $post_id = 0 ): string {
+		if ( empty( $post_id ) ) {
+			$post_id = $this->get_post_id();
+		}
+
+		return html_entity_decode( get_the_title( $post_id ), ENT_QUOTES, get_bloginfo( 'charset' ) );
+	}
+
+	/**
 	 * Helper to get the post content rendered.
 	 *
 	 * @param int $post_id Post ID.
@@ -864,6 +878,12 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/social-sharing',
 				'config' => [
+					'analytics'    => [
+						'share' => [
+							'action'   => 'Share',
+							'category' => 'Engagement',
+						],
+					],
 					'description'  => $this->get_post_excerpt(),
 					'imageUrl'     => $this->get_attachment_url(),
 					'platforms'    => [
@@ -877,7 +897,7 @@ class Test_Components extends WP_UnitTestCase {
 					],
 					'platformData' => [],
 					'postId'       => $this->get_post_id(),
-					'title'        => get_the_title( $this->get_post_id() ),
+					'title'        => $this->get_title(),
 					'url'          => get_the_permalink( $this->get_post_id() ),
 				],
 			]
@@ -1004,6 +1024,12 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/pagination',
 				'config' => [
+					'analytics'           => [
+						'click' => [
+							'action'   => 'Pagination',
+							'category' => 'Navigation',
+						],
+					],
 					'currentPage'         => 2,
 					'totalPages'          => 3,
 					'baseUrl'             => "/category/{$category->slug}/",
@@ -1033,6 +1059,12 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/search-form',
 				'config' => [
+					'analytics'          => [
+						'search' => [
+							'action'   => 'Search',
+							'category' => 'Navigation',
+						],
+					],
 					'baseUrl'            => '/',
 					'searchTerm'         => 'Irving',
 					'searchTermQueryArg' => 's',
@@ -1176,6 +1208,13 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias' => 'irving/logo',
 				'config' => [
+					'analytics'    => [
+						'click' => [
+							'action'   => 'Homepage',
+							'category' => 'Navigation',
+							'label'    => 'Logo',
+						],
+					],
 					'href'         => '/',
 					'logoImageUrl' => $this->get_attachment_url(),
 					'siteName'     => get_bloginfo( 'name' ),
@@ -1196,7 +1235,7 @@ class Test_Components extends WP_UnitTestCase {
 	 */
 	public function test_component_site_menu() {
 		// Create some test pages.
-		$posts = $this->factory->post->create_many( 4, [ 'post_type' => 'page' ] );
+		$posts = $this->factory->post->create_many( 5, [ 'post_type' => 'page' ] );
 
 		// Create a test menu.
 		$menu_id = wp_create_nav_menu( 'test-menu' );
@@ -1214,6 +1253,26 @@ class Test_Components extends WP_UnitTestCase {
 				// Menus above the second in the array children of the previous item.
 				'menu-item-parent-id' => ( $key > 1 ) ? $menu_items[ $key - 1 ] : 0,
 			];
+
+			switch ( $key ) {
+				case 0:
+				case 1:
+				default:
+					$menu_args['menu-item-parent-id'] = 0;
+					break;
+
+				case 2:
+					$menu_args['menu-item-parent-id'] = $menu_items[1];
+					break;
+
+				case 3:
+					$menu_args['menu-item-parent-id'] = $menu_items[1];
+					break;
+
+				case 4:
+					$menu_args['menu-item-parent-id'] = $menu_items[3];
+					break;
+			}
 
 			$menu_items[] = wp_update_nav_menu_item( $menu_id, 0, $menu_args );
 		}
@@ -1280,6 +1339,21 @@ class Test_Components extends WP_UnitTestCase {
 											'title'    => get_the_title( $menu_items[2] ),
 											'url'      => get_the_permalink( $posts[2] ),
 										],
+										'children' => [],
+									]
+								),
+								$this->get_expected_component(
+									'irving/menu-item',
+									[
+										'config'   => [
+											'attributeTitle' => '',
+											'classes'  => [],
+											'id'       => $menu_items[3],
+											'parentId' => $menu_items[1],
+											'target'   => '',
+											'title'    => get_the_title( $menu_items[3] ),
+											'url'      => get_the_permalink( $posts[3] ),
+										],
 										'children' => [
 											$this->get_expected_component(
 												'irving/menu-item',
@@ -1287,11 +1361,11 @@ class Test_Components extends WP_UnitTestCase {
 													'config' => [
 														'attributeTitle' => '',
 														'classes'  => [],
-														'id'       => $menu_items[3],
-														'parentId' => $menu_items[2],
+														'id'       => $menu_items[4],
+														'parentId' => $menu_items[3],
 														'target'   => '',
-														'title'    => get_the_title( $menu_items[3] ),
-														'url'      => get_the_permalink( $posts[3] ),
+														'title'    => get_the_title( $menu_items[4] ),
+														'url'      => get_the_permalink( $posts[4] ),
 													],
 												]
 											),
@@ -1316,6 +1390,38 @@ class Test_Components extends WP_UnitTestCase {
 
 		$this->assertComponentEquals( $expected, $component );
 
+		// Ensure the menu name defaults to the name set in WP.
+		$this->assertEquals(
+			(
+				new Component(
+					'irving/site-menu',
+					[
+						'config' => [
+							'location' => 'test-location',
+						],
+					]
+				)
+			)->get_config( 'menu_name' ),
+			'test-menu',
+			'The menu name is not defaulting to test-menu.'
+		);
+
+		// Ensure the menu name can be set explicitly.
+		$this->assertEquals(
+			(
+				new Component(
+					'irving/site-menu',
+					[
+						'config' => [
+							'location'  => 'test-location',
+							'menu_name' => 'About Us',
+						],
+					]
+				)
+			)->get_config( 'menu_name' ),
+			'About Us',
+			'The menu name was not explicitly set via config.'
+		);
 	}
 
 	/**

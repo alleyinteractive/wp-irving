@@ -1,6 +1,5 @@
 {
   "name": "alleyinteractive/wp-irving",
-  "version": "0.6.0-alpha",
   "authors": [
     {
       "name": "Alley Interactive",
@@ -8,10 +7,11 @@
     }
   ],
   "require-dev": {
-    "alleyinteractive/alley-coding-standards": "dev-master"
+    "alleyinteractive/alley-coding-standards": "dev-main"
   },
   "scripts": {
-    "phpcs": "phpcs . -p",
-    "phpcbf": "phpcbf ."
+    "phpcs": "phpcs . -ps",
+    "phpcbf": "phpcbf .",
+    "changelog": "./bin/script-draft-changelog.sh"
   }
 }

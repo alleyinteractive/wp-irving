@@ -46,21 +46,6 @@ class Test_Site_Theme extends WP_UnitTestCase {
 	];
 
 	/**
-	 * Set up test data.
-	 */
-	public function setUp() {
-		parent::setUp();
-
-		// Replace the dynamically loaded data with local data.
-		add_filter(
-			'wp_irving_setup_site_theme',
-			function( $theme ) {
-				return $this->site_theme;
-			}
-		);
-	}
-
-	/**
 	 * Test the basic functionality of the `get_site_theme()` method.
 	 *
 	 * @dataProvider get_site_theme_selectors
@@ -74,10 +59,25 @@ class Test_Site_Theme extends WP_UnitTestCase {
 	 * @param string $message        Messagae if the test fails.
 	 */
 	public function test_get_site_theme( string $selector, $default, $expected_value, string $message ) {
+
+		add_filter(
+			'wp_irving_setup_site_theme',
+			function( $theme ) {
+				return $this->site_theme;
+			}
+		);
+
 		$this->assertEquals(
 			Templates\get_site_theme( $selector, $default ),
 			$expected_value,
 			$message
+		);
+
+		remove_filter(
+			'wp_irving_setup_site_theme',
+			function( $theme ) {
+				return $this->site_theme;
+			}
 		);
 	}
 
@@ -167,5 +167,50 @@ class Test_Site_Theme extends WP_UnitTestCase {
 				'`#FFFFFF` not returned as double nested lookup.',
 			],
 		];
+	}
+
+	/**
+	 * Test child and parent theme support.
+	 *
+	 * @see ./data/site-theme/ For test data.
+	 */
+	public function test_get_site_theme_from_json_files() {
+
+		// Adjust the filter to mimic a parent and child theme setup.
+		add_filter(
+			'wp_irving_site_theme_json_directory_paths',
+			function() {
+				return [
+					__DIR__ . '/data/site-theme/parent',
+					__DIR__ . '/data/site-theme/child',
+				];
+			}
+		);
+
+		$this->assertEquals(
+			Templates\get_site_theme(),
+			[
+				'styles' => [
+					'is_parent'   => 'no',
+					'is_child'    => 'yes',
+					'only_parent' => 'yes',
+					'only_child'  => 'yes',
+					'nested'      => [
+						'is_parent'     => 'no',
+						'is_child'      => 'yes',
+						'only_parent'   => 'yes',
+						'only_child'    => 'yes',
+						'double_nested' => [
+							'is_parent'   => 'no',
+							'is_child'    => 'yes',
+							'only_parent' => 'yes',
+							'only_child'  => 'yes',
+						],
+					],
+				],
+
+			],
+			'Child site theme did not inherit parent site theme correctly'
+		);
 	}
 }

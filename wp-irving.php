@@ -6,7 +6,7 @@
  * Author URI:      https://alley.co
  * Text Domain:     wp-irving
  * Domain Path:     /languages
- * Version:         0.6.0-alpha
+ * Version:         0.9.0-alpha
  *
  * @package         WP_Irving
  */
@@ -15,7 +15,6 @@ namespace WP_Irving;
 
 define( 'WP_IRVING_PATH', dirname( __FILE__ ) );
 define( 'WP_IRVING_URL', plugin_dir_url( __FILE__ ) );
-define( 'WP_IRVING_VERSION', '0.6.0-alpha' );
 
 // Flush rewrite rules when the plugin is activated or deactivated.
 register_activation_hook( __FILE__, 'flush_rewrite_rules' );
@@ -36,20 +35,23 @@ require_once WP_IRVING_PATH . '/inc/endpoints/class-cache-endpoint.php';
 
 // Integrations.
 require_once WP_IRVING_PATH . '/inc/integrations/class-archiveless.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-application-passwords-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-coral.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-fb-instant-articles.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-amp.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-analytics.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-jetpack.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-google-tag-manager.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-jetpack.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-jwt-auth.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-new-relic.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-parsely.php';
+require_once WP_IRVING_PATH . '/inc/integrations/class-pico.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-safe-redirect-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-vip-go.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-pantheon.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-pico.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-wpcom-legacy-redirector.php';
 require_once WP_IRVING_PATH . '/inc/integrations/class-yoast.php';
-require_once WP_IRVING_PATH . '/inc/integrations/class-integrations-manager.php';
 require_once WP_IRVING_PATH . '/inc/integrations/namespace.php';
 
 // Replicating WP Core functionality.

@@ -87,7 +87,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 
 		$this->assertSame( 'test/basic', $component->get_name(), 'Component name not set.' );
 		$this->assertSame( '', $component->get_alias(), 'Default alias not null.' );
-		$this->assertSame( [], $component->get_config(), 'Default config not empty.' );
+		$this->assertSame( [ 'theme' => 'default' ], $component->get_config(), 'Default config not empty.' );
 		$this->assertSame( [], $component->get_children(), 'Default children not empty.' );
 		$this->assertSame( 'default', $component->get_theme(), 'Default theme not set.' );
 		$this->assertSame( [ 'default' ], $component->get_theme_options(), 'Default theme options not set.' );
@@ -173,13 +173,22 @@ class Test_Class_Component extends WP_UnitTestCase {
 			// Empty config.
 			[
 				[],
-				[ 'test-default' => 'default' ],
+				[
+					'test-default' => 'default',
+					'theme'        => 'default',
+				],
 				'Default config values not set.',
 			],
 			// Override defaults.
 			[
-				[ 'test-default' => 'overridden' ],
-				[ 'test-default' => 'overridden' ],
+				[
+					'test-default' => 'overridden',
+					'theme'        => 'overridden',
+				],
+				[
+					'test-default' => 'overridden',
+					'theme'        => 'overridden',
+				],
 				'Default config values not overridden.',
 			],
 			// Test type checking.
@@ -203,6 +212,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'test-object'  => $object,
 					'test-string'  => 'value',
 					'test-foo'     => 'value',
+					'theme'        => 'default',
 				],
 				'Setting a typed values not working.',
 			],
@@ -218,6 +228,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 				],
 				[
 					'test-default' => 'default',
+					'theme'        => 'default',
 				],
 				'Setting an incorrectly typed values not working.',
 			],
@@ -334,6 +345,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 			[
 				'test/foo' => 'bar',
 				'test/baz' => null,
+				'test/obj' => null,
 			],
 			$component->get_context(),
 			'Calculated context values not set.'
@@ -346,13 +358,12 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 * @dataProvider provide_context_config_data
 	 * @group context
 	 *
+	 * @param array $context  Test context values.
 	 * @param array $config   Test config values.
 	 * @param array $expected Expected value.
 	 */
-	public function test_context_values_set( $config, $expected ) {
-		get_context_store()->set(
-			[ 'test/foo' => 'bar' ]
-		);
+	public function test_context_values_set( array $context, array $config, array $expected ) {
+		get_context_store()->set( $context );
 
 		// 'test/use-context' is a registered type.
 		$component = new Component(
@@ -363,7 +374,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 		// Clean up.
 		get_context_store()->reset();
 
-		$this->assertSame(
+		$this->assertEquals(
 			$expected,
 			$component->get_config()
 		);
@@ -375,21 +386,45 @@ class Test_Class_Component extends WP_UnitTestCase {
 	 * @return array[]
 	 */
 	public function provide_context_config_data() {
+		// Set up a generic object for setting context.
+		$obj = new stdClass();
+
+		$obj->test_prop = 'value';
+
 		return [
+			// String based context.
 			[
+				[ 'test/foo' => 'bar' ],
 				[],
 				[
-					'foo' => 'bar',
-					'baz' => 'default',
+					'foo'   => 'bar',
+					'baz'   => 'default',
+					'obj'   => 'default',
+					'theme' => 'default',
 				],
 			],
+			// Object based context.
 			[
+				[ 'test/obj' => $obj ],
+				[],
+				[
+					'foo'   => 'default',
+					'baz'   => 'default',
+					'obj'   => 'value',
+					'theme' => 'default',
+				],
+			],
+			// Set context, but override via constructor.
+			[
+				[ 'test/foo' => 'bar' ],
 				[
 					'foo' => 'overridden',
 				],
 				[
-					'foo' => 'overridden',
-					'baz' => 'default',
+					'foo'   => 'overridden',
+					'baz'   => 'default',
+					'obj'   => 'default',
+					'theme' => 'default',
 				],
 			],
 		];
@@ -433,11 +468,42 @@ class Test_Class_Component extends WP_UnitTestCase {
 
 		$this->assertEquals(
 			[
-				'foo' => 'bar',
-				'baz' => 'qux',
+				'foo'   => 'bar',
+				'baz'   => 'qux',
+				'theme' => 'default',
 			],
 			$component->get_config()
 		);
+	}
+
+	/**
+	 * Test overriding `theme` in a config callback.
+	 */
+	public function test_config_callback_for_theme() {
+		$name = 'example/component';
+
+		/*
+		 * Register component with callback.
+		 *
+		 * We're using a callback that uses the config in order
+		 * to ensure that the callback is passed an array.
+		 */
+		get_registry()->register_component(
+			$name,
+			[
+				'config_callback' => function ( array $config ) {
+					$config['theme'] = 'fred';
+					return $config;
+				},
+			]
+		);
+
+		$component = new Component( $name );
+
+		// Clean up.
+		get_registry()->unregister_component( $name );
+
+		$this->assertEquals( 'fred', $component->get_theme() );
 	}
 
 	/**
@@ -465,6 +531,40 @@ class Test_Class_Component extends WP_UnitTestCase {
 			],
 			$component->get_children()
 		);
+	}
+
+	/**
+	 * Test both methods for providing the component theme.
+	 */
+	public function test_set_component_theme() {
+		$expected = [
+			'theme' => 'foo',
+			'bar'   => 'baz',
+		];
+
+		$legacy_component = new Component(
+			'example/test',
+			[
+				'theme'  => 'foo',
+				'config' => [
+					'bar' => 'baz',
+				],
+			]
+		);
+
+		$this->assertEquals( $expected, $legacy_component->get_config() );
+
+		$component = new Component(
+			'example/test',
+			[
+				'config' => [
+					'theme' => 'foo',
+					'bar'   => 'baz',
+				],
+			]
+		);
+
+		$this->assertEquals( $expected, $component->get_config() );
 	}
 
 	/**
@@ -668,6 +768,59 @@ class Test_Class_Component extends WP_UnitTestCase {
 			$component->jsonSerialize(),
 			'Component serialization filter was not removed correctly.'
 		);
+	}
+
+	/**
+	 * Test camel casing disabled.
+	 */
+	public function test_disabling_camel_casing() {
+		// Disable camel casing during serialization.
+		add_filter( 'wp_irving_camel_case', '__return_false' );
+
+		$component = new Component(
+			'example/no-camels',
+			[
+				'config' => [
+					'under_score' => 'under_score',
+					'camelCase'   => 'camelCase',
+					'cabob-case'  => 'cabob-case',
+					'nested_case' => [
+						'under_score' => 'under_score',
+						'camelCase'   => 'camelCase',
+						'cabob-case'  => 'cabob-case',
+					],
+				],
+				'theme'  => 'no_camels',
+			]
+		);
+
+		$expected = [
+			'name'     => 'example/no-camels',
+			'_alias'   => '',
+			'config'   => (object) [
+				'className'    => '',
+				'style'        => [],
+				'themeName'    => 'no_camels',
+				'themeOptions' => [
+					'default',
+				],
+				'under_score'  => 'under_score',
+				'camelCase'    => 'camelCase',
+				'cabob-case'   => 'cabob-case',
+				'nested_case'  => [
+					'under_score' => 'under_score',
+					'camelCase'   => 'camelCase',
+					'cabob-case'  => 'cabob-case',
+				],
+			],
+			'children' => [],
+		];
+
+		$this->assertEquals(
+			$expected,
+			$component->jsonSerialize(),
+		);
+
 	}
 
 	/**
