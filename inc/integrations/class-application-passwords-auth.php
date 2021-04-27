@@ -320,8 +320,8 @@ class Application_Passwords_Auth {
 	public function add_tools_link() {
 		add_submenu_page(
 			'tools.php',
-			__( 'Generate new authentication token', 'wp-irving' ),
-			__( 'Generate new authentication token', 'wp-irving' ),
+			__( 'Generate New Authentication Token', 'wp-irving' ),
+			__( 'Generate New Authentication Token', 'wp-irving' ),
 			'edit_posts',
 			add_query_arg( 'refresh-irving-token', true, admin_url() ),
 			null,
