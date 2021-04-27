@@ -8,6 +8,7 @@
 namespace WP_Irving\Integrations;
 
 use WP_Irving\Singleton;
+use WP_Application_Passwords;
 
 // phpcs:ignoreFile WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 /**
@@ -30,6 +31,13 @@ class Application_Passwords_Auth {
 	 * @var string
 	 */
 	const APP_ID_COOKIE_NAME = 'authorizationAppID';
+
+	/**
+	 * Cookie name for the flag which should trigger a new token to be created.
+	 *
+	 * @var string
+	 */
+	const RESET_TOKEN_FLAG_COOKIE_NAME = 'irvingResetToken';
 
 	/**
 	 * Cookie domain for authorization cookies.
@@ -84,9 +92,22 @@ class Application_Passwords_Auth {
 			wp_parse_url( home_url(), PHP_URL_HOST )
 		);
 
+		$this->possibly_clear_all_auth();
 		$this->possibly_set_cookie();
 		$this->possibly_remove_cookie();
 		$this->possibly_remove_bearer_cookie();
+	}
+
+	/**
+	 * Reset all cookies and tokens if we have a reset flag.
+	 */
+	public function possibly_clear_all_auth() {
+		if ( ! isset( $_COOKIE[ self::RESET_TOKEN_FLAG_COOKIE_NAME ] ) ) { // phpcs:ignore
+			return;
+		}
+
+		$this->remove_cookie();
+		$this->delete_all_application_passwords();
 	}
 
 	/**
@@ -167,7 +188,7 @@ class Application_Passwords_Auth {
 		// Get active application passwords.
 		$passwords = \get_user_meta(
 			get_current_user_id(),
-			\WP_Application_Passwords::USERMETA_KEY_APPLICATION_PASSWORDS,
+			WP_Application_Passwords::USERMETA_KEY_APPLICATION_PASSWORDS,
 			true
 		);
 
@@ -213,6 +234,14 @@ class Application_Passwords_Auth {
 			'/',
 			$this->cookie_domain
 		);
+
+		setcookie(
+			self::RESET_TOKEN_FLAG_COOKIE_NAME,
+			null,
+			-1,
+			'/',
+			$this->cookie_domain
+		);
 	}
 
 	/**
@@ -237,7 +266,7 @@ class Application_Passwords_Auth {
 	 */
 	public function delete_all_application_passwords() {
 		$user_id = get_current_user_id();
-		\WP_Application_Passwords::delete_all_application_passwords( $user_id );
+		WP_Application_Passwords::delete_all_application_passwords( $user_id );
 	}
 
 	/**
@@ -250,7 +279,7 @@ class Application_Passwords_Auth {
 		$app_name = get_bloginfo( 'name' ) . ' Irving App, user ' . $user_id;
 
 		// Set the new request with the new key and secret.
-		$app_pass_data = \WP_Application_Passwords::create_new_application_password(
+		$app_pass_data = WP_Application_Passwords::create_new_application_password(
 			$user_id,
 			[
 				'name'   => $app_name,
