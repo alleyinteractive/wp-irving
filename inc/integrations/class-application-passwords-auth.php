@@ -121,7 +121,7 @@ class Application_Passwords_Auth {
 			function() {
 				printf(
 					'<div class="notice notice-success is-dismissible"><p>%1$s</p></div>',
-					esc_html__( 'Your login session has been renewed.' )
+					esc_html__( 'Your login session has been renewed.', 'wp-irving' )
 				);
 			}
 		);
