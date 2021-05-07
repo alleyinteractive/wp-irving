@@ -19,6 +19,13 @@ class Application_Passwords_Auth {
 	use Singleton;
 
 	/**
+	 * Name of the application.
+	 *
+	 * @var string
+	 */
+	const APP_NAME = 'Irving Frontend Application';
+
+	/**
 	 * Cookie name that Irving core expects for auth token.
 	 *
 	 * @var string
@@ -114,7 +121,7 @@ class Application_Passwords_Auth {
 		}
 
 		$this->remove_cookie();
-		$this->delete_all_application_passwords();
+		$this->delete_irving_application_passwords();
 
 		add_action(
 			'admin_notices',
@@ -142,7 +149,7 @@ class Application_Passwords_Auth {
 		}
 
 		// Refresh application password if cookie has expired or has been removed.
-		$this->delete_all_application_passwords();
+		$this->delete_irving_application_passwords();
 		$app_pass_data = $this->create_application_password();
 
 		// Invalid response. This needs better error handing.
@@ -203,19 +210,15 @@ class Application_Passwords_Auth {
 		}
 
 		// Get active application passwords.
-		$passwords = \get_user_meta(
-			get_current_user_id(),
-			WP_Application_Passwords::USERMETA_KEY_APPLICATION_PASSWORDS,
-			true
-		);
+		$app_passwords = WP_Application_Passwords::get_user_application_passwords( get_current_user_id() );
 
 		// If no passwords are stored for current user, remove cookies.
-		if ( empty( $passwords ) ) {
+		if ( empty( $app_passwords ) ) {
 			$this->remove_cookie();
 		}
 
 		$matching_passwords = array_filter(
-			$passwords,
+			$app_passwords,
 			function ( $password ) {
 				return (
 					! empty( $_COOKIE[ self::APP_ID_COOKIE_NAME ] ) &&
@@ -281,9 +284,17 @@ class Application_Passwords_Auth {
 	 *
 	 * @return void
 	 */
-	public function delete_all_application_passwords() {
-		$user_id = get_current_user_id();
-		WP_Application_Passwords::delete_all_application_passwords( $user_id );
+	public function delete_irving_application_passwords() {
+		$user_id       = get_current_user_id();
+		$app_passwords = WP_Application_Passwords::get_user_application_passwords( $user_id );
+
+		// Loop through all passwords for this user, and delete any with a
+		// matching name.
+		foreach ( $app_passwords as $password ) {
+			if ( self::APP_NAME === $password['name'] ) {
+				 WP_Application_Passwords::delete_application_password( $user_id, $password['uuid'] );
+			}
+		}
 	}
 
 	/**
@@ -293,13 +304,12 @@ class Application_Passwords_Auth {
 	 */
 	public function create_application_password() : array {
 		$user_id  = get_current_user_id();
-		$app_name = get_bloginfo( 'name' ) . ' Irving App, user ' . $user_id;
 
 		// Set the new request with the new key and secret.
 		$app_pass_data = WP_Application_Passwords::create_new_application_password(
 			$user_id,
 			[
-				'name'   => $app_name,
+				'name'   => self::APP_NAME,
 				'app_id' => wp_generate_uuid4(),
 			]
 		);
