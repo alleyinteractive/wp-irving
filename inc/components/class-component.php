@@ -64,13 +64,6 @@ class Component implements JsonSerializable {
 	protected $theme = '';
 
 	/**
-	 * Theme options.
-	 *
-	 * @var array
-	 */
-	protected $theme_options = [];
-
-	/**
 	 * Map of provided context.
 	 *
 	 * @var array
@@ -144,7 +137,6 @@ class Component implements JsonSerializable {
 		$schema_defaults = [
 			'_alias'              => '',
 			'config'              => [],
-			'theme_options'       => [ 'default' ],
 			'provides_context'    => [],
 			'use_context'         => [],
 			'config_callback'     => null,
@@ -161,7 +153,6 @@ class Component implements JsonSerializable {
 
 		$this->set_alias( $schema['_alias'] );
 		$this->set_schema( $schema['config'] );
-		$this->set_theme_options( $schema['theme_options'] );
 		$this->set_provides_context( $schema['provides_context'] );
 		$this->set_use_context( $schema['use_context'] );
 		$this->set_callback( 'config', $schema['config_callback'] );
@@ -639,129 +630,6 @@ class Component implements JsonSerializable {
 	}
 
 	/**
-	 * Get all theme options.
-	 *
-	 * @return array
-	 */
-	public function get_theme_options(): array {
-		return $this->theme_options;
-	}
-
-	/**
-	 * Test if a string is in the theme options.
-	 *
-	 * @param string $theme Theme name.
-	 * @return bool
-	 */
-	public function is_available_theme( string $theme ): bool {
-		return in_array( $theme, $this->get_theme_options(), true );
-	}
-
-	/**
-	 * Set theme options.
-	 *
-	 * @param array $theme_options New theme options. Ensures uniques.
-	 * @return self
-	 */
-	private function set_theme_options( array $theme_options ): self {
-		$this->theme_options = array_unique( $theme_options );
-		return $this;
-	}
-
-	/**
-	 * Add theme options.
-	 *
-	 * @param array $theme_options One or more theme names to add.
-	 * @return self
-	 */
-	private function add_theme_options( array $theme_options ): self {
-
-		array_map(
-			function( $theme_option ) {
-
-				// Ignore non-strings for now.
-				if ( ! is_string( $theme_option ) ) {
-					return;
-				}
-
-				$this->add_theme_option( $theme_option );
-			},
-			$theme_options
-		);
-
-		return $this;
-	}
-
-	/**
-	 * Add a theme option.
-	 *
-	 * @param string $theme_option Theme name.
-	 * @return self
-	 */
-	private function add_theme_option( string $theme_option ): self {
-
-		// Ensure it's not already an option.
-		if ( ! $this->is_available_theme( $theme_option ) ) {
-			$this->theme_options[] = $theme_option;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * Remove theme options.
-	 *
-	 * @param array $theme_options One or more themes names to remove.
-	 * @return self
-	 */
-	private function remove_theme_options( array $theme_options ): self {
-
-		array_map(
-			function( $theme_option ) {
-
-				// Ignore non-strings for now.
-				if ( ! is_string( $theme_option ) ) {
-					return;
-				}
-
-				$this->remove_theme_option( $theme_option );
-			},
-			$theme_options
-		);
-
-		return $this;
-	}
-
-	/**
-	 * Remove theme option.
-	 *
-	 * @param string $theme_option Theme name.
-	 * @return [type]               [description]
-	 */
-	private function remove_theme_option( string $theme_option ): self {
-
-		// Ensure it's not already an option.
-		if ( $this->is_available_theme( $theme_option ) ) {
-
-			// Loop through options, removing the correct key.
-			$theme_options = $this->get_theme_options();
-			foreach ( $theme_options as $index => $key ) {
-				if ( $key === $theme_option ) {
-					unset( $theme_options[ $index ] );
-					break;
-				}
-			}
-
-			// Reset the array every time.
-			$this->set_theme_options(
-				$this->reset_array( $theme_options )
-			);
-		}
-
-		return $this;
-	}
-
-	/**
 	 * Get the context provider.
 	 *
 	 * @return array
@@ -1052,11 +920,6 @@ class Component implements JsonSerializable {
 			$do_camel_case ? $this->camel_case( $this->get_theme() ) : $this->get_theme()
 		);
 
-		$this->set_config_value(
-			'theme_options',
-			$do_camel_case ? array_keys( $this->camel_case_keys( array_flip( $this->get_theme_options() ) ) ) : $this->get_theme_options()
-		);
-
 		// Remove the `theme` key to avoid confusion with `theme_name`.
 		if ( 'irving/site-theme' !== $this->get_name() ) {
 			$this->unset_config_value( 'theme' );
@@ -1083,7 +946,6 @@ class Component implements JsonSerializable {
 			$force_camel_keys = [
 				'class_name',
 				'theme_name',
-				'theme_options',
 			];
 
 			foreach ( $config as $key => $value ) {
