@@ -565,12 +565,12 @@ class Test_Components extends WP_UnitTestCase {
 			'name'     => 'irving/post-featured-media',
 			'_alias'   => 'irving/fragment',
 			'config'   => (object) [
-				'postId'       => $this->get_post_id(),
-				'aspectRatio'  => '',
-				'objectFit'    => 'cover',
-				'className'    => '',
-				'style'        => [],
-				'themeName'    => 'default',
+				'postId'      => $this->get_post_id(),
+				'aspectRatio' => '',
+				'objectFit'   => 'cover',
+				'className'   => '',
+				'style'       => [],
+				'themeName'   => 'default',
 			],
 			'children' => [
 				[
@@ -1269,10 +1269,10 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias'   => 'irving/menu',
 				'config'   => [
-					'displayName'  => false,
-					'location'     => 'test-location',
-					'menuId'       => $menu_id,
-					'menuName'     => 'test-menu',
+					'displayName' => false,
+					'location'    => 'test-location',
+					'menuId'      => $menu_id,
+					'menuName'    => 'test-menu',
 				],
 				'children' => [
 					$this->get_expected_component(
