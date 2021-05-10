@@ -300,7 +300,6 @@ class Test_Templates extends WP_UnitTestCase {
 					'className'                 => '',
 					'style'                     => [],
 					'themeName'                 => 'default',
-					'themeOptions'              => [ 'default' ],
 				],
 				'children' => [
 					[
@@ -313,7 +312,6 @@ class Test_Templates extends WP_UnitTestCase {
 							'className'                 => '',
 							'style'                     => [],
 							'themeName'                 => 'default',
-							'themeOptions'              => [ 'default' ],
 						],
 						'children' => [],
 					],
@@ -363,16 +361,14 @@ class Test_Templates extends WP_UnitTestCase {
 				'config'   => [
 					'testProvided' => 20,
 					'themeName'    => 'default',
-					'themeOptions' => [ 'default' ],
 				],
 				'children' => [
 					[
 						'name'     => 'consumer',
 						'_alias'   => '',
 						'config'   => [
-							'testUsed'     => 20,
-							'themeName'    => 'default',
-							'themeOptions' => [ 'default' ],
+							'testUsed'  => 20,
+							'themeName' => 'default',
 						],
 						'children' => [],
 					],
@@ -441,22 +437,20 @@ class Test_Templates extends WP_UnitTestCase {
 				'name'     => 'test/context-provider',
 				'_alias'   => '',
 				'config'   => [
-					'value'        => 'foo',
-					'className'    => '',
-					'style'        => [],
-					'themeName'    => 'default',
-					'themeOptions' => [ 'default' ],
+					'value'     => 'foo',
+					'className' => '',
+					'style'     => [],
+					'themeName' => 'default',
 				],
 				'children' => [
 					[
 						'name'     => 'test/use-context-template',
 						'_alias'   => '',
 						'config'   => [
-							'bar'          => 'foo',
-							'className'    => '',
-							'style'        => [],
-							'themeName'    => 'default',
-							'themeOptions' => [ 'default' ],
+							'bar'       => 'foo',
+							'className' => '',
+							'style'     => [],
+							'themeName' => 'default',
 						],
 						'children' => [],
 					],
