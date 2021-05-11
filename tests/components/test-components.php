@@ -297,12 +297,11 @@ class Test_Components extends WP_UnitTestCase {
 			'_alias'   => 'irving/text',
 			'config'   => (object) [
 				// The format of the archive title changed in WP version 5.5.
-				'content'      => version_compare( get_bloginfo( 'version' ), '5.4.99', '>' ) ? 'Category: <span>Uncategorized</span>' : 'Category: Uncategorized',
-				'html'         => true,
-				'className'    => '',
-				'style'        => [],
-				'themeName'    => 'default',
-				'themeOptions' => [ 'default' ],
+				'content'   => version_compare( get_bloginfo( 'version' ), '5.4.99', '>' ) ? 'Category: <span>Uncategorized</span>' : 'Category: Uncategorized',
+				'html'      => true,
+				'className' => '',
+				'style'     => [],
+				'themeName' => 'default',
 			],
 			'children' => [],
 		];
@@ -412,47 +411,32 @@ class Test_Components extends WP_UnitTestCase {
 				'className'       => '',
 				'style'           => [],
 				'themeName'       => 'default',
-				'themeOptions'    => [ 'default' ],
 			],
 			'children' => [
 				[
 					'name'     => 'irving/link',
 					'_alias'   => '',
 					'config'   => (object) [
-						'href'         => get_author_posts_url( $this->get_author_id() ),
-						'fragment'     => '',
-						'rel'          => '',
-						'className'    => '',
-						'style'        => [],
-						'target'       => '',
-						'themeName'    => 'default',
-						'themeOptions' => [ 'default' ],
+						'href'      => get_author_posts_url( $this->get_author_id() ),
+						'fragment'  => '',
+						'rel'       => '',
+						'className' => '',
+						'style'     => [],
+						'target'    => '',
+						'themeName' => 'default',
 					],
 					'children' => [
 						[
 							'name'     => 'irving/text',
 							'_alias'   => '',
 							'config'   => (object) [
-								'content'      => get_the_author_meta( 'display_name', $this->get_author_id() ),
-								'tag'          => 'span',
-								'html'         => false,
-								'oembed'       => false,
-								'className'    => '',
-								'style'        => [],
-								'themeName'    => 'default',
-								'themeOptions' => [
-									'default',
-									'unstyled',
-									'responsiveEmbed',
-									'html',
-									'caption',
-									'h1',
-									'h2',
-									'h3',
-									'h4',
-									'h5',
-									'h6',
-								],
+								'content'   => get_the_author_meta( 'display_name', $this->get_author_id() ),
+								'tag'       => 'span',
+								'html'      => false,
+								'oembed'    => false,
+								'className' => '',
+								'style'     => [],
+								'themeName' => 'default',
 							],
 							'children' => [],
 						],
@@ -479,15 +463,14 @@ class Test_Components extends WP_UnitTestCase {
 			'_alias'   => 'irving/text',
 			'config'   => (object) [
 				// The format of the archive title changed in WP version 5.5.
-				'content'      => $this->get_post_content(),
-				'html'         => true,
-				'oembed'       => true,
-				'postId'       => $this->get_post_id(),
-				'className'    => '',
-				'style'        => [],
-				'tag'          => 'div',
-				'themeName'    => 'default',
-				'themeOptions' => [ 'default' ],
+				'content'   => $this->get_post_content(),
+				'html'      => true,
+				'oembed'    => true,
+				'postId'    => $this->get_post_id(),
+				'className' => '',
+				'style'     => [],
+				'tag'       => 'div',
+				'themeName' => 'default',
 			],
 			'children' => [],
 		];
@@ -510,13 +493,12 @@ class Test_Components extends WP_UnitTestCase {
 			'_alias'   => 'irving/text',
 			'config'   => (object) [
 				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals
-				'content'      => $this->get_post_excerpt(),
-				'html'         => true,
-				'postId'       => $this->get_post_id(),
-				'className'    => '',
-				'style'        => [],
-				'themeName'    => 'default',
-				'themeOptions' => [ 'default' ],
+				'content'   => $this->get_post_excerpt(),
+				'html'      => true,
+				'postId'    => $this->get_post_id(),
+				'className' => '',
+				'style'     => [],
+				'themeName' => 'default',
 			],
 			'children' => [],
 		];
@@ -552,7 +534,6 @@ class Test_Components extends WP_UnitTestCase {
 				'objectFit'        => 'cover',
 				'postId'           => $this->get_post_id(),
 				'themeName'        => 'default',
-				'themeOptions'     => [ 'default' ],
 				'width'            => $image_attr[1],
 				'srcset'           => wp_get_attachment_image_srcset( $this->get_attachment_id(), 'full' ),
 				'sizes'            => wp_get_attachment_image_sizes( $this->get_attachment_id(), 'full' ),
@@ -584,13 +565,12 @@ class Test_Components extends WP_UnitTestCase {
 			'name'     => 'irving/post-featured-media',
 			'_alias'   => 'irving/fragment',
 			'config'   => (object) [
-				'postId'       => $this->get_post_id(),
-				'aspectRatio'  => '',
-				'objectFit'    => 'cover',
-				'className'    => '',
-				'style'        => [],
-				'themeName'    => 'default',
-				'themeOptions' => [ 'default' ],
+				'postId'      => $this->get_post_id(),
+				'aspectRatio' => '',
+				'objectFit'   => 'cover',
+				'className'   => '',
+				'style'       => [],
+				'themeName'   => 'default',
 			],
 			'children' => [
 				[
@@ -608,7 +588,6 @@ class Test_Components extends WP_UnitTestCase {
 						'objectFit'        => 'cover',
 						'postId'           => $this->get_post_id(),
 						'themeName'        => 'default',
-						'themeOptions'     => [ 'default' ],
 						'width'            => $image_attr[1],
 						'srcset'           => wp_get_attachment_image_srcset( $this->get_attachment_id(), 'full' ),
 						'sizes'            => wp_get_attachment_image_sizes( $this->get_attachment_id(), 'full' ),
@@ -1290,14 +1269,10 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'_alias'   => 'irving/menu',
 				'config'   => [
-					'displayName'  => false,
-					'location'     => 'test-location',
-					'menuId'       => $menu_id,
-					'menuName'     => 'test-menu',
-					'themeOptions' => [
-						'default',
-						'defaultVertical',
-					],
+					'displayName' => false,
+					'location'    => 'test-location',
+					'menuId'      => $menu_id,
+					'menuName'    => 'test-menu',
 				],
 				'children' => [
 					$this->get_expected_component(
@@ -1807,10 +1782,9 @@ class Test_Components extends WP_UnitTestCase {
 		$component['config'] = (object) wp_parse_args(
 			$args['config'] ?? null,
 			[
-				'className'    => '',
-				'style'        => [],
-				'themeName'    => 'default',
-				'themeOptions' => [ 'default' ],
+				'className' => '',
+				'style'     => [],
+				'themeName' => 'default',
 			]
 		);
 

@@ -90,7 +90,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 		$this->assertSame( [ 'theme' => 'default' ], $component->get_config(), 'Default config not empty.' );
 		$this->assertSame( [], $component->get_children(), 'Default children not empty.' );
 		$this->assertSame( 'default', $component->get_theme(), 'Default theme not set.' );
-		$this->assertSame( [ 'default' ], $component->get_theme_options(), 'Default theme options not set.' );
 		$this->assertSame( [], $component->get_context(), 'Default context values not set.' );
 		$this->assertNull( $component->get_callback( 'config' ), 'Default config callback not null.' );
 		$this->assertNull( $component->get_callback( 'children' ), 'Default children callback not null.' );
@@ -258,20 +257,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 		// Key does not exist.
 		$this->assertNull(
 			$component->get_config_by_key( 'baz' )
-		);
-	}
-
-	/**
-	 * Test get_theme_options().
-	 */
-	public function test_get_theme_options() {
-		// 'test/theme-options' is a registered component type.
-		$component = new Component( 'test/theme-options' );
-
-		$this->assertSame(
-			[ 'primary', 'secondary' ],
-			$component->get_theme_options(),
-			'Did not get expected theme options.'
 		);
 	}
 
@@ -608,10 +593,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/basic',
 					'_alias'   => '',
 					'config'   => (object) [
-						'className'    => '',
-						'style'        => [],
-						'themeName'    => 'default',
-						'themeOptions' => [ 'default' ],
+						'className' => '',
+						'style'     => [],
+						'themeName' => 'default',
 					],
 					'children' => [],
 				],
@@ -631,11 +615,10 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/basic',
 					'_alias'   => '',
 					'config'   => (object) [
-						'foo'          => 'bar',
-						'className'    => '',
-						'style'        => [],
-						'themeName'    => 'default',
-						'themeOptions' => [ 'default' ],
+						'foo'       => 'bar',
+						'className' => '',
+						'style'     => [],
+						'themeName' => 'default',
 					],
 					'children' => [],
 				],
@@ -648,10 +631,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/alias',
 					'_alias'   => 'test/component',
 					'config'   => (object) [
-						'className'    => '',
-						'style'        => [],
-						'themeName'    => 'default',
-						'themeOptions' => [ 'default' ],
+						'className' => '',
+						'style'     => [],
+						'themeName' => 'default',
 					],
 					'children' => [],
 				],
@@ -664,11 +646,10 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/schema',
 					'_alias'   => '',
 					'config'   => (object) [
-						'testDefault'  => 'default',
-						'className'    => '',
-						'style'        => [],
-						'themeName'    => 'default',
-						'themeOptions' => [ 'default' ],
+						'testDefault' => 'default',
+						'className'   => '',
+						'style'       => [],
+						'themeName'   => 'default',
 					],
 					'children' => [],
 				],
@@ -681,10 +662,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 					'name'     => 'test/theme-options',
 					'_alias'   => '',
 					'config'   => (object) [
-						'className'    => '',
-						'style'        => [],
-						'themeName'    => 'default',
-						'themeOptions' => [ 'primary', 'secondary' ],
+						'className' => '',
+						'style'     => [],
+						'themeName' => 'default',
 					],
 					'children' => [],
 				],
@@ -710,7 +690,6 @@ class Test_Class_Component extends WP_UnitTestCase {
 						'className'                        => '',
 						'style'                            => [],
 						'themeName'                        => 'default',
-						'themeOptions'                     => [ 'default' ],
 					],
 					'children' => [],
 				],
@@ -732,13 +711,10 @@ class Test_Class_Component extends WP_UnitTestCase {
 				'name'     => 'test/basic',
 				'_alias'   => '',
 				'config'   => (object) [
-					'className'    => '',
-					'style'        => [],
-					'test'         => true,
-					'themeName'    => 'default',
-					'themeOptions' => [
-						'default',
-					],
+					'className' => '',
+					'style'     => [],
+					'test'      => true,
+					'themeName' => 'default',
 				],
 				'children' => [],
 			],
@@ -756,12 +732,9 @@ class Test_Class_Component extends WP_UnitTestCase {
 				'name'     => 'test/basic',
 				'_alias'   => '',
 				'config'   => (object) [
-					'className'    => '',
-					'style'        => [],
-					'themeName'    => 'default',
-					'themeOptions' => [
-						'default',
-					],
+					'className' => '',
+					'style'     => [],
+					'themeName' => 'default',
 				],
 				'children' => [],
 			],
@@ -798,16 +771,13 @@ class Test_Class_Component extends WP_UnitTestCase {
 			'name'     => 'example/no-camels',
 			'_alias'   => '',
 			'config'   => (object) [
-				'className'    => '',
-				'style'        => [],
-				'themeName'    => 'no_camels',
-				'themeOptions' => [
-					'default',
-				],
-				'under_score'  => 'under_score',
-				'camelCase'    => 'camelCase',
-				'cabob-case'   => 'cabob-case',
-				'nested_case'  => [
+				'className'   => '',
+				'style'       => [],
+				'themeName'   => 'no_camels',
+				'under_score' => 'under_score',
+				'camelCase'   => 'camelCase',
+				'cabob-case'  => 'cabob-case',
+				'nested_case' => [
 					'under_score' => 'under_score',
 					'camelCase'   => 'camelCase',
 					'cabob-case'  => 'cabob-case',
