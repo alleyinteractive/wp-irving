@@ -19,9 +19,21 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 == Changelog ==
 
-= 0.9.0 =
+= 0.10.0 =
 
 [in development]
+
+= 0.9.0 =
+
+* Fix: Update the site theme to work for child themes
+* Fix: Remove check for page context in block library styles
+* Fix: Update New Relic integration to better typecast
+* Add: Integrate Application Passswords
+* Add: Initial support for FB Instant Articles
+* Fix: Bypass auth errors and return unauthenticated data if app pass is incorrect
+* Add: Display a message to users with an invalid auth token
+* Fix: Update WP Irving integration to only delete Irving app passwords
+* Remove: Feat/deprecate theme options
 
 = 0.8.0 =
 
