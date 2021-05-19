@@ -288,6 +288,14 @@ class Coral {
 			];
 		}
 
+		// Handle an edge case where usernames ending with '?' character cause the Coral SSO request to crash.
+		if ( '?' === substr( $username, -1, 1 ) ) {
+			return [
+				'username'  => $username,
+				'available' => false,
+			];
+		}
+
 		// Retrieve any set banned values for Coral usernames from the Integrations options table.
 		$banned_values = Integrations\get_option_value( 'coral', 'banned_names' );
 
@@ -566,5 +574,14 @@ class Coral {
 		$username = $post->post_excerpt;
 		wp_cache_delete( "get_username_{$id}", $this->cache_group );
 		wp_cache_delete( "username_exists_{$username}", $this->cache_group );
+	}
+
+	/**
+	 * Return the post type for use outside this class.
+	 *
+	 * @return string The post type.
+	 */
+	public function get_post_type() {
+		return $this->post_type;
 	}
 }
