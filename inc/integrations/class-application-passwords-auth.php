@@ -89,6 +89,10 @@ class Application_Passwords_Auth {
 	 * Handle the cookie logic upon init.
 	 */
 	public function handle_cookie() {
+		// Prevent Favicon requests from affecting cookies.
+		if ( isset( $_SERVER['REQUEST_URI'] ) && '/favicon.ico' === $_SERVER['REQUEST_URI'] ) {
+			return;
+		}
 
 		/**
 		 * Determine the cross domain cookie domain.
