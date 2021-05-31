@@ -174,12 +174,16 @@ class Admin {
 			// Get term.
 			$term = get_term_by( 'term_taxonomy_id', $term_id, wp_unslash( $_GET['taxonomy'] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-			// Get term permalink.
-			$permalink = get_term_link( $term->term_id ?? 0 );
+			/**
+			 * Implementing the same fix from from the forked repo for the new tax edit page error.
+			 * https://github.com/alleyinteractive/wp-irving/blob/bc1efd287875e639e4a641a8ece0d1c5669be9c6/inc/templates/admin-bar.php#L325
+			*/
+			if ( $term instanceof \WP_Term ) {
 
-			// Get the API URL, allowing it to be filtered.
-			$path_url = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $permalink );
-			$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
+				// Get the API URL, allowing it to be filtered.
+				$path_url = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( get_term_link( $term->term_id ) );
+				$path_url = apply_filters( 'wp_irving_term_row_action_path_url', $path_url, $term );
+			}
 		}
 
 		if (
