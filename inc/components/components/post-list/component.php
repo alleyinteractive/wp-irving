@@ -214,7 +214,10 @@ function deduplicate_query( WP_Query $query, int $posts_to_return ): WP_Query {
 		}
 
 		// Once we hit our number of posts to return, exit the loop.
-		if ( count( $deduplicated_posts ) >= $posts_to_return ) {
+		if (
+			$posts_to_return >= 0
+			&& count( $deduplicated_posts ) >= $posts_to_return
+		) {
 			break;
 		}
 	}
