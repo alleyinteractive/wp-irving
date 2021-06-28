@@ -144,14 +144,14 @@ class Pico {
 	}
 
 	/**
-	 * Render an input for the Pico Whitelisted SSO Tiers.
+	 * Render a textarea for the Pico allow listed SSO Tiers.
 	 */
 	public function render_pico_tiers_input() {
 		// Check to see if there are existing tiers in the option.
 		$tiers = $this->options[ $this->option_key ]['tiers'] ?? '';
 
 		?>
-			<input id="pico_tiers" type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]" value="<?php echo esc_attr( $tiers ); ?>" />
+			<textarea id="pico_tiers" rows="5" cols="50" type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]"><?php echo esc_attr( $tiers ); ?></textarea>
 			<label for="pico_tiers">
 				<p>
 					<em><?php echo esc_html__( 'Tiers should be input as comma-separated values (e.g. Reader,Subscriber)', 'wp-irving' ); ?></em>
