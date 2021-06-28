@@ -70,6 +70,9 @@ class Coral {
 		}
 
 		add_action( "save_post_{$this->post_type}", [ $this, 'delete_cached_values' ], 10, 2 );
+
+		// Add hook for updated permalinks so that changes can be passed along to Coral.
+		add_action( 'added_post_meta', [ $this, 'check_for_updated_permalink' ], 10, 3 );
 	}
 
 	/**
@@ -89,6 +92,22 @@ class Coral {
 			'wp_irving_coral_sso_secret',
 			esc_html__( 'Coral SSO Secret', 'wp-irving' ),
 			[ $this, 'render_coral_sso_secret_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
+
+		add_settings_field(
+			'wp_irving_coral_admin_email',
+			esc_html__( 'Coral Admin Email', 'wp-irving' ),
+			[ $this, 'render_coral_admin_email_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
+
+		add_settings_field(
+			'wp_irving_coral_admin_password',
+			esc_html__( 'Coral Admin Password', 'wp-irving' ),
+			[ $this, 'render_coral_admin_password_input' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
 		);
@@ -120,7 +139,7 @@ class Coral {
 	 * Render an input for the Coral URL.
 	 */
 	public function render_coral_url_input() {
-		// Check to see if there is an existing SSO secret in the option.
+		// Check to see if there is an existing URL in the option.
 		$coral_url = $this->options[ $this->option_key ]['url'] ?? '';
 
 		?>
@@ -141,7 +160,31 @@ class Coral {
 	}
 
 	/**
-	 * Render an textare for strings banned from being included in Coral usernames.
+	 * Render an input for the Coral admin email.
+	 */
+	public function render_coral_admin_email_input() {
+		// Check to see if there is an existing admin email in the option.
+		$admin_email = $this->options[ $this->option_key ]['admin_email'] ?? '';
+
+		?>
+			<input type="text" name="irving_integrations[<?php echo esc_attr( 'coral_admin_email' ); ?>]" value="<?php echo esc_attr( $admin_email ); ?>" />
+		<?php
+	}
+
+	/**
+	 * Render an input for the Coral admin password.
+	 */
+	public function render_coral_admin_password_input() {
+		// Check to see if there is an existing admin password in the option.
+		$admin_password = $this->options[ $this->option_key ]['admin_password'] ?? '';
+
+		?>
+			<input type="password" name="irving_integrations[<?php echo esc_attr( 'coral_admin_password' ); ?>]" value="<?php echo esc_attr( $admin_password ); ?>" />
+		<?php
+	}
+
+	/**
+	 * Render a textarea for strings banned from being included in Coral usernames.
 	 */
 	public function render_coral_banned_usernames_textarea() {
 		// Check to see if there are existing banned usernames in the option.
@@ -583,5 +626,163 @@ class Coral {
 	 */
 	public function get_post_type() {
 		return $this->post_type;
+	}
+
+	/**
+	 * Hook into added post meta and identify additions of `_wp_old_slug`.
+	 * Pass along the updated permalink to Coral so that the post continues to
+	 * be properly identified.
+	 *
+	 * @param int    $meta_id     ID of updated metadata entry.
+	 * @param int    $object_id   ID of the object metadata is for.
+	 * @param string $meta_key    Metadata key.
+	 */
+	public function check_for_updated_permalink( $meta_id, $object_id, $meta_key ) {
+		// Verify the meta key.
+		if ( '_wp_old_slug' !== $meta_key ) {
+			return;
+		}
+
+		// Validate Coral is in use.
+		$coral_url = untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) );
+		if ( empty( $coral_url ) ) {
+			return;
+		}
+
+		// Attempt to update the permalink.
+		$response = $this->update_permalink_in_coral( $object_id );
+
+		// The token was invalid, so delete the stored token and try again.
+		if ( 401 === wp_remote_retrieve_response_code( $response ) ) {
+			delete_transient( 'wp_irving_coral_jwt_token' );
+			$response = $this->update_permalink_in_coral( $object_id );
+		}
+
+		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+		// Validate the returned URL matches our expectation.
+		if ( ( $response_body['data']['updateStory']['story']['url'] ?? '' ) === get_the_permalink( $object_id ) ) {
+			return;
+		}
+
+		// Something else went wrong; email the result to the site admin.
+		wp_mail(
+			get_option( 'admin_email' ),
+			__( 'Unsuccessful Coral Story URL Update', 'wp-irving' ),
+			sprintf(
+				'<p>%1$s</p><pre>%2$s</pre>',
+				/* Translators: The post permalink. */
+				sprintf( __( '%s not updated for Coral. Response:', 'wp-irving' ), get_the_permalink( $object_id ) ),
+				wp_remote_retrieve_body( $response )
+			)
+		);
+	}
+
+	/**
+	 * Update a post's URL in Coral.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return array|\WP_Error
+	 */
+	private function update_permalink_in_coral( $post_id ) {
+		// Get the new permalink and coral URL.
+		$permalink = get_the_permalink( $post_id );
+		$coral_url = untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) );
+
+		// Construct the GraphQL query.
+		$graphql_query = <<<EOD
+mutation {
+	updateStory(input: {
+		id: {$post_id},
+		story: {
+			url: "{$permalink}"
+		},
+		clientMutationId: "updatePath{$permalink}"
+	}) {
+		story {
+			id
+			url
+		}
+	}
+}
+EOD;
+
+		// Get JWT token.
+		$token = $this->get_coral_jwt_token();
+
+		// Fire authenticated request to Coral.
+		$response = wp_remote_post(
+			"{$coral_url}/api/graphql",
+			[
+				'body'    => wp_json_encode(
+					[
+						'query' => $graphql_query,
+					]
+				),
+				'headers' => [
+					'content-type'  => 'application/json',
+					'Authorization' => 'Bearer ' . $token,
+				],
+			]
+		);
+
+		return $response;
+	}
+
+	/**
+	 * Get token for Coral, either from cache or via API request.
+	 *
+	 * @return string|null
+	 */
+	private function get_coral_jwt_token(): ?string {
+		// Retrieve the cached token if available.
+		$key   = 'wp_irving_coral_jwt_token';
+		$token = get_transient( $key );
+		if ( ! empty( $token ) ) {
+			return $token;
+		}
+
+		$coral_url   = untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) );
+		$coral_email = Integrations\get_option_value( 'coral', 'admin_email' );
+		$coral_pass  = Integrations\get_option_value( 'coral', 'admin_password' );
+
+		// Validate data needed for request.
+		if (
+			empty( $coral_url )
+			|| empty( $coral_email )
+			|| empty( $coral_pass )
+		) {
+			return null;
+		}
+
+		// Get JWT token from Coral.
+		$response = wp_remote_post(
+			"{$coral_url}/api/auth/local",
+			[
+				'body'    => wp_json_encode(
+					[
+						'email'    => $coral_email,
+						'password' => $coral_pass,
+					]
+				),
+				'headers' => [
+					'content-type' => 'application/json',
+				],
+			]
+		);
+
+		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		// Get the token.
+		$token = $response_body['token'] ?? '';
+
+		// Bail if token wasn't properly retrieved.
+		if ( empty( $token ) ) {
+			return null;
+		}
+
+		// Cache for 90 days.
+		set_transient( $key, $token, 90 * DAY_IN_SECONDS );
+
+		return $token;
 	}
 }
