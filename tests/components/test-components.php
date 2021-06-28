@@ -1714,6 +1714,7 @@ class Test_Components extends WP_UnitTestCase {
 			[
 				'config' => [
 					'embedUrl' => 'https://example.coral.test',
+					'storyId'  => 0,
 				],
 			]
 		);
