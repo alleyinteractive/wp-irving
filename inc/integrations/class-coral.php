@@ -665,7 +665,7 @@ class Coral {
 		}
 
 		// Something else went wrong; email the result to the site admin.
-		wp_mail(
+		wp_mail( /* phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail */
 			get_option( 'admin_email' ),
 			__( 'Unsuccessful Coral Story URL Update', 'wp-irving' ),
 			sprintf(
