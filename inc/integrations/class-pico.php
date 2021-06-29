@@ -194,7 +194,7 @@ class Pico {
 		$tiers = Integrations\get_option_value( 'pico', 'tiers' );
 
 		if ( ! empty( $tiers ) ) {
-			$options['pico']['tiers'] = explode( ',', $tiers );
+			$options['pico']['tiers'] = array_filter( array_map( 'trim', explode( ',', $tiers ) ) );
 		}
 
 		/**
