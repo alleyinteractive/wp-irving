@@ -633,9 +633,9 @@ class Coral {
 	 * Pass along the updated permalink to Coral so that the post continues to
 	 * be properly identified.
 	 *
-	 * @param int    $meta_id     ID of updated metadata entry.
-	 * @param int    $object_id   ID of the object metadata is for.
-	 * @param string $meta_key    Metadata key.
+	 * @param int    $meta_id   ID of updated metadata entry.
+	 * @param int    $object_id ID of the object metadata is for.
+	 * @param string $meta_key  Metadata key.
 	 */
 	public function check_for_updated_permalink( $meta_id, $object_id, $meta_key ) {
 		// Verify the meta key.
