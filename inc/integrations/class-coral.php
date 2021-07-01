@@ -664,6 +664,8 @@ class Coral {
 			return;
 		}
 
+		add_filter( 'wp_mail_content_type', [ $this, 'wp_mail_content_type' ] );
+
 		// Something else went wrong; email the result to the site admin.
 		wp_mail( /* phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail */
 			get_option( 'admin_email' ),
@@ -675,6 +677,17 @@ class Coral {
 				wp_remote_retrieve_body( $response )
 			)
 		);
+
+		remove_filter( 'wp_mail_content_type', [ $this, 'wp_mail_content_type' ] );
+	}
+
+	/**
+	 * Email content type.
+	 *
+	 * @return string
+	 */
+	public function wp_mail_content_type() {
+		return 'text/html';
 	}
 
 	/**
