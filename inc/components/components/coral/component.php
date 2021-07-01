@@ -22,7 +22,7 @@ register_component_from_config(
 				$config,
 				[
 					'embed_URL' => untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) ),
-					'story_id'  => get_the_ID(),
+					'story_id'  => 'publish' === get_post_status() ? get_the_ID() : null,
 				]
 			);
 		},
