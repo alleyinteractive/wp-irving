@@ -71,8 +71,9 @@ class Coral {
 
 		add_action( "save_post_{$this->post_type}", [ $this, 'delete_cached_values' ], 10, 2 );
 
-		// Add hook for updated permalinks so that changes can be passed along to Coral.
-		add_action( 'added_post_meta', [ $this, 'check_for_updated_permalink' ], 10, 3 );
+		// Add hook for updated permalinks and post publish so that changes can be passed along to Coral.
+		add_action( 'added_post_meta', [ $this, 'added_post_meta' ], 10, 3 );
+		add_action( 'transition_post_status', [ $this, 'transition_post_status' ], 10, 3 );
 	}
 
 	/**
@@ -629,20 +630,44 @@ class Coral {
 	}
 
 	/**
+	 * Fires when a post is transitioned from one status to another.
+	 *
+	 * @param string   $new_status New post status.
+	 * @param string   $old_status Old post status.
+	 * @param \WP_Post $post       Post object.
+	 */
+	public function transition_post_status( $new_status, $old_status, $post ) {
+		// Only fire if transitioning to publish.
+		if ( 'publish' !== $new_status || $new_status === $old_status ) {
+			return;
+		}
+
+		$this->maybe_update_permalink( $post->ID );
+	}
+
+	/**
 	 * Hook into added post meta and identify additions of `_wp_old_slug`.
-	 * Pass along the updated permalink to Coral so that the post continues to
-	 * be properly identified.
 	 *
 	 * @param int    $meta_id   ID of updated metadata entry.
 	 * @param int    $object_id ID of the object metadata is for.
 	 * @param string $meta_key  Metadata key.
 	 */
-	public function check_for_updated_permalink( $meta_id, $object_id, $meta_key ) {
+	public function added_post_meta( $meta_id, $object_id, $meta_key ) {
 		// Verify the meta key.
 		if ( '_wp_old_slug' !== $meta_key ) {
 			return;
 		}
+	
+		$this->maybe_update_permalink( $object_id );
+	}
 
+	/**
+	 * Possibly pass along an updated permalink to Coral so that the post continues to
+	 * be properly identified.
+	 *
+	 * @param int $post_id Post ID.
+	 */
+	public function maybe_update_permalink( $post_id ) {
 		// Validate Coral is in use.
 		$coral_url = untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) );
 		if ( empty( $coral_url ) ) {
@@ -650,17 +675,17 @@ class Coral {
 		}
 
 		// Attempt to update the permalink.
-		$response = $this->update_permalink_in_coral( $object_id );
+		$response = $this->update_permalink_in_coral( $post_id );
 
 		// The token was invalid, so delete the stored token and try again.
 		if ( 401 === wp_remote_retrieve_response_code( $response ) ) {
 			delete_transient( 'wp_irving_coral_jwt_token' );
-			$response = $this->update_permalink_in_coral( $object_id );
+			$response = $this->update_permalink_in_coral( $post_id );
 		}
 
 		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 		// Validate the returned URL matches our expectation.
-		if ( ( $response_body['data']['updateStory']['story']['url'] ?? '' ) === get_the_permalink( $object_id ) ) {
+		if ( ( $response_body['data']['updateStory']['story']['url'] ?? '' ) === get_the_permalink( $post_id ) ) {
 			return;
 		}
 
@@ -673,7 +698,7 @@ class Coral {
 			sprintf(
 				'<p>%1$s</p><pre>%2$s</pre>',
 				/* Translators: The post permalink. */
-				sprintf( __( '%s not updated for Coral. Response:', 'wp-irving' ), get_the_permalink( $object_id ) ),
+				sprintf( __( '%s not updated for Coral. Response:', 'wp-irving' ), get_the_permalink( $post_id ) ),
 				wp_remote_retrieve_body( $response )
 			)
 		);
