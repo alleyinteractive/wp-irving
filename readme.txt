@@ -21,7 +21,11 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 = 0.10.0 =
 
-[in development]
+* Fix: Handle question mark edge case in usernames (#333)
+* Update: Refactor Post List to deduplicate posts more performantly (#335)
+* Update: Improve Coral integration to account for permalink modifications (#336)
+* Fix: Filter content type for Coral email (#337)
+* Fix: Only send Story ID for published posts (#338)
 
 = 0.9.0 =
 
