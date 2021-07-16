@@ -110,14 +110,17 @@ class Admin {
 	/**
 	 * Add API endpoint link to term row actions.
 	 *
-	 * @param  array    $actions Action links.
-	 * @param  \WP_Term $term    WP_Term object.
+	 * @param  array           $actions Action links.
+	 * @param  \WP_Term|object $term    WP_Term object.
 	 * @return array Updated action links.
 	 */
-	public function add_api_link_to_terms( array $actions, \WP_Term $term ) : array {
+	public function add_api_link_to_terms( array $actions, $term ) : array {
 
-		// Get term permalink.
+		// Get and validate term permalink.
 		$permalink = get_term_link( $term );
+		if ( $permalink instanceof \WP_Error ) {
+			return $actions;
+		}
 
 		// Get the API URL, allowing it to be filtered.
 		$path_url = \WP_Irving\REST_API\Components_Endpoint::get_wp_irving_api_url( $permalink );
