@@ -735,6 +735,70 @@ class Coral {
 	}
 
 	/**
+	 * API request.
+	 *
+	 * @param string $query GraphQL query.
+	 * @return array|null
+	 */
+	private function api_request( $query ) {
+		// Get the coral URL.
+		$coral_url = untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) );
+
+		// Get JWT token.
+		$token = $this->get_coral_jwt_token();
+
+		// Fire authenticated request to Coral.
+		$response = wp_remote_post(
+			"{$coral_url}/api/graphql",
+			[
+				'body'    => wp_json_encode(
+					[
+						'query' => $query,
+					]
+				),
+				'headers' => [
+					'content-type'  => 'application/json',
+					'Authorization' => 'Bearer ' . $token,
+				],
+			]
+		);
+
+		// The token was invalid, so delete the stored token for next time.
+		if ( 401 === wp_remote_retrieve_response_code( $response ) ) {
+			delete_transient( 'wp_irving_coral_jwt_token' );
+			return null;
+		}
+
+		if ( $response instanceof \WP_Error ) {
+			return null;
+		}
+
+		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		// Handle errors from API.
+		if ( ! empty( $response_body['errors'] ) ) {
+			array_map(
+				function( $error ) {
+					if (
+						'Internal Error' === $error['message'] &&
+						'activeStories' === ( $error['path']['0'] ?? '' )
+					) {
+						// This error occurs when more stories are requested than
+						// exist, so decrease the number of stories to fetch.
+						$limit     = get_option( $this->active_story_count_key, 0 );
+						$new_limit = max( $limit - 10, 1 );
+						update_option( $this->active_story_count_key, $new_limit );
+					}
+				},
+				$response_body['errors']
+			);
+			return null;
+		}
+
+		return $response_body['data'] ?? null;
+	}
+
+	/**
 	 * Update a post's URL in Coral.
 	 *
 	 * @param int $post_id Post ID.
@@ -901,35 +965,10 @@ EOD;
 		$limit = get_option( $this->active_story_count_key, 0 );
 
 		// Attempt to fetch comment count data.
-		$response = $this->fetch_active_story_comment_counts( $limit );
-
-		// The token was invalid, so delete the stored token and try again.
-		if ( 401 === wp_remote_retrieve_response_code( $response ) ) {
-			delete_transient( 'wp_irving_coral_jwt_token' );
-			$response = $this->fetch_active_story_comment_counts( $limit );
-		}
-
-		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
-
-		// Handle errors.
-		if ( ! empty( $response_body['errors'] ) ) {
-			// Map over the errors.
-			array_map(
-				function( $error ) use ( $limit ) {
-					if (
-						'Internal Error' === $error['message'] &&
-						'activeStories' === ( $error['path']['0'] ?? '' )
-					) {
-						update_option( $this->active_story_count_key, $limit - 10 );
-					}
-				},
-				$response_body['errors']
-			);
-			return;
-		}
+		$data = $this->fetch_active_story_comment_counts( $limit );
 
 		// Bail if there's no data.
-		if ( null === $response_body || null === $response_body['data'] ) {
+		if ( null === $data ) {
 			return;
 		}
 
@@ -937,7 +976,7 @@ EOD;
 		update_option( $this->cron_timestamp_key, time() );
 
 		$count = 0;
-		foreach ( $response_body['data']['activeStories'] as $story ) {
+		foreach ( $data['activeStories'] as $story ) {
 			// Increment the counter.
 			$count++;
 
@@ -959,10 +998,10 @@ EOD;
 		}
 
 		// If we reached the end of the stories, then too few were fetched initially.
-		if ( count( $response_body['data']['activeStories'] ) === $count ) {
+		if ( count( $data['activeStories'] ) === $count ) {
 			// Increase the request size and refetch.
 			update_option( $this->active_story_count_key, $limit + 20 );
-			// $this->fetch_active_story_comment_counts( );
+			$this->cron_exec();
 		}
 	}
 
@@ -1000,12 +1039,9 @@ EOD;
 	 * Fetch the Coral comment counts for the stories most recently commented on.
 	 *
 	 * @param int $limit Number of active stories to fetch. Optional, default 20.
-	 * @return array|\WP_Error
+	 * @return array|null
 	 */
 	private function fetch_active_story_comment_counts( $limit = 20 ) {
-		// Get the coral URL.
-		$coral_url = untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) );
-
 		// Construct the GraphQL query.
 		$graphql_query = <<<EOD
 query {
@@ -1020,25 +1056,6 @@ query {
 }
 EOD;
 
-		// Get JWT token.
-		$token = $this->get_coral_jwt_token();
-
-		// Fire authenticated request to Coral.
-		$response = wp_remote_post(
-			"{$coral_url}/api/graphql",
-			[
-				'body'    => wp_json_encode(
-					[
-						'query' => $graphql_query,
-					]
-				),
-				'headers' => [
-					'content-type'  => 'application/json',
-					'Authorization' => 'Bearer ' . $token,
-				],
-			]
-		);
-
-		return $response;
+		return $this->api_request( $graphql_query );
 	}
 }
