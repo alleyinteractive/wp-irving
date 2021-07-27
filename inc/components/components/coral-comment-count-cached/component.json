@@ -1,0 +1,17 @@
+{
+  "name": "irving/coral-comment-count-cached",
+  "description": "Coral comment count that is fetched from post meta.",
+  "config": {
+    "class_name": {
+      "default": "coral-count",
+      "type": "string"
+    },
+    "post_id": {
+      "default": 0,
+      "type": "int"
+    }
+  },
+  "use_context": {
+    "irving/post_id": "post_id"
+  }
+}
