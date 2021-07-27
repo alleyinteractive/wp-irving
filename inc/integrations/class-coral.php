@@ -987,7 +987,7 @@ EOD;
 			: url_to_postid( $story['url'] );
 
 		if ( ! empty( $post_id ) ) {
-			$post = get_post( $story['id'] );
+			$post = get_post( $post_id );
 			if ( $post instanceof \WP_Post ) {
 				return $post;
 			}
