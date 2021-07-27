@@ -911,6 +911,23 @@ EOD;
 
 		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
+		// Handle errors.
+		if ( ! empty( $response_body['errors'] ) ) {
+			// Map over the errors.
+			array_map(
+				function( $error ) use ( $limit ) {
+					if (
+						'Internal Error' === $error['message'] &&
+						'activeStories' === ( $error['path']['0'] ?? '' )
+					) {
+						update_option( $this->active_story_count_key, $limit - 10 );
+					}
+				},
+				$response_body['errors']
+			);
+			return;
+		}
+
 		// Bail if there's no data.
 		if ( null === $response_body || null === $response_body['data'] ) {
 			return;
