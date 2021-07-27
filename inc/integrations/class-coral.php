@@ -45,6 +45,27 @@ class Coral {
 	private $cache_group = 'wp-irving-coral';
 
 	/**
+	 * Cron hook.
+	 *
+	 * @var string
+	 */
+	private $comment_count_cron_hook = 'wp_irving_coral_comment_count_update';
+
+	/**
+	 * Option key for storing the cron execution timestamp.
+	 *
+	 * @var string
+	 */
+	private $cron_timestamp_key = 'wp_irving_coral_comment_count_cron_execution_timestamp';
+
+	/**
+	 * Option key for storing the active story fetch count.
+	 *
+	 * @var string
+	 */
+	private $active_story_count_key = 'wp_irving_coral_active_story_fetch_count';
+
+	/**
 	 * Setup the singleton. Validate JWT is installed, and setup hooks.
 	 */
 	public function setup() {
@@ -73,6 +94,9 @@ class Coral {
 
 		// Add hook for updated permalinks so that changes can be passed along to Coral.
 		add_action( 'added_post_meta', [ $this, 'check_for_updated_permalink' ], 10, 3 );
+
+		// Set up cron if needed.
+		$this->comment_count_cron_setup();
 	}
 
 	/**
@@ -108,6 +132,14 @@ class Coral {
 			'wp_irving_coral_admin_password',
 			esc_html__( 'Coral Admin Password', 'wp-irving' ),
 			[ $this, 'render_coral_admin_password_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
+
+		add_settings_field(
+			'wp_irving_coral_use_cron',
+			esc_html__( 'Use cron to fetch Coral comments?', 'wp-irving' ),
+			[ $this, 'render_coral_use_cron_input' ],
 			'wp_irving_integrations',
 			'irving_integrations_settings'
 		);
@@ -180,6 +212,18 @@ class Coral {
 
 		?>
 			<input type="password" name="irving_integrations[<?php echo esc_attr( 'coral_admin_password' ); ?>]" value="<?php echo esc_attr( $admin_password ); ?>" />
+		<?php
+	}
+
+	/**
+	 * Render a checkbox which enables the use of cron to fetch comment counts.
+	 */
+	public function render_coral_use_cron_input() {
+		$use_cron   = wp_validate_boolean( $this->options[ $this->option_key ]['use_cron'] ?? false );
+		$is_checked = $use_cron ? 'checked' : '';
+
+		?>
+			<input type="checkbox" name="irving_integrations[<?php echo esc_attr( 'coral_use_cron' ); ?>]" value="true" <?php echo esc_attr( $is_checked ); ?> />
 		<?php
 	}
 
@@ -797,5 +841,187 @@ EOD;
 		set_transient( $key, $token, 90 * DAY_IN_SECONDS );
 
 		return $token;
+	}
+
+	/**
+	 * Set up cron for fetching comment counts, if enabled.
+	 */
+	public function comment_count_cron_setup() {
+		// Bail if cron is not enabled.
+		if ( ! ( $this->options[ $this->option_key ]['use_cron'] ?? false ) ) {
+			return;
+		}
+
+		// Add a custom cron interval.
+		add_filter( 'cron_schedules', [ $this, 'cron_schedules' ] );
+
+		// Add hook for the cron job.
+		add_action( $this->comment_count_cron_hook, [ $this, 'cron_exec' ] );
+
+		// Schedule the cron job.
+		if ( ! wp_next_scheduled( $this->comment_count_cron_hook ) ) {
+			wp_schedule_event( time(), '15min', $this->comment_count_cron_hook );
+		}
+
+		// If on VIP, have cron actions use the jobs system.
+		if ( defined( 'WPCOM_IS_VIP_ENV' ) && true === WPCOM_IS_VIP_ENV ) {
+			add_filter(
+				'wpcom_vip_passthrough_cron_to_jobs',
+				function( $filters ) {
+					$filters[] = $this->comment_count_cron_hook;
+					return $filters;
+				}
+			);
+		}
+	}
+
+	/**
+	 * Add a custom cron schedule.
+	 *
+	 * @param array $schedules Cron schedules.
+	 * @return array
+	 */
+	public function cron_schedules( $schedules ) {
+		$schedules['15min'] = [
+			'interval' => 15 * 60,
+			'display'  => __( 'Once every 15 minutes', 'wp-irving' ),
+		];
+		return $schedules;
+	}
+
+	/**
+	 * Cron action.
+	 */
+	public function cron_exec() {
+		// Get the time of the last cron run.
+		$last_run = get_option( $this->cron_timestamp_key, 0 );
+
+		// Determine how many active stories to fetch.
+		// If the option doesn't exist, fetch all stories since it's the first time running.
+		$limit = get_option( $this->active_story_count_key, 0 );
+
+		// Attempt to fetch comment count data.
+		$response = $this->fetch_active_story_comment_counts( $limit );
+
+		// The token was invalid, so delete the stored token and try again.
+		if ( 401 === wp_remote_retrieve_response_code( $response ) ) {
+			delete_transient( 'wp_irving_coral_jwt_token' );
+			$response = $this->fetch_active_story_comment_counts( $limit );
+		}
+
+		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		// Bail if there's no data.
+		if ( null === $response_body || null === $response_body['data'] ) {
+			return;
+		}
+
+		// Update the time for the current cron run.
+		update_option( $this->cron_timestamp_key, time() );
+
+		$count = 0;
+		foreach ( $response_body['data']['activeStories'] as $story ) {
+			// Increment the counter.
+			$count++;
+
+			// Get the WordPress post for this story.
+			$post = $this->get_post_from_story( $story );
+
+			if ( ! $post ) {
+				continue;
+			}
+
+			// Save the comment count.
+			update_post_meta( $post->ID, 'coral_comment_count', $story['commentCounts']['totalPublished'] ?? 0 );
+
+			// If this story's most recent comment is older than the last cron
+			// run, we are done processing new data and can stop.
+			if ( strtotime( $story['lastCommentedAt'] ) < $last_run ) {
+				break;
+			}
+		}
+
+		// If we reached the end of the stories, then too few were fetched initially.
+		if ( count( $response_body['data']['activeStories'] ) === $count ) {
+			// Increase the request size and refetch.
+			update_option( $this->active_story_count_key, $limit + 20 );
+			// $this->fetch_active_story_comment_counts( );
+		}
+	}
+
+	/**
+	 * Get a post object from a story.
+	 *
+	 * @param array $story Story data.
+	 * @return \WP_Post|null Post object, or null if no post was found.
+	 */
+	private function get_post_from_story( $story ): ?\WP_Post {
+		// If the story ID is a WordPress post ID, use that.
+		if ( is_numeric( $story['id'] ) ) {
+			$post = get_post( $story['id'] );
+			if ( $post instanceof \WP_Post ) {
+				return $post;
+			}
+		}
+
+		// Get the post ID from the URL.
+		$post_id = function_exists( 'wpcom_vip_url_to_postid' )
+			? wpcom_vip_url_to_postid( $story['url'] )
+			: url_to_postid( $story['url'] );
+
+		if ( ! empty( $post_id ) ) {
+			$post = get_post( $story['id'] );
+			if ( $post instanceof \WP_Post ) {
+				return $post;
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Fetch the Coral comment counts for the stories most recently commented on.
+	 *
+	 * @param int $limit Number of active stories to fetch. Optional, default 20.
+	 * @return array|\WP_Error
+	 */
+	private function fetch_active_story_comment_counts( $limit = 20 ) {
+		// Get the coral URL.
+		$coral_url = untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) );
+
+		// Construct the GraphQL query.
+		$graphql_query = <<<EOD
+query {
+	activeStories (limit: {$limit}) {
+		id
+		url
+		commentCounts {
+			totalPublished
+		}
+		lastCommentedAt
+	}
+}
+EOD;
+
+		// Get JWT token.
+		$token = $this->get_coral_jwt_token();
+
+		// Fire authenticated request to Coral.
+		$response = wp_remote_post(
+			"{$coral_url}/api/graphql",
+			[
+				'body'    => wp_json_encode(
+					[
+						'query' => $graphql_query,
+					]
+				),
+				'headers' => [
+					'content-type'  => 'application/json',
+					'Authorization' => 'Bearer ' . $token,
+				],
+			]
+		);
+
+		return $response;
 	}
 }
