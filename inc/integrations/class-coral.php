@@ -694,31 +694,28 @@ class Coral {
 		}
 
 		// Attempt to update the permalink.
-		$response = $this->update_permalink_in_coral( $object_id );
+		$data = $this->update_permalink_in_coral( $object_id );
 
-		// The token was invalid, so delete the stored token and try again.
-		if ( 401 === wp_remote_retrieve_response_code( $response ) ) {
-			delete_transient( 'wp_irving_coral_jwt_token' );
-			$response = $this->update_permalink_in_coral( $object_id );
+		// If something went wrong, retry once.
+		if ( null === $data ) {
+			$data = $this->update_permalink_in_coral( $object_id );
 		}
 
-		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 		// Validate the returned URL matches our expectation.
-		if ( ( $response_body['data']['updateStory']['story']['url'] ?? '' ) === get_the_permalink( $object_id ) ) {
+		if ( ( $data['updateStory']['story']['url'] ?? '' ) === get_the_permalink( $object_id ) ) {
 			return;
 		}
 
 		add_filter( 'wp_mail_content_type', [ $this, 'wp_mail_content_type' ] );
 
-		// Something else went wrong; email the result to the site admin.
+		// Something else went wrong; email the site admin.
 		wp_mail( /* phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_mail_wp_mail */
 			get_option( 'admin_email' ),
 			__( 'Unsuccessful Coral Story URL Update', 'wp-irving' ),
 			sprintf(
-				'<p>%1$s</p><pre>%2$s</pre>',
+				'<p>%1$s</p>',
 				/* Translators: The post permalink. */
-				sprintf( __( '%s not updated for Coral. Response:', 'wp-irving' ), get_the_permalink( $object_id ) ),
-				wp_remote_retrieve_body( $response )
+				sprintf( __( '%s not updated for Coral.', 'wp-irving' ), get_the_permalink( $object_id ) )
 			)
 		);
 
@@ -805,9 +802,8 @@ class Coral {
 	 * @return array|\WP_Error
 	 */
 	private function update_permalink_in_coral( $post_id ) {
-		// Get the new permalink and coral URL.
+		// Get the new permalink.
 		$permalink = get_the_permalink( $post_id );
-		$coral_url = untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) );
 
 		// Construct the GraphQL query.
 		$graphql_query = <<<EOD
@@ -827,26 +823,7 @@ mutation {
 }
 EOD;
 
-		// Get JWT token.
-		$token = $this->get_coral_jwt_token();
-
-		// Fire authenticated request to Coral.
-		$response = wp_remote_post(
-			"{$coral_url}/api/graphql",
-			[
-				'body'    => wp_json_encode(
-					[
-						'query' => $graphql_query,
-					]
-				),
-				'headers' => [
-					'content-type'  => 'application/json',
-					'Authorization' => 'Bearer ' . $token,
-				],
-			]
-		);
-
-		return $response;
+		return $this->api_request( $graphql_query );
 	}
 
 	/**
