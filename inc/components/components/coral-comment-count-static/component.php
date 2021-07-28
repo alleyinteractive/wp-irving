@@ -28,6 +28,9 @@ register_component_from_config(
 				$config['count_text'] = __( 'Comment', 'wp-irving' );
 			}
 
+			// Set the article URL.
+			$config['article_URL'] = get_the_permalink( $config['post_id'] );
+
 			return $config;
 		},
 	]

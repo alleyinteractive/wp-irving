@@ -2,6 +2,10 @@
   "name": "irving/coral-comment-count-static",
   "description": "Coral comment count that is fetched from post meta.",
   "config": {
+    "article_URL": {
+      "default": "",
+      "type": "string"
+    },
     "class_name": {
       "default": "coral-count",
       "type": "string"
@@ -13,6 +17,10 @@
     "count_text": {
       "default": "Comments",
       "type": "string"
+    },
+    "no_text": {
+      "default": false,
+      "type": "bool"
     },
     "post_id": {
       "default": 0,
