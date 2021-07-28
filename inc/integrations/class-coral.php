@@ -1000,7 +1000,7 @@ EOD;
 		// Get the post ID from the URL.
 		$post_id = function_exists( 'wpcom_vip_url_to_postid' )
 			? wpcom_vip_url_to_postid( $story['url'] )
-			: url_to_postid( $story['url'] );
+			: url_to_postid( $story['url'] ); /* phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.url_to_postid_url_to_postid */
 
 		if ( ! empty( $post_id ) ) {
 			$post = get_post( $post_id );
