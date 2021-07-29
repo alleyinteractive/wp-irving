@@ -19,6 +19,13 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 ## Changelog ##
 
+### 0.11.0 ###
+
+* Fix: Allow filter to handle generic objects instead of WP_Term objects (#340)
+* Add: Ability to fetch Coral comment counts for posts via cron and related component (#341)
+* Add: Support for additional Coral config and account for API fetch limit of 25 (#342)
+* Fix: Only update story URL in Coral for posts (#343)
+
 ### 0.10.0 ###
 
 * Fix: Handle question mark edge case in usernames (#333)
