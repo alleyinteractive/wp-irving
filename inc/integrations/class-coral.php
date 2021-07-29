@@ -680,6 +680,11 @@ class Coral {
 			return;
 		}
 
+		// Fire for posts only.
+		if ( 'post' !== get_post_type( $object_id ) ) {
+			return;
+		}
+
 		// Validate Coral is in use.
 		$coral_url = untrailingslashit( Integrations\get_option_value( 'coral', 'url' ) );
 		if ( empty( $coral_url ) ) {
