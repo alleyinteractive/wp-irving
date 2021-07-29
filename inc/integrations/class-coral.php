@@ -59,13 +59,6 @@ class Coral {
 	private $cron_timestamp_key = 'wp_irving_coral_comment_count_cron_execution_timestamp';
 
 	/**
-	 * Option key for storing the active story fetch count.
-	 *
-	 * @var string
-	 */
-	private $active_story_count_key = 'wp_irving_coral_active_story_fetch_count';
-
-	/**
 	 * Setup the singleton. Validate JWT is installed, and setup hooks.
 	 */
 	public function setup() {
@@ -772,26 +765,6 @@ class Coral {
 
 		$response_body = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		// Handle errors from API.
-		if ( ! empty( $response_body['errors'] ) ) {
-			array_map(
-				function( $error ) {
-					if (
-						'Internal Error' === $error['message'] &&
-						'activeStories' === ( $error['path']['0'] ?? '' )
-					) {
-						// This error occurs when more stories are requested than
-						// exist, so decrease the number of stories to fetch.
-						$limit     = get_option( $this->active_story_count_key, 0 );
-						$new_limit = max( $limit - 10, 1 );
-						update_option( $this->active_story_count_key, $new_limit );
-					}
-				},
-				$response_body['errors']
-			);
-			return null;
-		}
-
 		return $response_body['data'] ?? null;
 	}
 
@@ -932,14 +905,20 @@ EOD;
 
 	/**
 	 * Cron action.
+	 *
+	 * @param int $limit Number of active stories to fetch, between 0 and 25.
+	 *                   Optional, default 25.
 	 */
-	public function cron_exec() {
+	public function cron_exec( $limit = 25 ) {
 		// Get the time of the last cron run.
 		$last_run = get_option( $this->cron_timestamp_key, 0 );
 
-		// Determine how many active stories to fetch.
-		// If the option doesn't exist, fetch all stories since it's the first time running.
-		$limit = get_option( $this->active_story_count_key, 0 );
+		// Determine how many active stories to fetch. The API maximum is 25
+		// (with the option to fetch all by setting the limit to 0).
+		$limit = min( max( $limit, 0 ), 25 );
+
+		// Override and fetch all stories if this is the first run.
+		$limit = ( 0 === $last_run ) ? 0 : $limit;
 
 		// Attempt to fetch comment count data.
 		$data = $this->fetch_active_story_comment_counts( $limit );
@@ -948,9 +927,6 @@ EOD;
 		if ( null === $data ) {
 			return;
 		}
-
-		// Update the time for the current cron run.
-		update_option( $this->cron_timestamp_key, time() );
 
 		$count = 0;
 		foreach ( $data['activeStories'] as $story ) {
@@ -975,11 +951,14 @@ EOD;
 		}
 
 		// If we reached the end of the stories, then too few were fetched initially.
-		if ( count( $data['activeStories'] ) === $count ) {
-			// Increase the request size and refetch.
-			update_option( $this->active_story_count_key, $limit + 20 );
-			$this->cron_exec();
+		if ( ( count( $data['activeStories'] ) === $count ) && ( 0 !== $limit ) ) {
+			// Execute again, this time fetching all.
+			$this->cron_exec( 0 );
+			return;
 		}
+
+		// Update the time for the current cron run.
+		update_option( $this->cron_timestamp_key, time() );
 	}
 
 	/**
@@ -1015,10 +994,10 @@ EOD;
 	/**
 	 * Fetch the Coral comment counts for the stories most recently commented on.
 	 *
-	 * @param int $limit Number of active stories to fetch. Optional, default 20.
+	 * @param int $limit Number of active stories to fetch. Optional, default 25.
 	 * @return array|null
 	 */
-	private function fetch_active_story_comment_counts( $limit = 20 ) {
+	private function fetch_active_story_comment_counts( $limit = 25 ) {
 		// Construct the GraphQL query.
 		$graphql_query = <<<EOD
 query {
