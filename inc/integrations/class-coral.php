@@ -964,6 +964,15 @@ EOD;
 
 		// Update the time for the current cron run.
 		update_option( $this->cron_timestamp_key, time() );
+
+		// Remove the existing scheduled job if necessary.
+		$timestamp = wp_next_scheduled( $this->comment_count_cron_hook );
+		if ( $timestamp ) {
+			wp_unschedule_event( $timestamp, $this->comment_count_cron_hook );
+		}
+
+		// Schedule the next cron job for 5 minutes from now.
+		wp_schedule_single_event( time() + 5 * MINUTE_IN_SECONDS, $this->comment_count_cron_hook );
 	}
 
 	/**
