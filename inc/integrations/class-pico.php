@@ -234,6 +234,8 @@ class Pico {
 		$response = $this->verification_request( $this->verify_user_path, $payload, $credentials );
 
 		if ( 200 !== $response['status_code'] ) {
+			// Provide a hook for logging errors.
+			do_action( 'wp_irving_verify_pico_user_api_error', $response );
 			return false;
 		}
 
