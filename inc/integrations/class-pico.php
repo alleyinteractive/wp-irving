@@ -233,6 +233,11 @@ class Pico {
 
 		$response = $this->verification_request( $this->verify_user_path, $payload, $credentials );
 
+		// Provide a hook for logging that the API key is invalid.
+		if ( 401 === $response['status_code'] ) {
+			do_action( 'wp_irving_pico_api_key_invalid', $response );
+		}
+
 		if ( 200 !== $response['status_code'] ) {
 			return false;
 		}
