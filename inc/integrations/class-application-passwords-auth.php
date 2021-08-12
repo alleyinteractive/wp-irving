@@ -19,11 +19,9 @@ class Application_Passwords_Auth {
 	use Singleton;
 
 	/**
-	 * Name of the application.
-	 *
-	 * @var string
+	 * Application ID for WP Irving. This was randomly generated.
 	 */
-	const APP_NAME = 'Irving Frontend Application';
+	const APP_ID = '1481e1b4-8e40-44ed-9b6d-92ba5066ab20';
 
 	/**
 	 * Cookie name that Irving core expects for auth token.
@@ -37,14 +35,7 @@ class Application_Passwords_Auth {
 	 *
 	 * @var string
 	 */
-	const APP_ID_COOKIE_NAME = 'authorizationAppID';
-
-	/**
-	 * Cookie name for the flag which should trigger a new token to be created.
-	 *
-	 * @var string
-	 */
-	const RESET_TOKEN_FLAG_COOKIE_NAME = 'irvingResetToken';
+	const UUID_COOKIE_NAME = 'authorizationTokenUUID';
 
 	/**
 	 * Cookie domain for authorization cookies.
@@ -52,6 +43,20 @@ class Application_Passwords_Auth {
 	 * @var string
 	 */
 	public $cookie_domain = '';
+
+	/**
+	 * Application name for application password tokens.
+	 *
+	 * @var string
+	 */
+	protected $app_name;
+
+	/**
+	 * Cookie TTL.
+	 *
+	 * @var int
+	 */
+	protected $ttl;
 
 	/**
 	 * Setup the singleton. Validate Application Passswords are availble, and setup hooks.
@@ -62,14 +67,40 @@ class Application_Passwords_Auth {
 			return;
 		}
 
-		// Set or unset the cookie upon init.
-		add_action( 'init', [ $this, 'handle_cookie' ] );
+		/**
+		 * Filter the application name as it appears on application passwords.
+		 *
+		 * @param string $app_name Application name.
+		 */
+		$this->app_name = apply_filters(
+			'wp_irving_application_passwords_name',
+			'Irving Frontend Website Session'
+		);
+
+		/**
+		 * Determine the cross domain cookie domain.
+		 *
+		 * @param string $cookie_domain Cookie domain for the auth token.
+		 */
+		$this->cookie_domain = apply_filters(
+			'wp_irving_auth_cookie_domain',
+			COOKIE_DOMAIN
+		);
+
+		/**
+		 * Filters the TTL for the cookies. This is added to time().
+		 *
+		 * @param int  $length   Duration of the expiration period in seconds.
+		 * @param int  $user_id  User ID.
+		 * @param bool $remember Whether to remember the user login. Default false.
+		 */
+		$this->ttl = apply_filters( 'wp_irving_application_passwords_ttl', 14 * DAY_IN_SECONDS );
+
+		// Whenever WordPress sets the auth cookie, also set the app password cookies.
+		add_action( 'set_auth_cookie', [ $this, 'action_set_auth_cookie' ] );
 
 		// Ensure auth errors fail silently, as to not break the Irving frontend.
 		add_filter( 'rest_authentication_errors', [ $this, 'handle_authentication_errors' ], 99 );
-
-		// Add a shortcut to the Tools menu for refreshing the token.
-		add_action( 'admin_menu', [ $this, 'add_tools_link' ] );
 	}
 
 	/**
@@ -86,99 +117,159 @@ class Application_Passwords_Auth {
 	}
 
 	/**
-	 * Handle the cookie logic upon init.
+	 * Set Irving application password cookies when the WP auth cookie is set.
 	 */
-	public function handle_cookie() {
-
-		/**
-		 * Determine the cross domain cookie domain.
-		 *
-		 * @todo Can we swap this for the COOKIE_DOMAIN constant at somepoint?
-		 * @todo Can/should we rename this filter without `jwt`?
-		 *
-		 * @var string
-		 */
-		$this->cookie_domain = apply_filters(
-			'wp_irving_jwt_token_cookie_domain',
-			wp_parse_url( home_url(), PHP_URL_HOST )
-		);
-
-		$this->possibly_clear_all_auth();
-		$this->possibly_set_cookie();
-		$this->possibly_remove_cookie();
-		$this->possibly_remove_bearer_cookie();
+	public function action_set_auth_cookie() {
+		$this->orchestrate_cookies();
 	}
 
 	/**
-	 * Reset all cookies and tokens if we have a reset flag.
-	 */
-	public function possibly_clear_all_auth() {
-		if (
-			! isset( $_COOKIE[ self::RESET_TOKEN_FLAG_COOKIE_NAME ] ) // phpcs:ignore
-			&& ! isset( $_GET['refresh-irving-token'] )
-		) {
-			return;
-		}
-
-		$this->remove_cookie();
-		$this->delete_irving_application_passwords();
-
-		add_action(
-			'admin_notices',
-			function() {
-				printf(
-					'<div class="notice notice-success is-dismissible"><p>%1$s</p></div>',
-					esc_html__( 'Your login session has been renewed.', 'wp-irving' )
-				);
-			}
-		);
-	}
-
-	/**
-	 * Get a clean token and set the cookie.
+	 * Orchestrate the cookie generation and setting process.
 	 *
-	 * @todo Display an admin error message if the token and/or cookie wasn't
-	 *       set correctly.
-	 *
-	 * @return bool Was the cookie set successfully?
+	 * @return bool
 	 */
-	public function possibly_set_cookie(): bool {
-		// We've already set the cookie.
-		if ( isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) { // phpcs:ignore
-			return false;
-		}
+	public function orchestrate_cookies() {
+		$current_password = $this->get_current_session_application_password( get_current_user_id() );
 
-		// Refresh application password if cookie has expired or has been removed.
-		$this->delete_irving_application_passwords();
-		$app_pass_data = $this->create_application_password();
+		if ( empty( $current_password ) ) {
+			// Get a new application password.
+			$current_password = $this->create_application_password();
+			$token_value = $this->get_formatted_token_cookie( $current_password['unhashed_password'] );
+
+			// Prune the old application passwords.
+			$this->prune_old_application_passwords();
+		} else {
+			$token_value = $_COOKIE[ self::TOKEN_COOKIE_NAME ];
+		}
 
 		// Invalid response. This needs better error handing.
-		if ( empty( $app_pass_data ) ) {
+		if ( empty( $current_password ) ) {
 			return false;
 		}
 
-		// Set a cross domain cookie using the application password.
-		setcookie(
-			self::TOKEN_COOKIE_NAME,
-			$this->get_formatted_token_cookie( $app_pass_data['password'] ),
-			time() + ( DAY_IN_SECONDS * 7 ),
-			'/',
-			$this->cookie_domain,
-			true,
-			false
+		return $this->set_cookies( $token_value, $current_password['uuid'] );
+	}
+
+	/**
+	 * Remove old application passwords that haven't been used since the TTL
+	 * expiration.
+	 */
+	public function prune_old_application_passwords() {
+		$this->delete_irving_application_passwords( time() - $this->ttl );
+	}
+
+	/**
+	 * Delete all old Irving application passwords for the current user.
+	 *
+	 * @param null|int $last_used_before Optional. Timestamp. If present, only
+	 *                                   application passwords last used before
+	 *                                   the given timestamp will be removed,
+	 *                                   adding in a day of buffer (since the
+	 *                                   last_used timestamp is only updated
+	 *                                   once per day).
+	 */
+	public function delete_irving_application_passwords( $last_used_before = null ) {
+		$user_id       = get_current_user_id();
+		$app_passwords = WP_Application_Passwords::get_user_application_passwords( $user_id );
+
+		// Loop through all passwords for this user to find those with a matching name.
+		foreach ( $app_passwords as $app_password ) {
+			if ( 0 === strpos( $app_password['name'], $this->app_name ) ) {
+				// Optionally check the last_used date.
+				if ( $last_used_before && $app_password['last_used'] + DAY_IN_SECONDS > $last_used_before ) {
+					continue;
+				}
+
+				// Delete the password.
+				WP_Application_Passwords::delete_application_password( $user_id, $app_password['uuid'] );
+			}
+		}
+	}
+
+	/**
+	 * Trigger the expiration on the cookies to unset them.
+	 */
+	public function remove_cookies() {
+		setcookie( self::TOKEN_COOKIE_NAME, null, -1, COOKIEPATH, $this->cookie_domain );
+		setcookie( self::UUID_COOKIE_NAME, null, -1, COOKIEPATH, $this->cookie_domain );
+	}
+
+	/**
+	 * Get the application password array for the current session, if possible.
+	 *
+	 * @param int $user_id User ID
+	 * @return array|false Array of application password data on success, false
+	 *                     on failure.
+	 */
+	protected function get_current_session_application_password( $user_id ) {
+		if ( isset( $_COOKIE[ self::UUID_COOKIE_NAME ], $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) {
+			// If the cookie is set, ensure the value is valid.
+			return $this->get_verified_application_password(
+				$_COOKIE[ self::UUID_COOKIE_NAME ],
+				$this->get_password_from_formatted_token( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ),
+				$user_id
+			);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Get and verify an application password.
+	 *
+	 * @param string $uuid     Application password UUID.
+	 * @param string $password Raw password for the Application Password.
+	 * @param int    $user_id  User ID.
+	 * @return array|false Application Password data on success, false on
+	 *                     failure.
+	 */
+	protected function get_verified_application_password( $uuid, $password, $user_id ) {
+		// Get active application passwords.
+		$app_password = WP_Application_Passwords::get_user_application_password( $user_id, $uuid );
+
+		if (
+			! empty( $app_password )
+			&& wp_check_password( $password, $app_password['password'], $user_id )
+		) {
+			return $app_password;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Attempt to pull the raw application password from the formatted token.
+	 *
+	 * @param string $token Formatted token.
+	 * @return string|false
+	 */
+	protected function get_password_from_formatted_token( $token ) {
+		$values = explode( ':', base64_decode( $token ) );
+		return ! empty( $values[1] ) ? $values[1] : false;
+	}
+
+	/**
+	 * Get or create an application password.
+	 *
+	 * @return array
+	 */
+	protected function create_application_password() : array {
+		$user_id = get_current_user_id();
+
+		// Set the new request with the new key and secret.
+		$app_pass_data = WP_Application_Passwords::create_new_application_password(
+			$user_id,
+			[
+				'app_id' => self::APP_ID,
+				'name'   => "{$this->app_name} | ID " . wp_get_session_token(),
+			]
 		);
 
-		setcookie(
-			self::APP_ID_COOKIE_NAME,
-			$app_pass_data['app_id'],
-			time() + ( DAY_IN_SECONDS * 7 ),
-			'/',
-			$this->cookie_domain,
-			true,
-			false
-		);
+		if ( is_wp_error( $app_pass_data ) || empty( $app_pass_data[0] ) || empty( $app_pass_data[1] ) ) {
+			return [];
+		}
 
-		return true;
+		return array_merge( $app_pass_data[1], [ 'unhashed_password' => $app_pass_data[0] ] );
 	}
 
 	/**
@@ -187,7 +278,7 @@ class Application_Passwords_Auth {
 	 * @param string $password Application password.
 	 * @return string
 	 */
-	public function get_formatted_token_cookie( $password ) : string {
+	protected function get_formatted_token_cookie( $password ) : string {
 		$user = wp_get_current_user();
 
 		if ( is_wp_error( $user ) ) {
@@ -198,144 +289,35 @@ class Application_Passwords_Auth {
 	}
 
 	/**
-	 * If the user isn't logged in, but has an auth cookie, kill it.
+	 * Set cookies.
 	 *
-	 * @todo what other checks do we need in here that would trigger removing the cookie? Last used?
-	 * @return bool Was the cookie was removed successfully?
+	 * @param string $token_value Value for the token cookie.
+	 * @param string $uuid_value  Value for the UUID cookie.
 	 */
-	public function possibly_remove_cookie(): bool {
-		// Only care if we have a cookie.
-		if ( ! isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) { // phpcs:ignore
-			return false;
-		}
+	protected function set_cookies( $token_value, $uuid_value ): bool {
+		// Front-end cookie is secure when the auth cookie is secure and the site's home URL uses HTTPS.
+		$secure_logged_in_cookie = is_ssl() && 'https' === parse_url( get_option( 'home' ), PHP_URL_SCHEME );
 
-		// Get active application passwords.
-		$app_passwords = WP_Application_Passwords::get_user_application_passwords( get_current_user_id() );
-
-		// If no passwords are stored for current user, remove cookies.
-		if ( empty( $app_passwords ) ) {
-			$this->remove_cookie();
-		}
-
-		$matching_passwords = array_filter(
-			$app_passwords,
-			function ( $password ) {
-				return (
-					! empty( $_COOKIE[ self::APP_ID_COOKIE_NAME ] ) &&
-					$password['app_id'] == $_COOKIE[ self::APP_ID_COOKIE_NAME ]
-				);
-			}
-		);
-
-		// If no stored passwords match the curren App ID, remove cookies.
-		if ( empty( $matching_passwords ) ) {
-			$this->remove_cookie();
-		}
-
-		return false;
-	}
-
-	/**
-	 * Set the expiration on the cookie to unset it.
-	 */
-	public function remove_cookie() {
 		setcookie(
 			self::TOKEN_COOKIE_NAME,
-			null,
-			-1,
-			'/',
-			$this->cookie_domain
+			$token_value,
+			$this->ttl,
+			COOKIEPATH,
+			$this->cookie_domain,
+			$secure_logged_in_cookie,
+			false
 		);
 
 		setcookie(
-			self::APP_ID_COOKIE_NAME,
-			null,
-			-1,
-			'/',
-			$this->cookie_domain
+			self::UUID_COOKIE_NAME,
+			$uuid_value,
+			$this->ttl,
+			COOKIEPATH,
+			$this->cookie_domain,
+			$secure_logged_in_cookie,
+			false
 		);
 
-		setcookie(
-			self::RESET_TOKEN_FLAG_COOKIE_NAME,
-			null,
-			-1,
-			'/',
-			$this->cookie_domain
-		);
-	}
-
-	/**
-	 * Remove any lingering bearer token cookie.
-	 */
-	public function possibly_remove_bearer_cookie() {
-		if ( isset( $_COOKIE[ JWT_Auth::TOKEN_COOKIE_NAME ] ) ) {
-			setcookie(
-				JWT_Auth::TOKEN_COOKIE_NAME,
-				null,
-				-1,
-				'/',
-				$this->cookie_domain
-			);
-		}
-	}
-
-	/**
-	 * Delete all old application passwords for the current user.
-	 *
-	 * @return void
-	 */
-	public function delete_irving_application_passwords() {
-		$user_id       = get_current_user_id();
-		$app_passwords = WP_Application_Passwords::get_user_application_passwords( $user_id );
-
-		// Loop through all passwords for this user, and delete any with a
-		// matching name.
-		foreach ( $app_passwords as $password ) {
-			if ( self::APP_NAME === $password['name'] ) {
-				 WP_Application_Passwords::delete_application_password( $user_id, $password['uuid'] );
-			}
-		}
-	}
-
-	/**
-	 * Get or create an application password.
-	 *
-	 * @return array
-	 */
-	public function create_application_password() : array {
-		$user_id  = get_current_user_id();
-
-		// Set the new request with the new key and secret.
-		$app_pass_data = WP_Application_Passwords::create_new_application_password(
-			$user_id,
-			[
-				'name'   => self::APP_NAME,
-				'app_id' => wp_generate_uuid4(),
-			]
-		);
-
-		if ( is_wp_error( $app_pass_data ) || empty( $app_pass_data[0] ) || empty( $app_pass_data[1] ) ) {
-			return [];
-		}
-
-		return [
-			'password' => $app_pass_data[0],
-			'app_id'   => $app_pass_data[1]['app_id'] ?? '',
-		];
-	}
-
-	/**
-	 * Add an admin bar shortcut to refresh the token.
-	 */
-	public function add_tools_link() {
-		add_submenu_page(
-			'tools.php',
-			__( 'Generate New Authentication Token', 'wp-irving' ),
-			__( 'Generate New Authentication Token', 'wp-irving' ),
-			'edit_posts',
-			add_query_arg( 'refresh-irving-token', true, admin_url() ),
-			null,
-			10
-		);
+		return true;
 	}
 }
