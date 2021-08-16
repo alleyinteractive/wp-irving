@@ -7,8 +7,10 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Irving\REST_API\Endpoint;
 use WP_Irving\Singleton;
 use WP_Application_Passwords;
+use WP_User;
 
 // phpcs:ignoreFile WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 /**
@@ -24,14 +26,14 @@ class Application_Passwords_Auth {
 	const APP_ID = '1481e1b4-8e40-44ed-9b6d-92ba5066ab20';
 
 	/**
-	 * Cookie name that Irving core expects for auth token.
+	 * Cookie name which Irving expects for auth token.
 	 *
 	 * @var string
 	 */
 	const TOKEN_COOKIE_NAME = 'authorizationBasicToken';
 
 	/**
-	 * Cookie name for app ID.
+	 * Cookie name which Irving expects for Application Password UUID.
 	 *
 	 * @var string
 	 */
@@ -59,7 +61,8 @@ class Application_Passwords_Auth {
 	protected $ttl;
 
 	/**
-	 * Setup the singleton. Validate Application Passswords are availble, and setup hooks.
+	 * Set up the singleton. Validate Application Passwords are available, and
+	 * setup hooks.
 	 */
 	public function setup() {
 		// Validate we have access to core application passwords.
@@ -96,20 +99,31 @@ class Application_Passwords_Auth {
 		 */
 		$this->ttl = apply_filters( 'wp_irving_application_passwords_ttl', 14 * DAY_IN_SECONDS );
 
-		// Whenever WordPress sets the auth cookie, also set the app password cookies.
+		// When WP sets the auth cookie, also set the app password cookies.
 		add_action( 'set_auth_cookie', [ $this, 'action_set_auth_cookie' ] );
+
+		// When WP successfully auths an app password, maybe update cookies.
+		add_action( 'application_password_did_authenticate', [ $this, 'action_application_password_did_authenticate' ], 10, 2 );
+
+		// When WP fails authentication an app password, maybe remove cookies.
+		add_action( 'application_password_failed_authentication', [ $this, 'action_application_password_failed_authentication' ] );
 
 		// Ensure auth errors fail silently, as to not break the Irving frontend.
 		add_filter( 'rest_authentication_errors', [ $this, 'handle_authentication_errors' ], 99 );
 	}
 
 	/**
-	 * Short-circuit authentication errors and allow Irving to return unauthenticated components data.
+	 * Short-circuit authentication errors and allow Irving to return
+	 * unauthenticated components' data.
 	 *
-	 * @param array $errors Authentication errors.
+	 * @param \WP_Error|null|true $errors Authentication errors.
+	 * @return \WP_Error|null|true
 	 */
 	public function handle_authentication_errors( $errors ) {
-		if ( strpos( $_SERVER['REQUEST_URI'], \WP_Irving\REST_API\Endpoint::get_namespace() ) ) {
+		if (
+			null !== $errors
+			&& strpos( $_SERVER['REQUEST_URI'], Endpoint::get_namespace() )
+		) {
 			return null;
 		}
 
@@ -124,17 +138,56 @@ class Application_Passwords_Auth {
 	}
 
 	/**
+	 * If the current session's application password was successfully
+	 * authenticated, update the cookies.
+	 *
+	 * @param WP_User $user                 Authenticated user. Unused.
+	 * @param array   $application_password Application password item.
+	 */
+	public function action_application_password_did_authenticate( WP_User $user, array $application_password ) {
+		if (
+			isset( $_COOKIE[ self::UUID_COOKIE_NAME ], $_COOKIE[ self::TOKEN_COOKIE_NAME ] )
+			&& $_COOKIE[ self::UUID_COOKIE_NAME ] === $application_password['uuid']
+		) {
+			$this->set_cookies( $_COOKIE[ self::TOKEN_COOKIE_NAME ], $application_password['uuid'] );
+		}
+	}
+
+	/**
+	 * If the application password in the cookie was used and authentication
+	 * failed, remove the cookies.
+	 */
+	public function action_application_password_failed_authentication() {
+		if (
+			isset( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $_COOKIE[ self::TOKEN_COOKIE_NAME ] )
+			&& $_COOKIE[ self::TOKEN_COOKIE_NAME ] === $this->get_formatted_token_cookie( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] )
+		) {
+			$this->remove_cookies();
+		}
+	}
+
+	/**
 	 * Orchestrate the cookie generation and setting process.
 	 *
 	 * @return bool
 	 */
-	public function orchestrate_cookies() {
-		$current_password = $this->get_current_session_application_password( get_current_user_id() );
+	public function orchestrate_cookies(): bool {
+		$user = wp_get_current_user();
+		if ( empty( $user->ID ) ) {
+			return false;
+		}
+
+		$current_password = $this->get_current_session_application_password( $user->ID );
 
 		if ( empty( $current_password ) ) {
 			// Get a new application password.
-			$current_password = $this->create_application_password();
-			$token_value = $this->get_formatted_token_cookie( $current_password['unhashed_password'] );
+
+			$current_password = $this->create_application_password( $user->ID );
+
+			$token_value = $this->get_formatted_token_cookie(
+				$user->data->user_login,
+				$current_password['unhashed_password']
+			);
 
 			// Prune the old application passwords.
 			$this->prune_old_application_passwords();
@@ -168,7 +221,7 @@ class Application_Passwords_Auth {
 	 *                                   last_used timestamp is only updated
 	 *                                   once per day).
 	 */
-	public function delete_irving_application_passwords( $last_used_before = null ) {
+	public function delete_irving_application_passwords( ?int $last_used_before = null ) {
 		$user_id       = get_current_user_id();
 		$app_passwords = WP_Application_Passwords::get_user_application_passwords( $user_id );
 
@@ -201,7 +254,7 @@ class Application_Passwords_Auth {
 	 * @return array|false Array of application password data on success, false
 	 *                     on failure.
 	 */
-	protected function get_current_session_application_password( $user_id ) {
+	protected function get_current_session_application_password( int $user_id ) {
 		if ( isset( $_COOKIE[ self::UUID_COOKIE_NAME ], $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) {
 			// If the cookie is set, ensure the value is valid.
 			return $this->get_verified_application_password(
@@ -223,7 +276,7 @@ class Application_Passwords_Auth {
 	 * @return array|false Application Password data on success, false on
 	 *                     failure.
 	 */
-	protected function get_verified_application_password( $uuid, $password, $user_id ) {
+	protected function get_verified_application_password( string $uuid, string $password, int $user_id ) {
 		// Get active application passwords.
 		$app_password = WP_Application_Passwords::get_user_application_password( $user_id, $uuid );
 
@@ -243,19 +296,18 @@ class Application_Passwords_Auth {
 	 * @param string $token Formatted token.
 	 * @return string|false
 	 */
-	protected function get_password_from_formatted_token( $token ) {
+	protected function get_password_from_formatted_token( string $token ) {
 		$values = explode( ':', base64_decode( $token ) );
 		return ! empty( $values[1] ) ? $values[1] : false;
 	}
 
 	/**
-	 * Get or create an application password.
+	 * Create an application password.
 	 *
+	 * @param int $user_id User ID.
 	 * @return array
 	 */
-	protected function create_application_password() : array {
-		$user_id = get_current_user_id();
-
+	protected function create_application_password( int $user_id ) : array {
 		// Set the new request with the new key and secret.
 		$app_pass_data = WP_Application_Passwords::create_new_application_password(
 			$user_id,
@@ -275,17 +327,12 @@ class Application_Passwords_Auth {
 	/**
 	 * Format cookie and prepare it to be used in app requests.
 	 *
+	 * @param string $username User's login.
 	 * @param string $password Application password.
 	 * @return string
 	 */
-	protected function get_formatted_token_cookie( $password ) : string {
-		$user = wp_get_current_user();
-
-		if ( is_wp_error( $user ) ) {
-			return '';
-		}
-
-		return base64_encode( $user->data->user_login . ':' . $password );
+	protected function get_formatted_token_cookie( string $username, string $password ) : string {
+		return base64_encode( "{$username}:{$password}" );
 	}
 
 	/**
@@ -294,7 +341,7 @@ class Application_Passwords_Auth {
 	 * @param string $token_value Value for the token cookie.
 	 * @param string $uuid_value  Value for the UUID cookie.
 	 */
-	protected function set_cookies( $token_value, $uuid_value ): bool {
+	protected function set_cookies( string $token_value, string $uuid_value ): bool {
 		// Front-end cookie is secure when the auth cookie is secure and the site's home URL uses HTTPS.
 		$secure_logged_in_cookie = is_ssl() && 'https' === parse_url( get_option( 'home' ), PHP_URL_SCHEME );
 
