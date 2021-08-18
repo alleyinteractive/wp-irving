@@ -37,7 +37,7 @@ class Application_Passwords_Auth {
 	 *
 	 * @var string
 	 */
-	const UUID_COOKIE_NAME = 'authorizationTokenUUID';
+	const UUID_COOKIE_NAME = 'authorizationAppID';
 
 	/**
 	 * Cookie domain for authorization cookies.
@@ -227,7 +227,7 @@ class Application_Passwords_Auth {
 
 		// Loop through all passwords for this user to find those with a matching name.
 		foreach ( $app_passwords as $app_password ) {
-			if ( 0 === strpos( $app_password['name'], $this->app_name ) ) {
+			if ( ! empty( $app_password['last_used'] ) && 0 === strpos( $app_password['name'], $this->app_name ) ) {
 				// Optionally check the last_used date.
 				if ( $last_used_before && $app_password['last_used'] + DAY_IN_SECONDS > $last_used_before ) {
 					continue;
@@ -348,7 +348,7 @@ class Application_Passwords_Auth {
 		setcookie(
 			self::TOKEN_COOKIE_NAME,
 			$token_value,
-			$this->ttl,
+			time() + $this->ttl,
 			COOKIEPATH,
 			$this->cookie_domain,
 			$secure_logged_in_cookie,
@@ -358,7 +358,7 @@ class Application_Passwords_Auth {
 		setcookie(
 			self::UUID_COOKIE_NAME,
 			$uuid_value,
-			$this->ttl,
+			time() + $this->ttl,
 			COOKIEPATH,
 			$this->cookie_domain,
 			$secure_logged_in_cookie,
