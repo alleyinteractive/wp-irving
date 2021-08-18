@@ -102,6 +102,9 @@ class Application_Passwords_Auth {
 		// When WP sets the auth cookie, also set the app password cookies.
 		add_action( 'set_auth_cookie', [ $this, 'action_set_auth_cookie' ] );
 
+		// When a user logs in, set the app password cookies.
+		add_action( 'wp_login', [ $this, 'action_wp_login' ], 10, 2 );
+
 		// When WP successfully auths an app password, maybe update cookies.
 		add_action( 'application_password_did_authenticate', [ $this, 'action_application_password_did_authenticate' ], 10, 2 );
 
@@ -132,9 +135,25 @@ class Application_Passwords_Auth {
 
 	/**
 	 * Set Irving application password cookies when the WP auth cookie is set.
+	 *
+	 * Note that on login, the current user hasn't been set by the time this
+	 * runs, so $user->ID will be empty.
 	 */
 	public function action_set_auth_cookie() {
-		$this->orchestrate_cookies();
+		$user = wp_get_current_user();
+		if ( ! empty( $user->ID ) ) {
+			$this->orchestrate_cookies( $user->ID, $user->user_login );
+		}
+	}
+
+	/**
+	 * Set or update token cookies on successful login.
+	 *
+	 * @param string  $user_login Username.
+	 * @param WP_User $user       WP_User object of the logged-in user.
+	 */
+	public function action_wp_login( $user_login, $user ) {
+		$this->orchestrate_cookies( $user->ID, $user_login );
 	}
 
 	/**
@@ -169,23 +188,22 @@ class Application_Passwords_Auth {
 	/**
 	 * Orchestrate the cookie generation and setting process.
 	 *
+	 * @param int    $user_id    User ID.
+	 * @param string $user_login User login.
 	 * @return bool
 	 */
-	public function orchestrate_cookies(): bool {
-		$user = wp_get_current_user();
-		if ( empty( $user->ID ) ) {
-			return false;
-		}
-
-		$current_password = $this->get_current_session_application_password( $user->ID );
+	public function orchestrate_cookies( int $user_id, string $user_login ): bool {
+		$current_password = $this->get_current_session_application_password( $user_id );
 
 		if ( empty( $current_password ) ) {
 			// Get a new application password.
-
-			$current_password = $this->create_application_password( $user->ID );
+			$current_password = $this->create_application_password( $user_id );
+			if ( empty( $current_password['unhashed_password'] ) ) {
+				return false;
+			}
 
 			$token_value = $this->get_formatted_token_cookie(
-				$user->data->user_login,
+				$user_login,
 				$current_password['unhashed_password']
 			);
 
