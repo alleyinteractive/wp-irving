@@ -61,6 +61,16 @@ class Application_Passwords_Auth {
 	protected $ttl;
 
 	/**
+	 * Token for the current session.
+	 *
+	 * This is stored in the instance because it might come from an action or
+	 * from `wp_get_session_token()` as necessary.
+	 *
+	 * @var string
+	 */
+	protected $session_token;
+
+	/**
 	 * Set up the singleton. Validate Application Passwords are available, and
 	 * setup hooks.
 	 */
@@ -100,7 +110,7 @@ class Application_Passwords_Auth {
 		$this->ttl = apply_filters( 'wp_irving_application_passwords_ttl', 14 * DAY_IN_SECONDS );
 
 		// When WP sets the auth cookie, also set the app password cookies.
-		add_action( 'set_auth_cookie', [ $this, 'action_set_auth_cookie' ] );
+		add_action( 'set_auth_cookie', [ $this, 'action_set_auth_cookie' ], 10, 6 );
 
 		// When a user logs in, set the app password cookies.
 		add_action( 'wp_login', [ $this, 'action_wp_login' ], 10, 2 );
@@ -138,10 +148,23 @@ class Application_Passwords_Auth {
 	 *
 	 * Note that on login, the current user hasn't been set by the time this
 	 * runs, so $user->ID will be empty.
+	 *
+	 * @todo If "remember" is not checked, should this change the cookie ttl? If
+	 *       `$expire === 0`, that means "remember" was not checked.
+	 *
+	 * @param string $auth_cookie Authentication cookie value.
+	 * @param int    $expire      The time the login grace period expires as a UNIX timestamp.
+	 *                            Default is 12 hours past the cookie's expiration time.
+	 * @param int    $expiration  The time when the authentication cookie expires as a UNIX timestamp.
+	 *                            Default is 14 days from now.
+	 * @param int    $user_id     User ID.
+	 * @param string $scheme      Authentication scheme. Values include 'auth' or 'secure_auth'.
+	 * @param string $token       User's session token to use for this cookie.
 	 */
-	public function action_set_auth_cookie() {
+	public function action_set_auth_cookie( $auth_cookie, $expire, $expiration, $user_id, $scheme, $token ) {
 		$user = wp_get_current_user();
 		if ( ! empty( $user->ID ) ) {
+			$this->session_token = $token;
 			$this->orchestrate_cookies( $user->ID, $user->user_login );
 		}
 	}
@@ -331,7 +354,7 @@ class Application_Passwords_Auth {
 			$user_id,
 			[
 				'app_id' => self::APP_ID,
-				'name'   => "{$this->app_name} | ID " . wp_get_session_token(),
+				'name'   => "{$this->app_name} | ID " . $this->get_session_token(),
 			]
 		);
 
@@ -384,5 +407,18 @@ class Application_Passwords_Auth {
 		);
 
 		return true;
+	}
+
+	/**
+	 * Get the current session token.
+	 *
+	 * @return string
+	 */
+	protected function get_session_token(): string {
+		if ( empty( $this->session_token ) ) {
+			$this->session_token = wp_get_session_token();
+		}
+
+		return $this->session_token;
 	}
 }
