@@ -240,7 +240,7 @@ class Application_Passwords_Auth {
 
 		if ( empty( $current_password ) ) {
 			// Get a new application password.
-			$current_password = $this->create_application_password( $user_id );
+			$current_password = $this->create_application_password( $user_id, $remember );
 			if ( empty( $current_password['unhashed_password'] ) ) {
 				return false;
 			}
@@ -266,26 +266,24 @@ class Application_Passwords_Auth {
 	 * @param int $user_id User ID.
 	 */
 	public function prune_old_application_passwords( int $user_id ) {
-		$this->delete_irving_application_passwords( $user_id, time() - $this->ttl );
+		$this->delete_irving_application_passwords( $user_id );
 	}
 
 	/**
 	 * Delete all old Irving application passwords for the current user.
 	 *
-	 * @param int      $user_id        User ID.
-	 * @param null|int $created_before Optional. Timestamp. If present, only
-	 *                                 application passwords created before the
-	 *                                 given timestamp will be removed, adding
-	 *                                 in an hour of buffer.
+	 * @param int       $user_id      User ID.
+	 * @param bool|null $expired_only Optional. Should only expired tokens be
+	 *                                deleted? Defaults to true.
 	 */
-	public function delete_irving_application_passwords( int $user_id, ?int $created_before = null ) {
+	public function delete_irving_application_passwords( int $user_id, ?bool $expired_only = true ) {
 		$app_passwords = WP_Application_Passwords::get_user_application_passwords( $user_id );
 
 		// Loop through all passwords for this user to find those with a matching name.
 		foreach ( $app_passwords as $app_password ) {
 			if ( $this->is_application_password_from_irving( $app_password ) ) {
 				// Optionally check the created timestamp.
-				if ( $created_before && $app_password['created'] + HOUR_IN_SECONDS > $created_before ) {
+				if ( $expired_only && ! $this->is_application_password_expired( $app_password) ) {
 					continue;
 				}
 
@@ -365,16 +363,19 @@ class Application_Passwords_Auth {
 	/**
 	 * Create an application password.
 	 *
-	 * @param int $user_id User ID.
+	 * @param int  $user_id  User ID.
+	 * @param bool $remember Should this be a short-term or full TTL token.
 	 * @return array
 	 */
-	protected function create_application_password( int $user_id ) : array {
+	protected function create_application_password( int $user_id, bool $remember = true ) : array {
+		$expiration = time() + ( $remember ? $this->ttl : 2 * DAY_IN_SECONDS );
+
 		// Set the new request with the new key and secret.
 		$app_pass_data = WP_Application_Passwords::create_new_application_password(
 			$user_id,
 			[
 				'app_id' => self::APP_ID,
-				'name'   => "{$this->app_name} | ID " . $this->get_session_token(),
+				'name'   => "{$this->app_name} | ID {$this->get_session_token()} | EXP {$expiration}",
 			]
 		);
 
@@ -463,6 +464,17 @@ class Application_Passwords_Auth {
 	 * @return bool
 	 */
 	protected function is_application_password_expired( array $application_password ): bool {
-		return $application_password['created'] < time() - $this->ttl;
+		// Attempt to extract the expiration from the token name.
+		$expiration = (int) substr(
+			$application_password['name'],
+			strpos( $application_password['name'], '| EXP ' ) + 6
+		);
+
+		if ( $expiration ) {
+			return $expiration < time();
+		} else {
+			// If the expiration couldn't be found, leverage the creation date.
+			return $application_password['created'] < time() - $this->ttl;
+		}
 	}
 }
