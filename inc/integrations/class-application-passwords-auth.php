@@ -7,6 +7,7 @@
 
 namespace WP_Irving\Integrations;
 
+use WP_Error;
 use WP_Irving\REST_API\Endpoint;
 use WP_Irving\Singleton;
 use WP_Application_Passwords;
@@ -71,6 +72,13 @@ class Application_Passwords_Auth {
 	protected $session_token;
 
 	/**
+	 * If a new application password is generated, keep it in memory.
+	 *
+	 * @var array
+	 */
+	protected $new_application_password;
+
+	/**
 	 * Set up the singleton. Validate Application Passwords are available, and
 	 * setup hooks.
 	 */
@@ -110,16 +118,16 @@ class Application_Passwords_Auth {
 		$this->ttl = apply_filters( 'wp_irving_application_passwords_ttl', 14 * DAY_IN_SECONDS );
 
 		// When WP sets the auth cookie, also set the app password cookies.
-		add_action( 'set_auth_cookie', [ $this, 'action_set_auth_cookie' ], 10, 6 );
+		add_action( 'set_auth_cookie', [ $this, 'set_cookies_with_session_cookies' ], 10, 6 );
 
-		// When a user logs in, set the app password cookies.
-		add_action( 'wp_login', [ $this, 'action_wp_login' ], 10, 2 );
-
-		// When WP successfully auths an app password, maybe update cookies.
-		add_action( 'application_password_did_authenticate', [ $this, 'action_application_password_did_authenticate' ], 10, 2 );
+		// When a user logs out, remove the app password and cookies.
+		add_action( 'wp_logout', [ $this, 'destroy_application_password_on_logout' ] );
 
 		// When WP fails authentication an app password, maybe remove cookies.
-		add_action( 'application_password_failed_authentication', [ $this, 'action_application_password_failed_authentication' ] );
+		add_action( 'application_password_failed_authentication', [ $this, 'clear_cookies_on_failed_authentication' ] );
+
+		// Don't let Irving App Passwords older than the TTL be used.
+		add_action( 'wp_authenticate_application_password_errors', [ $this, 'check_application_password_age_on_use' ], 10, 4 );
 
 		// Ensure auth errors fail silently, as to not break the Irving frontend.
 		add_filter( 'rest_authentication_errors', [ $this, 'handle_authentication_errors' ], 99 );
@@ -149,9 +157,6 @@ class Application_Passwords_Auth {
 	 * Note that on login, the current user hasn't been set by the time this
 	 * runs, so $user->ID will be empty.
 	 *
-	 * @todo If "remember" is not checked, should this change the cookie ttl? If
-	 *       `$expire === 0`, that means "remember" was not checked.
-	 *
 	 * @param string $auth_cookie Authentication cookie value.
 	 * @param int    $expire      The time the login grace period expires as a UNIX timestamp.
 	 *                            Default is 12 hours past the cookie's expiration time.
@@ -161,37 +166,23 @@ class Application_Passwords_Auth {
 	 * @param string $scheme      Authentication scheme. Values include 'auth' or 'secure_auth'.
 	 * @param string $token       User's session token to use for this cookie.
 	 */
-	public function action_set_auth_cookie( $auth_cookie, $expire, $expiration, $user_id, $scheme, $token ) {
-		$user = wp_get_current_user();
+	public function set_cookies_with_session_cookies( $auth_cookie, $expire, $expiration, $user_id, $scheme, $token ) {
+		$user = get_user_by( 'id', $user_id );
 		if ( ! empty( $user->ID ) ) {
 			$this->session_token = $token;
-			$this->orchestrate_cookies( $user->ID, $user->user_login );
+			$this->orchestrate_cookies( $user->ID, $user->user_login, $expire !== 0 );
 		}
 	}
 
 	/**
-	 * Set or update token cookies on successful login.
+	 * On logout, destroy the application password and related cookies.
 	 *
-	 * @param string  $user_login Username.
-	 * @param WP_User $user       WP_User object of the logged-in user.
+	 * @param int $user_id User ID.
 	 */
-	public function action_wp_login( $user_login, $user ) {
-		$this->orchestrate_cookies( $user->ID, $user_login );
-	}
-
-	/**
-	 * If the current session's application password was successfully
-	 * authenticated, update the cookies.
-	 *
-	 * @param WP_User $user                 Authenticated user. Unused.
-	 * @param array   $application_password Application password item.
-	 */
-	public function action_application_password_did_authenticate( WP_User $user, array $application_password ) {
-		if (
-			isset( $_COOKIE[ self::UUID_COOKIE_NAME ], $_COOKIE[ self::TOKEN_COOKIE_NAME ] )
-			&& $_COOKIE[ self::UUID_COOKIE_NAME ] === $application_password['uuid']
-		) {
-			$this->set_cookies( $_COOKIE[ self::TOKEN_COOKIE_NAME ], $application_password['uuid'] );
+	public function destroy_application_password_on_logout( $user_id ) {
+		if ( isset( $_COOKIE[ self::UUID_COOKIE_NAME ] ) ) {
+			WP_Application_Passwords::delete_application_password( $user_id, $_COOKIE[ self::UUID_COOKIE_NAME ] );
+			$this->remove_cookies();
 		}
 	}
 
@@ -199,7 +190,7 @@ class Application_Passwords_Auth {
 	 * If the application password in the cookie was used and authentication
 	 * failed, remove the cookies.
 	 */
-	public function action_application_password_failed_authentication() {
+	public function clear_cookies_on_failed_authentication() {
 		if (
 			isset( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'], $_COOKIE[ self::TOKEN_COOKIE_NAME ] )
 			&& $_COOKIE[ self::TOKEN_COOKIE_NAME ] === $this->get_formatted_token_cookie( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] )
@@ -209,13 +200,42 @@ class Application_Passwords_Auth {
 	}
 
 	/**
+	 * Don't allow Irving Application Passwords to be used longer than TTL.
+	 *
+	 * @param WP_Error $error    The error object.
+	 * @param WP_User  $user     The user authenticating.
+	 * @param array    $item     The details about the application password.
+	 */
+	public function check_application_password_age_on_use( $error, $user, $item ) {
+		if (
+			! empty( $item['name'] )
+			&& $this->is_application_password_from_irving( $item )
+			&& $this->is_application_password_expired( $item )
+		) {
+			$error->add(
+				'irving_application_password_expired',
+				__( 'The Irving application password is expired, please sign in again.', 'wp-irving' )
+			);
+
+			// Take this opportunity to remove old passwords.
+			$this->prune_old_application_passwords( $user->ID );
+
+			// Attempt to remove cookies.
+			$this->remove_cookies();
+		}
+
+		return $error;
+	}
+
+	/**
 	 * Orchestrate the cookie generation and setting process.
 	 *
 	 * @param int    $user_id    User ID.
 	 * @param string $user_login User login.
+	 * @param bool   $remember   Should this be a session cookie or full TTL.
 	 * @return bool
 	 */
-	public function orchestrate_cookies( int $user_id, string $user_login ): bool {
+	public function orchestrate_cookies( int $user_id, string $user_login, bool $remember = true ): bool {
 		$current_password = $this->get_current_session_application_password( $user_id );
 
 		if ( empty( $current_password ) ) {
@@ -231,46 +251,41 @@ class Application_Passwords_Auth {
 			);
 
 			// Prune the old application passwords.
-			$this->prune_old_application_passwords();
-		} else {
-			$token_value = $_COOKIE[ self::TOKEN_COOKIE_NAME ];
+			$this->prune_old_application_passwords( $user_id );
+
+			return $this->set_cookies( $token_value, $current_password['uuid'], $remember );
 		}
 
-		// Invalid response. This needs better error handing.
-		if ( empty( $current_password ) ) {
-			return false;
-		}
-
-		return $this->set_cookies( $token_value, $current_password['uuid'] );
+		return false;
 	}
 
 	/**
-	 * Remove old application passwords that haven't been used since the TTL
-	 * expiration.
+	 * Remove old application passwords that were created more than TTL seconds
+	 * ago.
+	 *
+	 * @param int $user_id User ID.
 	 */
-	public function prune_old_application_passwords() {
-		$this->delete_irving_application_passwords( time() - $this->ttl );
+	public function prune_old_application_passwords( int $user_id ) {
+		$this->delete_irving_application_passwords( $user_id, time() - $this->ttl );
 	}
 
 	/**
 	 * Delete all old Irving application passwords for the current user.
 	 *
-	 * @param null|int $last_used_before Optional. Timestamp. If present, only
-	 *                                   application passwords last used before
-	 *                                   the given timestamp will be removed,
-	 *                                   adding in a day of buffer (since the
-	 *                                   last_used timestamp is only updated
-	 *                                   once per day).
+	 * @param int      $user_id        User ID.
+	 * @param null|int $created_before Optional. Timestamp. If present, only
+	 *                                 application passwords created before the
+	 *                                 given timestamp will be removed, adding
+	 *                                 in an hour of buffer.
 	 */
-	public function delete_irving_application_passwords( ?int $last_used_before = null ) {
-		$user_id       = get_current_user_id();
+	public function delete_irving_application_passwords( int $user_id, ?int $created_before = null ) {
 		$app_passwords = WP_Application_Passwords::get_user_application_passwords( $user_id );
 
 		// Loop through all passwords for this user to find those with a matching name.
 		foreach ( $app_passwords as $app_password ) {
-			if ( ! empty( $app_password['last_used'] ) && 0 === strpos( $app_password['name'], $this->app_name ) ) {
-				// Optionally check the last_used date.
-				if ( $last_used_before && $app_password['last_used'] + DAY_IN_SECONDS > $last_used_before ) {
+			if ( $this->is_application_password_from_irving( $app_password ) ) {
+				// Optionally check the created timestamp.
+				if ( $created_before && $app_password['created'] + HOUR_IN_SECONDS > $created_before ) {
 					continue;
 				}
 
@@ -296,6 +311,11 @@ class Application_Passwords_Auth {
 	 *                     on failure.
 	 */
 	protected function get_current_session_application_password( int $user_id ) {
+		// If an application password was just created, use that.
+		if ( isset( $this->new_application_password ) ) {
+			return $this->new_application_password;
+		}
+
 		if ( isset( $_COOKIE[ self::UUID_COOKIE_NAME ], $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) {
 			// If the cookie is set, ensure the value is valid.
 			return $this->get_verified_application_password(
@@ -362,7 +382,8 @@ class Application_Passwords_Auth {
 			return [];
 		}
 
-		return array_merge( $app_pass_data[1], [ 'unhashed_password' => $app_pass_data[0] ] );
+		$this->new_application_password = array_merge( $app_pass_data[1], [ 'unhashed_password' => $app_pass_data[0] ] );
+		return $this->new_application_password;
 	}
 
 	/**
@@ -381,15 +402,18 @@ class Application_Passwords_Auth {
 	 *
 	 * @param string $token_value Value for the token cookie.
 	 * @param string $uuid_value  Value for the UUID cookie.
+	 * @param bool   $remember    Should this be a session cookie or full TTL.
+	 * @return bool
 	 */
-	protected function set_cookies( string $token_value, string $uuid_value ): bool {
+	protected function set_cookies( string $token_value, string $uuid_value, bool $remember = true ): bool {
 		// Front-end cookie is secure when the auth cookie is secure and the site's home URL uses HTTPS.
 		$secure_logged_in_cookie = is_ssl() && 'https' === parse_url( get_option( 'home' ), PHP_URL_SCHEME );
+		$expiration = $remember ? time() + $this->ttl : 0;
 
 		setcookie(
 			self::TOKEN_COOKIE_NAME,
 			$token_value,
-			time() + $this->ttl,
+			$expiration,
 			COOKIEPATH,
 			$this->cookie_domain,
 			$secure_logged_in_cookie,
@@ -399,7 +423,7 @@ class Application_Passwords_Auth {
 		setcookie(
 			self::UUID_COOKIE_NAME,
 			$uuid_value,
-			time() + $this->ttl,
+			$expiration,
 			COOKIEPATH,
 			$this->cookie_domain,
 			$secure_logged_in_cookie,
@@ -420,5 +444,25 @@ class Application_Passwords_Auth {
 		}
 
 		return $this->session_token;
+	}
+
+	/**
+	 * Was the application password generated by Irving?
+	 *
+	 * @param array $application_password Application Password.
+	 * @return bool
+	 */
+	protected function is_application_password_from_irving( array $application_password ): bool {
+		return 0 === strpos( $application_password['name'], $this->app_name );
+	}
+
+	/**
+	 * Is the given application password expired?
+	 *
+	 * @param array $application_password Application password.
+	 * @return bool
+	 */
+	protected function is_application_password_expired( array $application_password ): bool {
+		return $application_password['created'] < time() - $this->ttl;
 	}
 }
