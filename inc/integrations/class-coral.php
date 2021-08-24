@@ -68,8 +68,8 @@ class Coral {
 		// Register settings fields for integrations.
 		add_action( 'admin_init', [ $this, 'register_settings_fields' ] );
 
-		// Register a hidden post type for username records.
-		add_action( 'init', [ $this, 'register_post_type' ] );
+		// Register a hidden post type for username records. Setup is already running on `init`.
+		$this->register_post_type();
 
 		$sso_secret = $this->options[ $this->option_key ]['sso_secret'] ?? false;
 
