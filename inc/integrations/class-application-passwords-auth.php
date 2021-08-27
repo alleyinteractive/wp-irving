@@ -52,14 +52,14 @@ class Application_Passwords_Auth {
 	 *
 	 * @var string
 	 */
-	protected $app_name;
+	public $app_name;
 
 	/**
 	 * Cookie TTL.
 	 *
 	 * @var int
 	 */
-	protected $ttl;
+	public $ttl;
 
 	/**
 	 * Token for the current session.
@@ -69,14 +69,14 @@ class Application_Passwords_Auth {
 	 *
 	 * @var string
 	 */
-	protected $session_token;
+	public $session_token;
 
 	/**
 	 * If a new application password is generated, keep it in memory.
 	 *
 	 * @var array
 	 */
-	protected $new_application_password;
+	public $new_application_password;
 
 	/**
 	 * Set up the singleton. Validate Application Passwords are available, and
@@ -270,7 +270,7 @@ class Application_Passwords_Auth {
 	}
 
 	/**
-	 * Delete all old Irving application passwords for the current user.
+	 * Delete Irving application passwords for the given user.
 	 *
 	 * @param int       $user_id      User ID.
 	 * @param bool|null $expired_only Optional. Should only expired tokens be
@@ -297,8 +297,40 @@ class Application_Passwords_Auth {
 	 * Trigger the expiration on the cookies to unset them.
 	 */
 	public function remove_cookies() {
+		/** This WP filter is documented in wp-includes/pluggable.php */
+		if ( ! apply_filters( 'send_auth_cookies', true ) ) {
+			return false;
+		}
+
 		setcookie( self::TOKEN_COOKIE_NAME, null, -1, COOKIEPATH, $this->cookie_domain );
 		setcookie( self::UUID_COOKIE_NAME, null, -1, COOKIEPATH, $this->cookie_domain );
+	}
+
+	/**
+	 * Create an application password.
+	 *
+	 * @param int  $user_id  User ID.
+	 * @param bool $remember Should this be a short-term or full TTL token.
+	 * @return array
+	 */
+	public function create_application_password( int $user_id, bool $remember = true ) : array {
+		$expiration = time() + ( $remember ? $this->ttl : 2 * DAY_IN_SECONDS );
+
+		// Set the new request with the new key and secret.
+		$app_pass_data = WP_Application_Passwords::create_new_application_password(
+			$user_id,
+			[
+				'app_id' => self::APP_ID,
+				'name'   => "{$this->app_name} | ID {$this->get_session_token()} | EXP {$expiration}",
+			]
+		);
+
+		if ( is_wp_error( $app_pass_data ) || empty( $app_pass_data[0] ) || empty( $app_pass_data[1] ) ) {
+			return [];
+		}
+
+		$this->new_application_password = array_merge( $app_pass_data[1], [ 'unhashed_password' => $app_pass_data[0] ] );
+		return $this->new_application_password;
 	}
 
 	/**
@@ -361,33 +393,6 @@ class Application_Passwords_Auth {
 	}
 
 	/**
-	 * Create an application password.
-	 *
-	 * @param int  $user_id  User ID.
-	 * @param bool $remember Should this be a short-term or full TTL token.
-	 * @return array
-	 */
-	protected function create_application_password( int $user_id, bool $remember = true ) : array {
-		$expiration = time() + ( $remember ? $this->ttl : 2 * DAY_IN_SECONDS );
-
-		// Set the new request with the new key and secret.
-		$app_pass_data = WP_Application_Passwords::create_new_application_password(
-			$user_id,
-			[
-				'app_id' => self::APP_ID,
-				'name'   => "{$this->app_name} | ID {$this->get_session_token()} | EXP {$expiration}",
-			]
-		);
-
-		if ( is_wp_error( $app_pass_data ) || empty( $app_pass_data[0] ) || empty( $app_pass_data[1] ) ) {
-			return [];
-		}
-
-		$this->new_application_password = array_merge( $app_pass_data[1], [ 'unhashed_password' => $app_pass_data[0] ] );
-		return $this->new_application_password;
-	}
-
-	/**
 	 * Format cookie and prepare it to be used in app requests.
 	 *
 	 * @param string $username User's login.
@@ -401,6 +406,9 @@ class Application_Passwords_Auth {
 	/**
 	 * Set cookies.
 	 *
+	 * @todo Consider adding a Cookie class and providing it using DI so that it
+	 *       can be mocked to make this method testable.
+	 *
 	 * @param string $token_value Value for the token cookie.
 	 * @param string $uuid_value  Value for the UUID cookie.
 	 * @param bool   $remember    Should this be a session cookie or full TTL.
@@ -410,6 +418,17 @@ class Application_Passwords_Auth {
 		// Front-end cookie is secure when the auth cookie is secure and the site's home URL uses HTTPS.
 		$secure_logged_in_cookie = is_ssl() && 'https' === parse_url( get_option( 'home' ), PHP_URL_SCHEME );
 		$expiration = $remember ? time() + $this->ttl : 0;
+
+		/**
+		 * Allows preventing auth cookies from actually being sent to the client.
+		 *
+		 * This is a filter from WordPress core, see wp-includes/pluggable.php.
+		 *
+		 * @param bool $send Whether to send auth cookies to the client.
+		 */
+		if ( ! apply_filters( 'send_auth_cookies', true ) ) {
+			return false;
+		}
 
 		setcookie(
 			self::TOKEN_COOKIE_NAME,
