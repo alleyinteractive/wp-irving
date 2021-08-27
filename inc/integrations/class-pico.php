@@ -144,14 +144,14 @@ class Pico {
 	}
 
 	/**
-	 * Render an input for the Pico Whitelisted SSO Tiers.
+	 * Render a textarea for the Pico allow listed SSO Tiers.
 	 */
 	public function render_pico_tiers_input() {
 		// Check to see if there are existing tiers in the option.
 		$tiers = $this->options[ $this->option_key ]['tiers'] ?? '';
 
 		?>
-			<input id="pico_tiers" type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]" value="<?php echo esc_attr( $tiers ); ?>" />
+			<textarea id="pico_tiers" rows="5" cols="50" type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]"><?php echo esc_attr( $tiers ); ?></textarea>
 			<label for="pico_tiers">
 				<p>
 					<em><?php echo esc_html__( 'Tiers should be input as comma-separated values (e.g. Reader,Subscriber)', 'wp-irving' ); ?></em>
@@ -194,7 +194,7 @@ class Pico {
 		$tiers = Integrations\get_option_value( 'pico', 'tiers' );
 
 		if ( ! empty( $tiers ) ) {
-			$options['pico']['tiers'] = explode( ',', $tiers );
+			$options['pico']['tiers'] = array_filter( array_map( 'trim', explode( ',', $tiers ) ) );
 		}
 
 		/**
@@ -234,6 +234,8 @@ class Pico {
 		$response = $this->verification_request( $this->verify_user_path, $payload, $credentials );
 
 		if ( 200 !== $response['status_code'] ) {
+			// Provide a hook for logging errors.
+			do_action( 'wp_irving_verify_pico_user_api_error', $response );
 			return false;
 		}
 

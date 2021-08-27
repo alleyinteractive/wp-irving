@@ -66,8 +66,8 @@ function setup_admin_bar(
 				[
 					'config'   => [
 						'cookie_domain' => apply_filters(
-							'wp_irving_jwt_token_cookie_domain',
-							wp_parse_url( home_url(), PHP_URL_HOST )
+							'wp_irving_auth_cookie_domain',
+							COOKIE_DOMAIN
 						),
 					],
 					'children' => [

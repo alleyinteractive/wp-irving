@@ -5,6 +5,10 @@
         "embed_URL": {
           "default": "",
           "type": "string"
+        },
+        "story_id": {
+          "default": 0,
+          "type": "int"
         }
     }
 }

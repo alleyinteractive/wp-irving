@@ -283,7 +283,7 @@ class Application_Passwords_Auth {
 		foreach ( $app_passwords as $app_password ) {
 			if ( $this->is_application_password_from_irving( $app_password ) ) {
 				// Optionally check the created timestamp.
-				if ( $expired_only && ! $this->is_application_password_expired( $app_password) ) {
+				if ( $expired_only && ! $this->is_application_password_expired( $app_password ) ) {
 					continue;
 				}
 
