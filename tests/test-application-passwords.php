@@ -26,8 +26,8 @@ class Test_Application_Passwords extends WP_UnitTestCase {
 		self::$singleton = Application_Passwords_Auth::instance();
 	}
 
-	function set_up() {
-		parent::set_up();
+	function setUp() {
+		parent::setUp();
 
 		$this->user = self::factory()->user->create_and_get(
 			[
@@ -37,12 +37,12 @@ class Test_Application_Passwords extends WP_UnitTestCase {
 		);
 	}
 
-	public function tear_down() {
+	public function tearDown() {
 		// Reset some Application Password singleton properties.
 		self::$singleton->session_token = null;
 		self::$singleton->new_application_password = null;
 
-		parent::tear_down();
+		parent::tearDown();
 	}
 
 	public function test_login_creates_application_password() {
