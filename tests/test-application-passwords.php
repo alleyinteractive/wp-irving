@@ -59,7 +59,7 @@ class Test_Application_Passwords extends WP_UnitTestCase {
 
 		// Confirm that a new application password was created.
 		$this->assertNotEmpty( $updated_app_pws );
-		$this->assertMatchesRegularExpression(
+		$this->assertRegExp(
 			'/^' . self::$singleton->app_name . ' | ID .*? | EXP \d{10}$/',
 			$updated_app_pws[0]['name']
 		);
