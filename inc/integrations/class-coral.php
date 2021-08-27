@@ -155,7 +155,7 @@ class Coral {
 			[
 				'public'       => false,
 				'show_in_rest' => false,
-				'supports'     => [ 'title', 'excerpt' ],
+				'supports'     => [ 'title', 'excerpt', 'thumbnail' ],
 			]
 		);
 	}
@@ -305,6 +305,9 @@ class Coral {
 					'username' => $username,
 				],
 			];
+
+			// Filter credentials, e.g. allowing for the addition of custom user meta.
+			$credentials = apply_filters( 'wp_irving_coral_credentials', $credentials );
 
 			return [
 				'status'           => 'success',
@@ -491,7 +494,7 @@ class Coral {
 	 * @param string $id The SSO ID of the user.
 	 * @return int The post ID, or 0 if none is found.
 	 */
-	private function get_username_post_id( $id ): int {
+	public function get_username_post_id( $id ): int {
 		global $wpdb;
 
 		$key            = "get_username_post_id_{$id}";
@@ -606,7 +609,7 @@ class Coral {
 		];
 
 		$post_id = $this->get_username_post_id( $id );
-		
+
 		if ( 0 < $post_id ) {
 			$args['ID'] = $post_id;
 		}
