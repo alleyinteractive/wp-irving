@@ -5,15 +5,15 @@
  * @package WP_Irving
  */
 
+// phpcs:disable
+
 namespace WP_Irving;
 
 use WP_Irving\Integrations\Application_Passwords_Auth;
 use WP_UnitTestCase;
 
 /**
- * Test site theme functionality.
- *
- * @group templates
+ * Test Application Passwords integration.
  */
 class Test_Application_Passwords extends WP_UnitTestCase {
 	protected $user;
