@@ -404,6 +404,11 @@ class Components_Endpoint extends Endpoint {
 		$wp->handle_404();
 		$wp->register_globals();
 
+		// Handle the homepage being set to a page.
+		if ( $wp_query->get( 'page_id' ) === get_option( 'page_on_front' ) ) {
+			$wp_query->is_home = true;
+		}
+
 		return $wp_query;
 	}
 
