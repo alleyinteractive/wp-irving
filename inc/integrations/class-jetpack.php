@@ -27,6 +27,11 @@ class Jetpack {
 			// Inject the Site Stats component into the integrations config.
 			add_filter( 'wp_irving_integrations_config', [ $this, 'inject_jetpack_stats_into_integrations_config' ] );
 		}
+
+		// Parse Jetpack's verification markup and inject it into the <Head /> component.
+		if ( function_exists( '\jetpack_verification_print_meta' ) && ! is_admin() ) {
+			add_filter( 'wp_irving_component_children', [ $this, 'inject_jetpack_verification_markup_into_head_children' ], 10, 3 );
+		}
 	}
 
 	/**
@@ -87,5 +92,40 @@ class Jetpack {
 		}
 
 		return $config;
+	}
+
+	/**
+	 * Parse Jetpack's verification markup and inject it into the <Head /> component.
+	 *
+	 * @param array  $children Children for this component.
+	 * @param array  $config   Config for this component.
+	 * @param string $name     Name of this component.
+	 * @return array
+	 */
+	public function inject_jetpack_verification_markup_into_head_children( array $children, array $config, string $name ): array {
+
+		// Ony run this action on the `irving/head` in a `page` context.
+		if (
+			'irving/head' !== $name
+			|| 'page' !== ( $config['context'] ?? 'page' )
+		) {
+			return $children;
+		}
+
+		return array_merge(
+			$children,
+			\WP_Irving\Components\html_to_components( $this->get_jetpack_verification_markup(), [ 'meta' ] )
+		);
+	}
+
+	/**
+	 * Capture the markup output in the site <head>.
+	 *
+	 * @return string
+	 */
+	public function get_jetpack_verification_markup(): string {
+		ob_start();
+		jetpack_verification_print_meta(); // phpcs:ignore
+		return ob_get_clean();
 	}
 }
