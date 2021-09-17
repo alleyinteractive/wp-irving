@@ -119,7 +119,7 @@ class Jetpack {
 	}
 
 	/**
-	 * Capture the markup output by Yoast in the site <head>.
+	 * Capture the markup output in the site <head>.
 	 *
 	 * @return string
 	 */
