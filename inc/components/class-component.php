@@ -807,7 +807,7 @@ class Component implements JsonSerializable {
 	/**
 	 * Convert all array keys to camel case.
 	 *
-	 * @param array $array Array to convert.
+	 * @param array  $array Array to convert.
 	 * @param string $parent_key Key corresponding to the current config array.
 	 * @return array Updated array with camel-cased keys.
 	 */
