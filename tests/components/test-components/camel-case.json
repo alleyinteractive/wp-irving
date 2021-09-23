@@ -26,6 +26,12 @@
       },
       "type": "array",
       "camel_case_inner_keys": false
+    },
+    "style": {
+      "default": {
+        "background-color": "blue",
+        "--wp-irving--custom-property": "1px"
+      }
     }
   }
 }

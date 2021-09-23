@@ -807,10 +807,11 @@ class Component implements JsonSerializable {
 	/**
 	 * Convert all array keys to camel case.
 	 *
-	 * @param array $array Array to convert.
+	 * @param array  $array Array to convert.
+	 * @param string $parent_key Key corresponding to the current config array.
 	 * @return array Updated array with camel-cased keys.
 	 */
-	private function camel_case_keys( $array ): array {
+	private function camel_case_keys( $array, $parent_key = null ): array {
 
 		// Setup for recursion.
 		$camel_case_array = [];
@@ -823,14 +824,17 @@ class Component implements JsonSerializable {
 				is_array( $value )
 				&& false !== ( $this->get_schema()[ $key ]['camel_case_inner_keys'] ?? true )
 			) {
-					$value = $this->camel_case_keys( $value );
+				$value = $this->camel_case_keys( $value, $key );
 			}
 
-			// Camel case the key unless the schema explicitly states otherwise.
-			if ( false !== ( $this->get_schema()[ $key ]['camel_case_config_key'] ?? true ) ) {
-				$new_key = $this->camel_case( $key );
-			} else {
+			// Camel case the key unless the schema explicitly states otherwise, or if the key is a CSS custom property.
+			if (
+				false === ( $this->get_schema()[ $key ]['camel_case_config_key'] ?? true )
+				|| ( 'style' === $parent_key && 0 === strpos( $key, '--' ) )
+			) {
 				$new_key = $key;
+			} else {
+				$new_key = $this->camel_case( $key );
 			}
 
 			$camel_case_array[ $new_key ] = $value;
