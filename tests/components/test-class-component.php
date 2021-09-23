@@ -688,7 +688,7 @@ class Test_Class_Component extends WP_UnitTestCase {
 							'key_two' => '',
 						],
 						'style'                            => [
-							'backgroundColor'             => 'blue',
+							'backgroundColor'              => 'blue',
 							'--wp-irving--custom-property' => '1px',
 						],
 						'className'                        => '',
