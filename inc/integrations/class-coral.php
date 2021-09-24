@@ -138,6 +138,14 @@ class Coral {
 		);
 
 		add_settings_field(
+			'wp_irving_coral_comment_count_display_threshold',
+			esc_html__( 'Minimum number of comments required to display the comment count', 'wp-irving' ),
+			[ $this, 'render_coral_comment_count_display_threshold_input' ],
+			'wp_irving_integrations',
+			'irving_integrations_settings'
+		);
+
+		add_settings_field(
 			'wp_irving_coral_banned_names',
 			esc_html__( 'Coral Banned Username Values', 'wp-irving' ),
 			[ $this, 'render_coral_banned_usernames_textarea' ],
@@ -217,6 +225,18 @@ class Coral {
 
 		?>
 			<input type="checkbox" name="irving_integrations[<?php echo esc_attr( 'coral_use_cron' ); ?>]" value="true" <?php echo esc_attr( $is_checked ); ?> />
+		<?php
+	}
+
+	/**
+	 * Render a number input which determines when comment count icons appear.
+	 */
+	public function render_coral_comment_count_display_threshold_input() {
+		// Check to see if there is an existing SSO secret in the option.
+		$comment_count_display_threshold = $this->options[ $this->option_key ]['comment_count_display_threshold'] ?? 0;
+
+		?>
+			<input type="number" step="1" min="0" name="irving_integrations[<?php echo esc_attr( 'coral_comment_count_display_threshold' ); ?>]" value="<?php echo esc_attr( $comment_count_display_threshold ); ?>" />
 		<?php
 	}
 
