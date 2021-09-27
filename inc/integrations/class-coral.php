@@ -232,7 +232,7 @@ class Coral {
 	 * Render a number input which determines when comment count icons appear.
 	 */
 	public function render_coral_comment_count_display_threshold_input() {
-		// Check to see if there is an existing SSO secret in the option.
+		// Check to see if there is an existing value.
 		$comment_count_display_threshold = $this->options[ $this->option_key ]['comment_count_display_threshold'] ?? 0;
 
 		?>
