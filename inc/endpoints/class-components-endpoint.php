@@ -106,8 +106,7 @@ class Components_Endpoint extends Endpoint {
 	 * Callback for the route.
 	 *
 	 * @param  WP_REST_Request $request Request object.
-	 *
-	 * @return array
+	 * @return \WP_REST_Response
 	 */
 	public function get_route_response( $request ) {
 
@@ -176,13 +175,13 @@ class Components_Endpoint extends Endpoint {
 		/**
 		 * Modify the output of the components route.
 		 *
-		 * @param array                $data     Data for response.
-		 * @param WP_Query             $query    WP_Query object corresponding
-		 *                                       to this request.
-		 * @param string               $context  The context for this request.
-		 * @param string               $path     The path for this request.
-		 * @param WP_REST_Request      $request  WP_REST_Request object.
-		 * @param \Components_Endpoint $this     Current class instance.
+		 * @param array               $data     Data for response.
+		 * @param WP_Query            $query    WP_Query object corresponding
+		 *                                      to this request.
+		 * @param string              $context  The context for this request.
+		 * @param string              $path     The path for this request.
+		 * @param WP_REST_Request     $request  WP_REST_Request object.
+		 * @param Components_Endpoint $this     Current class instance.
 		 */
 		$data = (array) apply_filters(
 			'wp_irving_components_route',
