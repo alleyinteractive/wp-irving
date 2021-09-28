@@ -63,7 +63,7 @@ class Application_Passwords_Auth {
 		}
 
 		// Set or unset the cookie upon init.
-		add_action( 'init', [ $this, 'handle_cookie' ] );
+		add_filter( 'rest_authentication_errors', [ $this, 'handle_cookie' ], 20 );
 
 		// Ensure auth errors fail silently, as to not break the Irving frontend.
 		add_filter( 'rest_authentication_errors', [ $this, 'handle_authentication_errors' ], 99 );
@@ -86,27 +86,33 @@ class Application_Passwords_Auth {
 	}
 
 	/**
-	 * Handle the cookie logic upon init.
+	 * Handle the cookie logic upon rest authentication.
+	 *
+	 * @param \WP_Error|null|true $errors WP_Error if authentication error, null if authentication
+	 *                                    method wasn't used, true if authentication succeeded.
 	 */
-	public function handle_cookie() {
+	public function handle_cookie( $errors ) {
+		if ( $errors === true ) {
+			/**
+			 * Determine the cross domain cookie domain.
+			 *
+			 * @todo Can we swap this for the COOKIE_DOMAIN constant at somepoint?
+			 * @todo Can/should we rename this filter without `jwt`?
+			 *
+			 * @var string
+			 */
+			$this->cookie_domain = apply_filters(
+				'wp_irving_jwt_token_cookie_domain',
+				wp_parse_url( home_url(), PHP_URL_HOST )
+			);
 
-		/**
-		 * Determine the cross domain cookie domain.
-		 *
-		 * @todo Can we swap this for the COOKIE_DOMAIN constant at somepoint?
-		 * @todo Can/should we rename this filter without `jwt`?
-		 *
-		 * @var string
-		 */
-		$this->cookie_domain = apply_filters(
-			'wp_irving_jwt_token_cookie_domain',
-			wp_parse_url( home_url(), PHP_URL_HOST )
-		);
+			$this->possibly_clear_all_auth();
+			$this->possibly_set_cookie();
+			$this->possibly_remove_cookie();
+			$this->possibly_remove_bearer_cookie();
+		}
 
-		$this->possibly_clear_all_auth();
-		$this->possibly_set_cookie();
-		$this->possibly_remove_cookie();
-		$this->possibly_remove_bearer_cookie();
+		return $errors;
 	}
 
 	/**
@@ -143,8 +149,14 @@ class Application_Passwords_Auth {
 	 * @return bool Was the cookie set successfully?
 	 */
 	public function possibly_set_cookie(): bool {
-		// We've already set the cookie.
-		if ( isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] ) ) { // phpcs:ignore
+		// We've already set the cookie or the request is authenticated using the token.
+		if (
+			isset( $_COOKIE[ self::TOKEN_COOKIE_NAME ] )
+			|| (
+				wp_is_application_passwords_available()
+				&& isset( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] )
+			)
+		) { // phpcs:ignore
 			return false;
 		}
 
