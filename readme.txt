@@ -19,6 +19,17 @@ While WP Irving contains a few basic plugin integrations (and we hope to support
 
 == Changelog ==
 
+= 0.12.0 =
+* Update: Frequency of Coral comment count cron to every 5 minutes (#345)
+* Add: Action hook for logging Pico API errors (#346)
+* Fix: Registration of Coral user post type (#350)
+* Update: Modify Coral setup to help accommodate avatar implementation (#351)
+* Add: Support for Jetpack's Site Verification Tools module (#353)
+* Fix: Don't camel case CSS custom properties (#354)
+* Add: Coral comment count threshold setting (#355)
+* Update: Refactor application passwords integration (#348)
+* Fix: Incorrect dockblock types (#349)
+
 = 0.11.0 =
 
 * Fix: Allow filter to handle generic objects instead of WP_Term objects (#340)
