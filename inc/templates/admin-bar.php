@@ -46,62 +46,6 @@ function setup_admin_bar(
 		);
 	}
 
-	// Only show the admin bar if logged in.
-	if ( ! is_user_logged_in() ) {
-
-		// Get and validate headers.
-		$headers = [];
-		if ( function_exists( 'getallheaders' ) ) {
-			$headers = getallheaders();
-		}
-
-		if ( ! isset( $headers['Authorization'] ) ) {
-			return $data;
-		}
-
-		array_unshift(
-			$data['page'],
-			new Component(
-				'irving/wp-admin-bar',
-				[
-					'config'   => [
-						'cookie_domain' => apply_filters(
-							'wp_irving_auth_cookie_domain',
-							COOKIE_DOMAIN
-						),
-					],
-					'children' => [
-						[
-							'name'     => 'irving/container',
-							'config'   => [
-								'style' => [
-									'text-align' => 'center',
-									'padding'    => '1rem',
-								],
-							],
-							'children' => [
-								[
-									'name'   => 'irving/text',
-									'config' => [
-										'content' => sprintf(
-											'%1$s<a href="%3$s">%2$s</a>',
-											esc_html__( 'Looks like your session has expired. ', 'wp-irving' ),
-											esc_html__( 'Click here to generate a new token.', 'wp-irving' ),
-											admin_url()
-										),
-										'html'    => true,
-									],
-								],
-							],
-						],
-					],
-				]
-			)
-		);
-
-		return $data;
-	}
-
 	// Unshift an admin bar component to the top of the `page` array.
 	array_unshift(
 		$data['page'],
