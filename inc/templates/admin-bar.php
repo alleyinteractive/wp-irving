@@ -74,10 +74,11 @@ function wp_head() {
 		? sanitize_text_field( wp_unslash( $_SERVER['HTTP_REFERER'] ) )
 		: '';
 
-	// Bail early if the request did not come from the home URL.
+	// Bail early if the request did not come from the home URL or user isn't
+	// authenticated.
 	if (
-		wp_parse_url( home_url(), PHP_URL_HOST )
-		!== wp_parse_url( $referer, PHP_URL_HOST )
+		wp_parse_url( home_url(), PHP_URL_HOST ) !== wp_parse_url( $referer, PHP_URL_HOST )
+		|| ! is_user_logged_in()
 	) {
 		return;
 	}
