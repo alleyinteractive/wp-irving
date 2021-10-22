@@ -76,8 +76,8 @@ function wp_head() {
 
 	// Bail early if the request did not come from the home URL.
 	if (
-		wp_parse_url( home_url(), PHP_URL_HOST )
-		!== wp_parse_url( $referer, PHP_URL_HOST )
+		wp_parse_url( home_url(), PHP_URL_HOST ) !== wp_parse_url( $referer, PHP_URL_HOST )
+		|| ! is_user_logged_in()
 	) {
 		return;
 	}
@@ -97,7 +97,6 @@ function wp_head() {
 			visibility: visible;
 		}
 	</style>
-	asdf
 	<script type='text/javascript'>
 		document.addEventListener('DOMContentLoaded', function() {
 			var home = "<?php echo esc_url( home_url() ); ?>";
@@ -106,10 +105,8 @@ function wp_head() {
 			var mql = window.matchMedia('(min-width: 783px)');
 
 			var sendHeightMessage = function(e) {
-				var isUserLoggedIn = <?php echo is_user_logged_in() ? 'true' : 'false'; ?>;
-				var height = ! isUserLoggedIn ? 0 : e.matches ? 32 : 46;
 				top.postMessage({
-					height,
+					height: e.matches ? 32 : 46,
 				}, home);
 			};
 
