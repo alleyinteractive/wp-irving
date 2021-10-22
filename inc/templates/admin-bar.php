@@ -97,6 +97,7 @@ function wp_head() {
 			visibility: visible;
 		}
 	</style>
+	asdf
 	<script type='text/javascript'>
 		document.addEventListener('DOMContentLoaded', function() {
 			var home = "<?php echo esc_url( home_url() ); ?>";
@@ -105,8 +106,10 @@ function wp_head() {
 			var mql = window.matchMedia('(min-width: 783px)');
 
 			var sendHeightMessage = function(e) {
+				var isUserLoggedIn = <?php echo is_user_logged_in() ? 'true' : 'false'; ?>;
+				var height = ! isUserLoggedIn ? 0 : e.matches ? 32 : 46;
 				top.postMessage({
-					height: e.matches ? 32 : 46,
+					height,
 				}, home);
 			};
 
