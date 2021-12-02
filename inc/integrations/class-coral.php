@@ -248,7 +248,7 @@ class Coral {
 		$banned_names = $this->options[ $this->option_key ]['banned_names'] ?? '';
 
 		?>
-			<textarea id="coral_banned_names" rows="10" cols="50" type="text" name="irving_integrations[<?php echo esc_attr( 'coral_banned_names' ); ?>]"><?php echo esc_attr( $banned_names ); ?></textarea>
+			<textarea id="coral_banned_names" rows="10" cols="50" type="text" name="irving_integrations[<?php echo esc_attr( 'coral_banned_names' ); ?>]"><?php echo esc_textarea( $banned_names ); ?></textarea>
 			<label for="coral_banned_names">
 				<p>
 					<em><?php echo esc_html__( 'Values banned from being included in usernames should be input as comma-separated values.', 'wp-irving' ); ?></em>
