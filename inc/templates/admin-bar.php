@@ -46,6 +46,11 @@ function setup_admin_bar(
 		);
 	}
 
+	// Only show the admin bar if logged in.
+	if ( ! is_user_logged_in() ) {
+		return $data;
+	}
+
 	// Unshift an admin bar component to the top of the `page` array.
 	array_unshift(
 		$data['page'],

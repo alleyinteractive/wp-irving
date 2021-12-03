@@ -151,7 +151,7 @@ class Pico {
 		$tiers = $this->options[ $this->option_key ]['tiers'] ?? '';
 
 		?>
-			<textarea id="pico_tiers" rows="5" cols="50" type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]"><?php echo esc_attr( $tiers ); ?></textarea>
+			<textarea id="pico_tiers" rows="5" cols="50" type="text" name="irving_integrations[<?php echo esc_attr( 'pico_tiers' ); ?>]"><?php echo esc_textarea( $tiers ); ?></textarea>
 			<label for="pico_tiers">
 				<p>
 					<em><?php echo esc_html__( 'Tiers should be input as comma-separated values (e.g. Reader,Subscriber)', 'wp-irving' ); ?></em>
