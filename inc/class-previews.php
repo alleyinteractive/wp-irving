@@ -34,7 +34,7 @@ class Previews {
 	}
 
 	/**
-	 * Setup the singleton. Validate JWT is installed, and setup hooks.
+	 * Setup the singleton.
 	 */
 	public function setup() {
 
@@ -51,16 +51,10 @@ class Previews {
 			add_action( 'wp_irving_components_request', [ $this, 'enabled_public_previews' ] );
 		}
 
-		// After plugins have loaded, check for JWT and modify the preview logic as needed.
+		// After plugins have loaded, modify the preview logic as needed.
 		add_action(
 			'plugins_loaded',
 			function() {
-
-				// Validate that JWT exists and is enabled.
-				if ( ! defined( 'JWT_AUTH_VERSION' ) ) {
-					return;
-				}
-
 				// Hook into Irving's components request to check if it's for a preview.
 				add_action( 'wp_irving_components_request', [ $this, 'check_for_previews' ] );
 			}
