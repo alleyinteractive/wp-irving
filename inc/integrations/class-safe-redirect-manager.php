@@ -35,7 +35,7 @@ class Safe_Redirect_Manager {
 	 */
 	public function setup() {
 		// Ensure Safe Redirect Manager exists and is enabled.
-		if ( ! is_callable( [ 'SRM_Redirect', 'match_redirect' ] ) ) {
+		if ( ! method_exists( 'SRM_Redirect', 'match_redirect' ) ) {
 			return;
 		}
 
