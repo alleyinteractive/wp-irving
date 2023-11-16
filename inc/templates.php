@@ -199,7 +199,7 @@ function filter_template_loader() {
  * @return string The path to the found template.
  */
 function locate_template( array $templates ): string {
-	$template_path = STYLESHEETPATH . '/templates/';
+	$template_path = get_stylesheet_directory() . '/templates/';
 
 	/**
 	 * Filter the path to Irving templates.
@@ -250,7 +250,7 @@ function locate_template( array $templates ): string {
  */
 function locate_template_part( string $template ): string {
 
-	$template_part_path = STYLESHEETPATH . '/template-parts/';
+	$template_part_path = get_stylesheet_directory() . '/template-parts/';
 
 	/**
 	 * Filter the path to Irving template partss.
