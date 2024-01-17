@@ -28,6 +28,13 @@ class JWT_Auth {
 	const KEYPAIR_NAME = 'wp-irving-jwt-auth';
 
 	/**
+	 * Cookie domain.
+	 *
+	 * @var string
+	 */
+	protected $cookie_domain;
+
+	/**
 	 * Class instance.
 	 *
 	 * @var null|self
